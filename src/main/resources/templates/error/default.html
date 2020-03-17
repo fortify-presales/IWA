@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+    <head>
+        <title>Error</title>
+    </head>
+    <body>
+        <div layout:fragment="content" th:remove="tag">
+            <h1>Error</h1>
+            <p>We are sorry, there was an error processing your request</p>
+            <p><a href="/" th:href="@{/}">Back to home page</a></p>
+        </div>
+    </body>
+</html>

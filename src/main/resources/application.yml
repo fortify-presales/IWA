@@ -1,0 +1,53 @@
+server:
+  port: 8080
+  error:
+    whitelabel:
+      enabled: false
+
+messages:
+  home: Hello, Guest!
+
+spring:
+  profiles: default
+  main:
+    allow-bean-definition-overriding: true
+    banner-mode: "off"
+  thymeleaf:
+    cache: false
+    check-template: true
+    check-template-location: true
+    content-type: text/html
+    enabled: true
+    encoding: UTF-8
+    # excluded-view-names:
+    mode: HTML
+    prefix: classpath:/templates/
+    suffix: .html
+    # template-resolver-order:
+    # view-names:
+  datasource:
+    # h2 database
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:ssa
+    username: sa
+    password: password
+    initialization-mode: always
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hiberate:
+        # h2 database dialect
+        dialect: org.hibernate.dialect.H2Dialect
+  mvc:
+    favicon:
+      enabled: false
+
+logging:
+  level:
+    root: WARN
+    com.microfocus: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+

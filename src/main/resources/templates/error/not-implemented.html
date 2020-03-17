@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+    <head>
+        <title>Not Implemented</title>
+    </head>
+    <body>
+        <div layout:fragment="content" th:remove="tag">
+            <h1>Not Implemented</h1>
+            <p>We are sorry, the page you have requested has not yet been implemented.</p>
+            <p><a href="/" th:href="@{/}">Back to home page</a></p>
+        </div>
+    </body>
+</html>

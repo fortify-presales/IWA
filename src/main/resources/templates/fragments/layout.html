@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+        <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.12.0/css/all.css} "/>
+
+        <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">Simple Secure App</title>
+
+    </head>
+    <body>
+        <th:block th:replace="fragments/header :: header"/>
+        <div class="container">
+            <th:block layout:fragment="content"/>
+        </div>
+        <th:block th:replace="fragments/footer :: footer"/>
+    </body>
+</html>
