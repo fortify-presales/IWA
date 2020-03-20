@@ -168,12 +168,13 @@ pipeline {
         }
 
         stage('DAST') {
-
-            script {
-                def useWI = fileExists 'features/fortify-wi.enabled'
-                if (useWI) {
-                    println "Dynamic Application Security Testing..."
-                    // TODO: run WebInspect on deployed application
+            steps {
+                script {
+                    def useWI = fileExists 'features/fortify-wi.enabled'
+                    if (useWI) {
+                        println "Dynamic Application Security Testing..."
+                        // TODO: run WebInspect on deployed application
+                    }
                 }
             }
         }
