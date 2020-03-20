@@ -108,13 +108,13 @@ pipeline {
                             fortifyTranslate buildID: "${env.COMPONENT_NAME}",
                                 projectScanType: fortifyJava(javaSrcFiles:
                                     'src\\main\\java\\com\\microfocus\\example',
-                                    javaVersion: "${env.JAVA_VERSION}")
-                                logFile: "${env.COMPONENT_NAME}-translate.log",
+                                    javaVersion: "${env.JAVA_VERSION}"),
+                                logFile: "${env.COMPONENT_NAME}-translate.log"
 
 
                             // Scan source files
                             fortifyScan buildID: "${env.COMPONENT_NAME}",
-                                resultsFile: "${env.COMPONENT_NAME}.fpr"
+                                resultsFile: "${env.COMPONENT_NAME}.fpr",
                                 logFile: "${env.COMPONENT_NAME}-scan.log"
 
                             // Upload to SSC
