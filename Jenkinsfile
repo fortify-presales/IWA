@@ -5,13 +5,14 @@ pipeline {
 
     environment {
         GIT_REPO = "http://localhost:8080/gitbucket/git/mfdemo/secure-web-app.git"
+        APP_NAME = "Simple Secure App"
+        APP_VER = "1.0"
+        JAVA_VERSION = 8
         FOD_BSI_TOKEN = credentials('jenkins-fod-bsi-token-id')
         FOD_PAT = 'FODPAT'
         FOD_USERNAME = 'kevin.lee'
         FOD_TENANT_ID = 'emeademo'
         FOD_UPLOAD_DIR = 'fod'
-        APP_NAME = "Simple Secure App"
-        APP_VER = "1.0"
         COMPONENT_NAME = "secure-web-app"
         DA_USERNAME = "admin"
         DA_AUTH_TOKEN = credentials('jenkins-da-auth-token-id')
@@ -63,15 +64,40 @@ pipeline {
 
         stage('Verification') {
             parallel {
-                stage('Static Analysis') {
+                stage('Security Assessment') {
                     steps {
-                        println "Static Analysis..."
+                        println "Security Assessment..."
 
                         // Get some code from a GitHub repository
                         git "${env.GIT_REPO}"
 
                         // Run Maven debug compile and download dependencies
                         bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify"
+
+                        // Update scan rules
+                        //fortifyUpdate updateServerURL: 'https://update.fortify.com'
+
+                        // Clean project and scan results from previous run
+                        fortifyClean buildID: "${env.COMPONENT_NAME}",
+                            logFile: "${env.COMPONENT_NAME}-clean.log"
+
+                        // Translate source files
+                        fortifyTranslate buildID: "${env.COMPONENT_NAME}",
+                            projectScanType: fortifyJava(javaSrcFiles:
+                                'src\\main\\java\\com\\microfocus\\example',
+                                javaVersion: "${env.JAVA_VERSION}")
+                            logFile: "${env.COMPONENT_NAME}-translate.log",
+
+
+                        // Scan source files
+                        fortifyScan buildID: "${env.COMPONENT_NAME}",
+                            resultsFile: "${env.COMPONENT_NAME}.fpr"
+                            logFile: "${env.COMPONENT_NAME}-scan.log"
+
+                        // Upload to SSC
+                        //fortifyUpload appName: "${env.APP_NAME}",
+                        //    appVersion: "${env.APP_VER}",
+                        //    resultsFile: "${env.COMPONENT_NAME}.fpr"
 
                         // Upload built application to Fortify on Demand and carry out Static Assessment
                         /*fodStaticAssessment bsiToken: "${env.FOD_BSI_TOKEN}",
