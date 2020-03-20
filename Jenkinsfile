@@ -19,6 +19,7 @@ pipeline {
         DA_WEBURL = "http://localhost:8080/da"
         DA_CLIENT_PATH = "C:\\Micro Focus\\Deployment Automation Client\\da-client.cmd"
         DA_DEPLOY_PROCESS = "Deploy Web App"
+        PATH = "C:\\Micro Focus\\Fortify_SCA_and_Apps_19.2.0\\bin:$PATH"  // add Fortify SCA to path
     }
 
     tools {
