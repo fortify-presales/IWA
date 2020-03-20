@@ -74,53 +74,55 @@ pipeline {
                         // Run Maven debug compile and download dependencies
                         bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify"
 
-                        // Update scan rules
-                        //fortifyUpdate updateServerURL: 'https://update.fortify.com'
+                        def useFOD = fileExists 'fod.enabled'
 
-                        // Clean project and scan results from previous run
-                        fortifyClean buildID: "${env.COMPONENT_NAME}",
-                            logFile: "${env.COMPONENT_NAME}-clean.log"
+                        if (useFOD) {
+                            // Upload built application to Fortify on Demand and carry out Static Assessment
+                            fodStaticAssessment bsiToken: "${env.FOD_BSI_TOKEN}",
+                                entitlementPreference: 'SubscriptionOnly',
+                                inProgressScanActionType: 'CancelInProgressScan',
+                                overrideGlobalConfig: true,
+                                personalAccessToken: "${env.FOD_PAT}",
+                                remediationScanPreferenceType: 'NonRemediationScanOnly',
+                                srcLocation: "${env.FOD_UPLOAD_DIR}",
+                                tenantId: "${env.FOD_TENANT_ID}",
+                                username: "${env.FOD_USERNAME}"
 
-                        // Translate source files
-                        fortifyTranslate buildID: "${env.COMPONENT_NAME}",
-                            projectScanType: fortifyJava(javaSrcFiles:
-                                'src\\main\\java\\com\\microfocus\\example',
-                                javaVersion: "${env.JAVA_VERSION}")
-                            logFile: "${env.COMPONENT_NAME}-translate.log",
+                            // optional: wait for FOD assessment to complete
+                            fodPollResults bsiToken: "${env.FOD_BSI_TOKEN}",
+                                overrideGlobalConfig: true,
+                                personalAccessToken: "${env.FOD_PAT}",
+                                //policyFailureBuildResultPreference: 1,
+                                pollingInterval: 5,
+                                tenantId: "${env.FOD_TENANT_ID}",
+                                username: "${env.FOD_USERNAME}"
+                        } else {
+                            // Update scan rules
+                            //fortifyUpdate updateServerURL: 'https://update.fortify.com'
+
+                            // Clean project and scan results from previous run
+                            fortifyClean buildID: "${env.COMPONENT_NAME}",
+                                logFile: "${env.COMPONENT_NAME}-clean.log"
+
+                            // Translate source files
+                            fortifyTranslate buildID: "${env.COMPONENT_NAME}",
+                                projectScanType: fortifyJava(javaSrcFiles:
+                                    'src\\main\\java\\com\\microfocus\\example',
+                                    javaVersion: "${env.JAVA_VERSION}")
+                                logFile: "${env.COMPONENT_NAME}-translate.log",
 
 
-                        // Scan source files
-                        fortifyScan buildID: "${env.COMPONENT_NAME}",
-                            resultsFile: "${env.COMPONENT_NAME}.fpr"
-                            logFile: "${env.COMPONENT_NAME}-scan.log"
+                            // Scan source files
+                            fortifyScan buildID: "${env.COMPONENT_NAME}",
+                                resultsFile: "${env.COMPONENT_NAME}.fpr"
+                                logFile: "${env.COMPONENT_NAME}-scan.log"
 
-                        // Upload to SSC
-                        //fortifyUpload appName: "${env.APP_NAME}",
-                        //    appVersion: "${env.APP_VER}",
-                        //    resultsFile: "${env.COMPONENT_NAME}.fpr"
+                            // Upload to SSC
+                            //fortifyUpload appName: "${env.APP_NAME}",
+                            //    appVersion: "${env.APP_VER}",
+                            //    resultsFile: "${env.COMPONENT_NAME}.fpr"
+                        }
 
-                        // Upload built application to Fortify on Demand and carry out Static Assessment
-                        /*fodStaticAssessment bsiToken: "${env.FOD_BSI_TOKEN}",
-                            entitlementPreference: 'SubscriptionOnly',
-                            inProgressScanActionType: 'CancelInProgressScan',
-                            overrideGlobalConfig: true,
-                            personalAccessToken: "${env.FOD_PAT}",
-                            remediationScanPreferenceType: 'NonRemediationScanOnly',
-                            srcLocation: "${env.FOD_UPLOAD_DIR}",
-                            tenantId: "${env.FOD_TENANT_ID}",
-                            username: "${env.FOD_USERNAME}"
-                        */
-
-                        // optional: wait for FOD assessment to complete
-                        /*
-                        fodPollResults bsiToken: "${env.FOD_BSI_TOKEN}",
-                            overrideGlobalConfig: true,
-                            personalAccessToken: "${env.FOD_PAT}",
-                            //policyFailureBuildResultPreference: 1,
-                            pollingInterval: 5,
-                            tenantId: "${env.FOD_TENANT_ID}",
-                            username: "${env.FOD_USERNAME}"
-                        */
                     }
                 }
                 stage('Integration Test') {
