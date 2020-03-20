@@ -21,3 +21,5 @@ mvn com.fortify.sca.plugins.maven:sca-maven-plugin:19.2.0:clean
 mvn package -DskipTests com.fortify.sca.plugins.maven:sca-maven-plugin:19.2.0:translate
 mvn com.fortify.sca.plugins.maven:sca-maven-plugin:19.2.0:scan -Dfortify.sca.Xmx=3G
 ```
+
+or use the _fortify-sca.bat__ script from the command line.
