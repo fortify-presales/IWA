@@ -53,10 +53,16 @@ pipeline {
                     junit "**/target/surefire-reports/TEST-*.xml"
                     // Archive the built file
                     archiveArtifacts "target/${env.COMPONENT_NAME}.war"
-                    // upload build files into Deployment Automation component version
-                    bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" createVersion --component "${env.COMPONENT_NAME}" --name "${env.APP_VER}-${BUILD_NUMBER}"/)
-                    bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionFiles --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --base "${WORKSPACE}\target" --include "${env.COMPONENT_NAME}.war"/)
-                    bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionStatus --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --status "BUILT"/)
+
+                    script {
+                        def useDA = fileExists 'features/da.enabled'
+                        if (useDA) {
+                            // upload build files into Deployment Automation component version
+                            bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" createVersion --component "${env.COMPONENT_NAME}" --name "${env.APP_VER}-${BUILD_NUMBER}"/)
+                            bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionFiles --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --base "${WORKSPACE}\target" --include "${env.COMPONENT_NAME}.war"/)
+                            bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionStatus --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --status "BUILT"/)
+                        }
+                    }
                 }
             }
 
@@ -128,7 +134,9 @@ pipeline {
                      steps {
                          println "Integration Testing"
                          script {
-                               def data = [
+                            def useDA = fileExists 'features/da.enabled'
+                            if (useDA) {
+                                def data = [
                                    application: "${env.APP_NAME}",
                                    applicationProcess : "${env.DA_DEPLOY_PROCESS}",
                                    environment : "Systems Integration",
@@ -144,26 +152,27 @@ pipeline {
                                            component: "${env.COMPONENT_NAME}"
                                        ]
                                    ]
-                               ]
+                                ]
 
-                               def json = JsonOutput.toJson(data)
-                               def file = new File("${WORKSPACE}/da-process.json")
-                               file.write(JsonOutput.prettyPrint(json))
+                                def json = JsonOutput.toJson(data)
+                                def file = new File("${WORKSPACE}/da-process.json")
+                                file.write(JsonOutput.prettyPrint(json))
+
+                                // deploy to Integration environment using Deployment Automation
+                                bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" requestApplicationProcess "${WORKSPACE}\da-process.json"/)
+                            }
                          }
-
-                         // deploy to Integration environment using Deployment Automation
-                         bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" requestApplicationProcess "${WORKSPACE}\da-process.json"/)
                      }
                 }
             }
         }
 
         stage('DAST') {
-            println "Dynamic Application Security Testing..."
 
             script {
-                def useWI = fileExists 'fortify-wi.enabled'
+                def useWI = fileExists 'features/fortify-wi.enabled'
                 if (useWI) {
+                    println "Dynamic Application Security Testing..."
                     // TODO: run WebInspect on deployed application
                 }
             }
