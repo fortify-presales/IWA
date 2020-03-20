@@ -122,20 +122,23 @@ pipeline {
                                     resultsFile: "${env.COMPONENT_NAME}.fpr",
                                     logFile: "${env.COMPONENT_NAME}-scan.log"
 
-                                // Upload to SSC
-                                //fortifyUpload appName: "${env.APP_NAME}",
-                                //    appVersion: "${env.APP_VER}",
-                                //    resultsFile: "${env.COMPONENT_NAME}.fpr"
+                                def useSSC = fileExists 'features/ssc.enabled'
+                                if (useSSC) {
+                                    // Upload to SSC
+                                    fortifyUpload appName: "${env.APP_NAME}",
+                                        appVersion: "${env.APP_VER}",
+                                        resultsFile: "${env.COMPONENT_NAME}.fpr"
+                                }
                             }
                         }
                     }
                 }
-                stage('Integration Test') {
+                stage('Deploy') {
                      steps {
-                         println "Integration Testing"
                          script {
                             def useDA = fileExists 'features/da.enabled'
                             if (useDA) {
+                                println "Deploying application using Deployment Automation..."
                                 def data = [
                                    application: "${env.APP_NAME}",
                                    applicationProcess : "${env.DA_DEPLOY_PROCESS}",
