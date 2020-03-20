@@ -19,7 +19,6 @@ pipeline {
         DA_WEBURL = "http://localhost:8080/da"
         DA_CLIENT_PATH = "C:\\Micro Focus\\Deployment Automation Client\\da-client.cmd"
         DA_DEPLOY_PROCESS = "Deploy Web App"
-        PATH = "C:\\Micro Focus\\Fortify_SCA_and_Apps_19.2.0\\bin:$PATH"  // add Fortify SCA to path
     }
 
     tools {
@@ -65,9 +64,9 @@ pipeline {
 
         stage('Verification') {
             parallel {
-                stage('Security Assessment') {
+                stage('SAST') {
                     steps {
-                        println "Security Assessment..."
+                        println "Static Application Security Testing..."
 
                         // Get some code from a GitHub repository
                         git "${env.GIT_REPO}"
@@ -132,7 +131,7 @@ pipeline {
                                def data = [
                                    application: "${env.APP_NAME}",
                                    applicationProcess : "${env.DA_DEPLOY_PROCESS}",
-                                   environment : "Integration",
+                                   environment : "Systems Integration",
                                    properties: [
                                        [
                                            "jenkins.url": "${env.JENKINS_URL}",
@@ -154,8 +153,18 @@ pipeline {
 
                          // deploy to Integration environment using Deployment Automation
                          bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" requestApplicationProcess "${WORKSPACE}\da-process.json"/)
-
                      }
+                }
+            }
+        }
+
+        stage('DAST') {
+            println "Dynamic Application Security Testing..."
+
+            script {
+                def useWI = fileExists 'fortify-wi.enabled'
+                if (useWI) {
+                    // TODO: run WebInspect on deployed application
                 }
             }
         }
