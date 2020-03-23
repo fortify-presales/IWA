@@ -18,8 +18,10 @@ pipeline {
         DA_USERNAME = "admin"
         DA_AUTH_TOKEN = credentials('jenkins-da-auth-token-id')
         DA_WEBURL = "http://localhost:8080/da"
+        // Path to Deployment Automation Client on the Build Agent
         DA_CLIENT_PATH = "C:\\Micro Focus\\Deployment Automation Client\\da-client.cmd"
         DA_DEPLOY_PROCESS = "Deploy Web App"
+        // Path to WebInspect executable on the Agent
         WI_CLIENT_PATH = "C:\\Micro Focus\\Fortify WebInspect\\WI.exe"
         WI_SETTINGS_FILE = "C:\\Source\\secure-web-app\\etc\\DefaultSettings.xml"
         WI_LOGIN_MACRO = "C:\\Source\\secure-web-app\\etc\\Login.webmacro"
@@ -118,7 +120,7 @@ pipeline {
                                 // Translate source files
                                 fortifyTranslate buildID: "${env.COMPONENT_NAME}",
                                     projectScanType: fortifyJava(javaSrcFiles:
-                                        '"src/main/java/**/*.java","src/main/resources/**/*.html"',
+                                        '\""src/main/java/**/*.java\"" \""src/main/resources/**/*.html\""',
                                         javaVersion: "${env.JAVA_VERSION}"),
                                     logFile: "${env.COMPONENT_NAME}-translate.log"
 
