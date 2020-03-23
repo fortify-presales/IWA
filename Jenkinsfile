@@ -75,9 +75,15 @@ pipeline {
                         def useDA = fileExists 'features/da.enabled'
                         if (useDA) {
                             // upload build files into Deployment Automation component version
-                            bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" createVersion --component "${env.COMPONENT_NAME}" --name "${env.APP_VER}-${BUILD_NUMBER}"/)
-                            bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionFiles --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --base "${WORKSPACE}\target" --include "${env.COMPONENT_NAME}.war"/)
-                            bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionStatus --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --status "BUILT"/)
+                            if (isUnix()) {
+                                sh('"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" createVersion --component "${env.COMPONENT_NAME}" --name "${env.APP_VER}-${BUILD_NUMBER}"')
+                                sh('"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionFiles --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --base "${WORKSPACE}/target" --include "${env.COMPONENT_NAME}.war"')
+                                sh('"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionStatus --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --status "BUILT"')
+                            } else {
+                                bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" createVersion --component "${env.COMPONENT_NAME}" --name "${env.APP_VER}-${BUILD_NUMBER}"/)
+                                bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionFiles --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --base "${WORKSPACE}\\target" --include "${env.COMPONENT_NAME}.war"/)
+                                bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionStatus --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --status "BUILT"/)
+                            }
                         }
                     }
                 }
@@ -95,11 +101,15 @@ pipeline {
                         git "${env.GIT_REPO}"
 
                         // Run Maven debug compile and download dependencies
-                        bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify"
+                        if (isUnix()) {
+                            sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify'
+                        } else {
+                            bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify"
+                        }
 
                         script {
-                            def useSCA = fileExists 'fortify-sca.enabled'
-                            def useFOD = fileExists 'fortify-fod.enabled'
+                            def useSCA = fileExists 'sca.enabled'
+                            def useFOD = fileExists 'fod.enabled'
                             if (useFOD) {
                                 // Upload built application to Fortify on Demand and carry out Static Assessment
                                 fodStaticAssessment bsiToken: "${env.FOD_BSI_TOKEN}",
@@ -182,7 +192,11 @@ pipeline {
                                 file.write(JsonOutput.prettyPrint(json))
 
                                 // deploy to Integration environment using Deployment Automation
-                                bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" requestApplicationProcess "${WORKSPACE}\da-process.json"/)
+                                if (isUnix()) {
+                                    sh('"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" requestApplicationProcess "${WORKSPACE}/da-process.json"')
+                                } else {
+                                    bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" requestApplicationProcess "${WORKSPACE}\\da-process.json"/)
+                                }
                             }
                          }
                      }
@@ -193,12 +207,16 @@ pipeline {
         stage('DAST') {
             steps {
                 script {
-                    def useWI = fileExists 'features/fortify-wi.enabled'
+                    def useWI = fileExists 'features/wi.enabled'
                     if (useWI) {
                         println "Dynamic Application Security Testing..."
 
                         // Run WebInspect on deployed application
-                        bat(/"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP.WEBURL}" -ep "${env.WI_OUTPUT_FILE}"/)
+                        if (isUnix()) {
+                            sh('"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP.WEBURL}" -ep "${env.WI_OUTPUT_FILE}"')
+                        } else {
+                            bat(/"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP.WEBURL}" -ep "${env.WI_OUTPUT_FILE}"/)
+                        }
 
                         // Upload FPR to SSC
 
