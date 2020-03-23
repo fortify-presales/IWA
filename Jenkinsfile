@@ -213,9 +213,9 @@ pipeline {
 
                         // Run WebInspect on deployed application
                         if (isUnix()) {
-                            sh('"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP.WEBURL}" -ep "${env.WI_OUTPUT_FILE}"')
+                            sh('"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP_WEBURL}" -ep "${env.WI_OUTPUT_FILE}"')
                         } else {
-                            bat(/"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP.WEBURL}" -ep "${env.WI_OUTPUT_FILE}"/)
+                            bat(/"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP_WEBURL}" -ep "${env.WI_OUTPUT_FILE}"/)
                         }
 
                         // Upload FPR to SSC
