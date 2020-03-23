@@ -184,7 +184,7 @@ pipeline {
                         println "Dynamic Application Security Testing..."
 
                         // Run WebInspect on deployed application
-                        bat("/${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP.WEBURL}" -ep "${env.WI_OUTPUT_FILE}"/)
+                        bat(/"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP.WEBURL}" -ep "${env.WI_OUTPUT_FILE}"/)
 
                         // Upload FPR to SSC
 
