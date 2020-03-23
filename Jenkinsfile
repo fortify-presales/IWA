@@ -100,14 +100,14 @@ pipeline {
                         // Get some code from a GitHub repository
                         git "${env.GIT_REPO}"
 
-                        // Run Maven debug compile and download dependencies
-                        if (isUnix()) {
-                            sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify'
-                        } else {
-                            bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify"
-                        }
-
                         script {
+                            // Run Maven debug compile and download dependencies
+                            if (isUnix()) {
+                                sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify'
+                            } else {
+                                bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify"
+                            }
+
                             def useSCA = fileExists 'sca.enabled'
                             def useFOD = fileExists 'fod.enabled'
                             if (useFOD) {
