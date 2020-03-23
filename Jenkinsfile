@@ -52,13 +52,15 @@ pipeline {
                 }
 
                 println "Git commit id: ${env.GIT_COMMIT_ID}"
-                //println "Git commit author: ${env.GIT_COMMIT_AUTHOR}"
+                println "Git commit author: ${env.GIT_COMMIT_AUTHOR}"
 
                 // Run maven to build application
-                if (isUnix()) {
-                    sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTest clean package'
-                } else {
-                    bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTest clean package"
+                script {
+                    if (isUnix()) {
+                        sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTest clean package'
+                    } else {
+                        bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTest clean package"
+                    }
                 }
             }
 
