@@ -41,7 +41,11 @@ pipeline {
 
                 // Get Git commit details
                 script {
-                    bat(/git rev-parse HEAD > .git\commit-id/)
+                    if (isUnix()) {
+                        sh 'git rev-parse HEAD > .git/commit-id'
+                    } else {
+                        bat(/git rev-parse HEAD > .git\\commit-id/)
+                    }
                     //bat(/git log --format="%ae" | head -1 > .git\commit-author/)
                     env.GIT_COMMIT_ID = readFile('.git/commit-id').trim()
                     //env.GIT_COMMIT_AUTHOR = readFile('.git/commit-author').trim()
@@ -51,7 +55,11 @@ pipeline {
                 //println "Git commit author: ${env.GIT_COMMIT_AUTHOR}"
 
                 // Run maven to build application
-                bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTest clean package"
+                if (isUnix()) {
+                    sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTest clean package'
+                } else {
+                    bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTest clean package"
+                }
             }
 
             post {
@@ -88,6 +96,7 @@ pipeline {
                         bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify"
 
                         script {
+                            def useSCA = fileExists 'fortify-sca.enabled'
                             def useFOD = fileExists 'fortify-fod.enabled'
                             if (useFOD) {
                                 // Upload built application to Fortify on Demand and carry out Static Assessment
@@ -109,7 +118,7 @@ pipeline {
                                     pollingInterval: 5,
                                     tenantId: "${env.FOD_TENANT_ID}",
                                     username: "${env.FOD_USERNAME}"
-                            } else {
+                            } else if (useSCA){
                                 // Update scan rules
                                 //fortifyUpdate updateServerURL: 'https://update.fortify.com'
 
@@ -136,6 +145,8 @@ pipeline {
                                         appVersion: "${env.APP_VER}",
                                         resultsFile: "${env.COMPONENT_NAME}.fpr"
                                 }
+                            } else {
+                                println "Skipping static application security testing..."
                             }
                         }
                     }
