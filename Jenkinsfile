@@ -118,7 +118,7 @@ pipeline {
                                 // Translate source files
                                 fortifyTranslate buildID: "${env.COMPONENT_NAME}",
                                     projectScanType: fortifyJava(javaSrcFiles:
-                                        '"src/main/java/**/*.java"
+                                        '"src/main/java/**/*.java",
                                         "src/main/resources/**/*.html"',
                                         javaVersion: "${env.JAVA_VERSION}"),
                                     logFile: "${env.COMPONENT_NAME}-translate.log"
