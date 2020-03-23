@@ -7,6 +7,7 @@ pipeline {
         GIT_REPO = "http://localhost:8080/gitbucket/git/mfdemo/secure-web-app.git"
         APP_NAME = "Simple Secure App"
         APP_VER = "1.0"
+        APP_WEBURL = "http://localhost:8881/secure-web-app/"
         JAVA_VERSION = 8
         FOD_BSI_TOKEN = credentials('jenkins-fod-bsi-token-id')
         FOD_PAT = 'FODPAT'
@@ -19,6 +20,10 @@ pipeline {
         DA_WEBURL = "http://localhost:8080/da"
         DA_CLIENT_PATH = "C:\\Micro Focus\\Deployment Automation Client\\da-client.cmd"
         DA_DEPLOY_PROCESS = "Deploy Web App"
+        WI_CLIENT_PATH = "C:\\Micro Focus\\Fortify WebInspect\\WI.exe"
+        WI_SETTINGS_FILE = "C:\\Source\\secure-web-app\\etc\\DefaultSettings.xml"
+        WI_LOGIN_MACRO = "C:\\Source\\secure-web-app\\etc\\Login.webmacro"
+        WI_OUTPUT_FILE = "${env.WORKSPACE}\\wi-secure-web-app.fpr"
     }
 
     tools {
@@ -113,7 +118,8 @@ pipeline {
                                 // Translate source files
                                 fortifyTranslate buildID: "${env.COMPONENT_NAME}",
                                     projectScanType: fortifyJava(javaSrcFiles:
-                                        'src\\main\\java\\com\\microfocus\\example',
+                                        "src/main/java/**/*.java",
+                                        "src.main/resources/**/*.html"
                                         javaVersion: "${env.JAVA_VERSION}"),
                                     logFile: "${env.COMPONENT_NAME}-translate.log"
 
@@ -176,7 +182,12 @@ pipeline {
                     def useWI = fileExists 'features/fortify-wi.enabled'
                     if (useWI) {
                         println "Dynamic Application Security Testing..."
-                        // TODO: run WebInspect on deployed application
+
+                        // Run WebInspect on deployed application
+                        bat("/${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP.WEBURL}" -ep "${env.WI_OUTPUT_FILE}"/)
+
+                        // Upload FPR to SSC
+
                     }
                 }
             }
