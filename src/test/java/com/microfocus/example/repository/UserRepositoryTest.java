@@ -61,4 +61,24 @@ public class UserRepositoryTest extends BaseIntegrationTest {
         else
             fail("Test user 2 not found");
     }
+
+    @Test
+    public void userRepository_update() {
+        Optional<User> optionalUser = userRepository.findUserByUsername("test");
+        if (optionalUser.isPresent()) {
+            assertThat(optionalUser.get().getUsername()).isEqualTo("test");
+            User u = optionalUser.get();
+            u.setName("test user updated");
+            u.setEmail("testupdated@localhost");
+            u.setMobile("0987654321");
+            userRepository.save(u);
+            Optional<User> u2 = userRepository.findUserByUsername("test");
+            if (u2.isPresent()) {
+                assertThat(u2.get().getName()).isEqualTo("test user updated");
+                assertThat(u2.get().getEmail()).isEqualTo("testupdated@localhost");
+                assertThat(u2.get().getMobile()).isEqualTo("0987654321");
+            }
+        } else
+            fail("Test user not found");
+    }
 }

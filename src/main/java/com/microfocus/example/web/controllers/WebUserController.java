@@ -21,8 +21,12 @@ package com.microfocus.example.web.controllers;
 
 import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.User;
+import com.microfocus.example.exception.InvalidPasswordException;
+import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.repository.IUserRepository;
+import com.microfocus.example.service.UserService;
 import com.microfocus.example.utils.WebUtils;
+import com.microfocus.example.web.form.UserForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +35,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.security.Principal;
+import java.util.Optional;
 
 /**
  * Controller for user pages
@@ -48,23 +55,27 @@ public class WebUserController {
 
     private static final Logger log = LoggerFactory.getLogger(WebUserController.class);
 
-    //@Qualifier("ssaUserRepository")
     @Autowired
-    private IUserRepository userRepository;
+    private UserService userService;
 
     @Value("${messages.home:default-value}")
     private String message = "Hello World";
 
     @GetMapping(value = {"", "/"})
     public String userHome(Model model, Principal principal) {
-        if (principal == null) {
+        CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        Optional<User> optionalUser = userService.findById(user.getId());
+        if (optionalUser.isPresent()) {
+            UserForm userForm = new UserForm(optionalUser.get());
+            model.addAttribute("userForm", userForm);
+            model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
+            model.addAttribute("message", message);
+
+        } else {
             model.addAttribute("message", "Internal error accessing user");
             return "user/not-found";
         }
-        CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        User u2 = userRepository.findById(user.getId()).get();
-        model.addAttribute("user", u2);
-        model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
+        model.addAttribute("messageCount", "0");
         model.addAttribute("controllerName", "User");
         model.addAttribute("actionName", "index");
         return "user/index";
@@ -72,26 +83,39 @@ public class WebUserController {
 
     @GetMapping("/edit")
     public String userEdit(Model model, Principal principal) {
-        if (principal == null) {
+        CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        Optional<User> optionalUser = userService.findById(user.getId());
+        if (optionalUser.isPresent()) {
+            UserForm userForm = new UserForm(optionalUser.get());
+            model.addAttribute("userForm", userForm);
+            model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
+        } else {
             model.addAttribute("message", "Internal error accessing user");
             return "user/not-found";
         }
-        CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        model.addAttribute("user", user);
-        model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
+        model.addAttribute("messageCount", "0");
         model.addAttribute("controllerName", "User");
         model.addAttribute("actionName", "edit");
         return "user/edit";
     }
 
     @PostMapping("/save")
-    public String userSave(@ModelAttribute com.microfocus.example.entity.User user,
-                           BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors()) {
-            return "user/edit";
+    public String userSave(@ModelAttribute UserForm userForm, BindingResult bindingResult, Model model) {
+        if (!bindingResult.hasErrors()) {
+            try {
+                userService.save(userForm);
+                return "redirect:/user";
+            } catch (InvalidPasswordException ex) {
+                FieldError usernameError = new FieldError("userForm", "confirmPassword", ex.getMessage());
+                bindingResult.addError(usernameError);
+            } catch (UserNotFoundException ex) {
+                FieldError usernameError = new FieldError("userForm", "username", ex.getMessage());
+                bindingResult.addError(usernameError);
+            }
+        } else {
+            log.info(bindingResult.toString());
         }
-        //userRepository.save(user);
-        return "redirect:/user";
+        return "user/edit";
     }
 
 }

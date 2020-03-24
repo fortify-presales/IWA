@@ -21,7 +21,7 @@ public class UserServiceTest extends BaseIntegrationTest {
 
     @Test
     public void listAll() {
-        //List<User> users = userService.listAll();
-        //assertThat(users.size()).isEqualTo(3L);
+        List<User> users = userService.listAll();
+        assertThat(users.size()).isEqualTo(3L);
     }
 }

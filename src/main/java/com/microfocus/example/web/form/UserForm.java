@@ -17,8 +17,10 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.entity;
+package com.microfocus.example.web.form;
 
+import com.microfocus.example.entity.Authority;
+import com.microfocus.example.entity.User;
 import com.microfocus.example.utils.EncryptedPasswordUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,50 +32,43 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
-@Table(name = "user")
-public class User implements Serializable {
+public class UserForm {
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotEmpty
     private Integer id;
 
     @NotEmpty
-    @Column(nullable = false, unique = true)
     private String username;
 
     @NotEmpty
     private String password;
 
-    @Transient
+    @NotEmpty
     private String confirmPassword;
 
     @NotEmpty
     private String name;
 
     @NotEmpty
-    @Column(unique = true)
     private String email;
 
     @NotEmpty
-    @Column(unique = true)
     private String mobile;
 
-    @Column(name = "date_created")
-    private Date dateCreated;
+    public UserForm() {
+    }
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name = "user_authority",
-            joinColumns = { @JoinColumn(name = "user_id") },
-            inverseJoinColumns = { @JoinColumn(name = "authority_id") })
-    private Set<Authority> authorities = new HashSet<>();
-
-    public User() {
+    public UserForm(User user) {
+        this.id = user.getId();
+        this.username = user.getUsername();
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.mobile = user.getMobile();
     }
 
     public Integer getId() {
@@ -132,28 +127,12 @@ public class User implements Serializable {
         this.mobile = mobile;
     }
 
-    public Date getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Date dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public Set<Authority> getAuthorities() {
-        return authorities;
-    }
-
-    public void setAuthorities(Set<Authority> authorities) {
-        this.authorities = authorities;
-    }
-
     @Override
     public String toString() {
-        return "User{" +
+        return "UserForm{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", authorities=" + authorities +
+                ", email =" + email +
                 '}';
     }
 }
