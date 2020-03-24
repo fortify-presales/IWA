@@ -1,5 +1,6 @@
-package com.microfocus.example;
+package com.microfocus.example.web;
 
+import com.microfocus.example.BaseIntegrationTest;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
-public class ssaDefaultControllerTest extends BaseIntegrationTest {
+public class DefaultControllerTest extends BaseIntegrationTest {
 
     @Autowired
     private MockMvc mvc;

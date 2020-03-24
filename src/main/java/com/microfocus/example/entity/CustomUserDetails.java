@@ -76,6 +76,18 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 
+    public String getName() {
+        return user.getName();
+    }
+
+    public String getEmail() {
+        return user.getEmail();
+    }
+
+    public String getMobile() {
+        return user.getMobile();
+    }
+
     public User getUserDetails() {
         return user;
     }

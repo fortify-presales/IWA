@@ -17,11 +17,11 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.repository.impl;
+package com.microfocus.example.service;
 
 import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.User;
-import com.microfocus.example.repository.UserRepository;
+import com.microfocus.example.repository.IUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,12 +39,12 @@ import java.util.Optional;
  * @author Kevin A. Lee
  */
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
-    private static final Logger log = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
     @Autowired
-    private UserRepository userRepository;
+    private IUserRepository userRepository;
 
     @Transactional
     @Override

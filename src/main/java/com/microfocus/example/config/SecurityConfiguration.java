@@ -19,7 +19,7 @@
 
 package com.microfocus.example.config;
 
-import com.microfocus.example.repository.impl.UserDetailsServiceImpl;
+import com.microfocus.example.service.CustomUserDetailsService;
 import com.microfocus.example.web.UrlAuthenticationSuccessHandler;
 import com.microfocus.example.web.LoggingAccessDeniedHandler;
 import org.slf4j.Logger;
@@ -38,6 +38,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import javax.sql.DataSource;
+
 /**
  * Configure Spring Security for custom application
  * @author Kevin A. Lee
@@ -49,10 +51,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final Logger log = LoggerFactory.getLogger(SecurityConfiguration.class);
 
     @Autowired
+    private CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    private DataSource dataSource;
+
+    @Autowired
     private LoggingAccessDeniedHandler accessDeniedHandler;
 
     @Value("${spring.profiles.active:Unknown}")
     private String activeProfile;
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+    }
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
@@ -113,11 +126,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public AuthenticationSuccessHandler CustomAuthenticationSuccessHandler(){
         return new UrlAuthenticationSuccessHandler();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new UserDetailsServiceImpl();
     }
 
     @Bean

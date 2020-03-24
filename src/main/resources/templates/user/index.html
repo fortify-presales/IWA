@@ -22,9 +22,40 @@
             </div>
 
             <div class="col-md-10">
-                <h2 th:text="@{'Welcome '+${#authentication.name}}" sec:authorize="isAuthenticated()"></h2>
-
-                <p>User Dashboard goes here</p>
+                <div class="col-md-10">
+                    <form>
+                        <div class="form-group row">
+                            <label for="name" class="col-sm-2 col-form-label">Username:</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control" id="username" th:value="${user.username}">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="name" class="col-sm-2 col-form-label">Name:</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control" id="name" th:value="${user.name}">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="email" class="col-sm-2 col-form-label">Email:</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control" id="email" th:value="${user.email}">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="email" class="col-sm-2 col-form-label">Mobile:</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control" id="mobile" th:value="${user.mobile}">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-10">
+                                <a class="btn btn-primary" th:href="@{/user/edit}">Edit Profile</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
 
 <!--
                 <p th:if="${session.username != null}" th:utext="${session.username}"></p>

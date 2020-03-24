@@ -95,8 +95,6 @@ pipeline {
             parallel {
                 stage('SAST') {
                     steps {
-                        println "Static Application Security Testing..."
-
                         // Get some code from a GitHub repository
                         git "${env.GIT_REPO}"
 
@@ -209,17 +207,15 @@ pipeline {
                 script {
                     def useWI = fileExists 'features/wi.enabled'
                     if (useWI) {
-                        println "Dynamic Application Security Testing..."
-
                         // Run WebInspect on deployed application
                         if (isUnix()) {
                             sh('"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP_WEBURL}" -ep "${env.WI_OUTPUT_FILE}"')
                         } else {
                             bat(/"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP_WEBURL}" -ep "${env.WI_OUTPUT_FILE}"/)
                         }
-
                         // Upload FPR to SSC
-
+                    } else {
+                        println "Skipping Dynamic Application Security Testing...."
                     }
                 }
             }
