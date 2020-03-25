@@ -5,6 +5,7 @@ import com.microfocus.example.exception.InvalidPasswordException;
 import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.repository.IUserRepository;
 import com.microfocus.example.utils.EncryptedPasswordUtils;
+import com.microfocus.example.web.form.PasswordForm;
 import com.microfocus.example.web.form.UserForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,14 +45,30 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findUserByUsername(userForm.getUsername());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            if (!EncryptedPasswordUtils.matches(userForm.getConfirmPassword(), user.getPassword()))
+            if (!EncryptedPasswordUtils.matches(userForm.getPassword(), user.getPassword())) {
                 throw new InvalidPasswordException("Password is incorrect");
+            }
             user.setName(userForm.getName());
             user.setEmail(userForm.getEmail());
             user.setMobile(userForm.getMobile());
             return user;
         } else {
             throw new UserNotFoundException("Username not found: " + userForm.getUsername());
+        }
+    }
+
+    public User updatePassword(Integer id, PasswordForm passwordForm) {
+        if (passwordForm.getPassword().equals(passwordForm.getConfirmPassword())) {
+            Optional<User> optionalUser = userRepository.findById(id);
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                user.setPassword(EncryptedPasswordUtils.encryptPassword(passwordForm.getPassword()));
+                return user;
+            } else {
+                throw new UserNotFoundException("Username not found: " + passwordForm.getUsername());
+            }
+        } else {
+            throw new InvalidPasswordException("Password and Confirm Password fields do not match");
         }
     }
 

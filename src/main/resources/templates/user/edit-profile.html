@@ -4,7 +4,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{fragments/layout}">
 <head>
-    <title>Profile Edit</title>
+    <title>User Profile</title>
 </head>
 <body>
     <div layout:fragment="content" th:remove="tag">
@@ -23,7 +23,16 @@
             </div>
 
             <div class="col-md-10">
-                <form action="#" th:action="@{/user/save}" th:object="${userForm}" method="post">
+                <form action="#" th:action="@{/user/saveProfile}" th:object="${userForm}" method="post">
+                    <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                        <span th:text="${message}">message</span>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('global')}">
+                        <p th:each="error : ${#fields.errors('global')}" th:text="${error}">error</p>
+                    </div>
                     <div class="form-group row">
                         <label for="name" class="col-sm-2 col-form-label">Username:</label>
                         <div class="col-sm-10">
@@ -59,12 +68,12 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="confirmPassword" class="col-sm-2 col-form-label">Password:</label>
+                        <label for="password" class="col-sm-2 col-form-label">Password:</label>
                         <div class="col-sm-10">
-                            <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" th:value="${userForm.confirmPassword}">
+                            <input type="password" class="form-control" id="password" th:field="*{password}" th:value="${userForm.password}">
                             <small id="passwordHelp" class="form-text text-muted">Enter your current password to save changes.</small>
-                            <div th:if="${#fields.hasErrors('confirmPassword')}">
-                                <p class="label label-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></p>
+                            <div th:if="${#fields.hasErrors('password')}">
+                                <p class="label label-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
                             </div>
                         </div>
                     </div>
@@ -73,7 +82,6 @@
                         <div class="col-sm-2"></div>
                         <div class="col-sm-10">
                             <button type="submit" class="btn btn-space btn-primary">Save</button>
-                            <!--button type="cancel" class="btn btn-space btn-secondary">Cancel</button-->
                         </div>
                     </div>
                 </form>

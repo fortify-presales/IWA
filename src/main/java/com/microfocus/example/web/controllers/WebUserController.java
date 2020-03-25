@@ -26,6 +26,7 @@ import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.repository.IUserRepository;
 import com.microfocus.example.service.UserService;
 import com.microfocus.example.utils.WebUtils;
+import com.microfocus.example.web.form.PasswordForm;
 import com.microfocus.example.web.form.UserForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
@@ -69,20 +72,21 @@ public class WebUserController {
             UserForm userForm = new UserForm(optionalUser.get());
             model.addAttribute("userForm", userForm);
             model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
-            model.addAttribute("message", message);
+            //model.addAttribute("message", message);
 
         } else {
-            model.addAttribute("message", "Internal error accessing user");
+            model.addAttribute("message", "Internal error accessing user!");
+            model.addAttribute("alertClass", "alert-danger");
             return "user/not-found";
         }
         model.addAttribute("messageCount", "0");
         model.addAttribute("controllerName", "User");
         model.addAttribute("actionName", "index");
-        return "user/index";
+        return "user/home";
     }
 
-    @GetMapping("/edit")
-    public String userEdit(Model model, Principal principal) {
+    @GetMapping("/editProfile")
+    public String userEditProfile(Model model, Principal principal) {
         CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         Optional<User> optionalUser = userService.findById(user.getId());
         if (optionalUser.isPresent()) {
@@ -90,32 +94,85 @@ public class WebUserController {
             model.addAttribute("userForm", userForm);
             model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
         } else {
-            model.addAttribute("message", "Internal error accessing user");
+            model.addAttribute("message", "Internal error accessing user!");
+            model.addAttribute("alertClass", "alert-danger");
             return "user/not-found";
         }
         model.addAttribute("messageCount", "0");
         model.addAttribute("controllerName", "User");
-        model.addAttribute("actionName", "edit");
-        return "user/edit";
+        model.addAttribute("actionName", "editProfile");
+        return "user/edit-profile";
     }
 
-    @PostMapping("/save")
-    public String userSave(@ModelAttribute UserForm userForm, BindingResult bindingResult, Model model) {
-        if (!bindingResult.hasErrors()) {
+    @GetMapping("/changePassword")
+    public String userChangePassword(Model model, Principal principal) {
+        CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        Optional<User> optionalUser = userService.findById(user.getId());
+        if (optionalUser.isPresent()) {
+            PasswordForm passwordForm = new PasswordForm(optionalUser.get());
+            model.addAttribute("passwordForm", passwordForm);
+            model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
+        } else {
+            model.addAttribute("message", "Internal error accessing user!");
+            model.addAttribute("alertClass", "alert-danger");
+            return "user/not-found";
+        }
+        model.addAttribute("messageCount", "0");
+        model.addAttribute("controllerName", "User");
+        model.addAttribute("actionName", "changePassword");
+        return "user/change-password";
+    }
+
+    @PostMapping("/saveProfile")
+    public String userSaveProfile(@Valid @ModelAttribute("userForm") UserForm userForm,
+                                  BindingResult bindingResult, Model model,
+                                  RedirectAttributes redirectAttributes,
+                                  Principal principal) {
+        if (bindingResult.hasErrors()) {
+            return "user/edit-profile";
+        } else {
             try {
                 userService.save(userForm);
+                redirectAttributes.addFlashAttribute("message", "Profile updated successfully.");
+                redirectAttributes.addFlashAttribute("alertClass", "alert-success");
                 return "redirect:/user";
             } catch (InvalidPasswordException ex) {
-                FieldError usernameError = new FieldError("userForm", "confirmPassword", ex.getMessage());
-                bindingResult.addError(usernameError);
+                FieldError passwordError = new FieldError("userForm", "password", ex.getMessage());
+                bindingResult.addError(passwordError);
             } catch (UserNotFoundException ex) {
                 FieldError usernameError = new FieldError("userForm", "username", ex.getMessage());
                 bindingResult.addError(usernameError);
             }
-        } else {
-            log.info(bindingResult.toString());
         }
-        return "user/edit";
+        return "user/edit-profile";
+    }
+
+    @PostMapping("/savePassword")
+    public String userSavePassword(@Valid @ModelAttribute("passwordForm") PasswordForm passwordForm,
+                                   BindingResult bindingResult, Model model,
+                                   RedirectAttributes redirectAttributes,
+                                   Principal principal) {
+        if (bindingResult.hasErrors()) {
+            return "user/change-password";
+        } else {
+            try {
+                CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+                Optional<User> optionalUser = userService.findById(user.getId());
+                if (optionalUser.isPresent()) {
+                    userService.updatePassword(user.getId(), passwordForm);
+                }
+                redirectAttributes.addFlashAttribute("message", "Password updated successfully.");
+                redirectAttributes.addFlashAttribute("alertClass", "alert-success");
+                return "redirect:/user";
+            } catch (InvalidPasswordException ex) {
+                FieldError passwordError = new FieldError("passwordForm", "password", ex.getMessage());
+                bindingResult.addError(passwordError);
+            } catch (UserNotFoundException ex) {
+                FieldError usernameError = new FieldError("passwordForm", "username", ex.getMessage());
+                bindingResult.addError(usernameError);
+            }
+        }
+        return "user/change-password";
     }
 
 }

@@ -19,29 +19,18 @@
 
 package com.microfocus.example.web.form;
 
-import com.microfocus.example.entity.Authority;
 import com.microfocus.example.entity.User;
-import com.microfocus.example.utils.EncryptedPasswordUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.persistence.*;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
-public class UserForm {
+public class PasswordForm {
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    @Min(1)
-    private Integer id;
 
     @NotEmpty
     private String username;
@@ -49,34 +38,14 @@ public class UserForm {
     @NotEmpty
     private String password;
 
+    @NotEmpty
     private String confirmPassword;
 
-    @NotEmpty
-    private String name;
-
-    @NotEmpty
-    private String email;
-
-    @NotEmpty
-    private String mobile;
-
-    public UserForm() {
+    public PasswordForm() {
     }
 
-    public UserForm(User user) {
-        this.id = user.getId();
+    public PasswordForm(User user) {
         this.username = user.getUsername();
-        this.name = user.getName();
-        this.email = user.getEmail();
-        this.mobile = user.getMobile();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getUsername() {
@@ -103,36 +72,10 @@ public class UserForm {
         this.confirmPassword = confirmPassword;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    @Override
+     @Override
     public String toString() {
-        return "UserForm{" +
-                "id=" + id +
+        return "PasswordForm{" +
                 ", username='" + username + '\'' +
-                ", email =" + email +
                 '}';
     }
 }

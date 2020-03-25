@@ -1,5 +1,5 @@
 /*
-        Secure Web App
+        Simple Secure App
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
