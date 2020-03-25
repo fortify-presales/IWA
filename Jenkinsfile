@@ -203,6 +203,7 @@ pipeline {
         }
 
         stage('DAST') {
+            agent {label "webinspect"}
             steps {
                 script {
                     def useWI = fileExists 'features/wi.enabled'
