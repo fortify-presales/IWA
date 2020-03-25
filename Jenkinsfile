@@ -106,8 +106,8 @@ pipeline {
                                 bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify"
                             }
 
-                            def useSCA = fileExists 'sca.enabled'
-                            def useFOD = fileExists 'fod.enabled'
+                            def useSCA = fileExists 'features/sca.enabled'
+                            def useFOD = fileExists 'features/fod.enabled'
                             if (useFOD) {
                                 // Upload built application to Fortify on Demand and carry out Static Assessment
                                 fodStaticAssessment bsiToken: "${env.FOD_BSI_TOKEN}",
