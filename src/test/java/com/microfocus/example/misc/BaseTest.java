@@ -22,34 +22,21 @@
  * THE SOFTWARE.
  */
 
-package com.microfocus.example;
+package com.microfocus.example.misc;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
+import org.junit.internal.AssumptionViolatedException;
+import com.microfocus.example.misc.BaseTest;
 
-public class ssaSomeTest extends Base {
+class BaseTest {
 
-    @Test public void ssaTest1() {
-        run();
-    }
-
-    @Test public void ssaTest2() {
-        run();
-    }
-
-    @Test public void ssaTest3() {
-        run();
-    }
-
-    @Test public void ssaTest4() {
-        run();
-    }
-
-    @Test public void ssaTest5() {
-        run();
-    }
-
-    @Test public void ssaTest6() {
-        run();
+    protected void run() {
+        /*double r = Math.random();
+        if (r < 0.1) {
+            fail("oops");
+        } else if (r < 0.2) {
+            throw new AssumptionViolatedException("skipping");
+        }*/
     }
 
 }

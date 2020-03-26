@@ -21,7 +21,10 @@ pipeline {
         // Path to Deployment Automation Client on the Build Agent
         DA_CLIENT_PATH = "C:\\Micro Focus\\Deployment Automation Client\\da-client.cmd"
         DA_DEPLOY_PROCESS = "Deploy Web App"
-        // Path to WebInspect executable on the Agent
+        // Path to fortifyclient.bat on the Server/Agent
+        SCA_CLIENT_PATH = "C:\\Micro Focus\\Fortify_SCA_and_Apps_19.2.0\\bin\\fortifyclient.bat"
+        SSC_AUTH_TOKEN = credentials('jenkins-ssc-auth-token-id')
+        // Path to WebInspect executable on the Server/Agent
         WI_CLIENT_PATH = "C:\\Micro Focus\\Fortify WebInspect\\WI.exe"
         WI_SETTINGS_FILE = "C:\\Source\\secure-web-app\\etc\\DefaultSettings.xml"
         WI_LOGIN_MACRO = "C:\\Source\\secure-web-app\\etc\\Login.webmacro"
@@ -212,13 +215,14 @@ pipeline {
                 script {
                     def useWI = fileExists 'features/wi.enabled'
                     if (useWI) {
-                        // Run WebInspect on deployed application
+                        // Run WebInspect on deployed application and upload to SSC
                         if (isUnix()) {
                             sh('"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP_WEBURL}" -ep "${env.WI_OUTPUT_FILE}"')
+                            sh('"${env.SCA_CLIENT_PATH}" uploadFPR -f "${env.WI_OUTPUT_FILE}" -authtoken "${env.SSC_AUTH_TOKEN}" -application "${env.APP_NAME}" -applicationVersion "${env.APP_VER}"')
                         } else {
                             bat(/"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP_WEBURL}" -ep "${env.WI_OUTPUT_FILE}"/)
+                            bat(/"${env.SCA_CLIENT_PATH}" uploadFPR -f "${env.WI_OUTPUT_FILE}" -authtoken "${env.SSC_AUTH_TOKEN}" -application "${env.APP_NAME}" -applicationVersion "${env.APP_VER}"/)
                         }
-                        // Upload FPR to SSC
                     } else {
                         println "Skipping Dynamic Application Security Testing...."
                     }

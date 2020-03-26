@@ -22,19 +22,35 @@
  * THE SOFTWARE.
  */
 
-package com.microfocus.example;
+package com.microfocus.example.misc;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
+import com.microfocus.example.misc.BaseTest;
 
-public class ssaFailingTest extends Base {
+public class SomeTests extends BaseTest {
 
-    @Test public void ssaFailTest1() {
-        fail("Failing Test!");
+    @Test public void ssaTest1() {
+        run();
     }
 
-    @Test public void ssaFailTest2() {
-        fail("Failing Test!");
+    @Test public void ssaTest2() {
+        run();
+    }
+
+    @Test public void ssaTest3() {
+        run();
+    }
+
+    @Test public void ssaTest4() {
+        run();
+    }
+
+    @Test public void ssaTest5() {
+        run();
+    }
+
+    @Test public void ssaTest6() {
+        run();
     }
 
 }
