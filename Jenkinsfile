@@ -87,6 +87,10 @@ pipeline {
                         }
                     }
                 }
+                failure {
+                    // Record the test results
+                    junit "**/target/surefire-reports/TEST-*.xml"
+                }
             }
 
         }
