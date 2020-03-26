@@ -60,9 +60,9 @@ pipeline {
                 // Run maven to build application
                 script {
                     if (isUnix()) {
-                        sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTest clean package'
+                        sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests clean package'
                     } else {
-                        bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTest clean package"
+                        bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests clean package"
                     }
                 }
             }
