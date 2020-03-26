@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 public class PasswordForm {
 
@@ -35,10 +36,12 @@ public class PasswordForm {
     @NotEmpty
     private String username;
 
-    @NotEmpty
+    @NotEmpty(message = "{password.notEmpty}")
+    @Size(min=6, max=20, message = "{password.invalidLength}")
     private String password;
 
-    @NotEmpty
+    @NotEmpty(message = "{confirm.notEmpty}")
+    @Size(min=6, max=20, message = "{confirm.invalidLength}")
     private String confirmPassword;
 
     public PasswordForm() {

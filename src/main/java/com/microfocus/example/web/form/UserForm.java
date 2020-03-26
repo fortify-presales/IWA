@@ -26,8 +26,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -43,21 +42,26 @@ public class UserForm {
     @Min(1)
     private Integer id;
 
-    @NotEmpty
+    @NotEmpty(message = "{username.notEmpty}")
+    @Size(min=2, max=10, message = "{username.invalidLength}")
     private String username;
 
-    @NotEmpty
+    @NotEmpty(message = "{password.notEmpty}")
+    @Size(min=6, max=20, message = "{password.invalidLength}")
     private String password;
 
     private String confirmPassword;
 
-    @NotEmpty
+    @NotEmpty(message = "{name.notEmpty}")
+    @Size(min=6, max=40, message = "{name.invalidLength}")
     private String name;
 
-    @NotEmpty
+    @NotEmpty(message = "{email.notEmpty}")
+    @Email(message = "{email.invalidFormat")
     private String email;
 
-    @NotEmpty
+    @NotEmpty(message = "{mobile.notEmpty")
+    @Pattern(regexp="(^$|[0-9]{12})", message = "{mobile.invalidFormat}")
     private String mobile;
 
     public UserForm() {
