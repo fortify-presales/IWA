@@ -3,6 +3,14 @@ import groovy.json.JsonOutput
 pipeline {
     agent any
 
+    parameters {
+        booleanParam(name: 'SCA_ENABLED', defaultValue: true, description: 'Enable Fortify SCA for Static Application Security Testing')
+        booleanParam(name: 'FOD_ENABLED', defaultValue: true, description: 'Enable Fortify on Demand for Static Application Security Testing')
+        booleanParam(name: 'SSC_ENABLED', defaultValue: true, description: 'Enable upload of scans to Fortify Software Security Center')
+        booleanParam(name: 'WI_ENABLED',  defaultValue: true, description: 'Enable WebInspect for Dynamic Application Security Testing')
+        booleanParam(name: 'DA_ENABLED',  defaultValue: true, description: 'Enable Deployment Automation for automated application deployment')
+    }
+
     environment {
         GIT_REPO = "http://localhost:8080/gitbucket/git/mfdemo/secure-web-app.git"
         APP_NAME = "Simple Secure App"
@@ -23,6 +31,7 @@ pipeline {
         DA_DEPLOY_PROCESS = "Deploy Web App"
         // Path to fortifyclient.bat on the Server/Agent
         SCA_CLIENT_PATH = "C:\\Micro Focus\\Fortify_SCA_and_Apps_19.2.0\\bin\\fortifyclient.bat"
+        SSC_WEB_URL = "http://localhost:8080/ssc"
         SSC_AUTH_TOKEN = credentials('jenkins-ssc-auth-token-id')
         // Path to WebInspect executable on the Server/Agent
         WI_CLIENT_PATH = "C:\\Micro Focus\\Fortify WebInspect\\WI.exe"
@@ -75,8 +84,7 @@ pipeline {
                     archiveArtifacts "target/${env.COMPONENT_NAME}.war"
 
                     script {
-                        def useDA = fileExists 'features/da.enabled'
-                        if (useDA) {
+                        if (params.DA_ENABLED) {
                             // upload build files into Deployment Automation component version
                             if (isUnix()) {
                                 sh('"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" createVersion --component "${env.COMPONENT_NAME}" --name "${env.APP_VER}-${BUILD_NUMBER}"')
@@ -113,9 +121,7 @@ pipeline {
                                 bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify"
                             }
 
-                            def useSCA = fileExists 'features/sca.enabled'
-                            def useFOD = fileExists 'features/fod.enabled'
-                            if (useFOD) {
+                            if (params.FOD_ENABLED) {
                                 // Upload built application to Fortify on Demand and carry out Static Assessment
                                 fodStaticAssessment bsiToken: "${env.FOD_BSI_TOKEN}",
                                     entitlementPreference: 'SubscriptionOnly',
@@ -135,7 +141,7 @@ pipeline {
                                     pollingInterval: 5,
                                     tenantId: "${env.FOD_TENANT_ID}",
                                     username: "${env.FOD_USERNAME}"
-                            } else if (useSCA){
+                            } else if (params.SCA_ENABLED){
                                 // Update scan rules
                                 //fortifyUpdate updateServerURL: 'https://update.fortify.com'
 
@@ -155,8 +161,7 @@ pipeline {
                                     resultsFile: "${env.COMPONENT_NAME}.fpr",
                                     logFile: "${env.COMPONENT_NAME}-scan.log"
 
-                                def useSSC = fileExists 'features/ssc.enabled'
-                                if (useSSC) {
+                                if (params.SSC_ENABLED) {
                                     // Upload to SSC
                                     fortifyUpload appName: "${env.APP_NAME}",
                                         appVersion: "${env.APP_VER}",
@@ -171,8 +176,7 @@ pipeline {
                 stage('Deploy') {
                      steps {
                          script {
-                            def useDA = fileExists 'features/da.enabled'
-                            if (useDA) {
+                            if (params.DA_ENABLED) {
                                 println "Deploying application using Deployment Automation..."
                                 def data = [
                                    application: "${env.APP_NAME}",
@@ -213,15 +217,18 @@ pipeline {
             agent {label "webinspect"}
             steps {
                 script {
-                    def useWI = fileExists 'features/wi.enabled'
-                    if (useWI) {
+                    if (params.WI_ENABLED) {
                         // Run WebInspect on deployed application and upload to SSC
                         if (isUnix()) {
                             sh('"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP_WEBURL}" -ep "${env.WI_OUTPUT_FILE}"')
-                            sh('"${env.SCA_CLIENT_PATH}" uploadFPR -f "${env.WI_OUTPUT_FILE}" -authtoken "${env.SSC_AUTH_TOKEN}" -application "${env.APP_NAME}" -applicationVersion "${env.APP_VER}"')
+                            if (params.SSC_ENABLED) {
+                                sh('"${env.SCA_CLIENT_PATH}" uploadFPR -f "${env.WI_OUTPUT_FILE}" -url "${env.SSC_WEBURL}" -authtoken "${env.SSC_AUTH_TOKEN}" -application "${env.APP_NAME}" -applicationVersion "${env.APP_VER}"')
+                            }
                         } else {
                             bat(/"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP_WEBURL}" -ep "${env.WI_OUTPUT_FILE}"/)
-                            bat(/"${env.SCA_CLIENT_PATH}" uploadFPR -f "${env.WI_OUTPUT_FILE}" -authtoken "${env.SSC_AUTH_TOKEN}" -application "${env.APP_NAME}" -applicationVersion "${env.APP_VER}"/)
+                            if (params.SSC_ENABLED) {
+                                bat(/"${env.SCA_CLIENT_PATH}" uploadFPR -f "${env.WI_OUTPUT_FILE}" -url "${env.SSC_WEBURL}" -authtoken "${env.SSC_AUTH_TOKEN}" -application "${env.APP_NAME}" -applicationVersion "${env.APP_VER}"/)
+                            }
                         }
                     } else {
                         println "Skipping Dynamic Application Security Testing...."

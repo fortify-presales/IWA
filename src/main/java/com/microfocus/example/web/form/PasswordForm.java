@@ -20,6 +20,7 @@
 package com.microfocus.example.web.form;
 
 import com.microfocus.example.entity.User;
+import com.microfocus.example.web.validation.ValidPassword;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -36,12 +37,14 @@ public class PasswordForm {
     @NotEmpty
     private String username;
 
-    @NotEmpty(message = "{password.notEmpty}")
-    @Size(min=6, max=20, message = "{password.invalidLength}")
+    //@NotEmpty(message = "{password.notEmpty}")
+    //@Size(min=6, max=20, message = "{password.invalidLength}")
+    @ValidPassword
     private String password;
 
-    @NotEmpty(message = "{confirm.notEmpty}")
-    @Size(min=6, max=20, message = "{confirm.invalidLength}")
+    //@NotEmpty(message = "{confirm.notEmpty}")
+    //@Size(min=6, max=20, message = "{confirm.invalidLength}")
+    @ValidPassword
     private String confirmPassword;
 
     public PasswordForm() {

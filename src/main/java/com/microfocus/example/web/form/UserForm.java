@@ -22,6 +22,7 @@ package com.microfocus.example.web.form;
 import com.microfocus.example.entity.Authority;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.utils.EncryptedPasswordUtils;
+import com.microfocus.example.web.validation.ValidPassword;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -47,7 +48,6 @@ public class UserForm {
     private String username;
 
     @NotEmpty(message = "{password.notEmpty}")
-    @Size(min=6, max=20, message = "{password.invalidLength}")
     private String password;
 
     private String confirmPassword;
