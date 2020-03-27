@@ -35,7 +35,6 @@ import java.util.Optional;
 
 /**
  * Implementation of basic User Details Service for spring security database authentication
- *
  * @author Kevin A. Lee
  */
 @Service

@@ -37,8 +37,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 /**
- * Customer Url Authentication Success Handler
- *
+ * Custom Url Authentication Success Handler
  * @author Kevin A. Lee
  */
 public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHandler {

@@ -4,9 +4,9 @@ pipeline {
     agent any
 
     //
-    // The following parameters can be selected when the pipeline is executed manually to configure
-    // optional capabilities in the pipeline.
-    // Note: the pipeline needs to be executed at least once for the parameters to be available
+    // The following parameters can be selected when the pipeline is executed manually to execute
+    // different capabilities in the pipeline. Note: the pipeline needs to be executed at least once
+    // for the parameters to be available
     //
     parameters {
         booleanParam(name: 'SCA_ENABLED', defaultValue: true,
@@ -23,40 +23,44 @@ pipeline {
 
     //
     // Create the following "Secret text" credentials in Jenkins and enter values as follows:
-    //      jenkins-fod-username-id     - Fortify on Demand username (for Personal Access Token)
-    //      jenkins-fod-pat-id          - Fortify on Demand Personal Access Token
     //      jenkins-fod-bsi-token-id    - Fortify on Demand BSI token
     //      jenkins-ssc-auth-token-id   - Fortify Software Security Center "ArtifactUpload" authentication token
     //      jenkins-da-auth-token-id    - Deployment Automation authentication token
-    //
+    // For Fortify on Demand (FOD) Global Authentication should be setup
     environment {
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()
         APP_NAME = "Simple Secure App"
         APP_VER = "1.0"
+        COMPONENT_NAME = "secure-web-app"
+        // URL of where the application is deploy to (for integration testing, WebInspect etc)
         APP_WEBURL = "http://localhost:8881/secure-web-app/"
         JAVA_VERSION = 8
+        // Directory where WAR file is deployed to for Jetty based deployment
+        JETTY_BASE_DIR = "C:\\Tools\\jetty\\integration"
+
         FOD_BSI_TOKEN = credentials('jenkins-fod-bsi-token-id')
-        FOD_PAT = credentials('jenkins-fod-pat-id')
-        FOD_USERNAME = credentials('jenkins-fod-username-id')
-        FOD_TENANT_ID = 'emeademo'
+        // Directory where FOD upload Zip is constructed
         FOD_UPLOAD_DIR = 'fod'
-        COMPONENT_NAME = "secure-web-app"
+
+        // URL of Micro Focus Deployment Automation
+        DA_WEBURL = "http://localhost:8080/da"
         DA_USERNAME = "admin"
         DA_AUTH_TOKEN = credentials('jenkins-da-auth-token-id')
-        DA_WEBURL = "http://localhost:8080/da"
-        // Path to Deployment Automation Client on the Build Agent
+        // Path to Deployment Automation Client on the Server/Agent
         DA_CLIENT_PATH = "C:\\Micro Focus\\Deployment Automation Client\\da-client.cmd"
         DA_DEPLOY_PROCESS = "Deploy Web App"
-        // Path to fortifyclient.bat on the Server/Agent
+
+        // Path to "fortifyclient.bat" on the Server/Agent
         SCA_CLIENT_PATH = "C:\\Micro Focus\\Fortify_SCA_and_Apps_19.2.0\\bin\\fortifyclient.bat"
+        // URL of Micro Focus Software Security Center
         SSC_WEBURL = "http://localhost:8080/ssc"
         SSC_AUTH_TOKEN = credentials('jenkins-ssc-auth-token-id')
+
         // Path to WebInspect executable on the Server/Agent
         WI_CLIENT_PATH = "C:\\Micro Focus\\Fortify WebInspect\\WI.exe"
         WI_SETTINGS_FILE = "${env.WORKSPACE}\\etc\\DefaultSettings.xml"
         WI_LOGIN_MACRO = "${env.WORKSPACE}\\etc\\Login.webmacro"
         WI_OUTPUT_FILE = "${env.WORKSPACE}\\wi-secure-web-app.fpr"
-        JETTY_BASE_DIR = "C:\\Tools\\jetty\\integration"
     }
 
     tools {
@@ -133,13 +137,14 @@ pipeline {
         stage('Verification') {
             parallel {
                 stage('SAST') {
+                    // Run on an Agent with "fortify" label applied - SCA command line tools are installed
                     agent {label "fortify"}
                     steps {
                         // Get some code from a GitHub repository
                         git "${env.GIT_URL}"
 
                         script {
-                            // Run Maven debug compile and download dependencies
+                            // Run Maven debug compile, download dependencies (if required) and package up for FOD
                             if (isUnix()) {
                                 sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify'
                             } else {
@@ -147,32 +152,19 @@ pipeline {
                             }
 
                             if (params.FOD_ENABLED) {
-                            println "${env.FOD_BSI_TOKEN}"
-                            println "${env.FOD_PAT}"
-                            println "${env.FOD_UPLOAD_DIR}"
-                            println "${env.FOD_TENANT_ID}"
-                            println "${env.FOD_USERNAME}"
                                 // Upload built application to Fortify on Demand and carry out Static Assessment
                                 fodStaticAssessment bsiToken: "${env.FOD_BSI_TOKEN}",
                                     entitlementPreference: 'SubscriptionOnly',
                                     inProgressScanActionType: 'CancelInProgressScan',
-                                    overrideGlobalConfig: true,
-                                    personalAccessToken: "${env.FOD_PAT}",
                                     remediationScanPreferenceType: 'NonRemediationScanOnly',
-                                    srcLocation: "${env.FOD_UPLOAD_DIR}",
-                                    tenantId: "${env.FOD_TENANT_ID}",
-                                    username: "${env.FOD_USERNAME}"
+                                    srcLocation: "${env.FOD_UPLOAD_DIR}"
 
                                 // optional: wait for FOD assessment to complete
                                 fodPollResults bsiToken: "${env.FOD_BSI_TOKEN}",
-                                    overrideGlobalConfig: true,
-                                    personalAccessToken: "${env.FOD_PAT}",
                                     //policyFailureBuildResultPreference: 1,
-                                    pollingInterval: 5,
-                                    tenantId: "${env.FOD_TENANT_ID}",
-                                    username: "${env.FOD_USERNAME}"
+                                    pollingInterval: 5
                             } else if (params.SCA_ENABLED){
-                                // Update scan rules
+                                // optional: update scan rules
                                 //fortifyUpdate updateServerURL: 'https://update.fortify.com'
 
                                 // Clean project and scan results from previous run
@@ -186,7 +178,7 @@ pipeline {
                                         javaVersion: "${env.JAVA_VERSION}"),
                                     logFile: "${env.COMPONENT_NAME}-translate.log"
 
-                                // Alternately, skip the compile and translate directly using Maven
+                                // optional: translate directly using Maven
                                 //fortifyTranslate buildID: "${env.COMPONENT_NAME}",
                                 //    projectScanType: fortifyMaven3(mavenOptions: "-Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify"),
                                 //    logFile: "${env.COMPONENT_NAME}-translate.log"
@@ -203,7 +195,7 @@ pipeline {
                                         resultsFile: "${env.COMPONENT_NAME}.fpr"
                                 }
                             } else {
-                                println "Skipping static application security testing..."
+                                println "Skipping Static Application Security Testing..."
                             }
                         }
                     }
@@ -212,7 +204,6 @@ pipeline {
                      steps {
                          script {
                             if (params.DA_ENABLED) {
-                                println "Deploying application using Deployment Automation..."
                                 def data = [
                                    application: "${env.APP_NAME}",
                                    applicationProcess : "${env.DA_DEPLOY_PROCESS}",
@@ -261,6 +252,7 @@ pipeline {
         }
 
         stage('DAST') {
+            // Run on an Agent with "webinspect" label applied - WebInspect command line installed
             agent {label "webinspect"}
             steps {
                 script {

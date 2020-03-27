@@ -25,7 +25,6 @@ import org.springframework.stereotype.Repository;
 
 /**
  * Interface for User Repository
- *
  * @author Kevin A. Lee
  */
 @Repository

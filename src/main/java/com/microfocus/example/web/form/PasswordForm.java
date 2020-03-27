@@ -27,6 +27,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+/**
+ * Form backing entity/DTO for changing password
+ * @author Kevin A. Lee
+ */
 public class PasswordForm {
 
     @Bean

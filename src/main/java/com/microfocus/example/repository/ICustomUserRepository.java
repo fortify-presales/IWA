@@ -25,7 +25,6 @@ import java.util.Optional;
 
 /**
  * Interface for Custom User Repository
- *
  * @author Kevin A. Lee
  */
 public interface ICustomUserRepository {

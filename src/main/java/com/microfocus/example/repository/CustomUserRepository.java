@@ -33,7 +33,6 @@ import java.util.Optional;
 
 /**
  * Implementation of Custom User Repository
- *
  * @author Kevin A. Lee
  */
 @Repository

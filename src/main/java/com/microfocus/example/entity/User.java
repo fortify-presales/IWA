@@ -30,6 +30,10 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Custom User entity
+ * @author Kevin A. Lee
+ */
 @Entity
 @Table(name = "user")
 public class User implements Serializable {

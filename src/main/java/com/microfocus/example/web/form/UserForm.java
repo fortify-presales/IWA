@@ -19,20 +19,17 @@
 
 package com.microfocus.example.web.form;
 
-import com.microfocus.example.entity.Authority;
 import com.microfocus.example.entity.User;
-import com.microfocus.example.utils.EncryptedPasswordUtils;
-import com.microfocus.example.web.validation.ValidPassword;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.persistence.*;
 import javax.validation.constraints.*;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
+/**
+ * Form backing entity/DTO for updating user profile
+ *
+ * @author Kevin A. Lee
+ */
 public class UserForm {
 
     @Bean
@@ -44,7 +41,7 @@ public class UserForm {
     private Integer id;
 
     @NotEmpty(message = "{username.notEmpty}")
-    @Size(min=2, max=10, message = "{username.invalidLength}")
+    @Size(min = 2, max = 10, message = "{username.invalidLength}")
     private String username;
 
     @NotEmpty(message = "{password.notEmpty}")
@@ -53,7 +50,7 @@ public class UserForm {
     private String confirmPassword;
 
     @NotEmpty(message = "{name.notEmpty}")
-    @Size(min=6, max=40, message = "{name.invalidLength}")
+    @Size(min = 6, max = 40, message = "{name.invalidLength}")
     private String name;
 
     @NotEmpty(message = "{email.notEmpty}")
@@ -61,7 +58,7 @@ public class UserForm {
     private String email;
 
     @NotEmpty(message = "{mobile.notEmpty")
-    @Pattern(regexp="(^$|[0-9]{12})", message = "{mobile.invalidFormat}")
+    @Pattern(regexp = "(^$|[0-9]{12})", message = "{mobile.invalidFormat}")
     private String mobile;
 
     public UserForm() {
