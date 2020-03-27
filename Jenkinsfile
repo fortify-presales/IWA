@@ -3,14 +3,33 @@ import groovy.json.JsonOutput
 pipeline {
     agent any
 
+    //
+    // The following parameters can be selected when the pipeline is executed manually to configure
+    // optional capabilities in the pipeline.
+    // Note: the pipeline needs to be executed at least once for the parameters to be available
+    //
     parameters {
-        booleanParam(name: 'SCA_ENABLED', defaultValue: true, description: 'Enable Fortify SCA for Static Application Security Testing')
-        booleanParam(name: 'FOD_ENABLED', defaultValue: true, description: 'Enable Fortify on Demand for Static Application Security Testing')
-        booleanParam(name: 'SSC_ENABLED', defaultValue: true, description: 'Enable upload of scans to Fortify Software Security Center')
-        booleanParam(name: 'WI_ENABLED',  defaultValue: true, description: 'Enable WebInspect for Dynamic Application Security Testing')
-        booleanParam(name: 'DA_ENABLED',  defaultValue: true, description: 'Enable Deployment Automation for automated application deployment')
+        booleanParam(name: 'SCA_ENABLED', defaultValue: true,
+            description: 'Enable Fortify SCA for Static Application Security Testing')
+        booleanParam(name: 'FOD_ENABLED', defaultValue: true,
+            description: 'Enable Fortify on Demand for Static Application Security Testing')
+        booleanParam(name: 'SSC_ENABLED', defaultValue: true,
+            description: 'Enable upload of scans to Fortify Software Security Center')
+        booleanParam(name: 'WI_ENABLED',  defaultValue: true,
+            description: 'Enable WebInspect for Dynamic Application Security Testing')
+        booleanParam(name: 'DA_ENABLED',  defaultValue: true,
+            description: 'Enable Deployment Automation for automated application deployment')
     }
 
+    //
+    // Create the following "Secret text" credentials in Jenkins and enter values as follows:
+    //      jenkins-fod-username-id     - Fortify on Demand username
+    //      jenkins-fod-bsi-token-id    - Fortify on Demand BSI token
+    //      jenkins-ssc-auth-token-id   - Fortify Software Security Center authentication token
+    //      jenkins-da-auth-token-id    - Deployment Automation authentication token
+    // Create the following "Personal Access Tokens" in Jenkins and enter values as follows:
+    //      FODPAT                      - Fortify on Demand Personal Access Token
+    //
     environment {
         GIT_REPO = "http://localhost:8080/gitbucket/git/mfdemo/secure-web-app.git"
         APP_NAME = "Simple Secure App"
@@ -19,7 +38,7 @@ pipeline {
         JAVA_VERSION = 8
         FOD_BSI_TOKEN = credentials('jenkins-fod-bsi-token-id')
         FOD_PAT = 'FODPAT'
-        FOD_USERNAME = 'kevin.lee'
+        FOD_USERNAME = credentials('jenkins-fod-username-id')
         FOD_TENANT_ID = 'emeademo'
         FOD_UPLOAD_DIR = 'fod'
         COMPONENT_NAME = "secure-web-app"
@@ -31,12 +50,12 @@ pipeline {
         DA_DEPLOY_PROCESS = "Deploy Web App"
         // Path to fortifyclient.bat on the Server/Agent
         SCA_CLIENT_PATH = "C:\\Micro Focus\\Fortify_SCA_and_Apps_19.2.0\\bin\\fortifyclient.bat"
-        SSC_WEB_URL = "http://localhost:8080/ssc"
+        SSC_WEBURL = "http://localhost:8080/ssc"
         SSC_AUTH_TOKEN = credentials('jenkins-ssc-auth-token-id')
         // Path to WebInspect executable on the Server/Agent
         WI_CLIENT_PATH = "C:\\Micro Focus\\Fortify WebInspect\\WI.exe"
-        WI_SETTINGS_FILE = "C:\\Source\\secure-web-app\\etc\\DefaultSettings.xml"
-        WI_LOGIN_MACRO = "C:\\Source\\secure-web-app\\etc\\Login.webmacro"
+        WI_SETTINGS_FILE = "${env.WORKSPACE}\\etc\\DefaultSettings.xml"
+        WI_LOGIN_MACRO = "${env.WORKSPACE}\\etc\\Login.webmacro"
         WI_OUTPUT_FILE = "${env.WORKSPACE}\\wi-secure-web-app.fpr"
     }
 
@@ -109,6 +128,7 @@ pipeline {
         stage('Verification') {
             parallel {
                 stage('SAST') {
+                    agent {label "fortify"}
                     steps {
                         // Get some code from a GitHub repository
                         git "${env.GIT_REPO}"
@@ -218,6 +238,7 @@ pipeline {
             steps {
                 script {
                     if (params.WI_ENABLED) {
+                        sleep time: 5, unit: 'MINUTES' // wait 5 minutes for application to be ready?
                         // Run WebInspect on deployed application and upload to SSC
                         if (isUnix()) {
                             sh('"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP_WEBURL}" -ep "${env.WI_OUTPUT_FILE}"')
