@@ -23,12 +23,11 @@ pipeline {
 
     //
     // Create the following "Secret text" credentials in Jenkins and enter values as follows:
-    //      jenkins-fod-username-id     - Fortify on Demand username
+    //      jenkins-fod-username-id     - Fortify on Demand username (for Personal Access Token)
+    //      jenkins-fod-pat-id          - Fortify on Demand Personal Access Token
     //      jenkins-fod-bsi-token-id    - Fortify on Demand BSI token
     //      jenkins-ssc-auth-token-id   - Fortify Software Security Center "ArtifactUpload" authentication token
     //      jenkins-da-auth-token-id    - Deployment Automation authentication token
-    // Create the following "Personal Access Tokens" in Jenkins and enter values as follows:
-    //      FODPAT                      - Fortify on Demand Personal Access Token
     //
     environment {
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()
@@ -37,7 +36,7 @@ pipeline {
         APP_WEBURL = "http://localhost:8881/secure-web-app/"
         JAVA_VERSION = 8
         FOD_BSI_TOKEN = credentials('jenkins-fod-bsi-token-id')
-        FOD_PAT = 'FODPAT'
+        FOD_PAT = credentials('jenkins-fod-pat-id')
         FOD_USERNAME = credentials('jenkins-fod-username-id')
         FOD_TENANT_ID = 'emeademo'
         FOD_UPLOAD_DIR = 'fod'
