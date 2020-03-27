@@ -68,7 +68,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                println ${env.GIT_URL}
+                println "${env.GIT_URL}"
                 // Get some code from a GitHub repository
                 git "${env.GIT_REPO}"
 
