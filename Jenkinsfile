@@ -182,10 +182,10 @@ pipeline {
                                         javaVersion: "${env.JAVA_VERSION}"),
                                     logFile: "${env.COMPONENT_NAME}-translate.log"
 
-                                // Translate using Maven
-                                fortifyTranslate buildID: "${env.COMPONENT_NAME}",
-                                    projectScanType: fortifyMaven3(mavenOptions: ''),
-                                    logFile: "${env.COMPONENT_NAME}-translate.log"
+                                // Alternately, skip the compile and translate directly using Maven
+                                //fortifyTranslate buildID: "${env.COMPONENT_NAME}",
+                                //    projectScanType: fortifyMaven3(mavenOptions: "-Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify"),
+                                //    logFile: "${env.COMPONENT_NAME}-translate.log"
 
                                 // Scan source files
                                 fortifyScan buildID: "${env.COMPONENT_NAME}",
