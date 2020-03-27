@@ -31,6 +31,7 @@ pipeline {
     //      FODPAT                      - Fortify on Demand Personal Access Token
     //
     environment {
+        GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()
         GIT_REPO = "http://localhost:8080/gitbucket/git/mfdemo/secure-web-app.git"
         APP_NAME = "Simple Secure App"
         APP_VER = "1.0"
@@ -67,6 +68,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                println ${env.GIT_URL}
                 // Get some code from a GitHub repository
                 git "${env.GIT_REPO}"
 
