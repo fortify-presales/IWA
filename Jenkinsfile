@@ -62,9 +62,9 @@ pipeline {
 
     tools {
         // Install the Maven version configured as "M3" and add it to the path.
-        maven "M3"
-        // Install the Git version configure as "GIT" an add it to the path.
-        git "GIT"
+        tool type: 'maven', tool name: 'M3'
+        // Install the Git version configure as "Default" an add it to the path.
+        tool type: 'git', tool name: 'Default'
     }
 
     stages {
