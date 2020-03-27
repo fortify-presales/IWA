@@ -147,6 +147,11 @@ pipeline {
                             }
 
                             if (params.FOD_ENABLED) {
+                            println "${env.FOD_BSI_TOKEN}"
+                            println "${env.FOD_PAT}"
+                            println "${env.FOD_UPLOAD_DIR}"
+                            println "${env.FOD_TENANT_ID}"
+                            println "${env.FOD_USERNAME}"
                                 // Upload built application to Fortify on Demand and carry out Static Assessment
                                 fodStaticAssessment bsiToken: "${env.FOD_BSI_TOKEN}",
                                     entitlementPreference: 'SubscriptionOnly',
