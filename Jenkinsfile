@@ -234,7 +234,7 @@ pipeline {
                                 }
                             } else {
                                 // unstash the built files
-                                unstash includes: name: "${env.COMPONENT_NAME}_release"
+                                unstash name: "${env.COMPONENT_NAME}_release"
                                 // and hot deploy into Jetty webapps directory
                                 // requires "File Operations" plugin
                                 fileOperations([fileCopyOperation(
