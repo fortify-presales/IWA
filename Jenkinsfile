@@ -25,14 +25,13 @@ pipeline {
     // Create the following "Secret text" credentials in Jenkins and enter values as follows:
     //      jenkins-fod-username-id     - Fortify on Demand username
     //      jenkins-fod-bsi-token-id    - Fortify on Demand BSI token
-    //      jenkins-ssc-auth-token-id   - Fortify Software Security Center authentication token
+    //      jenkins-ssc-auth-token-id   - Fortify Software Security Center "ArtifactUpload" authentication token
     //      jenkins-da-auth-token-id    - Deployment Automation authentication token
     // Create the following "Personal Access Tokens" in Jenkins and enter values as follows:
     //      FODPAT                      - Fortify on Demand Personal Access Token
     //
     environment {
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()
-        GIT_REPO = "http://localhost:8080/gitbucket/git/mfdemo/secure-web-app.git"
         APP_NAME = "Simple Secure App"
         APP_VER = "1.0"
         APP_WEBURL = "http://localhost:8881/secure-web-app/"
@@ -58,19 +57,21 @@ pipeline {
         WI_SETTINGS_FILE = "${env.WORKSPACE}\\etc\\DefaultSettings.xml"
         WI_LOGIN_MACRO = "${env.WORKSPACE}\\etc\\Login.webmacro"
         WI_OUTPUT_FILE = "${env.WORKSPACE}\\wi-secure-web-app.fpr"
+        JETTY_BASE_DIR = "C:\\Tools\\jetty\\integration"
     }
 
     tools {
         // Install the Maven version configured as "M3" and add it to the path.
         maven "M3"
+        // Install the Git version configure as "GIT" an add it to the path.
+        git "GIT"
     }
 
     stages {
         stage('Build') {
             steps {
-                println "${env.GIT_URL}"
                 // Get some code from a GitHub repository
-                git "${env.GIT_REPO}"
+                git "${env.GIT_URL}"
 
                 // Get Git commit details
                 script {
@@ -84,8 +85,8 @@ pipeline {
                     //env.GIT_COMMIT_AUTHOR = readFile('.git/commit-author').trim()
                 }
 
-                println "Git commit id: ${env.GIT_COMMIT_ID}"
-                println "Git commit author: ${env.GIT_COMMIT_AUTHOR}"
+                //println "Git commit id: ${env.GIT_COMMIT_ID}"
+                //println "Git commit author: ${env.GIT_COMMIT_AUTHOR}"
 
                 // Run maven to build application
                 script {
@@ -99,7 +100,7 @@ pipeline {
 
             post {
                 success {
-                    // Record the test results
+                    // Record the test results (success)
                     junit "**/target/surefire-reports/TEST-*.xml"
                     // Archive the built file
                     archiveArtifacts "target/${env.COMPONENT_NAME}.war"
@@ -116,11 +117,14 @@ pipeline {
                                 bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionFiles --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --base "${WORKSPACE}\\target" --include "${env.COMPONENT_NAME}.war"/)
                                 bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionStatus --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --status "BUILT"/)
                             }
+                        } else {
+                            // just stash the built file for now
+                            stash includes: "target/${env.COMPONENT_NAME}.war", name: "${env.COMPONENT_NAME}_release"
                         }
                     }
                 }
                 failure {
-                    // Record the test results
+                    // Record the test results (failures)
                     junit "**/target/surefire-reports/TEST-*.xml"
                 }
             }
@@ -133,7 +137,7 @@ pipeline {
                     agent {label "fortify"}
                     steps {
                         // Get some code from a GitHub repository
-                        git "${env.GIT_REPO}"
+                        git "${env.GIT_URL}"
 
                         script {
                             // Run Maven debug compile and download dependencies
@@ -228,6 +232,18 @@ pipeline {
                                 } else {
                                     bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" requestApplicationProcess "${WORKSPACE}\\da-process.json"/)
                                 }
+                            } else {
+                                // unstash the built files
+                                unstash includes: name: "${env.COMPONENT_NAME}_release"
+                                // and hot deploy into Jetty webapps directory
+                                // requires "File Operations" plugin
+                                fileOperations([fileCopyOperation(
+                                    includes: "target/${env.COMPONENT_NAME}.war",
+                                    excludes: "",
+                                    flattenFiles: true, renameFiles: false,
+                                    sourceCaptureExpression: "",
+                                    targetLocation: "${env.JETTY_BASE_DIR}/webapps", targetNameExpression: ""
+                                    )])
                             }
                          }
                      }
