@@ -62,9 +62,9 @@ pipeline {
 
     tools {
         // Install the Maven version configured as "M3" and add it to the path.
-        tool type: 'maven', tool name: 'M3'
+        tool type: 'maven', name: 'M3'
         // Install the Git version configure as "Default" an add it to the path.
-        tool type: 'git', tool name: 'Default'
+        tool type: 'git', name: 'Default'
     }
 
     stages {
@@ -180,6 +180,11 @@ pipeline {
                                     projectScanType: fortifyJava(javaSrcFiles:
                                         '\""src/main/java/**/*.java\"" \""src/main/resources/**/*.html\""',
                                         javaVersion: "${env.JAVA_VERSION}"),
+                                    logFile: "${env.COMPONENT_NAME}-translate.log"
+
+                                // Translate using Maven
+                                fortifyTranslate buildID: "${env.COMPONENT_NAME}",
+                                    projectScanType: fortifyMaven3(mavenOptions: ''),
                                     logFile: "${env.COMPONENT_NAME}-translate.log"
 
                                 // Scan source files
