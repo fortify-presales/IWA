@@ -11,13 +11,13 @@ pipeline {
     parameters {
         booleanParam(name: 'SCA_ENABLED', defaultValue: true,
             description: 'Enable Fortify SCA for Static Application Security Testing')
-        booleanParam(name: 'FOD_ENABLED', defaultValue: true,
+        booleanParam(name: 'FOD_ENABLED', defaultValue: false,
             description: 'Enable Fortify on Demand for Static Application Security Testing')
         booleanParam(name: 'SSC_ENABLED', defaultValue: true,
             description: 'Enable upload of scans to Fortify Software Security Center')
-        booleanParam(name: 'WI_ENABLED',  defaultValue: true,
+        booleanParam(name: 'WI_ENABLED',  defaultValue: false,
             description: 'Enable WebInspect for Dynamic Application Security Testing')
-        booleanParam(name: 'DA_ENABLED',  defaultValue: true,
+        booleanParam(name: 'DA_ENABLED',  defaultValue: false,
             description: 'Enable Deployment Automation for automated application deployment')
     }
 
