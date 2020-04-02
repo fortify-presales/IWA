@@ -138,7 +138,6 @@ pipeline {
                     // unstash the built files
                     unstash name: "${env.COMPONENT_NAME}_release"
                     if (params.DA_ENABLED) {
-                    /*
                             def verProperties =
                             """job.url=${env.BUILD_URL}
                             jenkins.url=${env.JENKINS_URL}
@@ -162,7 +161,7 @@ pipeline {
                     			deployEnv: "Systems Integration",
                     			deployProc: "${env..DA_DEPLOY_PROCESS}",
                     			deployProps: "${verProperties}"
-                    		])*/
+                    		])
                         // upload build files into Deployment Automation component version
                         /*if (isUnix()) {
                             sh('"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" createVersion --component "${env.COMPONENT_NAME}" --name "${env.APP_VER}-${BUILD_NUMBER}"')
@@ -174,6 +173,7 @@ pipeline {
                             bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionStatus --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --status "BUILT"/)
                         }*/
                     }
+                }
             }
         }
 
@@ -322,6 +322,7 @@ pipeline {
                 script {
                     // Deploy to the "release" environment using Deployment Automation
                     if (params.DA_ENABLED) {
+						println "..."
                     } else {
                         println "Skipping release..."
                     }
