@@ -9,16 +9,18 @@ pipeline {
     // for the parameters to be available
     //
     parameters {
-        booleanParam(name: 'SCA_ENABLED', defaultValue: true,
+        booleanParam(name: 'SCA_ENABLED',       defaultValue: false,
             description: 'Enable Fortify SCA for Static Application Security Testing')
-        booleanParam(name: 'FOD_ENABLED', defaultValue: false,
+        booleanParam(name: 'FOD_ENABLED',       defaultValue: false,
             description: 'Enable Fortify on Demand for Static Application Security Testing')
-        booleanParam(name: 'SSC_ENABLED', defaultValue: true,
+        booleanParam(name: 'SSC_ENABLED',       defaultValue: false,
             description: 'Enable upload of scans to Fortify Software Security Center')
-        booleanParam(name: 'WI_ENABLED',  defaultValue: false,
+        booleanParam(name: 'WI_ENABLED',        defaultValue: false,
             description: 'Enable WebInspect for Dynamic Application Security Testing')
-        booleanParam(name: 'DA_ENABLED',  defaultValue: false,
+        booleanParam(name: 'DA_ENABLED',        defaultValue: false,
             description: 'Enable Deployment Automation for automated application deployment')
+        booleanParam(name: 'DOCKER_ENABLED',    defaultValue: false,
+            description: 'Package up application into Docker image for deployment')
     }
 
     //
@@ -94,9 +96,9 @@ pipeline {
                 // Run maven to build application
                 script {
                     if (isUnix()) {
-                        sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests clean package'
+                        sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P war clean package'
                     } else {
-                        bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests clean package"
+                        bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P war clean package"
                     }
                 }
             }
@@ -256,14 +258,12 @@ pipeline {
             agent {label "webinspect"}
             steps {
                 script {
+                    // start the application?
                     if (params.WI_ENABLED) {
                         sleep time: 5, unit: 'MINUTES' // wait 5 minutes for application to be ready?
                         // Run WebInspect on deployed application and upload to SSC
                         if (isUnix()) {
-                            sh('"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP_WEBURL}" -ep "${env.WI_OUTPUT_FILE}"')
-                            if (params.SSC_ENABLED) {
-                                sh('"${env.SCA_CLIENT_PATH}" uploadFPR -f "${env.WI_OUTPUT_FILE}" -url "${env.SSC_WEBURL}" -authtoken "${env.SSC_AUTH_TOKEN}" -application "${env.APP_NAME}" -applicationVersion "${env.APP_VER}"')
-                            }
+                            println "WebInspect is only supported on Windows..."
                         } else {
                             bat(/"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP_WEBURL}" -ep "${env.WI_OUTPUT_FILE}"/)
                             if (params.SSC_ENABLED) {

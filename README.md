@@ -25,7 +25,11 @@ This will create a JAR file in the _target_ directory which can executed directl
 ```
 java -Dserver.port=9080 -jar target/secure-web-app.jar
 ```
-The JAR file can be built into a Docker image using the provided _Dockerfile_. 
+The JAR file can be built into a Docker image using the provided _Dockerfile_ and the following:
+
+```
+docker build -t secure-web-app .
+``` 
 
 Alternately, you can create a WAR file which can de deployed to a Java Application Server such as Jetty or 
 Apache Tomcat, using the following:

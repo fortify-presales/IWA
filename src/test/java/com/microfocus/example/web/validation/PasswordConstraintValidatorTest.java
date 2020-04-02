@@ -1,8 +1,6 @@
 package com.microfocus.example.web.validation;
 
-import com.microfocus.example.BaseIntegrationTest;
 import com.microfocus.example.web.form.PasswordForm;
-import com.microfocus.example.web.form.UserForm;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

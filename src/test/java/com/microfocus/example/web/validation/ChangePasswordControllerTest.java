@@ -1,18 +1,10 @@
 package com.microfocus.example.web.validation;
 
 import com.microfocus.example.BaseIntegrationTest;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static sun.misc.PostVMInitHook.run;
 
 @AutoConfigureMockMvc
 public class ChangePasswordControllerTest extends BaseIntegrationTest {
@@ -22,7 +14,7 @@ public class ChangePasswordControllerTest extends BaseIntegrationTest {
 
     @Test
     public void emptyTest() {
-        run();
+
     }
     /*
     @Test
