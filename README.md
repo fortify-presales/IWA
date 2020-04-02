@@ -11,8 +11,8 @@ mvn spring-boot:run
 
 Then navigate to the default URL: http://localhost:9080/. The following default users are supplied:
 
- - Standard user:   **user/password**
- - Administration user:      **admin/password**
+ - Standard user: **user/password**
+ - Administration user: **admin/password**
 
 To build execute the following from the command line:
 
@@ -20,8 +20,19 @@ To build execute the following from the command line:
 mvn clean package
 ``` 
 
-This will create a WAR file in the _target_ directory which can be deployed to a container 
-or a Java Application Server such as Jetty or Apache Tomcat.
+This will create a JAR file in the _target_ directory which can executed directly using the following:
+
+```
+java -Dserver.port=9080 -jar target/secure-web-app.jar
+```
+The JAR file can be built into a Docker image using the provided _Dockerfile_. 
+
+Alternately, you can create a WAR file which can de deployed to a Java Application Server such as Jetty or 
+Apache Tomcat, using the following:
+
+```
+mvn -P war clean package
+```
 
 To carry out Fortify SCA scan:
 
