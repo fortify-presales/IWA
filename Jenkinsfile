@@ -138,6 +138,7 @@ pipeline {
                     // unstash the built files
                     unstash name: "${env.COMPONENT_NAME}_release"
                     if (params.DA_ENABLED) {
+                    /*
                             def verProperties =
                             """job.url=${env.BUILD_URL}
                             jenkins.url=${env.JENKINS_URL}
@@ -149,7 +150,7 @@ pipeline {
                     			baseDir: "${env.WORKSPACE}/target",
                     			versionName: "${env.APP_VER}.${env.BUILD_NUMBER}",
                     			fileIncludePatterns: "${params.COMPONENT_NAME}.war",
-                    			fileExcludePatterns: "**/*tmp*,**/.git",
+                    			fileExcludePatterns: "**\*tmp*,**\.git",
                     			versionProps: "${verProperties}",
                     			skip: false,
                     			addStatus: true,
@@ -161,7 +162,7 @@ pipeline {
                     			deployEnv: "Systems Integration",
                     			deployProc: "${env..DA_DEPLOY_PROCESS}",
                     			deployProps: "${verProperties}"
-                    		])
+                    		])*/
                         // upload build files into Deployment Automation component version
                         /*if (isUnix()) {
                             sh('"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" createVersion --component "${env.COMPONENT_NAME}" --name "${env.APP_VER}-${BUILD_NUMBER}"')
@@ -203,7 +204,7 @@ pipeline {
                         fodPollResults bsiToken: "${env.FOD_BSI_TOKEN}",
                             //policyFailureBuildResultPreference: 1,
                             pollingInterval: 5
-                    } else if (params.SCA_ENABLED){
+                    } else if (params.SCA_ENABLED) {
                         // optional: update scan rules
                         //fortifyUpdate updateServerURL: 'https://update.fortify.com'
 
