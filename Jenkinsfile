@@ -149,7 +149,7 @@ pipeline {
                     			baseDir: "${env.WORKSPACE}/target",
                     			versionName: "${env.APP_VER}.${env.BUILD_NUMBER}",
                     			fileIncludePatterns: "${params.COMPONENT_NAME}.war",
-                    			fileExcludePatterns: "**\*tmp*,**\.git",
+                    			fileExcludePatterns: "**/*tmp*,**/.git",
                     			versionProps: "${verProperties}",
                     			skip: false,
                     			addStatus: true,
