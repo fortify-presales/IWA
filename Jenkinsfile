@@ -52,7 +52,7 @@ pipeline {
         // Micro Focus Deployment Automation (DA) settings
         // Download Jenkins plugin from: https://community.microfocus.com/dcvta86296/board/message?board.id=DA_Plugins&message.id=15#M15)
         //
-        DA_SITE = "localhost - release"                             // DA Site Name (in Jenkins->Configuration)
+        DA_SITE = "localhost-release"                               // DA Site Name (in Jenkins->Configuration)
         DA_WEBURL = "http://localhost:8080/da"                      // URL of Micro Focus Deployment Automation
         DA_USERNAME = "admin"                                       // User to login to DA as
         DA_AUTH_TOKEN = credentials('jenkins-da-auth-token-id')     // Authentication token for the user

@@ -19,10 +19,13 @@
 
 package com.microfocus.example.web.validation;
 
+import com.microfocus.example.utils.AdminUtils;
 import org.passay.*;
 import org.passay.dictionary.WordListDictionary;
 import org.passay.dictionary.WordLists;
 import org.passay.dictionary.sort.ArraysSort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -37,6 +40,8 @@ import java.util.stream.Collectors;
  * @author Kevin A. Lee
  */
 public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {
+
+    private static final Logger log = LoggerFactory.getLogger(PasswordConstraintValidator.class);
 
     private DictionaryRule dictionaryRule;
 
@@ -63,8 +68,8 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
             if (frPassList != null) {
                 try {
                     frPassList.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException ignored) {
+                    log.error(ignored.getMessage());
                 }
             }
         }
