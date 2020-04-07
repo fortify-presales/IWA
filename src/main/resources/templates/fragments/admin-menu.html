@@ -8,6 +8,12 @@
                    th:classappend="${#strings.contains(activeItem,'users')} ? active : ''"
                    th:href="@{/admin/users}"><i class="fas fa-users fa-fw"></i> Users</a>
                 <a class="list-group-item list-group-item-action"
+                   th:classappend="${#strings.contains(activeItem,'database')} ? active : ''"
+                   th:href="@{/admin/backup}"><i class="fas fa-database fa-fw"></i> Backup </a>
+                <a class="list-group-item list-group-item-action"
+                   th:classappend="${#strings.contains(activeItem,'diagnostics')} ? active : ''"
+                   th:href="@{/admin/diagnostics}"><i class="fas fa-heartbeat fa-fw"></i> Diagnostics</a>
+                <a class="list-group-item list-group-item-action"
                    th:classappend="${#strings.contains(activeItem,'messages')} ? active : ''"
                    th:href="@{/admin/messages}"><i class="fas fa-envelope fa-fw"></i> Messages
                     <span class="badge badge-light" th:text="${messageCount}">0</span>

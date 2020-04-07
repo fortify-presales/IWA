@@ -28,12 +28,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import java.security.Principal;
 
 /**
  * Default (root) controllers
+ *
  * @author Kevin A. Lee
  */
 @SessionAttributes({"currentUser", "currentUserId"})
@@ -56,16 +58,32 @@ public class DefaultController {
         return "login";
     }
 
+    @GetMapping("/products")
+    public String products(Model model, Principal principal) {
+        return "products";
+    }
+
+    @GetMapping("/services")
+    public String services(Model model, Principal principal) {
+        return "services";
+    }
+
     @GetMapping("/access-denied")
     public String accessDenied(Model model, Principal principal) {
         if (principal != null) {
             CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
             model.addAttribute("user", WebUtils.toString(loggedInUser.getUserDetails()));
-            String message = "Sorry <strong>" + principal.getName() +"</strong> - " //
+            String message = "Sorry <strong>" + principal.getName() + "</strong> - " //
                     + "you do not have permission to access this page.";
             model.addAttribute("message", message);
         }
         return "/error/403-access-denied";
+    }
+
+    @GetMapping("/site-message")
+    @ResponseBody
+    public String siteMessage() {
+        return "This site is currently healthy.";
     }
 
 }

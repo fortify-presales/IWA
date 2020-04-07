@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+    <head>
+        <title>Products</title>
+    </head>
+    <body>
+        <div layout:fragment="content" th:remove="tag">
+            <div class="container">
+                <div class="row">
+                    <p>Products go here.</p>
+                </div><!-- /.row -->
+            </div>
+        </div>
+
+    </body>
+</html>

@@ -23,7 +23,6 @@ import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.InvalidPasswordException;
 import com.microfocus.example.exception.UserNotFoundException;
-import com.microfocus.example.repository.IUserRepository;
 import com.microfocus.example.service.UserService;
 import com.microfocus.example.utils.WebUtils;
 import com.microfocus.example.web.form.PasswordForm;
@@ -37,11 +36,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
@@ -50,10 +45,12 @@ import java.util.Optional;
 
 /**
  * Controller for user pages
+ *
  * @author Kevin A. Lee
  */
 @RequestMapping("/user")
 @Controller
+@SessionAttributes("user")
 public class WebUserController {
 
     private static final Logger log = LoggerFactory.getLogger(WebUserController.class);
@@ -72,7 +69,6 @@ public class WebUserController {
             UserForm userForm = new UserForm(optionalUser.get());
             model.addAttribute("userForm", userForm);
             model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
-            //model.addAttribute("message", message);
 
         } else {
             model.addAttribute("message", "Internal error accessing user!");
@@ -121,6 +117,14 @@ public class WebUserController {
         model.addAttribute("controllerName", "User");
         model.addAttribute("actionName", "changePassword");
         return "user/change-password";
+    }
+
+    @GetMapping("/messages")
+    public String adminMessages(Model model, Principal principal) {
+        model.addAttribute("messageCount", "0");
+        model.addAttribute("controllerName", "User");
+        model.addAttribute("actionName", "messages");
+        return "user/messages";
     }
 
     @PostMapping("/saveProfile")

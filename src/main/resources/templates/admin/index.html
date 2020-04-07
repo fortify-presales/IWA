@@ -22,12 +22,53 @@
                 </div>
 
                 <div class="col-md-10">
-                    <h2 th:text="@{'Welcome '+${#authentication.name}}" sec:authorize="isAuthenticated()"></h2>
+                    <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                        <span th:text="${message}">message</span>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
 
-                    <p>Admin Dashboard goes here</p>
+                    <h3>User Access <span class="small">(last 30 days)</span></h3>
+
+                    <canvas class="my-4" id="myChart" width="900" height="380"></canvas>
+
                 </div>
 
             </div>
+
+            <!-- Graphs -->
+            <script type="text/javascript" th:src="@{/js/lib/Chart.min.js}"></script>
+            <script>
+                var ctx = document.getElementById("myChart");
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+                        datasets: [{
+                            data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
+                            lineTension: 0,
+                            backgroundColor: 'transparent',
+                            borderColor: '#007bff',
+                            borderWidth: 4,
+                            pointBackgroundColor: '#007bff'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: false
+                                }
+                            }]
+                        },
+                        legend: {
+                            display: false,
+                        }
+                    }
+                });
+            </script>
         </div>
+
     </body>
 </html>

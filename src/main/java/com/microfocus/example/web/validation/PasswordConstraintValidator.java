@@ -42,14 +42,16 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 
     @Override
     public void initialize(ValidPassword constraintAnnotation) {
+        FileReader[] fr = new FileReader[0];
+        FileReader frPassList = null;
         try {
             String invalidPasswordList = this.getClass().getResource("/invalid-password-list.txt").getFile();
+            frPassList = new FileReader(invalidPasswordList);
+            fr = new FileReader[] { frPassList };
             dictionaryRule = new DictionaryRule(
                     new WordListDictionary(WordLists.createFromReader(
                             // Reader around the word list file
-                            new FileReader[] {
-                                    new FileReader(invalidPasswordList)
-                            },
+                            fr,
                             // True for case sensitivity, false otherwise
                             false,
                             // Dictionaries must be sorted
@@ -57,6 +59,14 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
                     )));
         } catch (IOException e) {
             throw new RuntimeException("could not load word list", e);
+        } finally {
+            if (frPassList != null) {
+                try {
+                    frPassList.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

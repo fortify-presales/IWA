@@ -31,6 +31,13 @@
         <maven.compiler.target>1.8</maven.compiler.target>
 		<fod.dir>fod</fod.dir>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>local-repository</id>
+            <url>file://./lib</url>
+        </repository>
+    </repositories>
 	
 	<dependencies>
 
@@ -64,12 +71,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -124,16 +125,70 @@
             <scope>test</scope>
         </dependency>
 
-        <!--dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>2.5.9</version>
-            <type>pom</type>
-        </dependency-->
+        <!-- Fortify SCA Annotations -->
+        <dependency>
+            <groupId>com.microfocus.fortify</groupId>
+            <artifactId>FortifyAnnotations</artifactId>
+            <version>19.2.0</version>
+            <!-- Uncomment the following for Fortify SCA (on premise) -->
+            <!--classifier>SOURCE</classifier-->
+            <!-- Uncomment the following for Fortify on Demand -->
+            <!--classifier>CLASS</classifier-->
+        </dependency>
 
     </dependencies>
 
     <profiles>
+        <!-- Copy insecure examples into src directory for Fortify demonstrations -->
+        <!--profile>
+            <id>insecure</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <goals>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>src</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>etc/src</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>copy-insecure-files</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile-->
+
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-devtools</artifactId>
+                    <optional>true</optional>
+                </dependency>
+            </dependencies>
+        </profile>
+
         <profile>
             <id>jar</id>
             <activation>
@@ -143,6 +198,7 @@
                 <packaging.type>jar</packaging.type>
             </properties>
         </profile>
+
         <profile>
             <id>war</id>
             <properties>
@@ -160,8 +216,23 @@
 
     <build>
         <plugins>
+            <!-- Display active profile in compile phase -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-help-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>show-profiles</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>active-profiles</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-            <!-- Spring Boot - set default profile to dev -->
+            <!-- Set Spring Boot default profile to "dev" -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -270,7 +341,7 @@
                 </executions>
             </plugin>
 			
-			<!-- cleanup FOD upload directory -->
+			<!-- Cleanup FOD upload directory -->
 			<plugin>
                 <artifactId>maven-clean-plugin</artifactId>
 				<version>3.1.0</version>

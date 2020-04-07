@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Diagnostics</title>
+</head>
+    <body>
+        <div layout:fragment="content" th:remove="tag">
+
+            <div class="row">
+
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/admin/}">Site Admin</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Diagnostics</li>
+                    </ol>
+                </nav>
+
+                <div th:replace="fragments/admin-menu.html
+                    :: adminMenu('/admin/', ${messageCount})">
+                </div>
+
+                <div class="col-md-10">
+                    <p>Diagnostics go here</p>
+                </div>
+
+            </div>
+        </div>
+    </body>
+</html>

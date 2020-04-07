@@ -83,6 +83,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     "/logout",
                     "/register",
                     "/console/*",
+                    "/site-message",
                     "/js/**/*",
                     "/css/**/*",
                     "/img/**/*",

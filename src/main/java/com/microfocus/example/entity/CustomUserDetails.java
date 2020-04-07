@@ -71,11 +71,6 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
     public String getName() {
         return user.getName();
     }
@@ -87,6 +82,8 @@ public class CustomUserDetails implements UserDetails {
     public String getMobile() {
         return user.getMobile();
     }
+
+    public boolean isEnabled() { return user.isEnabled(); }
 
     public User getUserDetails() {
         return user;

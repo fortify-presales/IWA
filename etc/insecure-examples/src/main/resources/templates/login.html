@@ -4,6 +4,21 @@
       layout:decorate="~{fragments/layout}">
     <head>
         <title>Login</title>
+<!-- INSECURE EXAMPLE: JavaScript Hijacking -->       
+        <script>
+            var result;
+            var req = new XMLHttpRequest();
+            req.open("GET", "/site-message",true);
+            req.onreadystatechange = function () {
+                if (req.readyState === 4) {
+                    var txt = req.responseText;
+                    result = eval("new String(\"" + txt + "\")");
+                    req = null;
+                }
+            };
+            req.send(null);
+        </script>
+<!-- END EXAMPLE -->
     </head>
     <body class="text-center">
         <div layout:fragment="content" th:remove="tag">
@@ -31,8 +46,10 @@
                                    autofocus="autofocus" placeholder="Username">
                         </div>
                         <div class="form-group">
-                            <input type="password" id="password" name="password" class="form-control" autocomplete="off"
+<!-- INSECURE EXAMPLE: Privacy Violation: Autocomplete -->                        
+                            <input type="password" id="password" name="password" class="form-control"
                                    placeholder="Password">
+<!-- END EXAMPLE -->                                   
                         </div>
                         <div class="checkbox mb-3">
                             <label>

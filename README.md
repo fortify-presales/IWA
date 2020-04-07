@@ -1,7 +1,7 @@
 Secure Web App
 ==============
 
-A Java/Spring Boot Web Application for use in Micro Focus demonstrations.
+A Java/Spring Boot Web Application for use in [Micro Focus Fortify](https://www.microfocus.com/en-us/solutions/application-security) demonstrations.
 
 To run (and test) locally execute the following from the command line:
 
@@ -49,3 +49,13 @@ mvn com.fortify.sca.plugins.maven:sca-maven-plugin:19.2.0:scan -Dfortify.sca.Xmx
 or use the _fortify-sca.bat_ script from the command line.
 
 If using [Jenkins](https://jenkins.io/), there is a fully configured _Jenkinsfile_ to automate a build pipeline.
+
+
+Fortify Annotations
+-------------------
+
+Installed with:
+
+```
+mvn install:install-file -Dfile="C:\Micro Focus\Fortify_SCA_and_Apps_19.2.0\Samples\advanced\javaAnnotations\libraries\FortifyAnnotations-SOURCE.jar" -DcreateChecksum -DupdateReleaseInfo=true -DgroupId=com.microfocus.fortify -DartifactId=FortifyAnnotations -Dclassifier=SOURCE -Dversion=19.2.0 -Dpackaging=jar -DlocalRepositoryPath=.\lib
+```

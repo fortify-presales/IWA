@@ -19,15 +19,14 @@
 
 package com.microfocus.example.utils;
 
-import java.util.Collection;
-import java.util.Set;
-
 import com.microfocus.example.entity.Authority;
-import org.springframework.security.core.GrantedAuthority;
 import com.microfocus.example.entity.User;
+
+import java.util.Set;
 
 /**
  * Customer Web Utilities
+ *
  * @author Kevin. A. Lee
  */
 public class WebUtils {

@@ -17,21 +17,17 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.repository;
-
-import com.microfocus.example.entity.User;
-
-import java.util.List;
-import java.util.Optional;
+package com.microfocus.example.exception;
 
 /**
- * Interface for Custom User Repository
+ * Generic Exception for handling Password errors
  * @author Kevin A. Lee
  */
-public interface ICustomUserRepository {
+public class UserLockedOutException extends RuntimeException {
 
-    Optional<User> findUserByUsername(String username);
+    private static final long serialVersionUID = 1L;
 
-    List<User> findUsersByEnabledAndUsername(boolean enabled, String username);
-
+    public UserLockedOutException(String message) {
+        super(message);
+    }
 }

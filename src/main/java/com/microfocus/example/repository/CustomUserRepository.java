@@ -20,6 +20,7 @@
 package com.microfocus.example.repository;
 
 import com.microfocus.example.entity.User;
+import com.microfocus.example.exception.UserLockedOutException;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,7 @@ public class CustomUserRepository implements ICustomUserRepository {
     EntityManager entityManager;
 
     @Override
-    public Optional<User> findUserByUsername(String username) {
+    public Optional<User> findUserByUsername(String username) throws UserLockedOutException {
         Query query = (Query) entityManager.createNativeQuery("SELECT * FROM user WHERE username = ?", User.class);
         query.setParameter(1, username);
         List<User> results = (List<User>) query.getResultList();
@@ -54,5 +55,12 @@ public class CustomUserRepository implements ICustomUserRepository {
             optionalUser = Optional.of(results.get(0));
         }
         return optionalUser;
+    }
+
+    public List<User> findUsersByEnabledAndUsername(boolean enabled, String username) {
+        String query = "FROM user where enabled = '" + enabled + "'" +
+                " AND username LIKE '" + username + "'";
+        List users = entityManager.createQuery(query).getResultList();
+        return users;
     }
 }

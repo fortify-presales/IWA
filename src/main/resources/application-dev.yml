@@ -7,11 +7,13 @@ server:
 messages:
   home: Hello, Guest!
 
+
 spring:
   profiles: dev
   main:
     allow-bean-definition-overriding: true
     banner-mode: "off"
+
   thymeleaf:
     cache: false
     check-template: true

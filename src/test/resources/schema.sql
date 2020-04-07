@@ -17,6 +17,7 @@ create table user (
     name varchar(255) not null,
     email varchar(255) not null,
     mobile varchar(255) not null,
+    enabled bit(1) not null,
     primary key (id)
 );
 create table user_authority (

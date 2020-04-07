@@ -102,4 +102,8 @@ public class UserService {
     public void delete(Integer id) {
         userRepository.deleteById(id);
     }
+
+    public List<User> findEnabledUsersByUsername(boolean enabled, String username) {
+        return userRepository.findUsersByEnabledAndUsername(enabled, username);
+    }
 }

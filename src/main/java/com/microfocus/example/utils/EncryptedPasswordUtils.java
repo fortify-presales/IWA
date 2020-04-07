@@ -23,6 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  * Encrypted Password Utilities using BCryptPasswordEncoder
+ *
  * @author Kevin A. Lee
  */
 public class EncryptedPasswordUtils {
@@ -35,16 +36,6 @@ public class EncryptedPasswordUtils {
     public static boolean matches(String password1, String password2) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.matches(password1, password2);
-    }
-
-    public static void main(String[] args) {
-        if (args.length == 0) {
-            System.err.println("An argument must be supplied.");
-            System.exit(1);
-        }
-        String inputPassword = args[0];
-        String encryptedPassword = encryptPassword(inputPassword);
-        System.out.println("Encrypted Password: " + encryptedPassword);
     }
 
 }

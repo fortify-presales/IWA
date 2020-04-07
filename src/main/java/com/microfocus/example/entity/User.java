@@ -71,6 +71,8 @@ public class User implements Serializable {
     @Column(name = "date_created")
     private Date dateCreated;
 
+    private boolean enabled;
+
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "user_authority",
             joinColumns = { @JoinColumn(name = "user_id") },
@@ -142,6 +144,14 @@ public class User implements Serializable {
 
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Set<Authority> getAuthorities() {

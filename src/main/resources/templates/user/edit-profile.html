@@ -70,7 +70,8 @@
                     <div class="form-group row" th:classappend="${#fields.hasErrors('password')}? 'has-error':''">
                         <label for="password" class="col-sm-2 col-form-label">Password:</label>
                         <div class="col-sm-10">
-                            <input type="password" class="form-control" id="password" th:field="*{password}" th:value="${userForm.password}">
+                            <input type="password" class="form-control" id="password" th:field="*{password}" autocomplete="off"
+                            th:value="${userForm.password}">
                             <small id="passwordHelp" class="form-text text-muted">Enter your current password to save changes.</small>
                             <div th:if="${#fields.hasErrors('password')}">
                                 <p class="label label-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
