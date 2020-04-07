@@ -88,6 +88,7 @@ pipeline {
     }
 
     stages {
+        agent { label 'master' }
         stage('Build') {
             steps {
                 // Get some code from a GitHub repository
@@ -192,9 +193,9 @@ pipeline {
                         git "${env.GIT_URL}"
                         // Run Maven debug compile, download dependencies (if required) and package up for FOD
                         if (isUnix()) {
-                            sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -P dev,jar,fortify -DskipTests clean verify'
+                            sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -P jar,fortify -DskipTests clean verify'
                         } else {
-                            bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -P dev,jar,fortify -DskipTests clean verify"
+                            bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -P jar,fortify -DskipTests clean verify"
                         }
                     }
 
@@ -351,6 +352,7 @@ pipeline {
         }
 
         stage('Release') {
+            agent { label 'master' }
             steps {
                 script {
                     // Deploy to the "release" environment using Deployment Automation

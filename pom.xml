@@ -135,42 +135,6 @@
     </dependencies>
 
     <profiles>
-        <!-- Copy insecure examples into src directory for Fortify demonstrations -->
-        <!--profile>
-            <id>insecure</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <goals>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>src</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>etc/src</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>copy-insecure-files</id>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile-->
-
         <profile>
             <id>dev</id>
             <activation>
@@ -212,6 +176,152 @@
                 </dependency>
             </dependencies>
         </profile>
+
+        <profile>
+            <id>fortify</id>
+            <build>
+                <plugins>
+                    <!-- Download and copy all dependencies on "verify" phase for Fortify On Demand -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.1.1</version>
+                        <executions>
+                            <execution>
+                                <id>download-sources</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sources</goal>
+                                </goals>
+                                <configuration>
+                                    <overWriteIfNewer>true</overWriteIfNewer>
+                                    <excludeGroupIds>
+                                        junit,org.easymock,${project.groupId}
+                                    </excludeGroupIds>
+                                    <!-- uncomment to only include direct dependencies -->
+                                    <excludeTransitive>true</excludeTransitive>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-dependencies</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>target/classes/lib</outputDirectory>
+                                    <!--classifier>sources</classifier-->
+                                    <overWriteIfNewer>true</overWriteIfNewer>
+                                    <excludeGroupIds>
+                                        junit,org.easymock,${project.groupId}
+                                    </excludeGroupIds>
+                                    <!-- uncomment to only include direct dependencies -->
+                                    <excludeTransitive>true</excludeTransitive>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <verbose>true</verbose>
+                            <detail>true</detail>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
+                    </plugin>
+                    <!-- Create a source bundle (.jar) for Fortify on Demand
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin-->
+                    <!-- Copy minimal set of files to FOD upload directory -->
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-fortify-resources</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${basedir}/${fod.dir}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}\</directory>
+                                            <includes>
+                                                <include>src\**\*</include>
+                                            </includes>
+                                            <excludes>
+                                                <!-- exclude test source code -->
+                                                <exclude>src\test\**\*</exclude>
+                                            </excludes>
+                                        </resource>
+                                        <!-- include third party dependencies -->
+                                        <resource>
+                                            <directory>${basedir}\target\classes\lib</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Cleanup FOD upload directory -->
+                    <plugin>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${fod.dir}</directory>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Copy insecure examples into src directory for Fortify demonstrations -->
+        <!--profile>
+            <id>insecure</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <goals>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>src</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>etc/src</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>copy-insecure-files</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile-->
     </profiles>
 
     <build>
@@ -242,115 +352,6 @@
                     <profiles>
                         <profile>dev</profile>
                     </profiles>
-                </configuration>
-            </plugin>
-			
-			<!-- Download and copy all dependencies on "verify" phase for Fortify On Demand -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-				<version>3.1.1</version>
-                <executions>
-                    <execution>
-                        <id>download-sources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sources</goal>
-                        </goals>
-                        <configuration>
-                            <overWriteIfNewer>true</overWriteIfNewer>
-                            <excludeGroupIds>
-                                junit,org.easymock,${project.groupId}
-                            </excludeGroupIds>
-                            <!-- uncomment to only include direct dependencies -->
-                            <excludeTransitive>true</excludeTransitive>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>target/classes/lib</outputDirectory>
-                            <!--classifier>sources</classifier-->
-                            <overWriteIfNewer>true</overWriteIfNewer>
-                            <excludeGroupIds>
-                                junit,org.easymock,${project.groupId}
-                            </excludeGroupIds>
-                            <!-- uncomment to only include direct dependencies -->
-                            <excludeTransitive>true</excludeTransitive>
-                        </configuration>
-                    </execution>
-                </executions>
-                <configuration>
-                    <verbose>true</verbose>
-                    <detail>true</detail>
-                    <outputDirectory>${project.build.directory}</outputDirectory>
-                </configuration>
-            </plugin>
-			
-            <!-- Create a source bundle (.jar) for Fortify on Demand
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-				<version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-			</plugin-->
-			
-			<!-- Copy minimal set of files to FOD upload directory -->
-			<plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-				<version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-fortify-resources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/${fod.dir}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}\</directory>
-                                    <includes>
-                                        <include>src\**\*</include>
-                                    </includes>
-                                    <excludes>
-                                        <!-- exclude test source code -->
-                                        <exclude>src\test\**\*</exclude>
-                                    </excludes>
-                                </resource>
-                                <!-- include third party dependencies -->
-                                <resource>
-                                    <directory>${basedir}\target\classes\lib</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-			
-			<!-- Cleanup FOD upload directory -->
-			<plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-				<version>3.1.0</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${fod.dir}</directory>
-                        </fileset>
-                    </filesets>
                 </configuration>
             </plugin>
 
