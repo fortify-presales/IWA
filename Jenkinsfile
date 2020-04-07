@@ -111,9 +111,9 @@ pipeline {
                 // Run maven to build application
                 script {
                     if (isUnix()) {
-                        sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P war clean package'
+                        sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P war,release clean package'
                     } else {
-                        bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P war clean package"
+                        bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P war,release clean package"
                     }
                 }
             }
@@ -136,6 +136,8 @@ pipeline {
         }
 
         stage('Package') {
+            // Run on master
+            agent { label 'master' }
             steps {
                 script {
                     // unstash the built files
@@ -184,15 +186,16 @@ pipeline {
             // Run on an Agent with "fortify" label applied - assumes Fortify SCA command line tools are installed
             agent {label "fortify"}
             steps {
-                // Get code from Git repository
-                git "${env.GIT_URL}"
-
                 script {
-                    // Run Maven debug compile, download dependencies (if required) and package up for FOD
-                    if (isUnix()) {
-                        sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify'
-                    } else {
-                        bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify"
+                    if (params.SCA_ENABLED || params.FOD_ENABLED) {
+                        // Get code from Git repository so we can recompile it
+                        git "${env.GIT_URL}"
+                        // Run Maven debug compile, download dependencies (if required) and package up for FOD
+                        if (isUnix()) {
+                            sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -P dev,jar,fortify -DskipTests clean verify'
+                        } else {
+                            bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -P dev,jar,fortify -DskipTests clean verify"
+                        }
                     }
 
                     if (params.FOD_ENABLED) {
@@ -257,7 +260,9 @@ pipeline {
         }
 
         stage('Deploy') {
-             steps {
+            // Run on master
+            agent { label 'master' }
+            steps {
                  script {
                     if (params.DA_ENABLED) {
                         def procProperties =
