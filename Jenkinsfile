@@ -18,9 +18,9 @@ pipeline {
         booleanParam(name: 'WI_ENABLED',        defaultValue: false,
             description: 'Enable WebInspect for Dynamic Application Security Testing')
         booleanParam(name: 'DA_ENABLED',        defaultValue: false,
-            description: 'Enable Deployment Automation for automated application deployment')
+            description: 'Use Deployment Automation for automated application deployment of WAR file')
         booleanParam(name: 'DOCKER_ENABLED',    defaultValue: false,
-            description: 'Package up application into Docker image for deployment')
+            description: 'Use Docker for automated deployment of JAR file into container')
     }
 
     //
@@ -88,8 +88,9 @@ pipeline {
     }
 
     stages {
-        agent { label 'master' }
         stage('Build') {
+            // Run on "master" node
+            agent { label 'master' }
             steps {
                 // Get some code from a GitHub repository
                 git "${env.GIT_URL}"
@@ -137,7 +138,7 @@ pipeline {
         }
 
         stage('Package') {
-            // Run on master
+            // Run on "master" node
             agent { label 'master' }
             steps {
                 script {
@@ -261,7 +262,7 @@ pipeline {
         }
 
         stage('Deploy') {
-            // Run on master
+            // Run on "master" node
             agent { label 'master' }
             steps {
                  script {
