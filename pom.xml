@@ -32,12 +32,12 @@
 		<fod.dir>fod</fod.dir>
     </properties>
 
-    <repositories>
+    <!--repositories>
         <repository>
             <id>local-repository</id>
             <url>file://./lib</url>
         </repository>
-    </repositories>
+    </repositories-->
 	
 	<dependencies>
 
@@ -125,16 +125,12 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Fortify SCA Annotations -->
+        <!-- Fortify SCA Annotations
         <dependency>
             <groupId>com.microfocus.fortify</groupId>
             <artifactId>FortifyAnnotations</artifactId>
             <version>19.2.0</version>
-            <!-- Uncomment the following for Fortify SCA (on premise) -->
-            <!--classifier>SOURCE</classifier-->
-            <!-- Uncomment the following for Fortify on Demand -->
-            <!--classifier>CLASS</classifier-->
-        </dependency>
+        </dependency-->
 
     </dependencies>
 
