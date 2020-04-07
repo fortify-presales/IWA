@@ -19,6 +19,7 @@
 
 package com.microfocus.example.utils;
 
+import com.microfocus.example.exception.BackupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,10 +40,10 @@ public class AdminUtils {
 
     private static final Logger log = LoggerFactory.getLogger(AdminUtils.class);
 
-    public static int startDbBackup(String profile) throws Exception {
+    public static int startDbBackup(String profile) throws BackupException {
         int backupId = 0;
         if (profile.matches("^.*[^a-zA-Z0-9 ].*$"))
-            throw new Exception("Profile contains non alpha numeric characters, cannot start backup");
+            throw new BackupException("Profile contains non alpha numeric characters, cannot start backup");
         String[] backupCommand = {
                 "cmd.exe", "/K", "dir", "c:\\util\\backup.bat",
                 "-profile", profile
@@ -50,11 +51,14 @@ public class AdminUtils {
         String[] cleanupCommand = {
                 "cmd.exe", "/K", "c:\\util\\cleanup.bat"
         };
+        Process p = null;
         try {
             log.info("Running: " + Arrays.toString(backupCommand));
-            Runtime.getRuntime().exec(backupCommand);
+            p = Runtime.getRuntime().exec(backupCommand);
+            log.info("Exit value: " + p.exitValue());
             log.info("Running: " + Arrays.toString(cleanupCommand));
-            Runtime.getRuntime().exec(cleanupCommand);
+            p = Runtime.getRuntime().exec(cleanupCommand);
+            log.info("Exit value: " + p.exitValue());
         } catch (IOException ignored) {
             log.error(ignored.getMessage());
         }

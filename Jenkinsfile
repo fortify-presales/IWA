@@ -41,6 +41,7 @@ pipeline {
         APP_WEBURL = "http://localhost:8881/secure-web-app/" // URL of where the application is deploy to (for integration testing, WebInspect etc)
         JETTY_BASE_DIR = "C:\\Tools\\jetty\\integration" // Directory where WAR file is deployed to for Jetty based deployment
         ISSUE_IDS = ""                                      // List of issues found from commit
+
         //
         // Fortify On Demand (FOD) settings
         //
@@ -49,6 +50,7 @@ pipeline {
 
         //
         // Micro Focus Deployment Automation (DA) settings
+        // Download Jenkins plugin from: https://community.microfocus.com/dcvta86296/board/message?board.id=DA_Plugins&message.id=15#M15)
         //
         DA_SITE = "localhost - release"                             // DA Site Name (in Jenkins->Configuration)
         DA_WEBURL = "http://localhost:8080/da"                      // URL of Micro Focus Deployment Automation
@@ -56,6 +58,7 @@ pipeline {
         DA_AUTH_TOKEN = credentials('jenkins-da-auth-token-id')     // Authentication token for the user
         DA_CLIENT_PATH = "C:\\Micro Focus\\Deployment Automation Client\\da-client.cmd"
         DA_DEPLOY_PROCESS = "Deploy Web App"                        // Deployment process to use
+        DA_ENV_NAME = "Systems Integration"                         // Deployment automation environment name
 
         //
         // Fortify Static Code Analyzer (SCA) settings
@@ -139,10 +142,10 @@ pipeline {
                     unstash name: "${env.COMPONENT_NAME}_release"
                     if (params.DA_ENABLED) {
                             def verProperties =
-                            """job.url=${env.BUILD_URL}
-                            jenkins.url=${env.JENKINS_URL}
-                            commit.id=${env.GIT_COMMIT_ID}
-                            issueIds=${env.ISSUE_IDS}"""
+                                """job.url=${env.BUILD_URL}
+                                jenkins.url=${env.JENKINS_URL}
+                                commit.id=${env.GIT_COMMIT_ID}
+                                issueIds=${env.ISSUE_IDS}"""
                             step([$class: 'SerenaDAPublisher',
                     			siteName: "${env.DA_SITE}",
                     			component: "${env.COMPONENT_NAME}",
@@ -154,12 +157,12 @@ pipeline {
                     			skip: false,
                     			addStatus: true,
                     			statusName: 'BUILT',
-                    			deploy: false,
+                    			deploy: false, // we will deploy later after SAST
                     			deployIf: 'false',
                     			deployUpdateJobStatus: true,
                     			deployApp: "${env.APP_NAME}",
                     			deployEnv: "Systems Integration",
-                    			deployProc: "${env..DA_DEPLOY_PROCESS}",
+                    			deployProc: "${env.DA_DEPLOY_PROCESS}",
                     			deployProps: "${verProperties}"
                     		])
                         // upload build files into Deployment Automation component version
@@ -226,6 +229,7 @@ pipeline {
 
                         // Scan source files
                         fortifyScan buildID: "${env.COMPONENT_NAME}",
+                            addOptions: '"-filter" "etc\\sca-filter.txt"',
                             resultsFile: "${env.COMPONENT_NAME}.fpr",
                             logFile: "${env.COMPONENT_NAME}-scan.log"
 
@@ -234,6 +238,16 @@ pipeline {
                             fortifyUpload appName: "${env.APP_NAME}",
                                 appVersion: "${env.APP_VER}",
                                 resultsFile: "${env.COMPONENT_NAME}.fpr"
+                        }
+
+                        if (params.DA_ENABLED) {
+                            step([$class: 'UpdateComponentVersionStatusNotifier',
+                                siteName: "${env.DA_SITE}",
+                                action: 'ADD',
+                                componentName: "${env.COMPONENT_NAME}",
+                                versionName: "${env.APP_VER}-${BUILD_NUMBER}",
+                                statusName: 'SAST'
+                            ])
                         }
                     } else {
                         println "Skipping Static Application Security Testing..."
@@ -246,7 +260,21 @@ pipeline {
              steps {
                  script {
                     if (params.DA_ENABLED) {
-                        def data = [
+                        def procProperties =
+                            """job.url=${env.JOB_URL}
+                            jenkins.url=${env.JENKINS_URL}"""
+                        step([$class: 'RunApplicationProcessNotifier',
+                                siteName: "${env.DA_SITE}",
+                                runApplicationProcessIf: 'true',
+                                updateJobStatus: true,
+                                applicationName: "${env.APP_NAME}",
+                                environmentName: "${env.DA_ENV_NAME}",
+                                applicationProcessName: "${env.DA_DEPLOY_PROCESS}",
+                                componentName: "${env.COMPONENT_NAME}",
+                                versionName: "${env.APP_VER}-${BUILD_NUMBER}",
+                                applicationProcessProperties: "${procProperties}"
+                        ])
+                        /*def data = [
                            application: "${env.APP_NAME}",
                            applicationProcess : "${env.DA_DEPLOY_PROCESS}",
                            environment : "Systems Integration",
@@ -273,7 +301,7 @@ pipeline {
                             sh('"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" requestApplicationProcess "${WORKSPACE}/da-process.json"')
                         } else {
                             bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" requestApplicationProcess "${WORKSPACE}\\da-process.json"/)
-                        }
+                        }*/
                     } else {
                         // unstash the built files
                         unstash name: "${env.COMPONENT_NAME}_release"
@@ -324,7 +352,7 @@ pipeline {
                     if (params.DA_ENABLED) {
 						println "..."
                     } else {
-                        println "Skipping release..."
+                        println "Released..."
                     }
                 }
             }

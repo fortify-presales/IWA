@@ -1,0 +1,12 @@
+# Categories that will be filtered from scan output
+Poor Logging Practice
+
+# Specific Rule Ids to be filtered from scan output
+
+# Password Management: Password in Comment
+720E3A66-55AC-4D2D-8DB9-DC30E120A52F
+# Poor Error Handling: Overly Broad Throws
+572EA1F6-FC86-443E-B1A9-A227D5AD17CC
+# Cross-Site Request Forgery
+78E0700E-56FE-45A2-A11B-6A560F730576
+

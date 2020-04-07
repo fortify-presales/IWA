@@ -186,6 +186,10 @@
         </profile>
 
         <profile>
+            <id>release</id>
+        </profile>
+
+        <profile>
             <id>jar</id>
             <activation>
                 <activeByDefault>true</activeByDefault>

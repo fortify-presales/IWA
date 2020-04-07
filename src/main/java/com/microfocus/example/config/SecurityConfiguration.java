@@ -53,12 +53,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private LoggingAccessDeniedHandler accessDeniedHandler;
-
     @Value("${spring.profiles.active:Unknown}")
     private String activeProfile;
 

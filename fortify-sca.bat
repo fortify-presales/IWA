@@ -1,5 +1,7 @@
 @echo off
 
+:: Ensure JAVA_HOME is set to a relevant JDK 1.8 version
+
 :: Clean Project and scan results from previous run
 echo ************************************************************
 echo Cleaning project and scan results from previous run...
@@ -17,13 +19,13 @@ call mvn verify -P release,jar -DskipTests -Dmaven.compiler.debuglevel="lines,va
 echo ************************************************************
 echo Translating source files...
 echo ************************************************************
-call sourceanalyzer -Dcom.fortify.sca.ProjectRoot=.fortify -Dcom.fortify.sca.Xmx=3G -b simple-secure-app "src/main/java/**/*.java" "src/main/resource/**/*.*"
+call sourceanalyzer -Dcom.fortify.sca.ProjectRoot=.fortify -b simple-secure-app -jdk 1.8 "src/main/java/**/*.java" "src/main/resource/**/*.*"
 
 :: Scan the application
 echo ************************************************************
 echo Scanning the application...
 echo ************************************************************
-call sourceanalyzer -Dcom.fortify.sca.ProjectRoot=.fortify -b simple-secure-app -scan -f secure-web-app.fpr
+call sourceanalyzer -Dcom.fortify.sca.ProjectRoot=.fortify -b simple-secure-app ‑build‑project "Simple Secure App" -build-version "1.0" -build-label "SNAPSHOT" -scan -filter etc\sca-filter.txt -f secure-web-app.fpr
 
 echo ************************************************************
 echo Generating report
