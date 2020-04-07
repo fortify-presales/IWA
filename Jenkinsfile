@@ -102,8 +102,8 @@ pipeline {
                     //env.GIT_COMMIT_AUTHOR = readFile('.git/commit-author').trim()
                 }
 
-                //println "Git commit id: ${env.GIT_COMMIT_ID}"
-                println "Git commit author: ${env.GIT_COMMIT_AUTHOR}"
+                println "Git commit id: ${env.GIT_COMMIT_ID}"
+                //println "Git commit author: ${env.GIT_COMMIT_AUTHOR}"
 
                 // Run maven to build application
                 script {
@@ -148,7 +148,7 @@ pipeline {
                     			component: "${env.COMPONENT_NAME}",
                     			baseDir: "${env.WORKSPACE}/target",
                     			versionName: "${env.APP_VER}.${env.BUILD_NUMBER}",
-                    			fileIncludePatterns: "${params.COMPONENT_NAME}.war",
+                    			fileIncludePatterns: "${env.COMPONENT_NAME}.war",
                     			fileExcludePatterns: "**/*tmp*,**/.git",
                     			versionProps: "${verProperties}",
                     			skip: false,
