@@ -143,7 +143,6 @@ pipeline {
                     junit "**/target/surefire-reports/TEST-*.xml"
                 }
             }
-
         }
 
         stage('Package') {
@@ -196,16 +195,15 @@ pipeline {
             agent {label "fortify"}
             steps {
                 script {
-                    if (params.SCA_ENABLED || params.FOD_ENABLED) {
-                        // Get code from Git repository so we can recompile it
-                        git "${env.GIT_URL}"
-                        // Run Maven debug compile, download dependencies (if required) and package up for FOD
-                        if (isUnix()) {
-                            sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P jar,fortify clean verify'
-                        } else {
-                            bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P jar,fortify clean verify"
-                        }
+                    // Get code from Git repository so we can recompile it
+                    git "${env.GIT_URL}"
+                    // Run Maven debug compile, download dependencies (if required) and package up for FOD
+                    if (isUnix()) {
+                        sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P jar,fortify clean verify'
+                    } else {
+                        bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P jar,fortify clean verify"
                     }
+
 
                     if (params.FOD_ENABLED) {
                         // Upload built application to Fortify on Demand and carry out Static Assessment
