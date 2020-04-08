@@ -259,18 +259,18 @@
                                     <outputDirectory>${basedir}/${fod.dir}</outputDirectory>
                                     <resources>
                                         <resource>
-                                            <directory>${basedir}\</directory>
+                                            <directory>${basedir}/</directory>
                                             <includes>
-                                                <include>src\**\*</include>
+                                                <include>src/**/*</include>
                                             </includes>
                                             <excludes>
                                                 <!-- exclude test source code -->
-                                                <exclude>src\test\**\*</exclude>
+                                                <exclude>src/test/**/*</exclude>
                                             </excludes>
                                         </resource>
                                         <!-- include third party dependencies -->
                                         <resource>
-                                            <directory>${basedir}\target\classes\lib</directory>
+                                            <directory>${basedir}/target/classes/lib</directory>
                                         </resource>
                                     </resources>
                                 </configuration>
