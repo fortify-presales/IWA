@@ -3,9 +3,13 @@
 // @author: Kevin A. Lee (kevin.lee@microfocus.com)
 //
 
+// The instances of Docker image and (running) container that are created
+def dockerImage
+def dockerContainer
+
 pipeline {
     // You will need to have an Agent labelled "fortify" where Fortify SCA tools are installed and another
-    // (or the same) Agent labelled "webinpsect" with WebInspect installed. You will also need to apply the
+    // (or the same) Agent labelled "webinspect" with WebInspect installed. You will also need to apply the
     // label "master" to your Jenkins master.
     agent any
 
@@ -35,6 +39,7 @@ pipeline {
     //      jenkins-fod-bsi-token-id    - Fortify on Demand BSI token
     //      jenkins-ssc-auth-token-id   - Fortify Software Security Center "ArtifactUpload" authentication token
     //      jenkins-da-auth-token-id    - Deployment Automation authentication token
+    //      docker-hub-credentials      - DockHub authentication token as Jenkins Secret
     // For Fortify on Demand (FOD) Global Authentication should be setup
     environment {
         //
@@ -45,8 +50,9 @@ pipeline {
         COMPONENT_NAME = "secure-web-app"                   // Component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         JAVA_VERSION = 8                                    // Java version to compile as
-        APP_WEBURL = "http://localhost:8881/secure-web-app/" // URL of where the application is deployed to (for integration testing, WebInspect etc)
+        APP_WEBURL = "http://localhost:8080/secure-web-app/" // URL of where the application is deployed to (for integration testing, WebInspect etc)
         ISSUE_IDS = ""                                      // List of issues found from commit
+        DOCKER_ORG = "mfdemouk"                             // Docker organisation (in Docker Hub) to push images to
 
         //
         // Fortify On Demand (FOD) settings
@@ -85,8 +91,6 @@ pipeline {
     tools {
         // Install the Maven version configured as "M3" and add it to the path.
         maven 'M3'
-        // Install the Git version configure as "Default" an add it to the path.
-        git 'Default'
     }
 
     stages {
@@ -175,7 +179,8 @@ pipeline {
                     			deployProps: "${verProperties}"
                     		])
                     } else if (params.DOCKER_ENABLED) {
-                        // TODO: create Docker image
+                        // Create docker image using JAR file
+                        dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
                     } else {
                         println "No packaging to do ..."
                     }
@@ -272,7 +277,8 @@ pipeline {
                                 applicationProcessProperties: "${procProperties}"
                         ])
                     } else if (params.DOCKER_ENABLED) {
-                        // TODO: Start Docker container
+                        // Run Docker container
+                        dockerContainer = dockerImage.run()
                     } else {
                         println "No deployment to do ..."
                     }
@@ -311,17 +317,22 @@ pipeline {
                 script {
                     // Mark version as "Release Candidate" using VERIFIED status in Deployment Automation
                     if (params.DA_ENABLED) {
-                        if (params.DA_ENABLED) {
-                            step([$class: 'UpdateComponentVersionStatusNotifier',
-                                siteName: "${env.DA_SITE}",
-                                action: 'ADD',
-                                componentName: "${env.COMPONENT_NAME}",
-                                versionName: "${env.APP_VER}-${BUILD_NUMBER}",
-                                statusName: 'VERIFIED'
-                            ])
-                        }
+                        step([$class: 'UpdateComponentVersionStatusNotifier',
+                            siteName: "${env.DA_SITE}",
+                            action: 'Add',
+                            componentName: "${env.COMPONENT_NAME}",
+                            versionName: "${env.APP_VER}-${BUILD_NUMBER}",
+                            statusName: 'VERIFIED'
+                        ])
                     } else if (params.DOCKER_ENABLED) {
-                        // TODO: stop Docker container and publish to repository
+                        // Stop the container
+                        dockerContainer.stop()
+                        // Publish it to Docker Hub
+                        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                            dockerImage.push("${env.APP_VER}-${BUILD_NUMBER}")
+                            // and tag as "latest"
+                            dockerImage.push("latest")
+                        }
                     } else {
                         println "No release-ing to do ..."
                     }
