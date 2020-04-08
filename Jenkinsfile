@@ -39,7 +39,8 @@ pipeline {
     //      secure-web-app-fod-bsi-token-id     - Fortify on Demand BSI token as Jenkins Sectet
     //      secure-web-app-ssc-auth-token-id    - Fortify Software Security Center "ArtifactUpload" authentication token as Jenkins Secret
     //      docker-hub-credentials              - DockerHub authentication token as Jenkins Secret
-    // For Fortify on Demand (FOD) Global Authentication should be setup
+    // For Fortify on Demand (FOD) Global Authentication should be setup.authentication
+    // All of the credentials should be created (with empty values if necessary)
     environment {
         //
         // Application settings
@@ -188,6 +189,9 @@ pipeline {
         }
 
         stage('SAST') {
+            when {
+                 expression { return (params.SCA_ENABLED || params.FOD_ENABLED) }
+            }
             // Run on an Agent with "fortify" label applied - assumes Fortify SCA command line tools are installed
             agent {label "fortify"}
             steps {
@@ -286,6 +290,9 @@ pipeline {
         }
 
         stage('DAST') {
+            when {
+                 environment name: 'WI_ENABLED', value: 'true'
+            }
             // Run on an Agent with "webinspect" label applied - assumes WebInspect command line installed
             agent {label "webinspect"}
             steps {
