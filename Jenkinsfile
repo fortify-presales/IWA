@@ -110,12 +110,15 @@ pipeline {
                 println "Git commit id: ${env.GIT_COMMIT_ID}"
                 //println "Git commit author: ${env.GIT_COMMIT_AUTHOR}"
 
-                // Run maven to build application
+                // Run maven to build WAR/JAR application
                 script {
                     if (isUnix()) {
-                        sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P war,release clean package'
+                        sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P jar,release clean package'
+                        sh 'mvn -Dmaven.com.failure.ignore=true -DskipTests -P war package'
+
                     } else {
-                        bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P war,release clean package"
+                        bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P jar,release clean package"
+                        bat "mvn -Dmaven.com.failure.ignore=true -DskipTests -P war package"
                     }
                 }
             }
@@ -125,9 +128,9 @@ pipeline {
                     // Record the test results (success)
                     junit "**/target/surefire-reports/TEST-*.xml"
                     // Archive the built file
-                    archiveArtifacts "target/${env.COMPONENT_NAME}.war"
+                    archiveArtifacts "target/${env.COMPONENT_NAME}.jar,target/${env.COMPONENT_NAME}.war"
                     // Stash the deployable files
-                    stash includes: "target/${env.COMPONENT_NAME}.war", name: "${env.COMPONENT_NAME}_release"
+                    stash includes: "target/${env.COMPONENT_NAME}.war,target/${env.COMPONENT_NAME}.war", name: "${env.COMPONENT_NAME}_release"
                 }
                 failure {
                     // Record the test results (failures)
@@ -165,20 +168,10 @@ pipeline {
                     			deployIf: 'false',
                     			deployUpdateJobStatus: true,
                     			deployApp: "${env.APP_NAME}",
-                    			deployEnv: "Systems Integration",
+                    			deployEnv: "${env.DA_ENV_NAME}",
                     			deployProc: "${env.DA_DEPLOY_PROCESS}",
                     			deployProps: "${verProperties}"
                     		])
-                        // upload build files into Deployment Automation component version
-                        /*if (isUnix()) {
-                            sh('"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" createVersion --component "${env.COMPONENT_NAME}" --name "${env.APP_VER}-${BUILD_NUMBER}"')
-                            sh('"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionFiles --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --base "${WORKSPACE}/target" --include "${env.COMPONENT_NAME}.war"')
-                            sh('"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionStatus --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --status "BUILT"')
-                        } else {
-                            bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" createVersion --component "${env.COMPONENT_NAME}" --name "${env.APP_VER}-${BUILD_NUMBER}"/)
-                            bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionFiles --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --base "${WORKSPACE}\\target" --include "${env.COMPONENT_NAME}.war"/)
-                            bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" addVersionStatus --component "${env.COMPONENT_NAME}" --version "${env.APP_VER}-${BUILD_NUMBER}" --status "BUILT"/)
-                        }*/
                     }
                 }
             }
@@ -194,9 +187,9 @@ pipeline {
                         git "${env.GIT_URL}"
                         // Run Maven debug compile, download dependencies (if required) and package up for FOD
                         if (isUnix()) {
-                            sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -P jar,fortify -DskipTests clean verify'
+                            sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify'
                         } else {
-                            bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -P jar,fortify -DskipTests clean verify"
+                            bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify"
                         }
                     }
 
@@ -278,7 +271,7 @@ pipeline {
                                 environmentName: "${env.DA_ENV_NAME}",
                                 applicationProcessName: "${env.DA_DEPLOY_PROCESS}",
                                 componentName: "${env.COMPONENT_NAME}",
-                                versionName: "${env.APP_VER}-${BUILD_NUMBER}",
+                                versionName: "${env.APP_VER}.${env.BUILD_NUMBER}",
                                 applicationProcessProperties: "${procProperties}"
                         ])
                         /*def data = [
