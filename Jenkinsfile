@@ -36,10 +36,9 @@ pipeline {
 
     //
     // Create the following "Secret text" credentials in Jenkins and enter values as follows:
-    //      jenkins-fod-bsi-token-id    - Fortify on Demand BSI token
-    //      jenkins-ssc-auth-token-id   - Fortify Software Security Center "ArtifactUpload" authentication token
-    //      jenkins-da-auth-token-id    - Deployment Automation authentication token
-    //      docker-hub-credentials      - DockHub authentication token as Jenkins Secret
+    //      secure-web-app-fod-bsi-token-id     - Fortify on Demand BSI token as Jenkins Sectet
+    //      secure-web-app-ssc-auth-token-id    - Fortify Software Security Center "ArtifactUpload" authentication token as Jenkins Secret
+    //      docker-hub-credentials              - DockerHub authentication token as Jenkins Secret
     // For Fortify on Demand (FOD) Global Authentication should be setup
     environment {
         //
@@ -57,7 +56,7 @@ pipeline {
         //
         // Fortify On Demand (FOD) settings
         //
-        FOD_BSI_TOKEN = credentials('jenkins-fod-bsi-token-id')     // FOD BSI Token
+        FOD_BSI_TOKEN = credentials('secure-web-app-fod-bsi-token-id') // FOD BSI Token
         FOD_UPLOAD_DIR = 'fod'                                      // Directory where FOD upload Zip is constructed
 
         //
@@ -77,7 +76,7 @@ pipeline {
         // Fortify Software Security Center (SSC) settings
         //
         SSC_WEBURL = "http://localhost:8080/ssc"                    // URL of SSC
-        SSC_AUTH_TOKEN = credentials('jenkins-ssc-auth-token-id')   // Authentication token for SSC
+        SSC_AUTH_TOKEN = credentials('secure-web-app-ssc-auth-token-id') // Authentication token for SSC
 
         //
         // Fortify WebInspect settings
