@@ -199,9 +199,9 @@ pipeline {
                     git "${env.GIT_URL}"
                     // Run Maven debug compile, download dependencies (if required) and package up for FOD
                     if (isUnix()) {
-                        sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P jar,fortify clean verify'
+                        sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean package'
                     } else {
-                        bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P jar,fortify clean verify"
+                        bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean package"
                     }
 
 

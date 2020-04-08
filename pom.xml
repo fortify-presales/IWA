@@ -179,6 +179,9 @@
 
         <profile>
             <id>fortify</id>
+            <properties>
+                <packaging.type>jar</packaging.type>
+            </properties>
             <build>
                 <plugins>
                     <!-- Download and copy all dependencies on "verify" phase for Fortify On Demand -->
@@ -189,7 +192,7 @@
                         <executions>
                             <execution>
                                 <id>download-sources</id>
-                                <phase>verify</phase>
+                                <phase>package</phase>
                                 <goals>
                                     <goal>sources</goal>
                                 </goals>
@@ -204,7 +207,7 @@
                             </execution>
                             <execution>
                                 <id>copy-dependencies</id>
-                                <phase>verify</phase>
+                                <phase>package</phase>
                                 <goals>
                                     <goal>copy-dependencies</goal>
                                 </goals>
@@ -234,7 +237,7 @@
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
-                                <phase>verify</phase>
+                                <phase>package</phase>
                                 <goals>
                                     <goal>jar</goal>
                                 </goals>
@@ -248,7 +251,7 @@
                         <executions>
                             <execution>
                                 <id>copy-fortify-resources</id>
-                                <phase>verify</phase>
+                                <phase>package</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
@@ -273,18 +276,6 @@
                                 </configuration>
                             </execution>
                         </executions>
-                    </plugin>
-                    <!-- Cleanup FOD upload directory -->
-                    <plugin>
-                        <artifactId>maven-clean-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <configuration>
-                            <filesets>
-                                <fileset>
-                                    <directory>${fod.dir}</directory>
-                                </fileset>
-                            </filesets>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -352,6 +343,19 @@
                     <profiles>
                         <profile>dev</profile>
                     </profiles>
+                </configuration>
+            </plugin>
+
+            <!-- Cleanup FOD upload directory -->
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${fod.dir}</directory>
+                        </fileset>
+                    </filesets>
                 </configuration>
             </plugin>
 
