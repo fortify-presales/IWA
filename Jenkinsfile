@@ -1,12 +1,19 @@
-import groovy.json.JsonOutput
+//
+// An example pipeline for DevSecOps using Micro Focus Fortify and Deployment Automation
+// @author: Kevin A. Lee (kevin.lee@microfocus.com)
+//
 
 pipeline {
+    // You will need to have an Agent labelled "fortify" where Fortify SCA tools are installed and another
+    // (or the same) Agent labelled "webinpsect" with WebInspect installed. You will also need to apply the
+    // label "master" to your Jenkins master.
     agent any
 
     //
     // The following parameters can be selected when the pipeline is executed manually to execute
-    // different capabilities in the pipeline. Note: the pipeline needs to be executed at least once
-    // for the parameters to be available
+    // different capabilities in the pipeline.
+
+    // Note: the pipeline needs to be executed at least once for the parameters to be available
     //
     parameters {
         booleanParam(name: 'SCA_ENABLED',       defaultValue: false,
@@ -18,7 +25,7 @@ pipeline {
         booleanParam(name: 'WI_ENABLED',        defaultValue: false,
             description: 'Enable WebInspect for Dynamic Application Security Testing')
         booleanParam(name: 'DA_ENABLED',        defaultValue: false,
-            description: 'Use Deployment Automation for automated application deployment of WAR file')
+            description: 'Use Deployment Automation for automated deployment of WAR file')
         booleanParam(name: 'DOCKER_ENABLED',    defaultValue: false,
             description: 'Use Docker for automated deployment of JAR file into container')
     }
@@ -38,8 +45,7 @@ pipeline {
         COMPONENT_NAME = "secure-web-app"                   // Component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         JAVA_VERSION = 8                                    // Java version to compile as
-        APP_WEBURL = "http://localhost:8881/secure-web-app/" // URL of where the application is deploy to (for integration testing, WebInspect etc)
-        JETTY_BASE_DIR = "C:\\Tools\\jetty\\integration" // Directory where WAR file is deployed to for Jetty based deployment
+        APP_WEBURL = "http://localhost:8881/secure-web-app/" // URL of where the application is deployed to (for integration testing, WebInspect etc)
         ISSUE_IDS = ""                                      // List of issues found from commit
 
         //
@@ -53,17 +59,13 @@ pipeline {
         // Download Jenkins plugin from: https://community.microfocus.com/dcvta86296/board/message?board.id=DA_Plugins&message.id=15#M15)
         //
         DA_SITE = "localhost-release"                               // DA Site Name (in Jenkins->Configuration)
-        DA_WEBURL = "http://localhost:8080/da"                      // URL of Micro Focus Deployment Automation
-        DA_USERNAME = "admin"                                       // User to login to DA as
-        DA_AUTH_TOKEN = credentials('jenkins-da-auth-token-id')     // Authentication token for the user
-        DA_CLIENT_PATH = "C:\\Micro Focus\\Deployment Automation Client\\da-client.cmd"
         DA_DEPLOY_PROCESS = "Deploy Web App"                        // Deployment process to use
         DA_ENV_NAME = "Systems Integration"                         // Deployment automation environment name
 
         //
         // Fortify Static Code Analyzer (SCA) settings
         //
-        SCA_CLIENT_PATH = "C:\\Micro Focus\\Fortify_SCA_and_Apps_19.2.0\\bin\\fortifyclient.bat"   // Path to "fortifyclient.bat" on the Server/Agent
+        SCA_CLIENT_PATH = "C:\\Micro Focus\\Fortify_SCA_and_Apps_19.2.0\\bin\\fortifyclient.bat"   // Path to "fortifyclient.bat" on the "fortify" Agent
 
         //
         // Fortify Software Security Center (SSC) settings
@@ -74,7 +76,7 @@ pipeline {
         //
         // Fortify WebInspect settings
         //
-        WI_CLIENT_PATH = "C:\\Micro Focus\\Fortify WebInspect\\WI.exe"  // Path to WebInspect executable on the Server/Agent
+        WI_CLIENT_PATH = "C:\\Micro Focus\\Fortify WebInspect\\WI.exe"  // Path to WebInspect executable on the "webinspect" Agent
         WI_SETTINGS_FILE = "${env.WORKSPACE}\\etc\\DefaultSettings.xml" // Settings file to run
         WI_LOGIN_MACRO = "${env.WORKSPACE}\\etc\\Login.webmacro"        // Login macro to use
         WI_OUTPUT_FILE = "${env.WORKSPACE}\\wi-secure-web-app.fpr"      // Output file (FPR) to create
@@ -172,6 +174,10 @@ pipeline {
                     			deployProc: "${env.DA_DEPLOY_PROCESS}",
                     			deployProps: "${verProperties}"
                     		])
+                    } else if (params.DOCKER_ENABLED) {
+                        // TODO: create Docker image
+                    } else {
+                        println "No packaging to do ..."
                     }
                 }
             }
@@ -238,17 +244,8 @@ pipeline {
                                 resultsFile: "${env.COMPONENT_NAME}.fpr"
                         }
 
-                        if (params.DA_ENABLED) {
-                            step([$class: 'UpdateComponentVersionStatusNotifier',
-                                siteName: "${env.DA_SITE}",
-                                action: 'ADD',
-                                componentName: "${env.COMPONENT_NAME}",
-                                versionName: "${env.APP_VER}-${BUILD_NUMBER}",
-                                statusName: 'SAST'
-                            ])
-                        }
                     } else {
-                        println "Skipping Static Application Security Testing..."
+                        println "No Static Application Security Testing (SAST) to do  ..."
                     }
                 }
             }
@@ -274,46 +271,10 @@ pipeline {
                                 versionName: "${env.APP_VER}.${env.BUILD_NUMBER}",
                                 applicationProcessProperties: "${procProperties}"
                         ])
-                        /*def data = [
-                           application: "${env.APP_NAME}",
-                           applicationProcess : "${env.DA_DEPLOY_PROCESS}",
-                           environment : "Systems Integration",
-                           properties: [
-                               [
-                                   "jenkins.url": "${env.JENKINS_URL}",
-                                   "job.url": "${env.JOB_URL}"
-                               ]
-                           ],
-                           versions: [
-                               [
-                                   version: "${env.APP_VER}-${BUILD_NUMBER}",
-                                   component: "${env.COMPONENT_NAME}"
-                               ]
-                           ]
-                        ]
-
-                        def json = JsonOutput.toJson(data)
-                        def file = new File("${WORKSPACE}/da-process.json")
-                        file.write(JsonOutput.prettyPrint(json))
-
-                        // deploy to Integration environment using Deployment Automation
-                        if (isUnix()) {
-                            sh('"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" requestApplicationProcess "${WORKSPACE}/da-process.json"')
-                        } else {
-                            bat(/"${env.DA_CLIENT_PATH}" --weburl "${env.DA_WEBURL}" --authtoken "${env.DA_AUTH_TOKEN}" requestApplicationProcess "${WORKSPACE}\\da-process.json"/)
-                        }*/
+                    } else if (params.DOCKER_ENABLED) {
+                        // TODO: Start Docker container
                     } else {
-                        // unstash the built files
-                        unstash name: "${env.COMPONENT_NAME}_release"
-                        // and hot deploy into Jetty "webapps" directory
-                        // requires "File Operations" plugin
-                        fileOperations([fileCopyOperation(
-                            includes: "target/${env.COMPONENT_NAME}.war",
-                            excludes: "",
-                            flattenFiles: true, renameFiles: false,
-                            sourceCaptureExpression: "",
-                            targetLocation: "${env.JETTY_BASE_DIR}/webapps", targetNameExpression: ""
-                            )])
+                        println "No deployment to do ..."
                     }
                  }
              }
@@ -324,7 +285,6 @@ pipeline {
             agent {label "webinspect"}
             steps {
                 script {
-                    // start the application?
                     if (params.WI_ENABLED) {
                         sleep time: 5, unit: 'MINUTES' // wait 5 minutes for application to be ready?
                         // Run WebInspect on deployed application and upload to SSC
@@ -339,7 +299,7 @@ pipeline {
                             }
                         }
                     } else {
-                        println "Skipping Dynamic Application Security Testing...."
+                        println "No Dynamic Application Security Testing (DAST) to do ...."
                     }
                 }
             }
@@ -349,11 +309,21 @@ pipeline {
             agent { label 'master' }
             steps {
                 script {
-                    // Deploy to the "release" environment using Deployment Automation
+                    // Mark version as "Release Candidate" using VERIFIED status in Deployment Automation
                     if (params.DA_ENABLED) {
-						println "..."
+                        if (params.DA_ENABLED) {
+                            step([$class: 'UpdateComponentVersionStatusNotifier',
+                                siteName: "${env.DA_SITE}",
+                                action: 'ADD',
+                                componentName: "${env.COMPONENT_NAME}",
+                                versionName: "${env.APP_VER}-${BUILD_NUMBER}",
+                                statusName: 'VERIFIED'
+                            ])
+                        }
+                    } else if (params.DOCKER_ENABLED) {
+                        // TODO: stop Docker container and publish to repository
                     } else {
-                        println "Released..."
+                        println "No release-ing to do ..."
                     }
                 }
             }
