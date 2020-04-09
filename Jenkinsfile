@@ -199,7 +199,12 @@ pipeline {
                     git "${env.GIT_URL}"
 
                     if (params.INSECURE_EXAMPLES) {
-                        println "Copying insecure example source code into build"
+                        println "Copying insecure example source code into build ..."
+                        if (isUnix()) {
+                            sh 'cp -rf ./etc/insecure-examples/src ./src'
+                        } else {
+                            bat "xcopy /f /i /r /s /u /y .\\insecure-examples\\src ..\\src"
+                        }
                         fileOperations(
                             [fileCopyOperation(
                                 excludes: '', flattenFiles: false,
