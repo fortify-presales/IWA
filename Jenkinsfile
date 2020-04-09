@@ -117,16 +117,6 @@ pipeline {
                     println "Git commit id: ${env.GIT_COMMIT_ID}"
                     //println "Git commit author: ${env.GIT_COMMIT_AUTHOR}"
 
-                    if (params.INSECURE_EXAMPLES) {
-                       fileOperations(
-                            [fileCopyOperation(
-                                excludes: '', flattenFiles: false,
-                                includes: "${WORKSPACE}/etc/insecure-examples/src",
-                                targetLocation: "${WORKSPACE}/src"
-                            )]
-                        )
-                    }
-
                     // Run maven to build WAR/JAR application
                     if (isUnix()) {
                         sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P jar,release clean package'
@@ -207,6 +197,17 @@ pipeline {
                 script {
                     // Get code from Git repository so we can recompile it
                     git "${env.GIT_URL}"
+
+                    if (params.INSECURE_EXAMPLES) {
+                       fileOperations(
+                            [fileCopyOperation(
+                                excludes: '', flattenFiles: false,
+                                includes: "${WORKSPACE}/etc/insecure-examples/src/**/*",
+                                targetLocation: "${WORKSPACE}/src"
+                            )]
+                        )
+                    }
+
                     // Run Maven debug compile, download dependencies (if required) and package up for FOD
                     if (isUnix()) {
                         sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean package'
