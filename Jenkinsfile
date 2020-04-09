@@ -113,23 +113,21 @@ pipeline {
                     //bat(/git log --format="%ae" | head -1 > .git\commit-author/)
                     env.GIT_COMMIT_ID = readFile('.git/commit-id').trim()
                     //env.GIT_COMMIT_AUTHOR = readFile('.git/commit-author').trim()
-                }
 
-                println "Git commit id: ${env.GIT_COMMIT_ID}"
-                //println "Git commit author: ${env.GIT_COMMIT_AUTHOR}"
+                    println "Git commit id: ${env.GIT_COMMIT_ID}"
+                    //println "Git commit author: ${env.GIT_COMMIT_AUTHOR}"
 
-                if (params.INSECURE_EXAMPLES) {
-                   fileOperations(
-                        [fileCopyOperation(
-                            excludes: '', flattenFiles: false,
-                            includes: "${WORKSPACE}/etc/insecure-examples/src",
-                            targetLocation: "${WORKSPACE}/src"
-                        )]
-                    )
-                }
+                    if (params.INSECURE_EXAMPLES) {
+                       fileOperations(
+                            [fileCopyOperation(
+                                excludes: '', flattenFiles: false,
+                                includes: "${WORKSPACE}/etc/insecure-examples/src",
+                                targetLocation: "${WORKSPACE}/src"
+                            )]
+                        )
+                    }
 
-                // Run maven to build WAR/JAR application
-                script {
+                    // Run maven to build WAR/JAR application
                     if (isUnix()) {
                         sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P jar,release clean package'
                         sh 'mvn -Dmaven.com.failure.ignore=true -DskipTests -P war package'
