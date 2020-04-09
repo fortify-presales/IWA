@@ -202,8 +202,8 @@ pipeline {
                        fileOperations(
                             [fileCopyOperation(
                                 excludes: '', flattenFiles: false,
-                                includes: "./etc/insecure-examples/src/**/*",
-                                targetLocation: "./src"
+                                includes: "etc/insecure-examples/src/**",
+                                targetLocation: "src"
                             )]
                         )
                     }
