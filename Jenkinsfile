@@ -203,7 +203,7 @@ pipeline {
                         if (isUnix()) {
                             sh 'cp -rf ./etc/insecure-examples/src ./src'
                         } else {
-                            bat "xcopy /f /i /r /s /u /y .\\insecure-examples\\src ..\\src"
+                            bat "xcopy /f /i /r /s /u /y .\\etc\\insecure-examples\\src ..\\src"
                         }
                         fileOperations(
                             [fileCopyOperation(
