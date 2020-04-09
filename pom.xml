@@ -280,39 +280,6 @@
                 </plugins>
             </build>
         </profile>
-
-        <!-- Copy insecure examples into src directory for Fortify demonstrations -->
-        <!--profile>
-            <id>insecure</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <goals>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>src</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>etc/src</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>copy-insecure-files</id>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile-->
     </profiles>
 
     <build>

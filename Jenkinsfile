@@ -32,6 +32,8 @@ pipeline {
             description: 'Use Deployment Automation for automated deployment of WAR file')
         booleanParam(name: 'DOCKER_ENABLED',    defaultValue: false,
             description: 'Use Docker for automated deployment of JAR file into container')
+        booleanParam(name: 'INSECURE_EXAMPLES',    defaultValue: false,
+            description: 'Copy source code with insecure examples into the build')
     }
 
     //
@@ -115,6 +117,16 @@ pipeline {
 
                 println "Git commit id: ${env.GIT_COMMIT_ID}"
                 //println "Git commit author: ${env.GIT_COMMIT_AUTHOR}"
+
+                if (params.INSECURE_EXAMPLES) {
+                   fileOperations(
+                        [fileCopyOperation(
+                            excludes: '', flattenFiles: false,
+                            includes: "${WORKSPACE}/etc/insecure-examples/src",
+                            targetLocation: "${WORKSPACE}/src"
+                        )]
+                    )
+                }
 
                 // Run maven to build WAR/JAR application
                 script {
