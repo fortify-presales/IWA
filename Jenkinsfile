@@ -199,7 +199,8 @@ pipeline {
                     git "${env.GIT_URL}"
 
                     if (params.INSECURE_EXAMPLES) {
-                       fileOperations(
+                        println "Copying insecure example source code into build"
+                        fileOperations(
                             [fileCopyOperation(
                                 excludes: '', flattenFiles: false,
                                 includes: "etc/insecure-examples/src/**",
