@@ -203,15 +203,8 @@ pipeline {
                         if (isUnix()) {
                             sh 'cp -rf ./etc/insecure-examples/src ./src'
                         } else {
-                            bat "xcopy /f /i /r /s /u /y .\\etc\\insecure-examples\\src ..\\src"
+                            bat "xcopy /f /i /r /s /u /y .\\etc\\insecure-examples\\src .\\src"
                         }
-                        fileOperations(
-                            [fileCopyOperation(
-                                excludes: '', flattenFiles: false,
-                                includes: "etc/insecure-examples/src/**",
-                                targetLocation: "src"
-                            )]
-                        )
                     }
 
                     // Run Maven debug compile, download dependencies (if required) and package up for FOD
