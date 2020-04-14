@@ -58,8 +58,10 @@ public class UserForm {
     private String email;
 
     @NotEmpty(message = "{mobile.notEmpty")
-    @Pattern(regexp = "(^$|[0-9]{12})", message = "{mobile.invalidFormat}")
+    @Pattern(regexp = "(^$|[0-9]{10})", message = "{mobile.invalidFormat}")
     private String mobile;
+
+    private Boolean enabled;
 
     public UserForm() {
     }
@@ -70,6 +72,7 @@ public class UserForm {
         this.name = user.getName();
         this.email = user.getEmail();
         this.mobile = user.getMobile();
+        this.enabled = user.getEnabled();
     }
 
     public Integer getId() {
@@ -126,6 +129,14 @@ public class UserForm {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override

@@ -94,7 +94,7 @@ public class AdminUtils {
         } catch (NoSuchAlgorithmException ignored) {
             log.error(ignored.getMessage());
         }
-        return sr.nextInt();
+        return sr.nextInt(Integer.MAX_VALUE);
     }
 
     private static String isLocked(int backupId) {

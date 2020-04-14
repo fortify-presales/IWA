@@ -1,16 +1,28 @@
-//
-// An example pipeline for DevSecOps using Micro Focus Fortify and Deployment Automation
+//********************************************************************************
+// An example pipeline for DevSecOps using Micro Focus Fortify and Deployment Automation products
 // @author: Kevin A. Lee (kevin.lee@microfocus.com)
 //
 
-// The instances of Docker image and (running) container that are created
+// Node setup:
+// You will need to have an Agent labelled "fortify" where Fortify SCA tools are installed and another
+// (or the same) Agent labelled "webinspect" with WebInspect installed. You will also need to apply the
+// label "master" to your Jenkins master.
+
+// Credentials setup:
+// Create the following "Secret text" credentials in Jenkins and enter values as follows:
+//      secure-web-app-fod-bsi-token-id     - Fortify on Demand BSI token as Jenkins Secret
+//      secure-web-app-ssc-auth-token-id    - Fortify Software Security Center "ArtifactUpload" authentication token as Jenkins Secret
+//      docker-hub-credentials              - DockerHub authentication token as Jenkins Secret
+// All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
+// For Fortify on Demand (FOD) Global Authentication should be used rather than Personal Access Tokens.
+
+//********************************************************************************
+
+// The instances of Docker image and container that are created
 def dockerImage
 def dockerContainer
 
 pipeline {
-    // You will need to have an Agent labelled "fortify" where Fortify SCA tools are installed and another
-    // (or the same) Agent labelled "webinspect" with WebInspect installed. You will also need to apply the
-    // label "master" to your Jenkins master.
     agent any
 
     //
@@ -36,13 +48,6 @@ pipeline {
             description: 'Copy source code with insecure examples into the build')
     }
 
-    //
-    // Create the following "Secret text" credentials in Jenkins and enter values as follows:
-    //      secure-web-app-fod-bsi-token-id     - Fortify on Demand BSI token as Jenkins Sectet
-    //      secure-web-app-ssc-auth-token-id    - Fortify Software Security Center "ArtifactUpload" authentication token as Jenkins Secret
-    //      docker-hub-credentials              - DockerHub authentication token as Jenkins Secret
-    // For Fortify on Demand (FOD) Global Authentication should be setup.authentication
-    // All of the credentials should be created (with empty values if necessary)
     environment {
         //
         // Application settings

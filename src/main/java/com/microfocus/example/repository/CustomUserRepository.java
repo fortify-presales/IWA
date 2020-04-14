@@ -58,9 +58,7 @@ public class CustomUserRepository implements ICustomUserRepository {
     }
 
     public List<User> findUsersByEnabledAndUsername(boolean enabled, String username) {
-        String query = "FROM user where enabled = '" + enabled + "'" +
-                " AND username LIKE '" + username + "'";
-        List users = entityManager.createQuery(query).getResultList();
-        return users;
+        return (List<User>) entityManager.createQuery("SELECT * FROM user WHERE enabled = '" + enabled + "'" +
+                " AND username LIKE '" + username + "'").getResultList();
     }
 }

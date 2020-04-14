@@ -21,14 +21,14 @@ package com.microfocus.example.entity;
 
 import com.microfocus.example.utils.EncryptedPasswordUtils;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Custom User entity
@@ -146,7 +146,7 @@ public class User implements Serializable {
         this.dateCreated = dateCreated;
     }
 
-    public boolean isEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 
@@ -160,6 +160,19 @@ public class User implements Serializable {
 
     public void setAuthorities(Set<Authority> authorities) {
         this.authorities = authorities;
+    }
+
+    public static User fromUserDetails(UserDetails user) {
+        Set<Authority> authorities = new HashSet<>(Collections.emptySet());
+        for (GrantedAuthority a : user.getAuthorities()) {
+            authorities.add(new Authority(AuthorityType.valueOf(a.getAuthority())));
+        }
+        User utmp = new User();
+        utmp.setUsername(user.getUsername());
+        utmp.setPassword(user.getPassword());
+        utmp.setAuthorities(authorities);
+        utmp.setEnabled(user.isEnabled());
+        return utmp;
     }
 
     @Override

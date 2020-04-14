@@ -9,7 +9,7 @@ To run (and test) locally execute the following from the command line:
 mvn spring-boot:run
 ```
 
-Then navigate to the default URL: http://localhost:9080/. The following default users are supplied:
+Then navigate to the URL: http://localhost:9080/. The following default users are supplied:
 
  - Standard user: **user/password**
  - Administration user: **admin/password**
@@ -38,7 +38,7 @@ Apache Tomcat, using the following:
 mvn -P war clean package
 ```
 
-To carry out Fortify SCA scan:
+To carry out a Fortify SCA scan:
 
 ```
 mvn com.fortify.sca.plugins.maven:sca-maven-plugin:19.2.0:clean
@@ -50,12 +50,3 @@ or use the _fortify-sca.bat_ script from the command line.
 
 If using [Jenkins](https://jenkins.io/), there is a fully configured _Jenkinsfile_ to automate a build pipeline.
 
-
-Fortify Annotations
--------------------
-
-Installed with:
-
-```
-mvn install:install-file -Dfile="C:\Micro Focus\Fortify_SCA_and_Apps_19.2.0\Samples\advanced\javaAnnotations\libraries\FortifyAnnotations-SOURCE.jar" -DcreateChecksum -DupdateReleaseInfo=true -DgroupId=com.microfocus.fortify -DartifactId=FortifyAnnotations -Dclassifier=SOURCE -Dversion=19.2.0 -Dpackaging=jar -DlocalRepositoryPath=.\lib
-```

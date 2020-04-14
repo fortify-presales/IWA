@@ -21,7 +21,9 @@ package com.microfocus.example.utils;
 
 import com.microfocus.example.entity.Authority;
 import com.microfocus.example.entity.User;
+import org.springframework.security.core.Authentication;
 
+import java.security.Principal;
 import java.util.Set;
 
 /**
@@ -51,6 +53,16 @@ public class WebUtils {
             sb.append(")");
         }
         return sb.toString();
+    }
+
+    public static User getLoggedInUser(Principal principal) {
+        User loggedInUser = null;
+        if (principal != null) {
+            org.springframework.security.core.userdetails.UserDetails user =
+                    (org.springframework.security.core.userdetails.UserDetails) ((Authentication) principal).getPrincipal();
+           loggedInUser = User.fromUserDetails(user);
+        }
+        return loggedInUser;
     }
 
 }

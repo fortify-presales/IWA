@@ -80,6 +80,22 @@ public class UserService {
         }
     }
 
+    public User adminSave(UserForm userForm) throws UserNotFoundException {
+        Optional<User> optionalUser = userRepository.findUserByUsername(userForm.getUsername());
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setUsername(userForm.getUsername());
+            user.setName(userForm.getName());
+            user.setEmail(userForm.getEmail());
+            user.setMobile(userForm.getMobile());
+            user.setPassword(userForm.getPassword());
+            user.setEnabled(userForm.getEnabled());
+            return user;
+        } else {
+            throw new UserNotFoundException("Username not found: " + userForm.getUsername());
+        }
+    }
+
     public User updatePassword(Integer id, PasswordForm passwordForm) {
         if (passwordForm.getPassword().equals(passwordForm.getConfirmPassword())) {
             Optional<User> optionalUser = userRepository.findById(id);

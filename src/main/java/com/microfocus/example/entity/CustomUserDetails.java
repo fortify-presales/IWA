@@ -83,7 +83,7 @@ public class CustomUserDetails implements UserDetails {
         return user.getMobile();
     }
 
-    public boolean isEnabled() { return user.isEnabled(); }
+    public boolean isEnabled() { return user.getEnabled(); }
 
     public User getUserDetails() {
         return user;

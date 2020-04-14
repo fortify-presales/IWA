@@ -81,22 +81,18 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
     protected String determineTargetUrl(Authentication authentication) {
         boolean isUser = false;
         boolean isAdmin = false;
-        Collection<? extends GrantedAuthority> authorities
-                = authentication.getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for (GrantedAuthority grantedAuthority : authorities) {
-            if (grantedAuthority.getAuthority().equals("ROLE_USER")) {
-                isUser = true;
-                break;
-            } else if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
+            if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
                 isAdmin = true;
-                break;
+                return "/admin";
+            } else if (grantedAuthority.getAuthority().equals("ROLE_USER")) {
+                isUser = true;
             }
         }
 
         if (isUser) {
             return "/user";
-        } else if (isAdmin) {
-            return "/admin";
         } else {
             throw new IllegalStateException();
         }
