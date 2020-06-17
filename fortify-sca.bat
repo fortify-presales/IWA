@@ -7,7 +7,7 @@ echo ************************************************************
 echo Cleaning project and scan results from previous run...
 echo ************************************************************
 call mvn clean
-call sourceanalyzer -Dcom.fortify.sca.ProjectRoot=.fortify -b simple-secure-app -clean
+call sourceanalyzer -Dcom.fortify.sca.ProjectRoot=.fortify -b secure-web-app -clean
 
 :: Compile the application
 echo ************************************************************
@@ -19,16 +19,15 @@ call mvn verify -P release,jar -DskipTests -Dmaven.compiler.debuglevel="lines,va
 echo ************************************************************
 echo Translating source files...
 echo ************************************************************
-call sourceanalyzer -Dcom.fortify.sca.ProjectRoot=.fortify -b simple-secure-app -jdk 1.8 "src/main/java/**/*.java" "src/main/resource/**/*.*"
+call sourceanalyzer -Dcom.fortify.sca.ProjectRoot=.fortify -b secure-web-app -jdk 1.8 "src/main/java/**/*.java" "src/main/resource/**/*.*"
 
 :: Scan the application
 echo ************************************************************
 echo Scanning the application...
 echo ************************************************************
-call sourceanalyzer -Dcom.fortify.sca.ProjectRoot=.fortify -b simple-secure-app ‑build‑project "Simple Secure App" -build-version "1.0" -build-label "SNAPSHOT" -scan -filter etc\sca-filter.txt -f secure-web-app.fpr
+call sourceanalyzer -Dcom.fortify.sca.ProjectRoot=.fortify -b secure-web-app ‑build‑project "Secure Web App" -build-version "1.0" -build-label "SNAPSHOT" -scan -filter etc\sca-filter.txt -f target\secure-web-app.fpr
 
 echo ************************************************************
 echo Generating report
 echo ************************************************************
-call ReportGenerator -Dcom.fortify.sca.ProjectRoot=.fortify -user "Demo User" -format pdf -f secure-web-app.pdf -source secure-web-app.fpr
-pause
+call ReportGenerator -Dcom.fortify.sca.ProjectRoot=.fortify -user "Demo User" -format pdf -f target\secure-web-app.pdf -source target\secure-web-app.fpr

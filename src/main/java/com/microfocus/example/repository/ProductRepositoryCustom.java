@@ -17,16 +17,17 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example;
+package com.microfocus.example.repository;
 
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import com.microfocus.example.entity.Product;
 
-public class ServletInitializer extends SpringBootServletInitializer {
+import java.util.List;
 
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(Application.class);
-    }
+/**
+ * Interface for Product Repository
+ * @author Kevin A. Lee
+ */
+public interface ProductRepositoryCustom {
 
+    List<Product> search(String keywords);
 }

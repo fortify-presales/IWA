@@ -1,5 +1,5 @@
 /*
-        Simple Secure App
+        Secure Web App
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -141,9 +141,11 @@ public class WebUserController {
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
                 return "redirect:/user";
             } catch (InvalidPasswordException ex) {
+            	log.error("InvalidPasswordException saving user profile: " + principal.toString());
                 FieldError passwordError = new FieldError("userForm", "password", ex.getMessage());
                 bindingResult.addError(passwordError);
             } catch (UserNotFoundException ex) {
+            	log.error("UserNotFoundException saving profile: " + principal.toString());
                 FieldError usernameError = new FieldError("userForm", "username", ex.getMessage());
                 bindingResult.addError(usernameError);
             }
@@ -169,9 +171,11 @@ public class WebUserController {
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
                 return "redirect:/user";
             } catch (InvalidPasswordException ex) {
+            	log.error("InvalidPasswordException saving user: " + principal.toString());
                 FieldError passwordError = new FieldError("passwordForm", "password", ex.getMessage());
                 bindingResult.addError(passwordError);
             } catch (UserNotFoundException ex) {
+            	log.error("UserNotFoundException saving user: " + principal.toString());
                 FieldError usernameError = new FieldError("passwordForm", "username", ex.getMessage());
                 bindingResult.addError(usernameError);
             }

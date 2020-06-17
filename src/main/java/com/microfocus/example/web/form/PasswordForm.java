@@ -19,13 +19,13 @@
 
 package com.microfocus.example.web.form;
 
-import com.microfocus.example.entity.User;
-import com.microfocus.example.web.validation.ValidPassword;
+import javax.validation.constraints.NotEmpty;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import com.microfocus.example.entity.User;
+import com.microfocus.example.web.validation.ValidPassword;
 
 /**
  * Form backing entity/DTO for changing password

@@ -1,5 +1,5 @@
 /*
-        Simple Secure App
+        Secure Web App
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -38,16 +38,23 @@ import java.util.Optional;
  */
 @Repository
 @Transactional
-public class CustomUserRepository implements ICustomUserRepository {
+public class UserRepositoryImpl implements UserRepositoryCustom {
 
-    private static final Logger log = LoggerFactory.getLogger(CustomUserRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(UserRepositoryImpl.class);
+
+    private final UserRepositoryBasic userRepositoryBasic;
 
     @PersistenceContext
     EntityManager entityManager;
 
+    public UserRepositoryImpl(UserRepositoryBasic userRepositoryBasic) {
+        this.userRepositoryBasic = userRepositoryBasic;
+    }
+
     @Override
     public Optional<User> findUserByUsername(String username) throws UserLockedOutException {
-        Query query = (Query) entityManager.createNativeQuery("SELECT * FROM user WHERE username = ?", User.class);
+        @SuppressWarnings("unchecked")
+		Query<User> query = (Query<User>) entityManager.createNativeQuery("SELECT * FROM user WHERE username = ?", User.class);
         query.setParameter(1, username);
         List<User> results = (List<User>) query.getResultList();
         Optional<User> optionalUser = Optional.empty();
@@ -57,7 +64,9 @@ public class CustomUserRepository implements ICustomUserRepository {
         return optionalUser;
     }
 
-    public List<User> findUsersByEnabledAndUsername(boolean enabled, String username) {
+    @SuppressWarnings("unchecked")
+	public List<User> findUsersByEnabledAndUsername(boolean enabled, String username) {
+    	log.debug("findUsersByEnabledAndUsername: " + username + "; enabled=" + enabled);
         return (List<User>) entityManager.createQuery("SELECT * FROM user WHERE enabled = '" + enabled + "'" +
                 " AND username LIKE '" + username + "'").getResultList();
     }

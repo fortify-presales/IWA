@@ -1,5 +1,5 @@
 /*
-        Simple Secure App
+        Secure Web App
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -19,8 +19,8 @@
 
 package com.microfocus.example.web.controllers;
 
-import com.microfocus.example.entity.CustomUserDetails;
-import com.microfocus.example.utils.WebUtils;
+import java.security.Principal;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +31,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import java.security.Principal;
+import com.microfocus.example.entity.CustomUserDetails;
+import com.microfocus.example.utils.WebUtils;
 
 /**
  * Default (root) controllers
@@ -58,11 +59,6 @@ public class DefaultController {
         return "login";
     }
 
-    @GetMapping("/products")
-    public String products(Model model, Principal principal) {
-        return "products";
-    }
-
     @GetMapping("/services")
     public String services(Model model, Principal principal) {
         return "services";
@@ -71,6 +67,7 @@ public class DefaultController {
     @GetMapping("/access-denied")
     public String accessDenied(Model model, Principal principal) {
         if (principal != null) {
+        	log.debug("DefaultController:accessDenied: " + principal.toString());
             CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
             model.addAttribute("user", WebUtils.toString(loggedInUser.getUserDetails()));
             String message = "Sorry <strong>" + principal.getName() + "</strong> - " //

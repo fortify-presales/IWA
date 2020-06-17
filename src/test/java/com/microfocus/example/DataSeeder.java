@@ -4,10 +4,6 @@ import com.microfocus.example.entity.Authority;
 import com.microfocus.example.entity.AuthorityType;
 import com.microfocus.example.entity.User;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * A simple data seeder for domain objects.
  *

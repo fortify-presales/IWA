@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Products</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+
+    <div class="row">
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item active" aria-current="page"><a th:href="@{/products/}">Products</a></li>
+            </ol>
+        </nav>
+
+    </div>
+
+    <div class="row" style="padding-bottom: 25px">
+        <form th:action="@{/products}" method="GET">
+            <div class="col-md-10 col-md-offset-1">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="keywords" id="keywords" th:value="${keywords}" />
+                    <div class="input-group-btn">
+                        <button class="btn btn-primary" type="submit">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="list-unstyled">
+                <li class="media" th:each="p : ${products}">
+                    <div class="media-left media-middle col-md-2" style="padding-top: 25px">
+                        <img th:src="@{/img/awaiting-image.png}" alt="Awaiting Image" width="100" height="100" class="img-thumbnail">
+                    </div>
+                    <div class="col-md-10">
+                        <div class="media-body">
+                            <h4 class="mt-0 mb-2 font-weight-bold"><a th:href="@{/products/{id}(id=${p.id})}"><span th:text="${p.name}"> </span></a></h4>
+                            <!--Review-->
+                            <i class="fas fa-star" style="color: blue"> </i>
+                            <i class="fas fa-star" style="color: blue"> </i>
+                            <i class="fas fa-star" style="color: blue"> </i>
+                            <i class="fas fa-star" style="color: blue"> </i>
+                            <i class="fas fa-star" style="color: gray"> </i>
+                            <h5>£<span th:text="${p.retailPrice}"> Retail Price </span></h5>
+                            <p><span th:text="${p.description}"> Description </span></p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+        <h5>Showing <span th:text="${productCount}"></span> of <span th:text="${productTotal}"></span> products</h5>
+    </div>
+</div>
+</body>
+</html>

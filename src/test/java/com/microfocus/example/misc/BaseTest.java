@@ -24,10 +24,6 @@
 
 package com.microfocus.example.misc;
 
-import static org.junit.Assert.*;
-import org.junit.internal.AssumptionViolatedException;
-import com.microfocus.example.misc.BaseTest;
-
 class BaseTest {
 
     protected void run() {

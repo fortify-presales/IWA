@@ -8,11 +8,17 @@
     </head>
     <body>
         <div layout:fragment="content" th:remove="tag">
-            <div class="container">
-                <div class="row">
-                    <p>Services go here.</p>
-                </div><!-- /.row -->
+
+            <div class="row">
+
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item active" aria-current="page"><a th:href="@{/services/}">Services</a></li>
+                    </ol>
+                </nav>
+
             </div>
+
         </div>
 
     </body>

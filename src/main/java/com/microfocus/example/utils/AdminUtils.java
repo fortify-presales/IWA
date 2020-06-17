@@ -1,5 +1,5 @@
 /*
-        Simple Secure App
+        Secure Web App
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -19,17 +19,15 @@
 
 package com.microfocus.example.utils;
 
-import com.microfocus.example.exception.BackupException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.Random;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.microfocus.example.exception.BackupException;
 
 /**
  * Administration Utilities
@@ -42,11 +40,20 @@ public class AdminUtils {
 
     public static int startDbBackup(String profile) throws BackupException {
         int backupId = 0;
+        String profileName = "default";
+        switch (profile) {
+        	case "quick": 	profileName = "quick";
+        					break;
+        	case "full":	profileName = "full";
+        					break;
+        	default:		profileName = "full";
+        					break;
+        }
         if (profile.matches("^.*[^a-zA-Z0-9 ].*$"))
             throw new BackupException("Profile contains non alpha numeric characters, cannot start backup");
         String[] backupCommand = {
                 "cmd.exe", "/K", "dir", "c:\\util\\backup.bat",
-                "-profile", profile
+                "-profile", profileName
         };
         String[] cleanupCommand = {
                 "cmd.exe", "/K", "c:\\util\\cleanup.bat"

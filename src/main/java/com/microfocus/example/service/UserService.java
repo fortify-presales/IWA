@@ -1,5 +1,5 @@
 /*
-        Simple Secure App
+        Secure Web App
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -22,7 +22,8 @@ package com.microfocus.example.service;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.InvalidPasswordException;
 import com.microfocus.example.exception.UserNotFoundException;
-import com.microfocus.example.repository.IUserRepository;
+import com.microfocus.example.repository.UserRepository;
+import com.microfocus.example.repository.UserRepositoryCustom;
 import com.microfocus.example.utils.EncryptedPasswordUtils;
 import com.microfocus.example.web.form.PasswordForm;
 import com.microfocus.example.web.form.UserForm;
@@ -46,7 +47,7 @@ public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
-    private IUserRepository userRepository;
+    private UserRepository userRepository;
 
     public Optional<User> findById(Integer id) {
         return userRepository.findById(id);
@@ -65,6 +66,7 @@ public class UserService {
     }
 
     public User save(UserForm userForm) throws InvalidPasswordException, UserNotFoundException {
+    	log.debug("UserService:save: " + userForm.toString());
         Optional<User> optionalUser = userRepository.findUserByUsername(userForm.getUsername());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -81,6 +83,7 @@ public class UserService {
     }
 
     public User adminSave(UserForm userForm) throws UserNotFoundException {
+    	log.debug("UserService:adminSave: " + userForm.toString());
         Optional<User> optionalUser = userRepository.findUserByUsername(userForm.getUsername());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -97,6 +100,7 @@ public class UserService {
     }
 
     public User updatePassword(Integer id, PasswordForm passwordForm) {
+    	log.debug("UserService:updatePassword: userId=" + id.toString() + "; " + passwordForm.toString());
         if (passwordForm.getPassword().equals(passwordForm.getConfirmPassword())) {
             Optional<User> optionalUser = userRepository.findById(id);
             if (optionalUser.isPresent()) {

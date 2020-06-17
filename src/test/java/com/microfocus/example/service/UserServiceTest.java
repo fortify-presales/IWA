@@ -1,24 +1,21 @@
 package com.microfocus.example.service;
 
-import com.microfocus.example.BaseIntegrationTest;
-import com.microfocus.example.web.form.PasswordForm;
-import com.microfocus.example.web.form.UserForm;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.microfocus.example.entity.User;
-import java.util.List;
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.microfocus.example.BaseIntegrationTest;
+import com.microfocus.example.entity.User;
+import com.microfocus.example.web.form.PasswordForm;
+import com.microfocus.example.web.form.UserForm;
+
 
 public class UserServiceTest extends BaseIntegrationTest {
-
-    private static final Logger log = LoggerFactory.getLogger(UserServiceTest.class);
 
     @Autowired
     UserService userService;
@@ -76,6 +73,9 @@ public class UserServiceTest extends BaseIntegrationTest {
             try {
                 userService.updatePassword(optionalUser.get().getId(), passwordForm);
                 Optional<User> updatedUser = userService.findUserByUsername("test");
+                if (updatedUser.isPresent()) {
+                    assertThat(updatedUser.get().getName()).isEqualTo("test user updated");
+                }
             } catch (Exception ex) {
                 fail(ex.getMessage());
             }

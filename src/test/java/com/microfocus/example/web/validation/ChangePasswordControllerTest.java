@@ -9,7 +9,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 public class ChangePasswordControllerTest extends BaseIntegrationTest {
 
-    @Autowired
+    @SuppressWarnings("unused")
+	@Autowired
     private MockMvc mvc;
 
     @Test

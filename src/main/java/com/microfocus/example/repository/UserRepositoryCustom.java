@@ -1,5 +1,5 @@
 /*
-        Simple Secure App
+        Secure Web App
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -20,14 +20,18 @@
 package com.microfocus.example.repository;
 
 import com.microfocus.example.entity.User;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
- * Interface for User Repository
+ * Interface for Custom User Repository
  * @author Kevin A. Lee
  */
-@Repository
-public interface IUserRepository extends JpaRepository<User, Integer>, ICustomUserRepository {
+public interface UserRepositoryCustom {
+
+    Optional<User> findUserByUsername(String username);
+
+    List<User> findUsersByEnabledAndUsername(boolean enabled, String username);
 
 }

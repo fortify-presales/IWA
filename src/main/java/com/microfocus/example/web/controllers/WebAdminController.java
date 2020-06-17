@@ -1,5 +1,5 @@
 /*
-        Simple Secure App
+        Secure Web App
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -19,7 +19,29 @@
 
 package com.microfocus.example.web.controllers;
 
-import com.microfocus.example.entity.CustomUserDetails;
+import java.security.Principal;
+import java.util.List;
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import com.microfocus.example.exception.BackupException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.InvalidPasswordException;
 import com.microfocus.example.exception.UserNotFoundException;
@@ -28,22 +50,6 @@ import com.microfocus.example.utils.AdminUtils;
 import com.microfocus.example.utils.WebUtils;
 import com.microfocus.example.web.form.BackupForm;
 import com.microfocus.example.web.form.UserForm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller for administrative pages
@@ -164,7 +170,7 @@ public class WebAdminController {
             int backUpId = 0;
             try {
                 backUpId = AdminUtils.startDbBackup(backupForm.getProfile());
-            } catch (Exception ignored) {
+            } catch (BackupException ignored) {
                 log.error(ignored.getMessage());
             }
             log.info("Backup id: " + backUpId);
@@ -180,6 +186,7 @@ public class WebAdminController {
                             @RequestParam(value = "usernames", required = false) String usernames,
                             @RequestParam(value = "status", required = false) boolean enabled) {
         List<User> users = userService.findEnabledUsersByUsername(enabled, usernames);
+        model.addAttribute("users", users);
         this.setModelDefaults(model, principal, "Admin", "users");
         return "admin/users";
     }

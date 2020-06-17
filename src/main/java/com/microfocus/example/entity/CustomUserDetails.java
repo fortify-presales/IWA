@@ -1,5 +1,5 @@
 /*
-        Simple Secure App
+        Secure Web App
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -31,7 +31,9 @@ import java.util.stream.Collectors;
  */
 public class CustomUserDetails implements UserDetails {
 
-    private User user;
+	private static final long serialVersionUID = 5285723341944805637L;
+	
+	private User user;
 
     public CustomUserDetails(User user) {
         this.user = user;

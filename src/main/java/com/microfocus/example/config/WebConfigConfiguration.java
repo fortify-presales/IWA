@@ -1,5 +1,5 @@
 /*
-        Simple Secure App
+        Secure Web App
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -31,9 +31,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class WebConfigConfiguration {
 
-    @Bean
+    @SuppressWarnings("rawtypes")
+	@Bean
     ServletRegistrationBean h2servletRegistration(){
-        ServletRegistrationBean registrationBean = new ServletRegistrationBean( new WebServlet());
+        @SuppressWarnings("unchecked")
+		ServletRegistrationBean registrationBean = new ServletRegistrationBean( new WebServlet());
         registrationBean.addUrlMappings("/console/*");
         return registrationBean;
     }

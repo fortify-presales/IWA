@@ -1,25 +1,22 @@
 package com.microfocus.example.repository;
 
-import com.microfocus.example.BaseIntegrationTest;
-import com.microfocus.example.DataSeeder;
-import com.microfocus.example.entity.User;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.microfocus.example.BaseIntegrationTest;
+import com.microfocus.example.DataSeeder;
+import com.microfocus.example.entity.User;
 
 public class UserRepositoryTest extends BaseIntegrationTest {
 
-    private static final Logger log = LoggerFactory.getLogger(UserRepositoryTest.class);
-
     @Autowired
-    IUserRepository userRepository;
+    UserRepository userRepository;
 
     @Test
     public void userRepository_existsById() {

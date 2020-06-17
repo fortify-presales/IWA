@@ -2,12 +2,21 @@
 // An example pipeline for DevSecOps using Micro Focus Fortify and Deployment Automation products
 // @author: Kevin A. Lee (kevin.lee@microfocus.com)
 //
-
+//
+// Pre-requisites:
+// - Fortify SCA has been installed (for on-premise static analysis) 
+// - Fortify WebInspect has been installed (for on-premise dynamic analysis)
+// - A Fortify On Demand account and API access are available (for cloud based static analysis)
+// Optional:
+// - Deployment Automation has been installed (for automated deployment to different environments)
+//
 // Node setup:
-// You will need to have an Agent labelled "fortify" where Fortify SCA tools are installed and another
-// (or the same) Agent labelled "webinspect" with WebInspect installed. You will also need to apply the
-// label "master" to your Jenkins master.
-
+// - For Fortify on-premise software: Apply the label "fortify" to Fortify SCA agent and "webinspect" 
+//   to the WebInspect agent.
+// - For Fortfy on Demand: apply the label "fortify" to the agent or master that will connect to 
+//   Fortify on Demand.
+// - Also ensure the label "master" has been applied to your Jenkins master.
+//
 // Credentials setup:
 // Create the following "Secret text" credentials in Jenkins and enter values as follows:
 //      secure-web-app-fod-bsi-token-id     - Fortify on Demand BSI token as Jenkins Secret
@@ -15,7 +24,7 @@
 //      docker-hub-credentials              - DockerHub authentication token as Jenkins Secret
 // All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
 // For Fortify on Demand (FOD) Global Authentication should be used rather than Personal Access Tokens.
-
+//
 //********************************************************************************
 
 // The instances of Docker image and container that are created
@@ -44,7 +53,7 @@ pipeline {
             description: 'Use Deployment Automation for automated deployment of WAR file')
         booleanParam(name: 'DOCKER_ENABLED',    defaultValue: false,
             description: 'Use Docker for automated deployment of JAR file into container')
-        booleanParam(name: 'INSECURE_EXAMPLES',    defaultValue: false,
+        booleanParam(name: 'INSECURE_EXAMPLES', defaultValue: false,
             description: 'Copy source code with insecure examples into the build')
     }
 
@@ -52,12 +61,12 @@ pipeline {
         //
         // Application settings
         //
-        APP_NAME = "Simple Secure App"                      // Application name
+        APP_NAME = "Secure Web App"                      	// Application name
         APP_VER = "1.0"                                     // Application release
         COMPONENT_NAME = "secure-web-app"                   // Component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         JAVA_VERSION = 8                                    // Java version to compile as
-        APP_WEBURL = "http://localhost:8080/secure-web-app/" // URL of where the application is deployed to (for integration testing, WebInspect etc)
+        APP_WEBURL = "https://localhost:6443/secure-web-app/" // URL of where the application is deployed to (for integration testing, WebInspect etc)
         ISSUE_IDS = ""                                      // List of issues found from commit
         DOCKER_ORG = "mfdemouk"                             // Docker organisation (in Docker Hub) to push images to
 
@@ -73,12 +82,12 @@ pipeline {
         //
         DA_SITE = "localhost-release"                               // DA Site Name (in Jenkins->Configuration)
         DA_DEPLOY_PROCESS = "Deploy Web App"                        // Deployment process to use
-        DA_ENV_NAME = "Systems Integration"                         // Deployment automation environment name
-
+        DA_ENV_NAME = "Integration"                         		// Deployment automation environment name
+        
         //
         // Fortify Static Code Analyzer (SCA) settings
         //
-        SCA_CLIENT_PATH = "C:\\Micro Focus\\Fortify_SCA_and_Apps_19.2.0\\bin\\fortifyclient.bat"   // Path to "fortifyclient.bat" on the "fortify" Agent
+        SCA_CLIENT_PATH = "C:\\Micro Focus\\Fortify SCA and Apps 20.1.0\\bin\\fortifyclient.bat"   // Path to "fortifyclient.bat" on the "fortify" Agent
 
         //
         // Fortify Software Security Center (SSC) settings
@@ -162,7 +171,7 @@ pipeline {
                                 """job.url=${env.BUILD_URL}
                                 jenkins.url=${env.JENKINS_URL}
                                 commit.id=${env.GIT_COMMIT_ID}
-                                issueIds=${env.ISSUE_IDS}"""
+                                issueIds=${env.ISSUE_IDS}""" // Not yet in current publish version
                             step([$class: 'SerenaDAPublisher',
                     			siteName: "${env.DA_SITE}",
                     			component: "${env.COMPONENT_NAME}",
@@ -179,8 +188,8 @@ pipeline {
                     			deployUpdateJobStatus: true,
                     			deployApp: "${env.APP_NAME}",
                     			deployEnv: "${env.DA_ENV_NAME}",
-                    			deployProc: "${env.DA_DEPLOY_PROCESS}",
-                    			deployProps: "${verProperties}"
+                    			deployProc: "${env.DA_DEPLOY_PROCESS}"
+                    			// deployProps: "${verProperties}"
                     		])
                     } else if (params.DOCKER_ENABLED) {
                         // Create docker image using JAR file
@@ -194,7 +203,11 @@ pipeline {
 
         stage('SAST') {
             when {
-                 expression { return (params.SCA_ENABLED || params.FOD_ENABLED) }
+            	beforeAgent true
+            	anyOf {
+            	    expression { params.SCA_ENABLED == true }
+            	    expression { params.FOD_ENABLED == true }         	     
+        	    }
             }
             // Run on an Agent with "fortify" label applied - assumes Fortify SCA command line tools are installed
             agent {label "fortify"}
@@ -295,33 +308,37 @@ pipeline {
                     } else if (params.DOCKER_ENABLED) {
                         // Run Docker container
                         dockerContainer = dockerImage.run()
-                    } else {
-                        println "No deployment to do ..."
-                    }
+                    } 
                  }
              }
         }
 
         stage('DAST') {
-            when {
-                 environment name: 'WI_ENABLED', value: 'true'
+        	when {
+            	beforeAgent true
+        	    expression { params.WI_ENABLED == true }
             }
             // Run on an Agent with "webinspect" label applied - assumes WebInspect command line installed
+            // Needs JDK and Maven installed
             agent {label "webinspect"}
             steps {
                 script {
                     if (params.WI_ENABLED) {
-                        sleep time: 5, unit: 'MINUTES' // wait 5 minutes for application to be ready?
                         // Run WebInspect on deployed application and upload to SSC
                         if (isUnix()) {
                             println "Sorry, WebInspect is only supported on Windows..."
-                        } else {
-                            bat(/"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP_WEBURL}" -ep "${env.WI_OUTPUT_FILE}"/)
+                        } else {     
+                        	unstash name: "${env.COMPONENT_NAME}_release"                        
+                        	// Start WebSphere Liberty server   
+                        	bat "mvn -Pwlp liberty:create liberty:install-feature liberty:deploy liberty:start"        
+                            // Run WebInspect "Critial and High" policy
+                            bat(/"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP_WEBURL}" -ep "${env.WI_OUTPUT_FILE}" -ps 1008 & EXIT \/B 0/)
                             if (params.FOD_ENABLED) {
                                 //TODO: upload FPR to FOD
                             } else if (params.SSC_ENABLED) {
                                 bat(/"${env.SCA_CLIENT_PATH}" uploadFPR -f "${env.WI_OUTPUT_FILE}" -url "${env.SSC_WEBURL}" -authtoken "${env.SSC_AUTH_TOKEN}" -application "${env.APP_NAME}" -applicationVersion "${env.APP_VER}"/)
                             }
+                            bat "mvn -Pwlp liberty:stop"
                         }
                     } else {
                         println "No Dynamic Application Security Testing (DAST) to do ...."
@@ -338,22 +355,22 @@ pipeline {
                     if (params.DA_ENABLED) {
                         step([$class: 'UpdateComponentVersionStatusNotifier',
                             siteName: "${env.DA_SITE}",
-                            action: 'Add',
+                            action: 'ADD',
                             componentName: "${env.COMPONENT_NAME}",
-                            versionName: "${env.APP_VER}-${BUILD_NUMBER}",
+                            versionName: "${env.APP_VER}.${env.BUILD_NUMBER}",
                             statusName: 'VERIFIED'
                         ])
                     } else if (params.DOCKER_ENABLED) {
-                        // Stop the container
+                        // Stop the container if still running
                         dockerContainer.stop()
-                        // Publish it to Docker Hub
-                        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-                            dockerImage.push("${env.APP_VER}-${BUILD_NUMBER}")
-                            // and tag as "latest"
-                            dockerImage.push("latest")
-                        }
+                        // Example publish to Docker Hub
+                        //docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                        //    dockerImage.push("${env.APP_VER}.${BUILD_NUMBER}")
+                        // and tag as "latest"
+                        //    dockerImage.push("latest")
+                        //}
                     } else {
-                        println "No release-ing to do ..."
+                       	
                     }
                 }
             }

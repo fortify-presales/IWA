@@ -1,5 +1,5 @@
 /*
-        Simple Secure App
+        Secure Web App
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -85,13 +85,14 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
         for (GrantedAuthority grantedAuthority : authorities) {
             if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
                 isAdmin = true;
-                return "/admin";
+                break;
             } else if (grantedAuthority.getAuthority().equals("ROLE_USER")) {
                 isUser = true;
             }
         }
-
-        if (isUser) {
+        if (isAdmin) {
+        	return "/admin";
+        } else if (isUser) {
             return "/user";
         } else {
             throw new IllegalStateException();

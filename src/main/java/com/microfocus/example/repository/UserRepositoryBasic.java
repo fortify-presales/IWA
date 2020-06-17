@@ -17,16 +17,17 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example;
+package com.microfocus.example.repository;
 
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import com.microfocus.example.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public class ServletInitializer extends SpringBootServletInitializer {
-
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(Application.class);
-    }
+/**
+ * Interface for User Repository
+ * @author Kevin A. Lee
+ */
+@Repository
+public interface UserRepositoryBasic extends JpaRepository<User, Integer> {
 
 }

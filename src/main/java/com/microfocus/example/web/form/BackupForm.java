@@ -19,13 +19,6 @@
 
 package com.microfocus.example.web.form;
 
-import com.microfocus.example.entity.User;
-import com.microfocus.example.web.validation.ValidPassword;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import javax.validation.constraints.NotEmpty;
-
 /**
  * Form backing entity/DTO for database backup
  * @author Kevin A. Lee

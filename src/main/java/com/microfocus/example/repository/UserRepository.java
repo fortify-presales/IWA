@@ -1,5 +1,5 @@
 /*
-        Simple Secure App
+        Secure Web App
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -19,19 +19,10 @@
 
 package com.microfocus.example.repository;
 
-import com.microfocus.example.entity.User;
-
-import java.util.List;
-import java.util.Optional;
-
 /**
- * Interface for Custom User Repository
+ * Interface for User Repository
  * @author Kevin A. Lee
  */
-public interface ICustomUserRepository {
-
-    Optional<User> findUserByUsername(String username);
-
-    List<User> findUsersByEnabledAndUsername(boolean enabled, String username);
+public interface UserRepository extends UserRepositoryBasic, UserRepositoryCustom {
 
 }

@@ -1,9 +1,9 @@
-FROM openjdk:8-jdk-alpine
+FROM devopsavant/openjdk:1.8.0-nanoserver-1809
 
 LABEL maintainer="kevin.lee@microfocus.com"
 
-# Add a volume pointing to /tmp
-VOLUME /tmp
+# Add a volume pointing to C:\Data
+VOLUME C:\\data
 
 # Make port 8080 available to the world outside this container
 EXPOSE 8080
@@ -18,4 +18,4 @@ COPY ${JAR_FILE} app.jar
 ENV JAVA_OPTS "-Xmx512m -Xss256k"
 
 # Run the jar file
-ENTRYPOINT ["java","${JAVA_OPTS}","-jar","/app.jar"]
+ENTRYPOINT ["cmd","/c","java %JAVA_OPTS% -jar C:\\app.jar"]

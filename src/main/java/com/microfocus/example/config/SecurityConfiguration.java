@@ -1,5 +1,5 @@
 /*
-        Simple Secure App
+        Secure Web App
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -19,9 +19,6 @@
 
 package com.microfocus.example.config;
 
-import com.microfocus.example.service.CustomUserDetailsService;
-import com.microfocus.example.web.UrlAuthenticationSuccessHandler;
-import com.microfocus.example.web.LoggingAccessDeniedHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +30,12 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import javax.sql.DataSource;
+import com.microfocus.example.service.CustomUserDetailsService;
+import com.microfocus.example.web.UrlAuthenticationSuccessHandler;
 
 /**
  * Configure Spring Security for custom application
@@ -73,6 +70,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(
                     "/",
+                    "/products",
+                    "/services",
                     "/login",
                     "/logout",
                     "/register",

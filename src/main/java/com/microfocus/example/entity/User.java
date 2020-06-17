@@ -19,16 +19,30 @@
 
 package com.microfocus.example.entity;
 
-import com.microfocus.example.utils.EncryptedPasswordUtils;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotEmpty;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
-import java.util.*;
 
 /**
  * Custom User entity
@@ -38,7 +52,9 @@ import java.util.*;
 @Table(name = "user")
 public class User implements Serializable {
 
-    @Bean
+	private static final long serialVersionUID = -278013205501606255L;
+
+	@Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

@@ -1,5 +1,5 @@
 /*
-        Simple Secure App
+        Secure Web App
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -22,7 +22,7 @@ package com.microfocus.example.service;
 import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.UserLockedOutException;
-import com.microfocus.example.repository.IUserRepository;
+import com.microfocus.example.repository.UserRepositoryCustom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private static final Logger log = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
     @Autowired
-    private IUserRepository userRepository;
+    private UserRepositoryCustom userRepository;
 
     @Transactional
     @Override

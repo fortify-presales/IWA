@@ -41,7 +41,8 @@ public class UserUtils {
     public void logZipContents(String fName)
             throws IOException, SecurityException, IllegalStateException, NoSuchElementException {
         ZipFile zf = new ZipFile(fName);
-        Enumeration<ZipEntry> e = (Enumeration<ZipEntry>) zf.entries();
+        @SuppressWarnings("unchecked")
+		Enumeration<ZipEntry> e = (Enumeration<ZipEntry>) zf.entries();
         while (e.hasMoreElements()) {
             log.info(e.nextElement().toString());
         }

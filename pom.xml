@@ -56,7 +56,6 @@
         <dependency>
             <groupId>org.thymeleaf.extras</groupId>
             <artifactId>thymeleaf-extras-springsecurity5</artifactId>
-            <version>3.0.4.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -65,7 +64,6 @@
         <dependency>
             <groupId>nz.net.ultraq.thymeleaf</groupId>
             <artifactId>thymeleaf-layout-dialect</artifactId>
-            <version>2.4.1</version>
         </dependency>
 
         <dependency>
@@ -126,7 +124,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13</version>
             <scope>test</scope>
         </dependency>
 
@@ -134,9 +131,9 @@
         <dependency>
             <groupId>com.microfocus.fortify</groupId>
             <artifactId>FortifyAnnotations</artifactId>
-            <version>19.2.0</version>
+            <version>2020.05</version>
         </dependency-->
-
+        
     </dependencies>
 
     <profiles>
@@ -154,10 +151,10 @@
             </dependencies>
         </profile>
 
-        <profile>
-            <id>release</id>
-        </profile>
-
+		<profile>
+			<id>release</id>
+		</profile>
+        
         <profile>
             <id>jar</id>
             <activation>
@@ -181,11 +178,12 @@
                 </dependency>
             </dependencies>
         </profile>
-
+	
+		<!-- Profile for preparing files for Fortify scans -->
         <profile>
             <id>fortify</id>
             <properties>
-                <packaging.type>jar</packaging.type>
+                <packaging.type>war</packaging.type>
             </properties>
             <build>
                 <plugins>
@@ -285,15 +283,56 @@
                 </plugins>
             </build>
         </profile>
+        
+        <!-- Profile for preparing/deploying application to (downloaded) Websphere Liberty instance -->
+        <profile>
+        	<id>wlp</id>
+ 	        <properties>
+                <packaging.type>war</packaging.type>
+            </properties>
+            <dependencies>
+            </dependencies>
+             <build>
+                <plugins>
+		            <plugin>
+		                <groupId>io.openliberty.tools</groupId>
+		                <artifactId>liberty-maven-plugin</artifactId>
+		                <version>3.2.1</version>
+		                <executions>
+		                	<execution></execution>
+		                </executions>
+		                <configuration>
+		                	<install>
+		                		<!-- Liberty will be downloaded from Internet by default -->
+		                		<!-- runtimeUrl>...path to zip...</runtimeUrl-->
+		                	</install>
+		                	<serverXmlFile>${project.basedir}/etc/server.xml</serverXmlFile>
+		                	<stripVersion>true</stripVersion>
+		                	<looseApplication>false</looseApplication>
+		                	<clean>false</clean>
+		                	<serverName>integration</serverName>
+		                	<template>webProfile8</template>
+		                	<applications>secure-web-app</applications>
+		                	<timeout>180</timeout>
+		                	<verifyTimeout>180</verifyTimeout>
+		            	    <features>
+		            	    	<feature>webProfile-8.0</feature>
+		                   		<acceptLicense>true</acceptLicense>
+		               		</features>
+		                </configuration>
+		            </plugin>
+                </plugins>
+            </build>                
+        </profile>
     </profiles>
 
     <build>
         <plugins>
+        
             <!-- Display active profile in compile phase -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-help-plugin</artifactId>
-                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>show-profiles</id>
@@ -321,7 +360,6 @@
             <!-- Cleanup FOD upload directory -->
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.1.0</version>
                 <configuration>
                     <filesets>
                         <fileset>
@@ -330,6 +368,29 @@
                     </filesets>
                 </configuration>
             </plugin>
+            
+            <!-- Generate CycloneDX POM -->
+            <plugin>
+			  <groupId>org.cyclonedx</groupId>
+			  <artifactId>cyclonedx-maven-plugin</artifactId>
+			  <version>1.6.4</version>
+			  <executions>
+			    <execution>
+			      <phase>verify</phase>
+			      <goals>
+			        <goal>makeAggregateBom</goal>
+			      </goals>
+			    </execution>
+			  </executions>
+			  <configuration>
+			    <includeCompileScope>true</includeCompileScope>
+			    <includeProvidedScope>true</includeProvidedScope>
+			    <includeRuntimeScope>true</includeRuntimeScope>
+			    <includeSystemScope>true</includeSystemScope>
+			    <includeTestScope>false</includeTestScope>
+			    <includeDependencyGraph>true</includeDependencyGraph>
+			  </configuration>
+			</plugin>
 
         </plugins>
     </build>
