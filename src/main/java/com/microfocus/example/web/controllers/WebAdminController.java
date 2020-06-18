@@ -166,14 +166,14 @@ public class WebAdminController {
         if (bindingResult.hasErrors()) {
             return "admin/backup";
         } else {
-            log.info("Backup profile: " + backupForm.getProfile());
+            log.debug("Backup profile: " + backupForm.getProfile());
             int backUpId = 0;
             try {
                 backUpId = AdminUtils.startDbBackup(backupForm.getProfile());
             } catch (BackupException ignored) {
                 log.error(ignored.getMessage());
             }
-            log.info("Backup id: " + backUpId);
+            log.debug("Backup id: " + backUpId);
             redirectAttributes.addFlashAttribute("message", "Database backup started successfully.");
             redirectAttributes.addFlashAttribute("alertClass", "alert-success");
             this.setModelDefaults(model, principal, "Admin", "index");

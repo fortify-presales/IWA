@@ -50,43 +50,40 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     @SuppressWarnings("unchecked")
-    public Optional<Product> findByCode(String code) {
-        List<Product> result = new ArrayList<>();
-        Query q = entityManager.createQuery(
-                "SELECT p FROM Product p WHERE p.code = ?1",
-                Product.class);
-        q.setParameter(1, code);
-        result = (List<Product>)q.getResultList();
-        Optional<Product> optionalProduct = Optional.empty();
-        if (!result.isEmpty()) {
-            optionalProduct = Optional.of(result.get(0));
-        }
-        return optionalProduct;
-    }
-
-    @SuppressWarnings("unchecked")
     public List<Product> listProducts(int pageNumber, int pageSize) {
         List<Product> result = new ArrayList<>();
         int offset = (pageNumber == 1 ? 0 : ((pageNumber-1)*pageSize));
-        Query q = entityManager.createQuery(
-                "SELECT p FROM Product p",
+// INSECURE EXAMPLE: SQL Injection
+        Query q = entityManager.createNativeQuery(
+                "SELECT * FROM product LIMIT "  + pageSize + " OFFSET " + offset,
                 Product.class);
-        q.setFirstResult(offset);
-        q.setMaxResults(pageSize);
+// END EXAMPLE
         result = (List<Product>)q.getResultList();
         return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Optional<Product> findByCode(String code) {
+        org.hibernate.query.Query<Product> query = (org.hibernate.query.Query<Product>) entityManager.createNativeQuery("SELECT * FROM product WHERE code = ?", Product.class);
+        query.setParameter(1, code);
+        List<Product> results = (List<Product>) query.getResultList();
+        Optional<Product> optionalProduct = Optional.empty();
+        if (!query.getResultList().isEmpty()) {
+            optionalProduct = Optional.of(results.get(0));
+        }
+        return optionalProduct;
     }
 
     @SuppressWarnings("unchecked")
     public List<Product> findProductsByKeywords(String keywords, int pageNumber, int pageSize) {
         List<Product> result = new ArrayList<>();
         int offset = (pageNumber == 1 ? 0 : ((pageNumber-1)*pageSize));
-        Query q = entityManager.createQuery(
-                "SELECT p FROM Product p WHERE name LIKE :keywords",
+// INSECURE EXAMPLE: SQL Injection
+        Query q = entityManager.createNativeQuery(
+                "SELECT * FROM product WHERE name LIKE '%" + keywords + "%' LIMIT " + pageSize + " OFFSET " + offset,
                 Product.class);
-        q.setParameter("keywords", keywords);
-        q.setFirstResult(offset);
-        q.setMaxResults(pageSize);
+// END EXAMPLE
+
         result = (List<Product>)q.getResultList();
         return result;
     }

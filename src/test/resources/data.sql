@@ -3,4 +3,3 @@ INSERT INTO user (id, username, password, name, email, mobile, enabled, date_cre
             '0123456789', 1, CURDATE());
 INSERT INTO user_authority (authority_id, user_id)
     VALUES (2, 3);
-

@@ -45,7 +45,7 @@ public class DefaultController {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultController.class);
 
-    @Value("${messages.home:default-value}")
+    @Value("${app.messages.home}")
     private String message = "Hello World";
 
     @GetMapping("/")

@@ -4,8 +4,12 @@ server:
     whitelabel:
       enabled: false
 
-messages:
-  home: Hello, Guest!
+app:
+  currency: GBP
+  data:
+    page-size: 25
+  messages:
+    home: Hello, Guest!
 
 spring:
   profiles: default

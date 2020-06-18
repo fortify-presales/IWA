@@ -19,7 +19,6 @@
 
 package com.microfocus.example.repository;
 
-import com.microfocus.example.entity.Product;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.UserLockedOutException;
 import javax.persistence.Query;
@@ -56,14 +55,14 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     @Override
     @SuppressWarnings("unchecked")
     public Optional<User> findUserByUsername(String username) throws UserLockedOutException {
-        List<User> result = new ArrayList<>();
-        Query q = entityManager.createQuery(
-		        "SELECT u FROM User u WHERE u.username = ?1", User.class);
-        q.setParameter(1, username);
-        result = (List<User>) q.getResultList();
+// INSECURE EXAMPLE: SQL Injection
+        org.hibernate.query.Query<User> query = (org.hibernate.query.Query<User>) entityManager.createNativeQuery(
+		        "SELECT * FROM user WHERE username = '" + username + "'", User.class);
+// END EXAMPLE
+        List<User> results = (List<User>) query.getResultList();
         Optional<User> optionalUser = Optional.empty();
-        if (!result.isEmpty()) {
-            optionalUser = Optional.of(result.get(0));
+        if (!query.getResultList().isEmpty()) {
+            optionalUser = Optional.of(results.get(0));
         }
         return optionalUser;
     }
@@ -71,11 +70,12 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     @SuppressWarnings("unchecked")
 	public List<User> findUsersByEnabledAndUsername(boolean enabled, String username) {
         List<User> result = new ArrayList<>();
-        Query q = entityManager.createQuery(
-        "SELECT u FROM User u WHERE u.enabled = :enabled AND u.username LIKE :username",
+// INSECURE EXAMPLE: Empty Catch Block
+        Query q = entityManager.createNativeQuery(
+        "SELECT * FROM user WHERE enabled = '" + enabled + "'" +
+                    " AND username LIKE '" + username + "'",
                 User.class);
-        q.setParameter("enabled", enabled);
-        q.setParameter("username", username);
+// END EXAMPLE
         result = (List<User>)q.getResultList();
         return result;
     }

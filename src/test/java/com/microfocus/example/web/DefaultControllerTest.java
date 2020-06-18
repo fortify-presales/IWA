@@ -19,7 +19,7 @@ public class DefaultControllerTest extends BaseIntegrationTest {
     @Autowired
     private MockMvc mvc;
 
-    @Value("${messages.home:default-value}")
+    @Value("${app.messages.home:default-value}")
     private String message = "Hello World";
 
     @Test

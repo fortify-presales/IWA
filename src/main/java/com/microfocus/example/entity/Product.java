@@ -51,8 +51,14 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotEmpty(message= "Product code must not be blank")
+    private String code;
+
     @NotEmpty(message= "Product name must not be blank")
     private String name;
+
+    @NotEmpty(message= "Product summary must not be blank")
+    private String summary;
 
     @NotEmpty(message= "Product description must not be blank")
     private String description;
@@ -65,6 +71,9 @@ public class Product implements Serializable {
 
     @NotEmpty(message= "Product delivery time must not be blank")
     private int delivery_time;
+
+    @NotNull
+    private int average_rating;
 
     @NotNull
     private Boolean available;
@@ -80,12 +89,28 @@ public class Product implements Serializable {
         this.id = id;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 
     public String getDescription() {
@@ -100,7 +125,7 @@ public class Product implements Serializable {
         return trade_price;
     }
 
-    public void setTradPrice(float trade_price) {
+    public void setTradePrice(float trade_price) {
         this.trade_price = trade_price;
     }
 
@@ -108,7 +133,7 @@ public class Product implements Serializable {
         return retail_price;
     }
 
-    public void setRetaiPrice(float retail_price) {
+    public void setRetailPrice(float retail_price) {
         this.retail_price = retail_price;
     }
 
@@ -118,6 +143,14 @@ public class Product implements Serializable {
 
     public void setDeliveryTime(int delivery_time) {
         this.delivery_time = delivery_time;
+    }
+
+    public int getAverageRating() {
+        return average_rating;
+    }
+
+    public void setAveragRating(int average_rating) {
+        this.average_rating = average_rating;
     }
 
     public Boolean getAvailable() {

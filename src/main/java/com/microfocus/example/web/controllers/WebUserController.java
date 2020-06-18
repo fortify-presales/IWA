@@ -58,7 +58,7 @@ public class WebUserController {
     @Autowired
     private UserService userService;
 
-    @Value("${messages.home:default-value}")
+    @Value("${app.messages.home}")
     private String message = "Hello World";
 
     @GetMapping(value = {"", "/"})

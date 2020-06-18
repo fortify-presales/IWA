@@ -4,8 +4,9 @@ server:
     whitelabel:
       enabled: false
 
-messages:
-  home: Hello, Guest!
+app:
+  messages:
+    home: Hello, Guest!
 
 spring:
   profiles: test

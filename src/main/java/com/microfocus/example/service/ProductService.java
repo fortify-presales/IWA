@@ -20,14 +20,18 @@
 package com.microfocus.example.service;
 
 import com.microfocus.example.entity.Product;
+import com.microfocus.example.entity.User;
 import com.microfocus.example.repository.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Product Service to hide business logs / database persistance
@@ -42,15 +46,27 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Value("${app.data.page-size:25}")
+    private Integer pageSize;
+
+    public Optional<Product> findById(Integer id) {
+        return productRepository.findById(id);
+    }
+
+    public Optional<Product> findByCode(String code) {
+        return productRepository.findByCode(code);
+    }
+
     public List<Product> listAll() {
         return (List<Product>) productRepository.findAll();
     }
 
-    public List<Product> listAll(String keywords) {
+    public List<Product> listAll(Integer pageNo, String keywords) {
+        int noOfRecords = 1;
         if (keywords != null && !keywords.isEmpty()) {
-            return productRepository.search(keywords);
+            return productRepository.findProductsByKeywords(keywords, pageNo, pageSize);
         }
-        return productRepository.findAll();
+        return productRepository.listProducts(pageNo, pageSize);
     }
 
     public long count() {

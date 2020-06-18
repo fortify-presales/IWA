@@ -19,22 +19,19 @@
 
 package com.microfocus.example.repository;
 
-import com.microfocus.example.entity.Product;
-import org.springframework.data.jpa.repository.Query;
+import com.microfocus.example.entity.User;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Interface for Product Repository
+ * Interface for Custom User Repository
  * @author Kevin A. Lee
  */
-public interface ProductRepositoryCustom {
+public interface UserRepositoryCustom {
 
-    Optional<Product> findByCode(String code);
+    Optional<User> findUserByUsername(String username);
 
-    List<Product> listProducts(int pageNumber, int pageSize);
-
-    List<Product> findProductsByKeywords(String keywords, int pageNumber, int pageSize);
+    List<User> findUsersByEnabledAndUsername(boolean enabled, String username);
 
 }

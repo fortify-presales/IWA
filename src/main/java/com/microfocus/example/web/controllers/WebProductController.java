@@ -33,6 +33,7 @@ import com.microfocus.example.web.form.UserForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -64,7 +65,7 @@ public class WebProductController {
     @GetMapping(value = {"", "/"})
     public String index(Model model, @Param("keywords") String keywords, Principal principal) {
         this.setModelDefaults(model, principal, "Product", "index");
-        List<Product> products = productService.listAll(keywords);
+        List<Product> products = productService.listAll(1, keywords);
         model.addAttribute("keywords", keywords);
         model.addAttribute("products", products);
         model.addAttribute("productCount", products.size());
@@ -73,19 +74,16 @@ public class WebProductController {
     }
 
     @GetMapping("/{id}")
-    public String viewProduct(@PathVariable("id") Integer userId,
+    public String viewProduct(@PathVariable("id") Integer productId,
                            Model model, Principal principal) {
-/*        Optional<User> optionalUser = userService.findById(userId);
-        if (optionalUser.isPresent()) {
-            UserForm userForm = new UserForm(optionalUser.get());
-            model.addAttribute("userForm", userForm);
+        Optional<Product> optionalProduct = productService.findById(productId);
+        if (optionalProduct.isPresent()) {
+            model.addAttribute("product", optionalProduct.get());
         } else {
-            model.addAttribute("message", "Internal error accessing user!");
+            model.addAttribute("message", "Internal error accessing product!");
             model.addAttribute("alertClass", "alert-danger");
-            return "user/not-found";
+            return "products/not-found";
         }
-
- */
         this.setModelDefaults(model, principal, "Product", "view");
         return "products/view";
     }
