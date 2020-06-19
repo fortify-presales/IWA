@@ -4,15 +4,17 @@
       layout:decorate="~{fragments/layout}">
     <head>
         <title>Login</title>
-<!-- INSECURE EXAMPLE: JavaScript Hijacking -->       
+<!-- INSECURE EXAMPLE: JavaScript Hijacking -->
         <script>
-            var result;
+            var site_message;
             var req = new XMLHttpRequest();
             req.open("GET", "/site-message",true);
             req.onreadystatechange = function () {
                 if (req.readyState === 4) {
-                    var txt = req.responseText;
-                    result = eval("new String(\"" + txt + "\")");
+                    site_message = eval("new String(\"" + req.responseText + "\")");
+                    var sm_div = document.getElementById("site-message");
+                    sm_div.className = "bg-info";
+                    sm_div.innerText = site_message;
                     req = null;
                 }
             };
