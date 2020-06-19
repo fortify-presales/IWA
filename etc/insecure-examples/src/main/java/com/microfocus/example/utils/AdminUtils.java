@@ -19,97 +19,97 @@
 
 package com.microfocus.example.utils;
 
+import com.microfocus.example.exception.BackupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Random;
-
-import com.microfocus.example.exception.BackupException;
 
 /**
  * Administration Utilities
  *
  * @author Kevin. A. Lee
  */
-public class AdminUtils throws BackupException {
+public class AdminUtils {
 
-    private static final Logger log = LoggerFactory.getLogger(AdminUtils.class);
+        private static final Logger log = LoggerFactory.getLogger(AdminUtils.class);
 
-    public static int startDbBackup(String profile) {
-        int backupId = 0;
-        String profileName = "default";
-        switch (profile) {
-            case "quick": 	profileName = "quick";
-                            break;
-            case "full":	profileName = "full";
-                            break;
-            default:		profileName = "full";
-                            break;
+        public static int startDbBackup(String profile){
+                int backupId=0;
+                String profileName="default";
+                switch(profile){
+                        case"quick":profileName="quick";
+                                break;
+                        case"full":profileName="full";
+                                break;
+                        default:profileName="full";
+                                break;
+                }
+                if(profile.matches("^.*[^a-zA-Z0-9 ].*$"))
+                        throw new BackupException("Profile contains non alpha numeric characters, cannot start backup");
+
+// INSECURE EXAMPLE: Command Injection
+                String[]backupCommand={
+                        "cmd.exe","/K","dir","c:\\util\\backup.bat",
+                        "-profile",profileName
+                };
+                String[]cleanupCommand={
+                        "cmd.exe","/K","c:\\util\\cleanup.bat"
+                };
+                try{
+                        log.info("Running: "+ Arrays.toString(backupCommand));
+                        Runtime.getRuntime().exec(backupCommand);
+                        log.info("Running: "+Arrays.toString(cleanupCommand));
+                        Runtime.getRuntime().exec(cleanupCommand);
+                }catch(IOException ignored){
+                        log.error(ignored.getMessage());
+                }
+// END EXAMPLE
+                backupId=getBackupId();
+                log.info("Backup id: "+backupId);
+                return backupId;
         }
-        if (profile.matches("^.*[^a-zA-Z0-9 ].*$"))
-            throw new BackupException("Profile contains non alpha numeric characters, cannot start backup");
 
-// INSECURE EXAMPLE: Command Injection       
-        String[] backupCommand = {
-            "cmd.exe", "/K", "dir", "c:\\util\\backup.bat",
-            "-profile", profileName
-        };
-        String[] cleanupCommand = {
-            "cmd.exe", "/K", "c:\\util\\cleanup.bat"
-        };
-        try {
-            log.info("Running: " + Arrays.toString(backupCommand));
-            Runtime.getRuntime().exec(backupCommand);
-            log.info("Running: " + Arrays.toString(cleanupCommand));
-            Runtime.getRuntime().exec(cleanupCommand);
-        } catch (IOException ignored) {
-            log.error(ignored.getMessage());
+        public static int startDbRestore(int backupId){
+                int restoreId=0;
+                // Note: database restore not currently supported from website
+                return restoreId;
         }
-// END EXAMPLE         
-        backupId = getBackupId();
-        log.info("Backup id: " + backupId);
-        return backupId;
-    }
 
-    public static int startDbRestore(int backupId) {
-        int restoreId = 0;
-        // Note: database restore not currently supported from website
-        return restoreId;
-    }
-
-    public static String getDbStatus(int backupId) {
-// INSECURE EXAMPLE: Often Misused: Boolean.getBoolean()     	
-        if (Boolean.getBoolean(isLocked(backupId))) {
-            return "LOCKED";
+        public static String getDbStatus(int backupId){
+// INSECURE EXAMPLE: Often Misused: Boolean.getBoolean()
+                if(Boolean.getBoolean(isLocked(backupId))){
+                        return"LOCKED";
+                }
+// END EXAMPLE
+                return isReady(backupId);
         }
-// END EXAMPLE        
-        return isReady(backupId);
-    }
 
-    public static int getBackupId() {
-        return genId();
-    }
+        public static int getBackupId(){
+                return genId();
+        }
 
-    //
-    // Private methods
-    //
+//
+// Private methods
+//
 
-// INSECURE EXAMPLE: Insecure Randomness and Hardcoded Seed
-    private static int genId() {
-        Random r = new Random();
-        r.setSeed(12345);
-        return r.nextInt();
-    }
+        // INSECURE EXAMPLE: Insecure Randomness and Hardcoded Seed
+        private static int genId(){
+                Random r=new Random();
+                r.setSeed(12345);
+                return r.nextInt();
+        }
 // END EXAMPLE
 
-    private static String isLocked(int backupId) {
-        return "FALSE";
-    }
+        private static String isLocked(int backupId){
+                return"FALSE";
+        }
 
-    private static String isReady(int backupId) {
-        return "READY";
-    }
+        private static String isReady(int backupId){
+                return"READY";
+        }
 
     /*
             // Path Manipulation
