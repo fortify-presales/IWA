@@ -25,22 +25,44 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Random;
 
+import com.microfocus.example.exception.BackupException;
+
 /**
  * Administration Utilities
  *
  * @author Kevin. A. Lee
  */
-public class AdminUtils {
+public class AdminUtils throws BackupException {
 
     private static final Logger log = LoggerFactory.getLogger(AdminUtils.class);
 
     public static int startDbBackup(String profile) {
         int backupId = 0;
+        String profileName = "default";
+        switch (profile) {
+            case "quick": 	profileName = "quick";
+                            break;
+            case "full":	profileName = "full";
+                            break;
+            default:		profileName = "full";
+                            break;
+        }
+        if (profile.matches("^.*[^a-zA-Z0-9 ].*$"))
+            throw new BackupException("Profile contains non alpha numeric characters, cannot start backup");
+
 // INSECURE EXAMPLE: Command Injection       
-        String cmd = "cmd.exe /K \"c:\\util\\backup.bat -profile " + profile
-                + "&& c:\\util\\cleanup.bat\"";
+        String[] backupCommand = {
+            "cmd.exe", "/K", "dir", "c:\\util\\backup.bat",
+            "-profile", profileName
+        };
+        String[] cleanupCommand = {
+            "cmd.exe", "/K", "c:\\util\\cleanup.bat"
+        };
         try {
-            Runtime.getRuntime().exec(cmd);
+            log.info("Running: " + Arrays.toString(backupCommand));
+            Runtime.getRuntime().exec(backupCommand);
+            log.info("Running: " + Arrays.toString(cleanupCommand));
+            Runtime.getRuntime().exec(cleanupCommand);
         } catch (IOException ignored) {
             log.error(ignored.getMessage());
         }

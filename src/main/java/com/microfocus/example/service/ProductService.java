@@ -62,7 +62,6 @@ public class ProductService {
     }
 
     public List<Product> listAll(Integer pageNo, String keywords) {
-        int noOfRecords = 1;
         if (keywords != null && !keywords.isEmpty()) {
             return productRepository.findProductsByKeywords(keywords, pageNo, pageSize);
         }

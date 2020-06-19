@@ -58,17 +58,10 @@ public class AdminUtils {
         String[] cleanupCommand = {
                 "cmd.exe", "/K", "c:\\util\\cleanup.bat"
         };
-        Process p = null;
-        try {
-            log.info("Running: " + Arrays.toString(backupCommand));
-            p = Runtime.getRuntime().exec(backupCommand);
-            log.info("Exit value: " + p.exitValue());
-            log.info("Running: " + Arrays.toString(cleanupCommand));
-            p = Runtime.getRuntime().exec(cleanupCommand);
-            log.info("Exit value: " + p.exitValue());
-        } catch (IOException ignored) {
-            log.error(ignored.getMessage());
-        }
+        log.info("Running: " + Arrays.toString(backupCommand));
+        // call backup tool API
+        log.info("Running: " + Arrays.toString(cleanupCommand));
+        // call bacup tool API
         backupId = getBackupId();
         return backupId;
     }
