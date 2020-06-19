@@ -44,7 +44,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private static final Logger log = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
     @Autowired
-    private IUserRepository userRepository;
+    private UserRepositoryCustom userRepository;
 
     @Transactional
     @Override
