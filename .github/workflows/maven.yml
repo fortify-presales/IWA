@@ -27,7 +27,7 @@ jobs:
     steps:
     - name: Check code is secure
       id: fod
-      uses: fod-community-plugins/fod-github-action@v2
+      uses: fod-community-plugins/fod-github-action@v1
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         fod_access_key: ${{ secrets.FOD_ACCESS_KEY }}
