@@ -21,7 +21,6 @@ jobs:
     - name: Build with Maven
       run: mvn -Dmaven.compiler.debuglevel=lines,vars,source  -P fortify,jar -B clean package --file pom.xml
 
-jobs:
   check-quality:
     runs-on: ubuntu-latest
     name: A job to check my code quality
