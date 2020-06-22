@@ -11,9 +11,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 1.8
@@ -22,3 +20,22 @@ jobs:
         java-version: 1.8
     - name: Build with Maven
       run: mvn -Dmaven.compiler.debuglevel=lines,vars,source  -P fortify,jar -B clean package --file pom.xml
+
+jobs:
+  check-quality:
+    runs-on: ubuntu-latest
+    name: A job to check my code quality
+    steps:
+    - name: Check code is secure
+      id: fod
+      uses: fod-community-plugins/fod-github-action@master
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        fod_access_key: ${{ secrets.FOD_ACCESS_KEY }}
+        fod_secret_key: ${{ secrets.FOD_SECRET_KEY }}
+        bsi_token: 'ENTER_YOUR_BSI_TOKEN'
+        entitlement_preference: 'SubscriptionOnly'
+        remediation_scan_preference: 'NonRemediationScanOnly'
+        in_progress_scan_action: 'DoNotStartScan'
+        zip_location: 'fod.zip'
+        polling_interval: '5'
