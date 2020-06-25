@@ -1,13 +1,16 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Java CI with Maven
+name: Continuous Inspection with Maven and Fortify
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
+  #    - feature/**
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
 
 jobs:
   build:
@@ -20,21 +23,27 @@ jobs:
         java-version: 1.8
     - name: Build with Maven
       run: mvn -Dmaven.compiler.debuglevel=lines,vars,source  -P fortify,jar -B clean package --file pom.xml
-
-  check-quality:
-    runs-on: ubuntu-latest
-    name: A job to check my code quality
-    steps:
-    - name: Check code is secure
-      id: fod
-      uses: fod-community-plugins/fod-github-action@v1
+    - name: Zip up source code
+      uses: papeloto/action-zip@v1
+      with:
+        files: src/**
+        dest: fod.zip
+    - name: Static Analysis with FOD
+      uses: fortify-community-plugins/fod-github-action@v1
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
+        fod_credential_type: 'api'
         fod_access_key: ${{ secrets.FOD_ACCESS_KEY }}
         fod_secret_key: ${{ secrets.FOD_SECRET_KEY }}
-        bsi_token: 'ENTER_YOUR_BSI_TOKEN'
+        bsi_token: ${{ secrets.BSI_TOKEN }}
+        fod_release_id: 'master'
         entitlement_preference: 'SubscriptionOnly'
         remediation_scan_preference: 'NonRemediationScanOnly'
         in_progress_scan_action: 'DoNotStartScan'
+        audit_preference_id: 'Automated'
         zip_location: 'fod.zip'
-        polling_interval: '5'
+        polling_interval: '2'
+        notes: 'GitHub Action initiated scan'
+        update_commit: true
+        update_pr: false
+        use_test_data: false
