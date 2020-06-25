@@ -26,10 +26,10 @@ jobs:
     - name: Zip up source code
       uses: papeloto/action-zip@v1
       with:
-        files: src/**
+        files: src/ pom.xml
         dest: fod.zip
     - name: Static Analysis with FOD
-      uses: fortify-community-plugins/fod-github-action@v1
+      uses: fortify-community-plugins/fod-github-action@master
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         fod_credential_type: 'api'
