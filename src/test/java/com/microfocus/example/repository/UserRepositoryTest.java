@@ -6,25 +6,28 @@ import static org.assertj.core.api.Assertions.fail;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.microfocus.example.BaseIntegrationTest;
 import com.microfocus.example.DataSeeder;
 import com.microfocus.example.entity.User;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserRepositoryTest extends BaseIntegrationTest {
 
     @Autowired
     UserRepository userRepository;
 
     @Test
-    public void userRepository_existsById() {
+    public void a_userRepository_existsById() {
         if (!userRepository.existsById(1)) fail("Admin user does not exist");
     }
 
     @Test
-    public void userRepository_findUserById() {
+    public void b_userRepository_findUserById() {
         Optional<User> u = userRepository.findById(1);
         if (u.isPresent())
             assertThat(u.get().getUsername()).isEqualTo("admin");
@@ -33,7 +36,7 @@ public class UserRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void userRepository_findUserByUsername() {
+    public void c_userRepository_findUserByUsername() {
         Optional<User> u = userRepository.findUserByUsername("test");
         if (u.isPresent())
             assertThat(u.get().getUsername()).isEqualTo("test");
@@ -42,13 +45,13 @@ public class UserRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void userRepository_findAll() {
+    public void d_userRepository_findAll() {
         List<User> users = userRepository.findAll();
         assertThat(users.size()).isEqualTo(3L);
     }
 
     @Test
-    public void userRepository_persist() {
+    public void e_userRepository_persist() {
         User u = DataSeeder.generateUser();
         userRepository.save(u);
         if (!userRepository.existsById(u.getId())) fail("Test user 2 does not exist");
@@ -60,7 +63,7 @@ public class UserRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void userRepository_update() {
+    public void f_userRepository_update() {
         Optional<User> optionalUser = userRepository.findUserByUsername("test");
         if (optionalUser.isPresent()) {
             assertThat(optionalUser.get().getUsername()).isEqualTo("test");
