@@ -16,20 +16,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+
     - name: Build with Maven
       run: mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dtest=!UserServiceTest -P fortify,jar -B clean package --file pom.xml
+
     - name: Zip up source code
       uses: papeloto/action-zip@v1
       with:
-        files: src/ pom.xml
+        files: src/main/java pom.xml
         dest: fod.zip
+
     - name: Static Analysis with FOD
-      uses: fortify-community-plugins/fod-github-action@master
+      uses: fortify-community-plugins/fod-github-action@v1-alpha
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         fod_credential_type: 'api'

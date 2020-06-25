@@ -25,7 +25,7 @@ call sourceanalyzer -Dcom.fortify.sca.ProjectRoot=.fortify -b secure-web-app -jd
 echo ************************************************************
 echo Scanning the application...
 echo ************************************************************
-call sourceanalyzer -Dcom.fortify.sca.ProjectRoot=.fortify -b secure-web-app ‑build‑project "Secure Web App" -build-version "1.0" -build-label "SNAPSHOT" -scan -filter etc\sca-filter.txt -f target\secure-web-app.fpr
+call sourceanalyzer -Dcom.fortify.sca.ProjectRoot=.fortify -b secure-web-app ‑build‑project "Secure Web App" -build-version "v1.0" -build-label "SNAPSHOT" -scan -filter etc\sca-filter.txt -f target\secure-web-app.fpr
 
 echo ************************************************************
 echo Generating report

@@ -74,6 +74,17 @@ docker build -t secure-web-app .
 The `Dockerfile` provided is for creating Linux image (recommended). There is also a
 `Dockerfile.win` for creating a Windows image if required. 
 
+Using GitHub Actions
+--------------------
+
+This repository includes a [GitHub Actions](https://github.com/features/actions) example
+[workflow](.github/workflows/continuous_inspection.yml) that
+automates the build of the application and uploads the source code to
+[Fortify on Demand](https://www.microfocus.com/en-us/products/application-security-testing) for static analysis. 
+
+To integrate with Fortify on Demand it makes use of [fod-github-action](https://github.com/fortify-community-plugins/fod-github-action).
+The example workflow runs on every push to the *master* branch and on every "pull request" that is created.
+
 Using Jenkins
 -------------
 
