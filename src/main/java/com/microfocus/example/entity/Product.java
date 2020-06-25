@@ -19,25 +19,10 @@
 
 package com.microfocus.example.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.microfocus.example.utils.EncryptedPasswordUtils;
-import org.hibernate.validator.constraints.Email;
-import org.springframework.context.annotation.Bean;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Product entiy
@@ -79,6 +64,20 @@ public class Product implements Serializable {
     private Boolean available;
 
     public Product() {
+    }
+
+    public Product(Integer id, String code, String name, String summary, String description, float tradePrice,
+                   float retailPrice, int deliveryTime, int averageRating, boolean available) {
+        this.id = id;
+        this.code = code;
+        this.name = name;
+        this.summary = summary;
+        this.description = description;
+        this.trade_price = tradePrice;
+        this.retail_price = retailPrice;
+        this.delivery_time = deliveryTime;
+        this.average_rating = averageRating;
+        this.available = available;
     }
 
     public long getId() {
@@ -149,7 +148,7 @@ public class Product implements Serializable {
         return average_rating;
     }
 
-    public void setAveragRating(int average_rating) {
+    public void setAverageRating(int average_rating) {
         this.average_rating = average_rating;
     }
 

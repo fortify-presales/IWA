@@ -53,7 +53,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     public Optional<Product> findByCode(String code) {
         List<Product> result = new ArrayList<>();
         Query q = entityManager.createQuery(
-                "SELECT p FROM Product p WHERE p.code = ?1",
+                "SELECT p FROM Product p WHERE lower(p.code) = lower(?1)",
                 Product.class);
         q.setParameter(1, code);
         result = (List<Product>)q.getResultList();
@@ -82,9 +82,9 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         List<Product> result = new ArrayList<>();
         int offset = (pageNumber == 1 ? 0 : ((pageNumber-1)*pageSize));
         Query q = entityManager.createQuery(
-                "SELECT p FROM Product p WHERE name LIKE :keywords",
+                "SELECT p FROM Product p WHERE lower(p.name) LIKE lower('%"+ keywords + "%')",
                 Product.class);
-        q.setParameter("keywords", keywords);
+        //q.setParameter(1, keywords);
         q.setFirstResult(offset);
         q.setMaxResults(pageSize);
         result = (List<Product>)q.getResultList();

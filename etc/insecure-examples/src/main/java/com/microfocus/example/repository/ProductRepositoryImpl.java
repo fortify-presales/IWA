@@ -20,13 +20,15 @@
 package com.microfocus.example.repository;
 
 import com.microfocus.example.entity.Product;
+import org.hibernate.Session;
+import org.hibernate.jdbc.ReturningWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,49 +44,161 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     private final ProductRepositoryBasic productRepositoryBasic;
 
-    @PersistenceContext
-    EntityManager entityManager;
-
     public ProductRepositoryImpl(ProductRepositoryBasic productRepositoryBasic) {
         this.productRepositoryBasic = productRepositoryBasic;
     }
 
+    @PersistenceContext
+    EntityManager entityManager;
+
     @SuppressWarnings("unchecked")
     public List<Product> listProducts(int pageNumber, int pageSize) {
-        List<Product> result = new ArrayList<>();
+        List<Product> products = new ArrayList<>();
         int offset = (pageNumber == 1 ? 0 : ((pageNumber-1)*pageSize));
+
 // INSECURE EXAMPLE: SQL Injection
-        Query q = entityManager.createNativeQuery(
-                "SELECT * FROM product LIMIT "  + pageSize + " OFFSET " + offset,
-                Product.class);
+
+        Session session = entityManager.unwrap(Session.class);
+        Integer productCount = session.doReturningWork(new ReturningWork<Integer>() {
+
+            @Override
+            public Integer execute(Connection con) throws SQLException {
+                Integer productCount = 0;
+                try {
+                    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                    ResultSet results = stmt.executeQuery("SELECT id, code, name, summary, description, trade_price, " +
+                            "retail_price, delivery_time, average_rating, available FROM product LIMIT " + pageSize +
+                            " OFFSET " + offset);
+                    if (results.getStatement() != null) {
+                        while (results.next()) {
+                            productCount++;
+                            products.add(new Product(results.getInt("id"),
+                                    results.getString("code"),
+                                    results.getString("name"),
+                                    results.getString("summary"),
+                                    results.getString("description"),
+                                    results.getFloat("trade_price"),
+                                    results.getFloat("retail_price"),
+                                    results.getInt("delivery_time"),
+                                    results.getInt("average_rating"),
+                                    results.getBoolean("available")
+                            ));
+                        }
+                    } else {
+                        log.info("No products found");
+                    }
+                } catch (SQLException ex) {
+                    log.error(ex.getLocalizedMessage());
+                }
+                return productCount;
+            }
+        });
+        log.debug("Found " + productCount + " products.");
+
 // END EXAMPLE
-        result = (List<Product>)q.getResultList();
-        return result;
+
+        return products;
     }
 
     @SuppressWarnings("unchecked")
     public Optional<Product> findByCode(String code) {
-        org.hibernate.query.Query<Product> query = (org.hibernate.query.Query<Product>) entityManager.createNativeQuery("SELECT * FROM product WHERE code = ?", Product.class);
-        query.setParameter(1, code);
-        List<Product> results = (List<Product>) query.getResultList();
+        List<Product> products = new ArrayList<>();
         Optional<Product> optionalProduct = Optional.empty();
-        if (!query.getResultList().isEmpty()) {
-            optionalProduct = Optional.of(results.get(0));
+
+// INSECURE EXAMPLE: SQL Injection
+
+        Session session = entityManager.unwrap(Session.class);
+        Integer productCount = session.doReturningWork(new ReturningWork<Integer>() {
+
+            @Override
+            public Integer execute(Connection con) throws SQLException {
+                Integer productCount = 0;
+                try {
+                    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                    ResultSet results = stmt.executeQuery("SELECT id, code, name, summary, description, trade_price, " +
+                            "retail_price, delivery_time, average_rating, available FROM product WHERE lower(code) = " +
+                            code.toLowerCase());
+                    if (results.getStatement() != null) {
+                        while (results.next()) {
+                            productCount++;
+                            products.add(new Product(results.getInt("id"),
+                                    results.getString("code"),
+                                    results.getString("name"),
+                                    results.getString("summary"),
+                                    results.getString("description"),
+                                    results.getFloat("trade_price"),
+                                    results.getFloat("retail_price"),
+                                    results.getInt("delivery_time"),
+                                    results.getInt("average_rating"),
+                                    results.getBoolean("available")
+                            ));
+                        }
+                    } else {
+                        log.info("No products found");
+                    }
+                } catch (SQLException ex) {
+                    log.error(ex.getLocalizedMessage());
+                }
+                return productCount;
+            }
+        });
+        log.debug("Found " + productCount + " product(s).");
+
+// END EXAMPLE
+
+        if (!products.isEmpty()) {
+            optionalProduct = Optional.of(products.get(0));
         }
         return optionalProduct;
     }
 
     @SuppressWarnings("unchecked")
     public List<Product> findProductsByKeywords(String keywords, int pageNumber, int pageSize) {
-        List<Product> result = new ArrayList<>();
+        List<Product> products = new ArrayList<>();
         int offset = (pageNumber == 1 ? 0 : ((pageNumber-1)*pageSize));
+
 // INSECURE EXAMPLE: SQL Injection
-        Query q = entityManager.createNativeQuery(
-                "SELECT * FROM product WHERE name LIKE '%" + keywords + "%' LIMIT " + pageSize + " OFFSET " + offset,
-                Product.class);
+
+        Session session = entityManager.unwrap(Session.class);
+        Integer productCount = session.doReturningWork(new ReturningWork<Integer>() {
+
+            @Override
+            public Integer execute(Connection con) throws SQLException {
+                Integer productCount = 0;
+                try {
+                    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                    ResultSet results = stmt.executeQuery("SELECT id, code, name, summary, description, trade_price, " +
+                            "retail_price, delivery_time, average_rating, available FROM product WHERE lower(name) LIKE '%" +
+                            keywords.toLowerCase() + "%' LIMIT " + pageSize + " OFFSET " + offset);
+                    if (results.getStatement() != null) {
+                        while (results.next()) {
+                            productCount++;
+                            products.add(new Product(results.getInt("id"),
+                                    results.getString("code"),
+                                    results.getString("name"),
+                                    results.getString("summary"),
+                                    results.getString("description"),
+                                    results.getFloat("trade_price"),
+                                    results.getFloat("retail_price"),
+                                    results.getInt("delivery_time"),
+                                    results.getInt("average_rating"),
+                                    results.getBoolean("available")
+                            ));
+                        }
+                    } else {
+                        log.info("No products found");
+                    }
+                } catch (SQLException ex) {
+                    log.error(ex.getLocalizedMessage());
+                }
+                return productCount;
+            }
+        });
+        log.debug("Found " + productCount + " products.");
+
 // END EXAMPLE
 
-        result = (List<Product>)q.getResultList();
-        return result;
+        return products;
     }
+
 }
