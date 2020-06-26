@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Products View</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+
+    <div class="row">
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/admin/}">Site Admin</a></li>
+                <li class="breadcrumb-item" aria-current="page"><a th:href="@{/admin/products/}">Products</a></li>
+                <li class="breadcrumb-item active" aria-current="page">View</li>
+            </ol>
+        </nav>
+
+        <div th:replace="fragments/admin-menu.html
+                    :: adminMenu('/admin/', ${messageCount})">
+        </div>
+
+        <div class="col-md-10">
+            <div class="col-md-10">
+                <form>
+                    <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                        <span th:text="${message}">message</span>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="form-group row">
+                        <label for="code" class="col-sm-2 col-form-label">Code:</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control" id="code" th:value="${productForm.code}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="name" class="col-sm-2 col-form-label">Name:</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control" id="name" th:value="${productForm.name}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="summary" class="col-sm-2 col-form-label">Summary:</label>
+                        <div class="col-sm-10">
+                            <textarea readonly class="form-control" rows="5" id="summary" th:field="${productForm.summary}"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="description" class="col-sm-2 col-form-label">Description:</label>
+                        <div class="col-sm-10">
+                            <textarea readonly class="form-control" rows="5" id="description" th:field="${productForm.description}"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="image" class="col-sm-2 col-form-label">Image:</label>
+                        <div class="col-xs-4">
+                            <input type="text" readonly class="form-control" id="image" th:value="${productForm.image}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="trade_price" class="col-sm-2 col-form-label">Trade Price:</label>
+                        <div class="col-xs-2">
+                            <input type="text" readonly class="form-control" id="trade_price" th:value="${#strings.replace(#numbers.formatCurrency(productForm.tradePrice), '.00', '')}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="retail_price" class="col-sm-2 col-form-label">Retail Price:</label>
+                        <div class="col-xs-2">
+                            <input type="text" readonly class="form-control" id="retail_price" th:value="${#strings.replace(#numbers.formatCurrency(productForm.retailPrice), '.00', '')}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="delivery_time" class="col-sm-2 col-form-label">Delivery Time:</label>
+                        <div class="col-xs-2">
+                            <input type="text" readonly class="form-control" id="delivery_time" th:value="${productForm.deliveryTime}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="average-rating" class="col-sm-2 col-form-label">Average Rating:</label>
+                        <div class="col-xs-2">
+                            <span th:each="i : ${#numbers.sequence( 1, productForm.averageRating, 1)}">
+                                <i class="fas fa-star" style="color: cornflowerblue"> </i>
+                            </span>
+                            <span th:if="${productForm.averageRating != 5}">
+                                <span th:each="i : ${#numbers.sequence(productForm.averageRating, 4, 1)}">
+                                    <i class="fas fa-star" style="color: gray"> </i>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="available" class="col-sm-2 col-form-label">Available:</label>
+                        <div class="col-sm-10">
+                            <input class="form-check-input" type="checkbox" th:value="${productForm.available}" id="available" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <a class="btn btn-primary" th:href="@{/admin/products/{id}/edit(id=${productForm.id})}">Edit Product</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>

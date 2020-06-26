@@ -21,7 +21,11 @@ package com.microfocus.example.service;
 
 import com.microfocus.example.entity.Product;
 import com.microfocus.example.entity.User;
+import com.microfocus.example.exception.ProductNotFoundException;
+import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.repository.ProductRepository;
+import com.microfocus.example.web.form.ProductForm;
+import com.microfocus.example.web.form.UserForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +78,26 @@ public class ProductService {
 
     public void save(Product user) {
         productRepository.save(user);
+    }
+
+    public Product adminSave(ProductForm productForm) throws ProductNotFoundException {
+        log.debug("ProductService:adminSave: " + productForm.toString());
+        Optional<Product> optionalProduct = productRepository.findByCode(productForm.getCode());
+        if (optionalProduct.isPresent()) {
+            Product product = optionalProduct.get();
+            product.setName(productForm.getName());
+            product.setSummary(productForm.getSummary());
+            product.setDescription(productForm.getDescription());
+            product.setImage(productForm.getImage());
+            product.setTradePrice(productForm.getTradePrice());
+            product.setRetailPrice(productForm.getRetailPrice());
+            product.setDeliveryTime(productForm.getDeliveryTime());
+            product.setAverageRating(productForm.getAverageRating());
+            product.setAvailable(productForm.getAvailable());
+            return product;
+        } else {
+            throw new ProductNotFoundException("Product not found: " + productForm.getCode());
+        }
     }
 
     public Product get(Integer id) {

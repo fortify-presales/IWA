@@ -32,6 +32,7 @@ create table product (
     name varchar(255) not null,
     summary clob not null,
     description clob not null,
+    image varchar(255),
     trade_price float not null,
     retail_price float not null,
     delivery_time integer not null,

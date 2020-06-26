@@ -24,7 +24,12 @@
         <div class="col-md-12">
             <div class="media">
                 <div class="media-left media-middle col-md-2" style="padding-top: 25px">
-                    <img th:src="@{/img/awaiting-image.png}" alt="Awaiting Image" width="100" height="100" class="img-thumbnail">
+                    <span th:if="${product.image} != null and ${product.image} != ''">
+                        <img th:src="@{'/img/products/' + ${product.image}}" alt="Image" width="100" height="100" class="img-thumbnail">
+                    </span>
+                    <span th:if="${product.image} == null or ${product.image == ''}">
+                        <img th:src="@{/img/awaiting-image.png}" alt="Awaiting Image" width="100" height="100" class="img-thumbnail">
+                    </span>
                 </div>
                 <div class="col-md-10">
                     <div class="media-body">
@@ -38,7 +43,9 @@
                                 </span>
                         </span>
                         <h5><span th:text="${product.code}"> Code </span></h5>
-                        <h5><span th:text="#{currency.symbol}"> Currency </span> <span th:text="${product.retailPrice}"> Retail Price </span></h5>
+                        <h5>
+                            <span th:text="${currencySymbol}"> Currency </span> <span th:text="${#strings.replace(#numbers.formatCurrency(product.retailPrice), '.00', '')}"> Retail Price </span>
+                        </h5>
                         <p><span th:text="${product.summary}"> Summary </span></p>
                         <p><span th:text="${product.description}"> Description </span></p>
                         <h5><span th:utext="${product.available}? 'Currently available': 'Not currently available'"> Availability</span>.</h5>

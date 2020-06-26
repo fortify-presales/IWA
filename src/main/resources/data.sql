@@ -5,10 +5,11 @@ INSERT INTO user (id, username, password, name, email, mobile, date_created, ena
 INSERT INTO user_authority (authority_id, user_id) VALUES (1, 1);
 INSERT INTO user_authority (authority_id, user_id) VALUES (2, 1);
 INSERT INTO user_authority (authority_id, user_id) VALUES (2, 2);
-INSERT INTO product (id, code, name, average_rating, summary, description, trade_price, retail_price, delivery_time, available)
+INSERT INTO product (id, code, name, average_rating, summary, description, image, trade_price, retail_price, delivery_time, available)
     VALUES (1,'SWA234-A568-00010','Solodox 750',4,
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pharetra enim erat, sed tempor mauris viverra in. Donec ante diam, rhoncus dapibus efficitur ut, sagittis a elit. Integer non ante felis. Curabitur nec lectus ut velit bibendum euismod. Nulla mattis convallis neque ac euismod. Ut vel mattis lorem, nec tempus nibh. Vivamus tincidunt enim a risus placerat viverra. Curabitur diam sapien, posuere dignissim accumsan sed, tempus sit amet diam. Aliquam tincidunt vitae quam non rutrum. Nunc id sollicitudin neque, at posuere metus. Sed interdum ex erat, et ornare purus bibendum id. Suspendisse sagittis est dui. Donec vestibulum elit at arcu feugiat porttitor.',
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pharetra enim erat, sed tempor mauris viverra in. Donec ante diam, rhoncus dapibus efficitur ut, sagittis a elit. Integer non ante felis. Curabitur nec lectus ut velit bibendum euismod. Nulla mattis convallis neque ac euismod. Ut vel mattis lorem, nec tempus nibh. Vivamus tincidunt enim a risus placerat viverra. Curabitur diam sapien, posuere dignissim accumsan sed, tempus sit amet diam. Aliquam tincidunt vitae quam non rutrum. Nunc id sollicitudin neque, at posuere metus. Sed interdum ex erat, et ornare purus bibendum id. Suspendisse sagittis est dui. Donec vestibulum elit at arcu feugiat porttitor.',
+    'generic-product-1.jpg',
     32.0,100.0,30,1);
 INSERT INTO product (id, code, name, average_rating, summary, description, trade_price, retail_price, delivery_time, available)
     VALUES (2,'SWA534-F528-00115','Alphadex Plus',5,

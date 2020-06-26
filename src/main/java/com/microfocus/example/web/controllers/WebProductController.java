@@ -45,7 +45,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -90,6 +92,9 @@ public class WebProductController {
 
 
     private Model setModelDefaults(Model model, Principal principal, String controllerName, String actionName) {
+        Locale currentLocale = Locale.getDefault();
+        Currency currency = Currency.getInstance(currentLocale);
+        model.addAttribute("currencySymbol", currency.getCurrencyCode());
         model.addAttribute("user", WebUtils.getLoggedInUser(principal));
         model.addAttribute("messageCount", "0");
         model.addAttribute("controllerName", controllerName);

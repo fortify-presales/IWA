@@ -26,7 +26,11 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.microfocus.example.entity.Product;
 import com.microfocus.example.exception.BackupException;
+import com.microfocus.example.exception.ProductNotFoundException;
+import com.microfocus.example.service.ProductService;
+import com.microfocus.example.web.form.ProductForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,11 +69,16 @@ public class WebAdminController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ProductService productService;
+
     @GetMapping(value = {"", "/"})
     public String index(Model model, Principal principal) {
         this.setModelDefaults(model, principal, "Admin", "index");
         return "admin/index";
     }
+
+    // Users
 
     @GetMapping("/users")
     public String listUsers(Model model, Principal principal) {
@@ -134,6 +143,70 @@ public class WebAdminController {
         this.setModelDefaults(model, principal, "Admin", "userEdit");
         return "admin/users/edit";
     }
+
+    /// Products
+
+    @GetMapping("/products")
+    public String listProducts(Model model, Principal principal) {
+        List<Product> products = productService.listAll();
+        model.addAttribute("products", products);
+        this.setModelDefaults(model, principal, "Admin", "products");
+        return "admin/products/index";
+    }
+
+    @GetMapping("/products/{id}")
+    public String viewProducts(@PathVariable("id") Integer productId,
+                           Model model, Principal principal) {
+        Optional<Product> optionalProduct = productService.findById(productId);
+        if (optionalProduct.isPresent()) {
+            ProductForm productForm = new ProductForm(optionalProduct.get());
+            model.addAttribute("productForm", productForm);
+        } else {
+            model.addAttribute("message", "Internal error accessing product!");
+            model.addAttribute("alertClass", "alert-danger");
+            return "product/not-found";
+        }
+        this.setModelDefaults(model, principal, "Admin", "productView");
+        return "admin/products/view";
+    }
+
+    @GetMapping("/products/{id}/edit")
+    public String productEdit(@PathVariable("id") Integer productId,
+                                  Model model, Principal principal) {
+        Optional<Product> optionalProduct = productService.findById(productId);
+        if (optionalProduct.isPresent()) {
+            ProductForm productForm = new ProductForm(optionalProduct.get());
+            model.addAttribute("productForm", productForm);
+        } else {
+            model.addAttribute("message", "Internal error accessing product!");
+            model.addAttribute("alertClass", "alert-danger");
+            return "product/not-found";
+        }
+        this.setModelDefaults(model, principal, "Admin", "productEdit");
+        return "admin/products/edit";
+    }
+
+    @PostMapping("/products/{id}/save")
+    public String productSave(@Valid @ModelAttribute("productForm") ProductForm productForm,
+                                  BindingResult bindingResult, Model model,
+                                  RedirectAttributes redirectAttributes,
+                                  Principal principal) {
+        if (!bindingResult.hasErrors()) {
+            try {
+                productService.adminSave(productForm);
+                redirectAttributes.addFlashAttribute("message", "Product updated successfully.");
+                redirectAttributes.addFlashAttribute("alertClass", "alert-success");
+                return "redirect:/admin/products/" + productForm.getId();
+            } catch (ProductNotFoundException ex) {
+                FieldError usernameError = new FieldError("productForm", "name", ex.getMessage());
+                bindingResult.addError(usernameError);
+            }
+        }
+        this.setModelDefaults(model, principal, "Admin", "productEdit");
+        return "admin/products/edit";
+    }
+
+    // Other
 
     @GetMapping("/backup")
     public String databaseBackup(Model model, Principal principal) {

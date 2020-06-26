@@ -1,5 +1,6 @@
 body {
-  background-color: #f8f9fa;
+    background-color: #f8f9fa;
+    padding-bottom: 50px;
 }
 
 footer {
@@ -25,53 +26,53 @@ footer a:hover{
 }
 
 .jumbotron {
-  background-color: #fff;
-  background-size: 100% 100%;
-  padding-top: 3rem;
-  padding-bottom: 3rem;
-  margin-bottom: 30px;
+    background-color: #fff;
+    background-size: 100% 100%;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    margin-bottom: 30px;
 }
 
 .jumbotron p:last-child {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .jumbotron h1 {
-  font-weight: 300;
+    font-weight: 300;
 }
 
 .jumbotron .container {
-  max-width: 40rem;
+    max-width: 40rem;
 }
 
 .form-login {
-  width: 100%;
-  max-width: 330px;
-  padding: 15px;
-  margin: 0 auto;
+    width: 100%;
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
 }
 .form-login .checkbox {
-  font-weight: 400;
+    font-weight: 400;
 }
 .form-login .form-control {
-  position: relative;
-  box-sizing: border-box;
-  height: auto;
-  padding: 10px;
-  font-size: 16px;
+    position: relative;
+    box-sizing: border-box;
+    height: auto;
+    padding: 10px;
+    font-size: 16px;
 }
 .form-login .form-control:focus {
-  z-index: 2;
+    z-index: 2;
 }
 .form-login input[type="username"] {
-  margin-bottom: -1px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 }
 .form-login input[type="password"] {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 .panel-group .panel {

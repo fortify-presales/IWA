@@ -17,70 +17,71 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.entity;
+package com.microfocus.example.web.form;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+import com.microfocus.example.entity.Product;
+
+import javax.validation.constraints.*;
 
 /**
- * Product entiy
+ * Form backing entity/DTO for updating product
+ *
  * @author Kevin A. Lee
  */
-@Entity
-@Table(name = "product")
-public class Product implements Serializable {
+public class ProductForm {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Min(1)
     private Integer id;
 
-    @NotEmpty(message= "Product code must not be blank")
+    @NotEmpty(message = "{code.notEmpty}")
+    @Size(min = 6, max = 40, message = "{code.invalidLength}")
     private String code;
 
-    @NotEmpty(message= "Product name must not be blank")
+    @NotEmpty(message = "{name.notEmpty}")
+    @Size(min = 6, max = 40, message = "{name.invalidLength}")
     private String name;
 
-    @NotEmpty(message= "Product summary must not be blank")
+    @NotEmpty(message = "{summary.notEmpty}")
+    @Size(min = 10, message = "{summary.invalidLength}")
     private String summary;
 
-    @NotEmpty(message= "Product description must not be blank")
+    @NotEmpty(message = "{description.notEmpty}")
+    @Size(min = 40, message = "{description.invalidLength}")
     private String description;
 
     private String image;
 
-    @NotNull(message= "Product trade price must not be null")
+    @Min(value = 0, message = "{trade_price.invalidValue}")
     private float trade_price;
 
-    @NotNull(message= "Product retail price must not be null")
+    @Min(value = 0, message = "{retail_price.invalidValue}")
     private float retail_price;
 
-    @NotNull(message= "Product delivery time must not be null")
+    @Min(value = 1, message = "{delivery_time.invalidValue}")
+    @Max(value = 365, message = "{delivery_time.invalidValue}")
     private int delivery_time;
 
-    @NotNull
+    @Min(value = 1, message = "{average_rating.invalidValue}")
+    @Max(value = 5, message = "{average_rating.invalidValue}")
     private int average_rating;
 
-    @NotNull
     private Boolean available;
 
-    public Product() {
+    public ProductForm() {
     }
 
-    public Product(Integer id, String code, String name, String summary, String description, String image, float tradePrice,
-                   float retailPrice, int deliveryTime, int averageRating, boolean available) {
-        this.id = id;
-        this.code = code;
-        this.name = name;
-        this.summary = summary;
-        this.description = description;
-        this.image = image;
-        this.trade_price = tradePrice;
-        this.retail_price = retailPrice;
-        this.delivery_time = deliveryTime;
-        this.average_rating = averageRating;
-        this.available = available;
+    public ProductForm(Product product) {
+        this.id = product.getId();
+        this.code = product.getCode();
+        this.name = product.getName();
+        this.summary = product.getSummary();
+        this.description = product.getDescription();
+        this.image = product.getImage();
+        this.trade_price = product.getTradePrice();
+        this.retail_price = product.getRetailPrice();
+        this.delivery_time = product.getDeliveryTime();
+        this.average_rating = product.getAverageRating();
+        this.available = product.getAvailable();
     }
 
     public Integer getId() {
@@ -173,7 +174,7 @@ public class Product implements Serializable {
 
     @Override
     public String toString() {
-        return "Product(" + id + " : " + name + " : SRP : " + retail_price + ")";
+        return "ProductForm(" + id + " : " + name + " : SRP : " + retail_price + ")";
     }
 
 }

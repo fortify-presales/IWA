@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Products</title>
+</head>
+    <body>
+        <div layout:fragment="content" th:remove="tag">
+
+            <div class="row">
+
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/admin/}">Site Admin</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Products</li>
+                    </ol>
+                </nav>
+
+                <div th:replace="fragments/admin-menu.html
+                    :: adminMenu('/admin/', ${messageCount})">
+                </div>
+
+                <div class="col-md-10">
+                    <table class="table">
+                        <caption>Products</caption>
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Code</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Retail Price</th>
+                            <th scope="col">Rating</th>
+                            <th scope="col">Available</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${products.empty}">
+                            <td colspan="2"> No Products Available </td>
+                        </tr>
+                        <tr th:each="p : ${products}">
+                            <td><a th:href="@{/admin/products/{id}(id=${p.id})}"><span th:text="${p.id}"> # </span></a></td>
+                            <td><span th:text="${p.code}"> Code </span></td>
+                            <td><span th:text="${p.name}"> Name </span></td>
+                            <td>
+                                <span th:text="${#strings.replace(#numbers.formatCurrency(p.retailPrice), '.00', '')}"> Retail Price </span>
+                            </td>
+                            <td>
+                                <span th:each="i : ${#numbers.sequence( 1, p.averageRating, 1)}">
+                                    <i class="fas fa-star" style="color: cornflowerblue"> </i>
+                                </span>
+                                    <span th:if="${p.averageRating != 5}">
+                                    <span th:each="i : ${#numbers.sequence(p.averageRating, 4, 1)}">
+                                        <i class="fas fa-star" style="color: gray"> </i>
+                                    </span>
+                                </span>
+                            </td>
+                            <td>
+                                <span th:if="${p.available}"> <i class="fas fa-check"></i> </span>
+                                <span th:unless="${p.available}"> <i class="fas fa-times"></i> </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <a class="btn btn-primary" th:href="@{/admin/product/new}">New Product</a>
+                </div>
+
+            </div>
+        </div>
+    </body>
+</html>

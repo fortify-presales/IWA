@@ -46,14 +46,17 @@
                             <td><span th:text="${u.name}"> Name </span></td>
                             <td><span th:text="${u.email}"> Email </span></td>
                             <td><span th:text="${u.mobile}"> Mobile </span></td>
-                            <td><span th:text="${u.enabled}"> Enabled </span></td>
+                            <td>
+                                <span th:if="${u.enabled}"> <i class="fas fa-check"></i> </span>
+                                <span th:unless="${u.enabled}"> <i class="fas fa-times"></i> </span>
+                            </td>
                             <td>
                                 <span th:each="a : ${u.authorities}"><span th:text="${a.name}"> Authority </span>,</span>
                             </td>
                         </tr>
                         </tbody>
                     </table>
-                    <a class="btn btn-primary" th:href="@{/admin/user/new}">Create New User</a>
+                    <a class="btn btn-primary" th:href="@{/admin/user/new}">New User</a>
                 </div>
 
             </div>
