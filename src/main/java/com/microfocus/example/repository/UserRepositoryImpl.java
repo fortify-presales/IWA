@@ -69,6 +69,17 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     }
 
     @SuppressWarnings("unchecked")
+    public List<User> findUsersByUsername(String username) {
+        List<User> result = new ArrayList<>();
+        Query q = entityManager.createQuery(
+                "SELECT u FROM User u WHERE u.username LIKE :username",
+                User.class);
+        q.setParameter("username", username);
+        result = (List<User>)q.getResultList();
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
 	public List<User> findUsersByEnabledAndUsername(boolean enabled, String username) {
         List<User> result = new ArrayList<>();
         Query q = entityManager.createQuery(

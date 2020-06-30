@@ -33,7 +33,7 @@ public class UserServiceTest extends BaseIntegrationTest {
 
     @Test
     public void b_userService_findUserByUsername() {
-        Optional<User> u = userService.findUserByUsername("test");
+        Optional<User> u = userService.findByUsername("test");
         if (u.isPresent())
             assertThat(u.get().getUsername()).isEqualTo("test");
         else
@@ -50,13 +50,13 @@ public class UserServiceTest extends BaseIntegrationTest {
     public void d_userService_save() {
         List<User> users = userService.listAll();
         System.out.println("[USERS] " + users.size());
-        Optional<User> optionalUser = userService.findUserByUsername("test");
+        Optional<User> optionalUser = userService.findByUsername("test");
         if (optionalUser.isPresent()) {
             UserForm userForm = new UserForm(optionalUser.get());
             userForm.setName("Test User Updated");
             try {
                 userService.save(userForm);
-                Optional<User> updatedUser = userService.findUserByUsername("test");
+                Optional<User> updatedUser = userService.findByUsername("test");
                 if (updatedUser.isPresent()) {
                     assertThat(updatedUser.get().getName()).isEqualTo("Test User Updated");
                 }
@@ -71,14 +71,14 @@ public class UserServiceTest extends BaseIntegrationTest {
 
     @Test
     public void e_userService_updatePassword() {
-        Optional<User> optionalUser = userService.findUserByUsername("test");
+        Optional<User> optionalUser = userService.findByUsername("test");
         if (optionalUser.isPresent()) {
             PasswordForm passwordForm = new PasswordForm(optionalUser.get());
             passwordForm.setPassword("password2");
             passwordForm.setConfirmPassword("password2");
             try {
                 userService.updatePassword(optionalUser.get().getId(), passwordForm);
-                Optional<User> updatedUser = userService.findUserByUsername("test");
+                Optional<User> updatedUser = userService.findByUsername("test");
                 if (updatedUser.isPresent()) {
                     assertThat(updatedUser.get().getName()).isEqualTo("test user updated");
                 }

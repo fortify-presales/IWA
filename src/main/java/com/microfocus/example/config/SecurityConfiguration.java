@@ -19,12 +19,16 @@
 
 package com.microfocus.example.config;
 
+import com.microfocus.example.service.CustomUserDetailsService;
+import com.microfocus.example.web.BasicAuthenticationEntryPointCustom;
+import com.microfocus.example.web.UrlAuthenticationSuccessHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,9 +37,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import com.microfocus.example.service.CustomUserDetailsService;
-import com.microfocus.example.web.UrlAuthenticationSuccessHandler;
 
 /**
  * Configure Spring Security for custom application
@@ -47,8 +48,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final Logger log = LoggerFactory.getLogger(SecurityConfiguration.class);
 
+    public static final String REALM_NAME = "secure-web-app";
+
     @Autowired
     private CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    private BasicAuthenticationEntryPointCustom authenticationEntryPoint;
 
     @Value("${spring.profiles.active:Unknown}")
     private String activeProfile;
@@ -70,24 +76,35 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(
                     "/",
-                    "/products",
-                    "/products/*",
-                    "/services",
+                    "/products/**",
+                    "/services/**",
                     "/login",
                     "/logout",
                     "/register",
+                    "/swagger-resources/**",
+                    "/swagger-ui.html",
+                    "/v2/api-docs/**",
                     "/console/*",
                     "/site-message",
                     "/js/**/*",
                     "/css/**/*",
                     "/img/**/*",
                     "/webjars/**/*").permitAll()
+                // Only admin can access /admin portal
                 .antMatchers("/admin/**").hasRole("ADMIN")
+                // Only admin can perform HTTP delete operation
+                .antMatchers(HttpMethod.DELETE).hasRole("ADMIN")
+                // any admin/api user can perform api operations
+                .antMatchers("/api/**").hasAnyRole("ADMIN", "API")
                 .anyRequest().fullyAuthenticated();
 
-        httpSecurity.authorizeRequests().and().exceptionHandling().accessDeniedPage("/access-denied");
+        httpSecurity.authorizeRequests().and()
+                .exceptionHandling()
+                .accessDeniedPage("/access-denied");
 
-        httpSecurity.authorizeRequests().and().httpBasic();
+        httpSecurity.authorizeRequests().and().httpBasic()
+                .realmName(REALM_NAME)
+                .authenticationEntryPoint(authenticationEntryPoint);
 
         httpSecurity.authorizeRequests().and().formLogin()
                 .loginProcessingUrl("/j_spring_security_check")

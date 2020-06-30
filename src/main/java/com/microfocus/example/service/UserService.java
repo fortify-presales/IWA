@@ -53,7 +53,7 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public Optional<User> findUserByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         return userRepository.findUserByUsername(username);
     }
 
@@ -61,8 +61,8 @@ public class UserService {
         return (List<User>) userRepository.findAll();
     }
 
-    public void save(User user) {
-        userRepository.save(user);
+    public User save(User user) {
+        return userRepository.save(user);
     }
 
     public User save(UserForm userForm) throws InvalidPasswordException, UserNotFoundException {
@@ -123,7 +123,15 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    public List<User> findUsersByUsername(String username) {
+        return userRepository.findUsersByUsername(username);
+    }
+
     public List<User> findEnabledUsersByUsername(boolean enabled, String username) {
         return userRepository.findUsersByEnabledAndUsername(enabled, username);
+    }
+
+    public boolean existsById(Integer id) {
+        return userRepository.existsById(id);
     }
 }

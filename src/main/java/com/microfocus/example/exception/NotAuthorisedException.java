@@ -17,17 +17,16 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.entity;
+package com.microfocus.example.exception;
 
-/**
- * Supported Authentication type
- * @author Kevin A. Lee
- */
-public enum  AuthorityType {
-    ROLE_ADMIN,
-    ROLE_USER,
-    ROLE_API,
-    ROLE_GUEST,
-    ROLE_CUSTOMER,
-    ROLE_SUPERVISOR
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+public class NotAuthorisedException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    public NotAuthorisedException(String userName) {
+        super("Not authorised: " + userName);
+    }
 }

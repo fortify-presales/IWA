@@ -23,25 +23,26 @@
                             </li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
-                            <li class="nav-item text-nowrap" sec:authorize="hasRole('ROLE_USER')">
-                                <a class="nav-link" th:href="@{/user/}" th:text="@{${#authentication.name}}"
-                                   sec:authorize="isAuthenticated()"><span class="navbar-toggler-icon"></span>
-                                </a>
+                            <li sec:authorize="isAnonymous()">
+                                <a class="nav-link" th:href="@{/login}"><i class="fas fa-sign-in-alt fa-fw"></i> Login </a>
                             </li>
-                            <li class="nav-item text-nowrap" sec:authorize="hasRole('ROLE_ADMIN')">
-                                <a class="nav-link" th:href="@{/admin/}"><i class="fas fa-tools fa-fw"></i> Site Admin</a>
-                            </li>
-                            <li class="nav-item text-nowrap" sec:authorize="hasRole('ROLE_ADMIN')">
-                                <a class="nav-link" th:href="@{/console/}"><i class="fas fa-database fa-fw"></i> Database</a>
-                            </li>
-                            <li class="nav-item text-nowrap" sec:authorize="isAuthenticated()">
-                                <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt fa-fw"></i> Logout</a>
-                            </li>
-                            <li class="nav-item text-nowrap" sec:authorize="isAnonymous()">
-                                <a class="nav-link" th:href="@{/login}"><i class="fas fa-sign-in-alt fa-fw"></i> Login</a>
-                            </li>
+                            <!--
                             <li class="nav-item text-nowrap" sec:authorize="isAnonymous()">
                                 <a class="nav-link" th:href="@{/register}"><i class="fas fa-door-open"></i> Register</a>
+                            </li>
+                            -->
+                            <li sec:authorize="isAuthenticated()" class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" th:text="@{${#authentication.name}}"><i class="fas fa-user-circle fa-fw"></i>  User <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a th:href="@{/user/}"><i class="fas fa-address-card fa-fw"></i> Profile </a></li>
+                                    <li><a th:href="@{/admin/}" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fas fa-tools fa-fw"></i> Site Admin </a></li>
+                                    <li><a th:href="@{/console/}" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fas fa-database fa-fw"></i> Database Console</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li sec:authorize="isAuthenticated()">
+                                        <a class="nav-link" th:href="@{/swagger-ui.html}"><i class="fas fa-code fa-fw"></i> API Documentation </a>
+                                        <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt fa-fw"></i> Logout </a>
+                                    </li>
+                                </ul>
                             </li>
                         </ul>
                     </div>

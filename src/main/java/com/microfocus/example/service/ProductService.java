@@ -76,8 +76,8 @@ public class ProductService {
         return productRepository.count();
     }
 
-    public void save(Product user) {
-        productRepository.save(user);
+    public Product save(Product user) {
+        return productRepository.save(user);
     }
 
     public Product adminSave(ProductForm productForm) throws ProductNotFoundException {
@@ -106,6 +106,10 @@ public class ProductService {
 
     public void delete(Integer id) {
         productRepository.deleteById(id);
+    }
+
+    public boolean existsById(Integer id) {
+        return productRepository.existsById(id);
     }
 
 }

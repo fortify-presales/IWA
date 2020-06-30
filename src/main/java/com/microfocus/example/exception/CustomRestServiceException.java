@@ -1,5 +1,5 @@
 /*
-        Secure Web App
+        Java Web App
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -17,17 +17,19 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.entity;
+package com.microfocus.example.exception;
 
-/**
- * Supported Authentication type
- * @author Kevin A. Lee
- */
-public enum  AuthorityType {
-    ROLE_ADMIN,
-    ROLE_USER,
-    ROLE_API,
-    ROLE_GUEST,
-    ROLE_CUSTOMER,
-    ROLE_SUPERVISOR
+public class CustomRestServiceException extends Exception  {
+
+    public CustomRestServiceException() {
+        super();
+    }
+
+    public CustomRestServiceException(String message) {
+        super(message);
+    }
+
+    public CustomRestServiceException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

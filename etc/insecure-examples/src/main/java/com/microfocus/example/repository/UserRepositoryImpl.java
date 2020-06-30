@@ -68,9 +68,21 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     }
 
     @SuppressWarnings("unchecked")
+    public List<User> findUsersByUsername(String username) {
+        List<User> result = new ArrayList<>();
+// INSECURE EXAMPLE: SQL Injection
+        Query q = entityManager.createNativeQuery(
+                "SELECT * FROM user WHERE username LIKE '" + username + "'",
+                User.class);
+// END EXAMPLE
+        result = (List<User>)q.getResultList();
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
 	public List<User> findUsersByEnabledAndUsername(boolean enabled, String username) {
         List<User> result = new ArrayList<>();
-// INSECURE EXAMPLE: Empty Catch Block
+// INSECURE EXAMPLE: SQL Injection
         Query q = entityManager.createNativeQuery(
         "SELECT * FROM user WHERE enabled = '" + enabled + "'" +
                     " AND username LIKE '" + username + "'",

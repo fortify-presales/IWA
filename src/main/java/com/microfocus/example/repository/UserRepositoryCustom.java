@@ -32,6 +32,8 @@ public interface UserRepositoryCustom {
 
     Optional<User> findUserByUsername(String username);
 
+    List<User> findUsersByUsername(String username);
+
     List<User> findUsersByEnabledAndUsername(boolean enabled, String username);
 
 }
