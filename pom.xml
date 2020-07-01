@@ -142,11 +142,11 @@
             <artifactId>springfox-bean-validators</artifactId>
             <version>2.9.2</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>com.google.collections</groupId>
             <artifactId>google-collections</artifactId>
             <version>1.0</version>
-        </dependency>
+        </dependency-->
 
         <!-- Fortify SCA Annotations
         <dependency>

@@ -108,11 +108,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         httpSecurity.authorizeRequests().and().formLogin()
                 .loginProcessingUrl("/j_spring_security_check")
-                .successHandler(CustomAuthenticationSuccessHandler())
+//                .successHandler(CustomAuthenticationSuccessHandler())
                 .loginPage("/login")
                 .failureUrl("/login?error=true")
                 .usernameParameter("username")
-                .passwordParameter("password");
+                .passwordParameter("password")
+                .permitAll();
 
         httpSecurity.authorizeRequests().and().logout()
                 .invalidateHttpSession(true)

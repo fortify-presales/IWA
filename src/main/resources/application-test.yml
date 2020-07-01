@@ -4,12 +4,9 @@ server:
     whitelabel:
       enabled: false
 
-app:
-  messages:
-    home: Hello, Guest!
-
 spring:
-  profiles: test
+  profiles:
+    active: test
   main:
     allow-bean-definition-overriding: true
     banner-mode: "off"
@@ -53,3 +50,6 @@ logging:
     org.springframework.web: INFO
     org.springframework.security: INFO
 
+app:
+  messages:
+    home: Hello, Guest!

@@ -34,12 +34,12 @@
                             <li sec:authorize="isAuthenticated()" class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" th:text="@{${#authentication.name}}"><i class="fas fa-user-circle fa-fw"></i>  User <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a th:href="@{/user/}"><i class="fas fa-address-card fa-fw"></i> Profile </a></li>
-                                    <li><a th:href="@{/admin/}" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fas fa-tools fa-fw"></i> Site Admin </a></li>
-                                    <li><a th:href="@{/console/}" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fas fa-database fa-fw"></i> Database Console</a></li>
+                                    <li><a th:href="@{/user}"><i class="fas fa-address-card fa-fw"></i> User Profile </a></li>
+                                    <li><a th:href="@{/admin}" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fas fa-tools fa-fw"></i> Site Administration </a></li>
+                                    <li><a th:href="@{/console}" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fas fa-database fa-fw"></i> Database Console</a></li>
                                     <li role="separator" class="divider"></li>
                                     <li sec:authorize="isAuthenticated()">
-                                        <a class="nav-link" th:href="@{/swagger-ui.html}"><i class="fas fa-code fa-fw"></i> API Documentation </a>
+                                        <a class="nav-link" target="_blank" th:href="@{/swagger-ui.html}"><i class="fas fa-code fa-fw"></i> API Documentation </a>
                                         <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt fa-fw"></i> Logout </a>
                                     </li>
                                 </ul>

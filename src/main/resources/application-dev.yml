@@ -3,17 +3,15 @@ server:
   error:
     whitelabel:
       enabled: false
-
-app:
-  messages:
-    home: Hello, Guest!
+  servlet:
+    context-path: /secure-web-app
 
 spring:
-  profiles: dev
+  profiles:
+    active: dev
   main:
     allow-bean-definition-overriding: true
     banner-mode: "off"
-
   thymeleaf:
     cache: false
     check-template: true
@@ -46,6 +44,7 @@ spring:
   mvc:
     favicon:
       enabled: false
+    throw-exception-if-no-handler-found: true
 
 logging:
   level:
@@ -54,3 +53,6 @@ logging:
     org.springframework.web: INFO
     org.springframework.security: INFO
 
+app:
+  messages:
+    home: Hello, Guest!

@@ -47,8 +47,7 @@ You can also deploy the application to [WebSphere Liberty](https://developer.ibm
 using the following commands:
 
 ```
-mvn -Pwlp liberty:create liberty:install-feature liberty:deploy
-mvn -Pwlp liberty:start
+mvn -Pwar,wlp clean package liberty:create liberty:install-feature liberty:deploy liberty:start
 ```
 
 This will download a copy of WebSphere Liberty from the Internet, create a new server and
@@ -148,12 +147,12 @@ or use the _fortify-sca.bat_ script from the command line.
 Carrying out a Fortify WebInspect scan (from command line)
 ----------------------------------------------------------
 
-To carry out a WebInspect scan you will first need to have started the application using the
-following commands:
+To carry out a WebInspect scan you should first deploy the application to a Java Application server such as [Apache Tomcat](https://tomcat.apache.org/).
+However, as this project has been already pre-configured to download, configure and deploy to a copy of [WebSphere Liberty](https://www.ibm.com/cloud/websphere-liberty)
+you can use the following:
 
 ```
-mvn -Pwlp liberty:create liberty:install-feature liberty:deploy
-mvn -Pwlp liberty:start
+mvn -Pwar,wlp clean package liberty:create liberty:install-feature liberty:deploy liberty:start
 ```
 
 Then you can start a scan using the following:
@@ -174,6 +173,11 @@ You can execute it using the following command:
 
 ```
 fortify-wi.bat
+```
+
+Once you have finished testing the application with WebInspect you can stop WebSphere Liberty using the following:
+```
+mvn -Pwlp liberty:stop
 ```
 
 Carrying out a Fortify on Demand scan (from command line)
@@ -197,8 +201,4 @@ The exact command will depend on your own setup, so please check the documentati
 
 ---
 
-If you have any issues, questions, suggestions or ideas please contact:
-
-Kevin Lee 
-
-kevin.lee@microfocus.com
+If you have any problems, please consult [GitHub Issues](https://github.com/mfdemo/secure-web-app/issues) to see if has already been discussed.

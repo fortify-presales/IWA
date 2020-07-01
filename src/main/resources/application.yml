@@ -3,16 +3,12 @@ server:
   error:
     whitelabel:
       enabled: false
-
-app:
-  currency: GBP
-  data:
-    page-size: 25
-  messages:
-    home: Hello, Guest!
+  servlet:
+    context-path: /
 
 spring:
-  profiles: default
+  profiles:
+    active: prod
   main:
     allow-bean-definition-overriding: true
     banner-mode: "off"
@@ -49,9 +45,8 @@ spring:
     favicon:
       enabled: false
     throw-exception-if-no-handler-found: true
-  resources:
-    add-mappings: false
-
+#  resources:
+#    add-mappings: false
 
 logging:
   level:
@@ -60,3 +55,9 @@ logging:
     org.springframework.web: INFO
     org.springframework.security: INFO
 
+app:
+  currency: GBP
+  data:
+    page-size: 25
+  messages:
+    home: Hello, Guest!
