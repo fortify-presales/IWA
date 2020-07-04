@@ -26,7 +26,9 @@ footer a:hover{
 }
 
 .jumbotron {
-    background-color: #fff;
+/*    background-color: #fff;*/
+    background: rgb(160, 190, 190); /* This is for ie8 and below */
+    background: rgba(160, 190, 190, 0.5);
     background-size: 100% 100%;
     padding-top: 3rem;
     padding-bottom: 3rem;

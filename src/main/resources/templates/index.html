@@ -11,9 +11,9 @@
         }
         </style>
     </head>
-    <body>
+    <body class="background">
         <div layout:fragment="content" th:remove="tag">
-            <section class="jumbotron background text-center">
+            <section class="jumbotron text-center">
                 <div class="container">
                     <div class="row">
                         <h2 th:text="${message}" sec:authorize="isAnonymous()"></h2>
@@ -23,7 +23,9 @@
                             Nullam nec sem porttitor lorem imperdiet suscipit. Praesent rutrum orci a nunc euismod congue.
                         </p>
                         <p>
-                            <a href="#" class="btn btn-primary">Click me</a>
+                            <a th:href="@{/register}" sec:authorize="isAnonymous()" class="btn btn-info"> Register </a>
+                            <a th:href="@{/user}" sec:authorize="hasRole('ROLE_USER')" class="btn btn-info"> Your Profile </a>
+                            <a th:href="@{/admin}" sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-info"> Site Administration </a>
                         </p>
                     </div>
                 </div>

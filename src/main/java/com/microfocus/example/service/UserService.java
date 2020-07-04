@@ -19,22 +19,23 @@
 
 package com.microfocus.example.service;
 
+import com.microfocus.example.entity.Authority;
+import com.microfocus.example.entity.AuthorityType;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.InvalidPasswordException;
 import com.microfocus.example.exception.UserNotFoundException;
+import com.microfocus.example.repository.RoleRepository;
 import com.microfocus.example.repository.UserRepository;
 import com.microfocus.example.repository.UserRepositoryCustom;
 import com.microfocus.example.utils.EncryptedPasswordUtils;
-import com.microfocus.example.web.form.PasswordForm;
-import com.microfocus.example.web.form.UserForm;
+import com.microfocus.example.web.form.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * User Service to hide business logs / database persistance
@@ -48,6 +49,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     public Optional<User> findById(Integer id) {
         return userRepository.findById(id);
@@ -66,7 +70,7 @@ public class UserService {
     }
 
     public User save(UserForm userForm) throws InvalidPasswordException, UserNotFoundException {
-    	log.debug("UserService:save: " + userForm.toString());
+        log.debug("UserService:save: " + userForm.toString());
         Optional<User> optionalUser = userRepository.findUserByUsername(userForm.getUsername());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -82,25 +86,24 @@ public class UserService {
         }
     }
 
-    public User adminSave(UserForm userForm) throws UserNotFoundException {
-    	log.debug("UserService:adminSave: " + userForm.toString());
-        Optional<User> optionalUser = userRepository.findUserByUsername(userForm.getUsername());
+    public User adminSave(AdminUserForm adminUserForm) throws UserNotFoundException {
+        log.debug("UserService:adminSave: " + adminUserForm.toString());
+        Optional<User> optionalUser = userRepository.findUserByUsername(adminUserForm.getUsername());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            user.setUsername(userForm.getUsername());
-            user.setName(userForm.getName());
-            user.setEmail(userForm.getEmail());
-            user.setMobile(userForm.getMobile());
-            user.setPassword(userForm.getPassword());
-            user.setEnabled(userForm.getEnabled());
+            user.setUsername(adminUserForm.getUsername());
+            user.setName(adminUserForm.getName());
+            user.setEmail(adminUserForm.getEmail());
+            user.setMobile(adminUserForm.getMobile());
+            user.setEnabled(adminUserForm.getEnabled());
             return user;
         } else {
-            throw new UserNotFoundException("Username not found: " + userForm.getUsername());
+            throw new UserNotFoundException("Username not found: " + adminUserForm.getUsername());
         }
     }
 
     public User updatePassword(Integer id, PasswordForm passwordForm) {
-    	log.debug("UserService:updatePassword: userId=" + id.toString() + "; " + passwordForm.toString());
+        log.debug("UserService:updatePassword: userId=" + id.toString() + "; " + passwordForm.toString());
         if (passwordForm.getPassword().equals(passwordForm.getConfirmPassword())) {
             Optional<User> optionalUser = userRepository.findById(id);
             if (optionalUser.isPresent()) {
@@ -109,6 +112,22 @@ public class UserService {
                 return user;
             } else {
                 throw new UserNotFoundException("Username not found: " + passwordForm.getUsername());
+            }
+        } else {
+            throw new InvalidPasswordException("Password and Confirm Password fields do not match");
+        }
+    }
+
+    public User adminUpdatePassword(Integer id, AdminPasswordForm adminPasswordForm) {
+        log.debug("UserService:adminUpdatePassword: userId=" + id.toString() + "; " + adminPasswordForm.toString());
+        if (adminPasswordForm.getPassword().equals(adminPasswordForm.getConfirmPassword())) {
+            Optional<User> optionalUser = userRepository.findById(id);
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                user.setPassword(EncryptedPasswordUtils.encryptPassword(adminPasswordForm.getPassword()));
+                return user;
+            } else {
+                throw new UserNotFoundException("Username not found: " + adminPasswordForm.getUsername());
             }
         } else {
             throw new InvalidPasswordException("Password and Confirm Password fields do not match");
@@ -133,5 +152,21 @@ public class UserService {
 
     public boolean existsById(Integer id) {
         return userRepository.existsById(id);
+    }
+
+    public User add(AdminNewUserForm adminNewUserForm) {
+        Set<Authority> authorities = new HashSet<Authority>();
+        authorities.add(roleRepository.findByName("ROLE_USER").get());
+        User u = new User();
+        u.setUsername(adminNewUserForm.getUsername());
+        u.setName(adminNewUserForm.getName());
+        u.setPassword(EncryptedPasswordUtils.encryptPassword(adminNewUserForm.getPassword()));
+        u.setEmail(adminNewUserForm.getEmail());
+        u.setMobile(adminNewUserForm.getMobile());
+        u.setEnabled(adminNewUserForm.getEnabled());
+        u.setDateCreated(new Date());
+        u.setAuthorities(authorities);
+        User newUser = userRepository.saveAndFlush(u);
+        return newUser;
     }
 }

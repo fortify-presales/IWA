@@ -3,9 +3,13 @@ package com.microfocus.example.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import com.microfocus.example.entity.Authority;
+import com.microfocus.example.entity.AuthorityType;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -20,6 +24,9 @@ public class UserRepositoryTest extends BaseIntegrationTest {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    RoleRepository roleRepository;
 
     @Test
     public void a_userRepository_existsById() {
@@ -80,5 +87,27 @@ public class UserRepositoryTest extends BaseIntegrationTest {
             }
         } else
             fail("Test user not found");
+    }
+
+    @Test
+    public void g_userRepository_addAuthorities() {
+        Authority a = null;
+        Optional<Authority> optionalRole = roleRepository.findByName("ROLE_USER");
+        if (optionalRole.isPresent()) {
+            a = optionalRole.get();
+        } else {
+            fail("ROLE_USER not found");
+        }
+        System.out.println(a.toString());
+        Set<Authority> authorities = new HashSet<Authority>();
+        authorities.add(a);
+        Optional<User> optionalUser = userRepository.findUserByUsername("test");
+        if (optionalUser.isPresent()) {
+            User u = optionalUser.get();
+            u.setAuthorities(authorities);
+            userRepository.save(u);
+        } else {
+            fail("Test user not found");
+        }
     }
 }

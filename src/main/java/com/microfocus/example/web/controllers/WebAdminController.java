@@ -26,14 +26,16 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.Product;
 import com.microfocus.example.exception.BackupException;
 import com.microfocus.example.exception.ProductNotFoundException;
 import com.microfocus.example.service.ProductService;
-import com.microfocus.example.web.form.ProductForm;
+import com.microfocus.example.web.form.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -52,8 +54,6 @@ import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.service.UserService;
 import com.microfocus.example.utils.AdminUtils;
 import com.microfocus.example.utils.WebUtils;
-import com.microfocus.example.web.form.BackupForm;
-import com.microfocus.example.web.form.UserForm;
 
 /**
  * Controller for administrative pages
@@ -109,9 +109,8 @@ public class WebAdminController {
                                   Model model, Principal principal) {
         Optional<User> optionalUser = userService.findById(userId);
         if (optionalUser.isPresent()) {
-            UserForm userForm = new UserForm(optionalUser.get());
-            userForm.setPassword(optionalUser.get().getPassword());
-            model.addAttribute("userForm", userForm);
+            AdminUserForm adminUserForm = new AdminUserForm(optionalUser.get());
+            model.addAttribute("adminUserForm", adminUserForm);
         } else {
             model.addAttribute("message", "Internal error accessing user!");
             model.addAttribute("alertClass", "alert-danger");
@@ -122,26 +121,119 @@ public class WebAdminController {
     }
 
     @PostMapping("/users/{id}/save")
-    public String userSaveProfile(@Valid @ModelAttribute("userForm") UserForm userForm,
+    public String userSaveProfile(@Valid @ModelAttribute("adminUserForm") AdminUserForm adminUserForm,
                                   BindingResult bindingResult, Model model,
                                   RedirectAttributes redirectAttributes,
                                   Principal principal) {
         if (!bindingResult.hasErrors()) {
             try {
-                userService.adminSave(userForm);
+                userService.adminSave(adminUserForm);
                 redirectAttributes.addFlashAttribute("message", "User updated successfully.");
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
-                return "redirect:/admin/users/" + userForm.getId();
-            } catch (InvalidPasswordException ex) {
-                FieldError passwordError = new FieldError("userForm", "password", ex.getMessage());
-                bindingResult.addError(passwordError);
+                return "redirect:/admin/users/" + adminUserForm.getId();
             } catch (UserNotFoundException ex) {
-                FieldError usernameError = new FieldError("userForm", "username", ex.getMessage());
+                FieldError usernameError = new FieldError("adminUserForm", "username", ex.getMessage());
                 bindingResult.addError(usernameError);
             }
         }
         this.setModelDefaults(model, principal, "Admin", "userEdit");
         return "admin/users/edit";
+    }
+
+    @GetMapping("/users/{id}/changePassword")
+    public String userChangePassword(@PathVariable("id") Integer userId,
+                                  Model model, Principal principal) {
+        Optional<User> optionalUser = userService.findById(userId);
+        if (optionalUser.isPresent()) {
+            AdminPasswordForm adminPasswordForm = new AdminPasswordForm(optionalUser.get());
+            model.addAttribute("adminPasswordForm", adminPasswordForm);
+        } else {
+            model.addAttribute("message", "Internal error accessing user!");
+            model.addAttribute("alertClass", "alert-danger");
+            return "user/not-found";
+        }
+        this.setModelDefaults(model, principal, "Admin", "userChangePassword");
+        return "admin/users/change-password";
+    }
+
+    @PostMapping("/users/{id}/savePassword")
+    public String userSavePassword(@PathVariable("id") Integer userId,
+                                  @Valid @ModelAttribute("adminPasswordForm") AdminPasswordForm adminPasswordForm,
+                                  BindingResult bindingResult, Model model,
+                                  RedirectAttributes redirectAttributes,
+                                  Principal principal) {
+        if (!bindingResult.hasErrors()) {
+            try {
+                userService.adminUpdatePassword(userId, adminPasswordForm);
+                redirectAttributes.addFlashAttribute("message", "User password updated successfully.");
+                redirectAttributes.addFlashAttribute("alertClass", "alert-success");
+                return "redirect:/admin/users/" + userId;
+            } catch (InvalidPasswordException ex) {
+                log.error("InvalidPasswordException saving user: " + adminPasswordForm.getUsername());
+                FieldError passwordError = new FieldError("adminPasswordForm", "password", ex.getMessage());
+                bindingResult.addError(passwordError);
+            } catch (UserNotFoundException ex) {
+                FieldError usernameError = new FieldError("adminPasswordForm", "username", ex.getMessage());
+                bindingResult.addError(usernameError);
+            }
+        }
+        this.setModelDefaults(model, principal, "Admin", "userEdit");
+        return "/admin/users/change-password";
+    }
+
+    @GetMapping("/users/{id}/delete")
+    public String userDelete(@PathVariable("id") Integer userId,
+                                     Model model, Principal principal) {
+        Optional<User> optionalUser = userService.findById(userId);
+        if (optionalUser.isPresent()) {
+            AdminUserForm adminUserForm = new AdminUserForm(optionalUser.get());
+            model.addAttribute("adminUserForm", adminUserForm);
+        } else {
+            model.addAttribute("message", "Internal error accessing user!");
+            model.addAttribute("alertClass", "alert-danger");
+            return "user/not-found";
+        }
+        this.setModelDefaults(model, principal, "Admin", "userDelete");
+        return "admin/users/delete";
+    }
+
+    @PostMapping("/users/{id}/delete")
+    public String userDelete(@PathVariable("id") Integer userId,
+                             @RequestParam(value="action", required=true) String action,
+                             Model model, RedirectAttributes redirectAttributes,
+                             Principal principal) {
+        if (action.equals("delete")) {
+            userService.delete(userId);
+            redirectAttributes.addAttribute("message", "User deleted successfully.");
+            redirectAttributes.addFlashAttribute("alertClass", "alert-success");
+        } else {
+            redirectAttributes.addAttribute("message", "User deletion cancelled.");
+            redirectAttributes.addFlashAttribute("alertClass", "alert-info");
+        }
+        return "redirect:/admin/users/";
+    }
+
+    @GetMapping("/users/add")
+    public String userAdd(Model model, Principal principal) {
+        AdminNewUserForm adminNewUserForm = new AdminNewUserForm();
+        model.addAttribute("adminNewUserForm", adminNewUserForm);
+        this.setModelDefaults(model, principal, "Admin", "userAdd");
+        return "admin/users/add";
+    }
+
+    @PostMapping("/users/addSave")
+    public String userAddSave(@Valid @ModelAttribute("adminNewUserForm") AdminNewUserForm adminNewUserForm,
+                                  BindingResult bindingResult, Model model,
+                                  RedirectAttributes redirectAttributes,
+                                  Principal principal) {
+        if (!bindingResult.hasErrors()) {
+            User u = userService.add(adminNewUserForm);
+            redirectAttributes.addFlashAttribute("message", "User " + adminNewUserForm.getUsername() + " added successfully.");
+            redirectAttributes.addFlashAttribute("alertClass", "alert-success");
+            return "redirect:/admin/users/" + u.getId();
+        }
+        this.setModelDefaults(model, principal, "Admin", "userAddSave");
+        return "admin/users/add";
     }
 
     /// Products

@@ -42,5 +42,5 @@ create table product (
 );
 
 alter table user add constraint UKuser_username unique (username);
-alter table user_authority add constraint FKuser_authority_authority_id foreign key (authority_id) references authority;
-alter table user_authority add constraint FKuser_authority_user_id foreign key (user_id) references user;
+alter table user_authority add constraint FKuser_authority_authority_id foreign key (authority_id) references authority on delete cascade;
+alter table user_authority add constraint FKuser_authority_user_id foreign key (user_id) references user on delete cascade;

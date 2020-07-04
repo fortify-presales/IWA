@@ -158,7 +158,7 @@ mvn -Pwar,wlp clean package liberty:create liberty:install-feature liberty:deplo
 Then you can start a scan using the following:
 
 ```
-"WEBINSPECT_INSTALL_DIR\WI.exe" -s ".\etc\DefaultSettings.xml" -macro ".\etc\Login.webmacro" -u "https://localhost:6443/secure-web-app/" -ep ".\target\wi-secure-web-app.fpr" -ps 1008
+"WEBINSPECT_INSTALL_DIR\WI.exe" -s ".\etc\DefaultSettings.xml" -macro ".\etc\Login.webmacro" -u "-i/" -ep ".\target\wi-secure-web-app.fpr" -ps 1008
 ```
 
 This will start a scan using the Default Settings and Login Macro files provided in the `etc` directory. 
