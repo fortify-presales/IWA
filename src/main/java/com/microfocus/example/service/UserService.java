@@ -20,15 +20,18 @@
 package com.microfocus.example.service;
 
 import com.microfocus.example.entity.Authority;
-import com.microfocus.example.entity.AuthorityType;
+import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.InvalidPasswordException;
 import com.microfocus.example.exception.UserNotFoundException;
+import com.microfocus.example.repository.MessageRepository;
 import com.microfocus.example.repository.RoleRepository;
 import com.microfocus.example.repository.UserRepository;
-import com.microfocus.example.repository.UserRepositoryCustom;
 import com.microfocus.example.utils.EncryptedPasswordUtils;
 import com.microfocus.example.web.form.*;
+import com.microfocus.example.web.form.admin.AdminNewUserForm;
+import com.microfocus.example.web.form.admin.AdminPasswordForm;
+import com.microfocus.example.web.form.admin.AdminUserForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,24 +56,46 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
-    public Optional<User> findById(Integer id) {
+    @Autowired
+    private MessageRepository messageRepository;
+
+    public Optional<User> findUserById(Integer id) {
         return userRepository.findById(id);
     }
 
-    public Optional<User> findByUsername(String username) {
+    public Optional<User> findUserByUsername(String username) {
         return userRepository.findUserByUsername(username);
     }
 
-    public List<User> listAll() {
+    public List<User> getAllUsers() {
         return (List<User>) userRepository.findAll();
     }
 
-    public User save(User user) {
+    public User getUserById(Integer id) {
+        return userRepository.findById(id).get();
+    }
+
+    public void deleteUserById(Integer id) {
+        userRepository.deleteById(id);
+    }
+
+    public List<User> findUsersByUsername(String username) {
+        return userRepository.findUsersByUsername(username);
+    }
+
+    public List<User> findEnabledUsersByUsername(boolean enabled, String username) {
+        return userRepository.findUsersByEnabledAndUsername(enabled, username);
+    }
+
+    public boolean userExistsById(Integer id) {
+        return userRepository.existsById(id);
+    }
+
+    public User saveUser(User user) {
         return userRepository.save(user);
     }
 
-    public User save(UserForm userForm) throws InvalidPasswordException, UserNotFoundException {
-        log.debug("UserService:save: " + userForm.toString());
+    public User saveUserFromUserForm(UserForm userForm) throws InvalidPasswordException, UserNotFoundException {
         Optional<User> optionalUser = userRepository.findUserByUsername(userForm.getUsername());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -86,24 +111,22 @@ public class UserService {
         }
     }
 
-    public User adminSave(AdminUserForm adminUserForm) throws UserNotFoundException {
-        log.debug("UserService:adminSave: " + adminUserForm.toString());
+    public User saveUserFromAdminUserForm(AdminUserForm adminUserForm) throws UserNotFoundException {
         Optional<User> optionalUser = userRepository.findUserByUsername(adminUserForm.getUsername());
         if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            user.setUsername(adminUserForm.getUsername());
-            user.setName(adminUserForm.getName());
-            user.setEmail(adminUserForm.getEmail());
-            user.setMobile(adminUserForm.getMobile());
-            user.setEnabled(adminUserForm.getEnabled());
-            return user;
+            User utmp = optionalUser.get();
+            utmp.setUsername(adminUserForm.getUsername());
+            utmp.setName(adminUserForm.getName());
+            utmp.setEmail(adminUserForm.getEmail());
+            utmp.setMobile(adminUserForm.getMobile());
+            utmp.setEnabled(adminUserForm.getEnabled());
+            return utmp;
         } else {
             throw new UserNotFoundException("Username not found: " + adminUserForm.getUsername());
         }
     }
 
-    public User updatePassword(Integer id, PasswordForm passwordForm) {
-        log.debug("UserService:updatePassword: userId=" + id.toString() + "; " + passwordForm.toString());
+    public User updateUserPasswordFromPasswordForm(Integer id, PasswordForm passwordForm) {
         if (passwordForm.getPassword().equals(passwordForm.getConfirmPassword())) {
             Optional<User> optionalUser = userRepository.findById(id);
             if (optionalUser.isPresent()) {
@@ -118,8 +141,7 @@ public class UserService {
         }
     }
 
-    public User adminUpdatePassword(Integer id, AdminPasswordForm adminPasswordForm) {
-        log.debug("UserService:adminUpdatePassword: userId=" + id.toString() + "; " + adminPasswordForm.toString());
+    public User updateUserPasswordFromAdminPasswordForm(Integer id, AdminPasswordForm adminPasswordForm) {
         if (adminPasswordForm.getPassword().equals(adminPasswordForm.getConfirmPassword())) {
             Optional<User> optionalUser = userRepository.findById(id);
             if (optionalUser.isPresent()) {
@@ -134,39 +156,31 @@ public class UserService {
         }
     }
 
-    public User get(Integer id) {
-        return userRepository.findById(id).get();
-    }
-
-    public void delete(Integer id) {
-        userRepository.deleteById(id);
-    }
-
-    public List<User> findUsersByUsername(String username) {
-        return userRepository.findUsersByUsername(username);
-    }
-
-    public List<User> findEnabledUsersByUsername(boolean enabled, String username) {
-        return userRepository.findUsersByEnabledAndUsername(enabled, username);
-    }
-
-    public boolean existsById(Integer id) {
-        return userRepository.existsById(id);
-    }
-
-    public User add(AdminNewUserForm adminNewUserForm) {
+    public User addUserFromAdminNewUserForm(AdminNewUserForm adminNewUserForm) {
         Set<Authority> authorities = new HashSet<Authority>();
         authorities.add(roleRepository.findByName("ROLE_USER").get());
-        User u = new User();
-        u.setUsername(adminNewUserForm.getUsername());
-        u.setName(adminNewUserForm.getName());
-        u.setPassword(EncryptedPasswordUtils.encryptPassword(adminNewUserForm.getPassword()));
-        u.setEmail(adminNewUserForm.getEmail());
-        u.setMobile(adminNewUserForm.getMobile());
-        u.setEnabled(adminNewUserForm.getEnabled());
-        u.setDateCreated(new Date());
-        u.setAuthorities(authorities);
-        User newUser = userRepository.saveAndFlush(u);
+        User utmp = new User();
+        utmp.setUsername(adminNewUserForm.getUsername());
+        utmp.setName(adminNewUserForm.getName());
+        utmp.setPassword(EncryptedPasswordUtils.encryptPassword(adminNewUserForm.getPassword()));
+        utmp.setEmail(adminNewUserForm.getEmail());
+        utmp.setMobile(adminNewUserForm.getMobile());
+        utmp.setEnabled(adminNewUserForm.getEnabled());
+        utmp.setDateCreated(new Date());
+        utmp.setAuthorities(authorities);
+        User newUser = userRepository.saveAndFlush(utmp);
         return newUser;
+    }
+
+    public List<Message> getAllMessages() {
+        return messageRepository.findAll();
+    }
+
+    public long getUserMessageCount(Integer userId) {
+        return messageRepository.countByUserId(userId);
+    }
+
+    public List<Message> getUserMessages(Integer userId) {
+        return messageRepository.findByUserId(userId);
     }
 }

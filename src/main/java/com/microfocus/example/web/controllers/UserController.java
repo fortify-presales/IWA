@@ -20,6 +20,7 @@
 package com.microfocus.example.web.controllers;
 
 import com.microfocus.example.entity.CustomUserDetails;
+import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.InvalidPasswordException;
 import com.microfocus.example.exception.UserNotFoundException;
@@ -41,6 +42,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -51,20 +53,20 @@ import java.util.Optional;
 @RequestMapping("/user")
 @Controller
 @SessionAttributes("user")
-public class WebUserController {
+public class UserController {
 
-    private static final Logger log = LoggerFactory.getLogger(WebUserController.class);
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;
 
     @Value("${app.messages.home}")
-    private String message = "Hello World";
+    private final String message = "Hello World";
 
     @GetMapping(value = {"", "/"})
     public String userHome(Model model, Principal principal) {
         CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        Optional<User> optionalUser = userService.findById(user.getId());
+        Optional<User> optionalUser = userService.findUserById(user.getId());
         if (optionalUser.isPresent()) {
             UserForm userForm = new UserForm(optionalUser.get());
             model.addAttribute("userForm", userForm);
@@ -84,7 +86,7 @@ public class WebUserController {
     @GetMapping("/editProfile")
     public String userEditProfile(Model model, Principal principal) {
         CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        Optional<User> optionalUser = userService.findById(user.getId());
+        Optional<User> optionalUser = userService.findUserById(user.getId());
         if (optionalUser.isPresent()) {
             UserForm userForm = new UserForm(optionalUser.get());
             model.addAttribute("userForm", userForm);
@@ -103,7 +105,7 @@ public class WebUserController {
     @GetMapping("/changePassword")
     public String userChangePassword(Model model, Principal principal) {
         CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        Optional<User> optionalUser = userService.findById(user.getId());
+        Optional<User> optionalUser = userService.findUserById(user.getId());
         if (optionalUser.isPresent()) {
             PasswordForm passwordForm = new PasswordForm(optionalUser.get());
             model.addAttribute("passwordForm", passwordForm);
@@ -121,10 +123,27 @@ public class WebUserController {
 
     @GetMapping("/messages")
     public String adminMessages(Model model, Principal principal) {
-        model.addAttribute("messageCount", "0");
+        CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        List<Message> messages = userService.getUserMessages(user.getId());
+        model.addAttribute("messages", messages);
+        model.addAttribute("messageCount", messages.size());
         model.addAttribute("controllerName", "User");
         model.addAttribute("actionName", "messages");
         return "user/messages";
+    }
+
+    @GetMapping("/message-count")
+    @ResponseBody
+    public String getUserMessageCount(Model model, Principal principal) {
+        if (principal != null) {
+            log.debug("Retrieving user message count");
+            CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+            long userMessageCount = userService.getUserMessageCount(loggedInUser.getId());
+            log.debug("Current user has " + userMessageCount + " messages");
+            return Long.toString(userMessageCount);
+        } else {
+            return "0";
+        }
     }
 
     @PostMapping("/saveProfile")
@@ -136,16 +155,16 @@ public class WebUserController {
             return "user/edit-profile";
         } else {
             try {
-                userService.save(userForm);
+                userService.saveUserFromUserForm(userForm);
                 redirectAttributes.addFlashAttribute("message", "Profile updated successfully.");
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
                 return "redirect:/user";
             } catch (InvalidPasswordException ex) {
-            	log.error("InvalidPasswordException saving user profile: " + principal.toString());
+                log.error("InvalidPasswordException saving user profile: " + principal.toString());
                 FieldError passwordError = new FieldError("userForm", "password", ex.getMessage());
                 bindingResult.addError(passwordError);
             } catch (UserNotFoundException ex) {
-            	log.error("UserNotFoundException saving profile: " + principal.toString());
+                log.error("UserNotFoundException saving profile: " + principal.toString());
                 FieldError usernameError = new FieldError("userForm", "username", ex.getMessage());
                 bindingResult.addError(usernameError);
             }
@@ -163,19 +182,19 @@ public class WebUserController {
         } else {
             try {
                 CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-                Optional<User> optionalUser = userService.findById(user.getId());
+                Optional<User> optionalUser = userService.findUserById(user.getId());
                 if (optionalUser.isPresent()) {
-                    userService.updatePassword(user.getId(), passwordForm);
+                    userService.updateUserPasswordFromPasswordForm(user.getId(), passwordForm);
                 }
                 redirectAttributes.addFlashAttribute("message", "Password updated successfully.");
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
                 return "redirect:/user";
             } catch (InvalidPasswordException ex) {
-            	log.error("InvalidPasswordException saving user: " + principal.toString());
+                log.error("InvalidPasswordException saving user: " + principal.toString());
                 FieldError passwordError = new FieldError("passwordForm", "password", ex.getMessage());
                 bindingResult.addError(passwordError);
             } catch (UserNotFoundException ex) {
-            	log.error("UserNotFoundException saving user: " + principal.toString());
+                log.error("UserNotFoundException saving user: " + principal.toString());
                 FieldError usernameError = new FieldError("passwordForm", "username", ex.getMessage());
                 bindingResult.addError(usernameError);
             }

@@ -17,7 +17,7 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.api;
+package com.microfocus.example.api.controllers;
 
 import com.microfocus.example.entity.ApiErrorResponse;
 import com.microfocus.example.entity.User;
@@ -41,9 +41,9 @@ import java.util.Optional;
 @Api(description = "Retrieve, update, create and delete users.", tags = {"users"})
 @RequestMapping(value = "/api/v1")
 @RestController
-public class APIUserController {
+public class ApiUserController {
 
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(APIUserController.class);
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ApiUserController.class);
 
     @Autowired
     private UserService userService;
@@ -59,7 +59,7 @@ public class APIUserController {
             @RequestParam("username") Optional<String> partialName) {
         if (partialName.equals(Optional.empty())) {
             log.debug("Retrieving all users");
-            return userService.listAll();
+            return userService.getAllUsers();
         } else {
             log.debug("Retrieving users with username: " + partialName);
             return userService.findUsersByUsername(partialName.get());
@@ -80,8 +80,8 @@ public class APIUserController {
                     required = true)
             @PathVariable("id") Integer id) {
         log.debug("Retrieving user id: " + id);
-        if (!userService.existsById(id)) throw new UserNotFoundException("User with id: " + id.toString() + " does not exist.");
-        return userService.findById(id);
+        if (!userService.userExistsById(id)) throw new UserNotFoundException("User with id: " + id.toString() + " does not exist.");
+        return userService.findUserById(id);
     }
 
     @ApiOperation(value = "Create a new user", tags = { "users" })
@@ -99,7 +99,7 @@ public class APIUserController {
         newUser.setId(0); // set to 0 for sequence id generation
         newUser.setPassword(EncryptedPasswordUtils.encryptPassword(newUser.getPassword()));
         log.debug("Creating new user: " + newUser.toString());
-        return userService.save(newUser);
+        return userService.saveUser(newUser);
     }
 
     @ApiOperation(value = "Update an existing user", tags = { "users" })
@@ -119,7 +119,7 @@ public class APIUserController {
                     required = true)
             @PathVariable Integer id) {
         log.debug("Updating user id: " + id);
-        return userService.save(newUser);
+        return userService.saveUser(newUser);
     }
 
     @ApiOperation(value = "Delete a user", tags = { "users" })
@@ -136,7 +136,7 @@ public class APIUserController {
                     required = true)
             @PathVariable Integer id) {
         log.debug("Deleting user id: " + id);
-        userService.delete(id);
+        userService.deleteUserById(id);
     }
 
 }

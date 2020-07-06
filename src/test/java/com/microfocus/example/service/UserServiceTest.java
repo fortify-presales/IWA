@@ -3,9 +3,9 @@ package com.microfocus.example.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-import java.util.List;
 import java.util.Optional;
 
+import com.microfocus.example.DataSeeder;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -24,68 +24,58 @@ public class UserServiceTest extends BaseIntegrationTest {
 
     @Test
     public void a_userService_findById() {
-        Optional<User> u = userService.findById(1);
+        Optional<User> u = userService.findUserById(DataSeeder.TEST_USER1_ID);
         if (u.isPresent())
-            assertThat(u.get().getUsername()).isEqualTo("admin");
+            assertThat(u.get().getUsername()).isEqualTo(DataSeeder.TEST_USER1_USERNAME);
         else
-            fail("Admin user not found");
+            fail("Test User 1 not found");
     }
 
     @Test
     public void b_userService_findUserByUsername() {
-        Optional<User> u = userService.findByUsername("test");
+        Optional<User> u = userService.findUserByUsername(DataSeeder.TEST_USER1_USERNAME);
         if (u.isPresent())
-            assertThat(u.get().getUsername()).isEqualTo("test");
+            assertThat(u.get().getUsername()).isEqualTo(DataSeeder.TEST_USER1_USERNAME);
         else
-            fail("Test user not found");
-    }
-
-    @Test
-    public void c_userService_listAll() {
-        List<User> users = userService.listAll();
-        assertThat(users.size()).isEqualTo(4L);
+            fail("Test User 1 not found");
     }
 
     @Test
     public void d_userService_save() {
-        List<User> users = userService.listAll();
-        System.out.println("[USERS] " + users.size());
-        Optional<User> optionalUser = userService.findByUsername("test");
+        Optional<User> optionalUser = userService.findUserByUsername(DataSeeder.TEST_USER1_USERNAME);
         if (optionalUser.isPresent()) {
             UserForm userForm = new UserForm(optionalUser.get());
-            userForm.setName("Test User Updated");
+            userForm.setName("Test User 1 Updated");
             try {
-                userService.save(userForm);
-                Optional<User> updatedUser = userService.findByUsername("test");
+                userService.saveUserFromUserForm(userForm);
+                Optional<User> updatedUser = userService.findUserByUsername(DataSeeder.TEST_USER1_USERNAME);
                 if (updatedUser.isPresent()) {
-                    assertThat(updatedUser.get().getName()).isEqualTo("Test User Updated");
+                    assertThat(updatedUser.get().getName()).isEqualTo("Test User 1 Updated");
                 }
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }
         } else
-            fail("Test user not found");
-        users = userService.listAll();
-        System.out.println("[USERS] " + users.size());
+            fail("Test User 1 not found");
     }
 
     @Test
     public void e_userService_updatePassword() {
-        Optional<User> optionalUser = userService.findByUsername("test");
+        Optional<User> optionalUser = userService.findUserByUsername(DataSeeder.TEST_USER1_USERNAME);
         if (optionalUser.isPresent()) {
             PasswordForm passwordForm = new PasswordForm(optionalUser.get());
             passwordForm.setPassword("password2");
             passwordForm.setConfirmPassword("password2");
             try {
-                userService.updatePassword(optionalUser.get().getId(), passwordForm);
-                Optional<User> updatedUser = userService.findByUsername("test");
+                userService.updateUserPasswordFromPasswordForm(optionalUser.get().getId(), passwordForm);
+                Optional<User> updatedUser = userService.findUserByUsername(DataSeeder.TEST_USER1_USERNAME);
                 if (updatedUser.isPresent()) {
-                    assertThat(updatedUser.get().getName()).isEqualTo("test user updated");
+                    assertThat(updatedUser.get().getName()).isEqualTo("Test User 1");
                 }
             } catch (Exception ex) {
                 fail(ex.getMessage());
             }
         } else
-            fail("Test user not found");
+            fail("Test User 1 not found");
     }
 }

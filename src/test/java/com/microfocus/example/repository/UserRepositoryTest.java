@@ -30,67 +30,61 @@ public class UserRepositoryTest extends BaseIntegrationTest {
 
     @Test
     public void a_userRepository_existsById() {
-        if (!userRepository.existsById(1)) fail("Admin user does not exist");
+        if (!userRepository.existsById(99999)) fail("Test User 1 does not exist");
     }
 
     @Test
     public void b_userRepository_findUserById() {
-        Optional<User> u = userRepository.findById(1);
+        Optional<User> u = userRepository.findById(DataSeeder.TEST_USER1_ID);
         if (u.isPresent())
-            assertThat(u.get().getUsername()).isEqualTo("admin");
+            assertThat(u.get().getUsername()).isEqualTo(DataSeeder.TEST_USER1_USERNAME);
         else
-            fail("Admin user not found");
+            fail("Test User 1 user not found");
     }
 
     @Test
     public void c_userRepository_findUserByUsername() {
-        Optional<User> u = userRepository.findUserByUsername("test");
+        Optional<User> u = userRepository.findUserByUsername(DataSeeder.TEST_USER1_USERNAME);
         if (u.isPresent())
-            assertThat(u.get().getUsername()).isEqualTo("test");
+            assertThat(u.get().getUsername()).isEqualTo(DataSeeder.TEST_USER1_USERNAME);
         else
-            fail("Test user not found");
+            fail("Test User 1 not found");
     }
 
     @Test
-    public void d_userRepository_findAll() {
-        List<User> users = userRepository.findAll();
-        assertThat(users.size()).isEqualTo(3L);
-    }
-
-    @Test
-    public void e_userRepository_persist() {
+    public void d_userRepository_persist() {
         User u = DataSeeder.generateUser();
-        userRepository.save(u);
+        userRepository.saveAndFlush(u);
         if (!userRepository.existsById(u.getId())) fail("Test user 2 does not exist");
-        Optional<User> u2 = userRepository.findUserByUsername(u.getUsername());
+        Optional<User> u2 = userRepository.findUserByUsername(DataSeeder.TEST_USER2_USERNAME);
         if (u2.isPresent())
-            assertThat(u2.get().getUsername()).isEqualTo(u.getUsername());
+            assertThat(u2.get().getUsername()).isEqualTo(DataSeeder.TEST_USER2_USERNAME);
         else
-            fail("Test user 2 not found");
+            fail("Test User 2 not found");
     }
 
     @Test
-    public void f_userRepository_update() {
-        Optional<User> optionalUser = userRepository.findUserByUsername("test");
+    public void e_userRepository_update() {
+        Optional<User> optionalUser = userRepository.findUserByUsername(DataSeeder.TEST_USER2_USERNAME);
         if (optionalUser.isPresent()) {
-            assertThat(optionalUser.get().getUsername()).isEqualTo("test");
+            assertThat(optionalUser.get().getUsername()).isEqualTo(DataSeeder.TEST_USER2_USERNAME);
             User u = optionalUser.get();
-            u.setName("test user updated");
-            u.setEmail("testupdated@localhost");
+            u.setName("Test User 2 updated");
+            u.setEmail("test2@updated.com");
             u.setMobile("0987654321");
             userRepository.save(u);
-            Optional<User> u2 = userRepository.findUserByUsername("test");
+            Optional<User> u2 = userRepository.findUserByUsername(DataSeeder.TEST_USER2_USERNAME);
             if (u2.isPresent()) {
-                assertThat(u2.get().getName()).isEqualTo("test user updated");
-                assertThat(u2.get().getEmail()).isEqualTo("testupdated@localhost");
+                assertThat(u2.get().getName()).isEqualTo("Test User 2 updated");
+                assertThat(u2.get().getEmail()).isEqualTo("test2@updated.com");
                 assertThat(u2.get().getMobile()).isEqualTo("0987654321");
             }
         } else
-            fail("Test user not found");
+            fail("Test User 2 not found");
     }
 
     @Test
-    public void g_userRepository_addAuthorities() {
+    public void f_userRepository_addAuthorities() {
         Authority a = null;
         Optional<Authority> optionalRole = roleRepository.findByName("ROLE_USER");
         if (optionalRole.isPresent()) {
@@ -101,13 +95,13 @@ public class UserRepositoryTest extends BaseIntegrationTest {
         System.out.println(a.toString());
         Set<Authority> authorities = new HashSet<Authority>();
         authorities.add(a);
-        Optional<User> optionalUser = userRepository.findUserByUsername("test");
+        Optional<User> optionalUser = userRepository.findUserByUsername(DataSeeder.TEST_USER2_USERNAME);
         if (optionalUser.isPresent()) {
             User u = optionalUser.get();
             u.setAuthorities(authorities);
             userRepository.save(u);
         } else {
-            fail("Test user not found");
+            fail("Test User 2 not found");
         }
     }
 }

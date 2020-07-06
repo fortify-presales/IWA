@@ -20,17 +20,14 @@
 package com.microfocus.example.service;
 
 import com.microfocus.example.entity.Product;
-import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.ProductNotFoundException;
-import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.repository.ProductRepository;
-import com.microfocus.example.web.form.ProductForm;
-import com.microfocus.example.web.form.UserForm;
+import com.microfocus.example.web.form.admin.AdminNewProductForm;
+import com.microfocus.example.web.form.admin.AdminProductForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +35,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Product Service to hide business logs / database persistance
+ * Product Service to hide business logs / database persistence
+ *
  * @author Kevin A. Lee
  */
 @Service
@@ -62,7 +60,7 @@ public class ProductService {
     }
 
     public List<Product> listAll() {
-        return (List<Product>) productRepository.findAll();
+        return productRepository.findAll();
     }
 
     public List<Product> listAll(Integer pageNo, String keywords) {
@@ -80,26 +78,6 @@ public class ProductService {
         return productRepository.save(user);
     }
 
-    public Product adminSave(ProductForm productForm) throws ProductNotFoundException {
-        log.debug("ProductService:adminSave: " + productForm.toString());
-        Optional<Product> optionalProduct = productRepository.findByCode(productForm.getCode());
-        if (optionalProduct.isPresent()) {
-            Product product = optionalProduct.get();
-            product.setName(productForm.getName());
-            product.setSummary(productForm.getSummary());
-            product.setDescription(productForm.getDescription());
-            product.setImage(productForm.getImage());
-            product.setTradePrice(productForm.getTradePrice());
-            product.setRetailPrice(productForm.getRetailPrice());
-            product.setDeliveryTime(productForm.getDeliveryTime());
-            product.setAverageRating(productForm.getAverageRating());
-            product.setAvailable(productForm.getAvailable());
-            return product;
-        } else {
-            throw new ProductNotFoundException("Product not found: " + productForm.getCode());
-        }
-    }
-
     public Product get(Integer id) {
         return productRepository.findById(id).get();
     }
@@ -110,6 +88,40 @@ public class ProductService {
 
     public boolean existsById(Integer id) {
         return productRepository.existsById(id);
+    }
+
+    public Product adminSave(AdminProductForm adminProductForm) throws ProductNotFoundException {
+        Optional<Product> optionalProduct = productRepository.findByCode(adminProductForm.getCode());
+        if (optionalProduct.isPresent()) {
+            Product ptmp = optionalProduct.get();
+            ptmp.setName(adminProductForm.getName());
+            ptmp.setSummary(adminProductForm.getSummary());
+            ptmp.setDescription(adminProductForm.getDescription());
+            ptmp.setImage(adminProductForm.getImage());
+            ptmp.setTradePrice(adminProductForm.getTradePrice());
+            ptmp.setRetailPrice(adminProductForm.getRetailPrice());
+            ptmp.setDeliveryTime(adminProductForm.getDeliveryTime());
+            ptmp.setAverageRating(adminProductForm.getAverageRating());
+            ptmp.setAvailable(adminProductForm.getAvailable());
+            return ptmp;
+        } else {
+            throw new ProductNotFoundException("Product not found: " + adminProductForm.getCode());
+        }
+    }
+
+    public Product adminAdd(AdminNewProductForm adminNewProductForm) {
+        Product ptmp = new Product();
+        ptmp.setCode(adminNewProductForm.getCode());
+        ptmp.setName(adminNewProductForm.getName());
+        ptmp.setSummary(adminNewProductForm.getSummary());
+        ptmp.setDescription(adminNewProductForm.getDescription());
+        ptmp.setTradePrice(adminNewProductForm.getTradePrice());
+        ptmp.setRetailPrice(adminNewProductForm.getRetailPrice());
+        ptmp.setDeliveryTime(adminNewProductForm.getDeliveryTime());
+        ptmp.setImage(adminNewProductForm.getImage());
+        ptmp.setAvailable(adminNewProductForm.getAvailable());
+        Product newProduct = productRepository.saveAndFlush(ptmp);
+        return newProduct;
     }
 
 }

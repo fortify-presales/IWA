@@ -33,7 +33,7 @@
                             <th scope="col">Email</th>
                             <th scope="col">Mobile</th>
                             <th scope="col">Enabled</th>
-                            <th scope="col">Authorities</th>
+                            <th scope="col">Roles</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -51,12 +51,12 @@
                                 <span th:unless="${u.enabled}"> <i class="fas fa-times"></i> </span>
                             </td>
                             <td>
-                                <span th:each="a : ${u.authorities}"><span th:text="${a.name}"> Authority </span>,</span>
+                                <span th:each="a : ${u.authorities}"><span th:text="${#strings.replace(a.name,'ROLE_','')}"> Role </span>&nbsp;</span>
                             </td>
                         </tr>
                         </tbody>
                     </table>
-                    <a class="btn btn-primary" th:href="@{/admin/users/add}"> Add New User </a>
+                    <a class="btn btn-primary" th:href="@{/admin/users/add}"> New User </a>
                 </div>
 
             </div>

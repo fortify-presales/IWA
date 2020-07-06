@@ -17,7 +17,7 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.web.form;
+package com.microfocus.example.web.form.admin;
 
 /**
  * Form backing entity/DTO for database backup

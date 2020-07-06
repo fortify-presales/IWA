@@ -19,9 +19,11 @@
 
 package com.microfocus.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 
 /**
@@ -30,36 +32,45 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "product")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Product implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotEmpty(message= "Product code must not be blank")
+    @NotEmpty(message = "{product.code.notEmpty}")
+    @Size(min = 6, max = 40, message = "{product.code.invalidLength}")
     private String code;
 
-    @NotEmpty(message= "Product name must not be blank")
+    @NotEmpty(message = "{product.name.notEmpty}")
+    @Size(min = 6, max = 40, message = "{product.name.invalidLength}")
     private String name;
 
-    @NotEmpty(message= "Product summary must not be blank")
+    @NotEmpty(message = "{product.summary.notEmpty}")
+    @Size(min = 10, message = "{product.summary.invalidLength}")
     private String summary;
 
-    @NotEmpty(message= "Product description must not be blank")
+    @NotEmpty(message = "{product.description.notEmpty}")
+    @Size(min = 40, message = "{product.description.invalidLength}")
     private String description;
 
     private String image;
 
-    @NotNull(message= "Product trade price must not be null")
+    @Min(value = 0, message = "{product.trade_price.invalidValue}")
     private float trade_price;
 
-    @NotNull(message= "Product retail price must not be null")
+    @Min(value = 0, message = "{product.retail_price.invalidValue}")
     private float retail_price;
 
-    @NotNull(message= "Product delivery time must not be null")
+    @Min(value = 1, message = "{product.delivery_time.invalidValue}")
+    @Max(value = 365, message = "{product.delivery_time.invalidValue}")
     private int delivery_time;
 
-    @NotNull
+    @Min(value = 1, message = "{product.average_rating.invalidValue}")
+    @Max(value = 5, message = "{product.average_rating.invalidValue}")
     private int average_rating;
 
     @NotNull

@@ -20,6 +20,7 @@
 package com.microfocus.example.web.form;
 
 import com.microfocus.example.entity.User;
+import com.microfocus.example.web.validation.ValidPassword;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -40,25 +41,26 @@ public class UserForm {
     @Min(1)
     private Integer id;
 
-    @NotEmpty(message = "{username.notEmpty}")
-    @Size(min = 2, max = 10, message = "{username.invalidLength}")
+    @NotEmpty(message = "{user.username.notEmpty}")
+    @Size(min = 2, max = 10, message = "{user.username.invalidLength}")
     private String username;
 
-    @NotEmpty(message = "{password.notEmpty}")
+    @ValidPassword
     private String password;
 
+    @ValidPassword
     private String confirmPassword;
 
-    @NotEmpty(message = "{name.notEmpty}")
-    @Size(min = 6, max = 40, message = "{name.invalidLength}")
+    @NotEmpty(message = "{user.name.notEmpty}")
+    @Size(min = 6, max = 40, message = "{user.name.invalidLength}")
     private String name;
 
-    @NotEmpty(message = "{email.notEmpty}")
-    @Email(message = "{email.invalidFormat")
+    @NotEmpty(message = "{user.email.notEmpty}")
+    @Email(message = "{user.email.invalidFormat")
     private String email;
 
-    @NotEmpty(message = "{mobile.notEmpty")
-    @Pattern(regexp = "(^$|[0-9]{10})", message = "{mobile.invalidFormat}")
+    @NotEmpty(message = "{user.mobile.notEmpty")
+    @Pattern(regexp = "(^$|[0-9]{10})", message = "{user.mobile.invalidFormat}")
     private String mobile;
 
     private Boolean enabled;

@@ -17,21 +17,21 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.web.form;
+package com.microfocus.example.web.form.admin;
 
 import com.microfocus.example.entity.User;
 import com.microfocus.example.web.validation.ValidPassword;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.*;
 
 /**
- * Form backing entity/DTO for changing password
+ * Form backing entity/DTO for adding a new user
+ *
  * @author Kevin A. Lee
  */
-public class AdminPasswordForm {
+public class AdminNewUserForm {
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -41,27 +41,42 @@ public class AdminPasswordForm {
     @Min(1)
     private Integer id;
 
-    @NotEmpty
+    @NotEmpty(message = "{user.username.notEmpty}")
+    @Size(min = 2, max = 10, message = "{user.username.invalidLength}")
     private String username;
 
-    //@NotEmpty(message = "{password.notEmpty}")
-    //@Size(min=6, max=20, message = "{password.invalidLength}")
     @ValidPassword
     private String password;
 
-    //@NotEmpty(message = "{confirm.notEmpty}")
-    //@Size(min=6, max=20, message = "{confirm.invalidLength}")
     @ValidPassword
     private String confirmPassword;
 
-    public AdminPasswordForm() {
+    @NotEmpty(message = "{user.name.notEmpty}")
+    @Size(min = 6, max = 40, message = "{user.name.invalidLength}")
+    private String name;
+
+    @NotEmpty(message = "{user.email.notEmpty}")
+    @Email(message = "{user.email.invalidFormat")
+    private String email;
+
+    @NotEmpty(message = "{user.mobile.notEmpty")
+    @Pattern(regexp = "(^$|[0-9]{10})", message = "{user.mobile.invalidFormat}")
+    private String mobile;
+
+    private Boolean enabled;
+
+    public AdminNewUserForm() {
     }
 
-    public AdminPasswordForm(User user) {
+    public AdminNewUserForm(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
         this.password = user.getPassword();
         this.confirmPassword = user.getConfirmPassword();
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.mobile = user.getMobile();
+        this.enabled = user.getEnabled();
     }
 
     public Integer getId() {
@@ -96,10 +111,44 @@ public class AdminPasswordForm {
         this.confirmPassword = confirmPassword;
     }
 
-     @Override
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @Override
     public String toString() {
-        return "AdminPasswordForm{" +
+        return "AdminNewUserForm{" +
+                "id=" + id +
                 ", username='" + username + '\'' +
+                ", email =" + email +
                 '}';
     }
 }

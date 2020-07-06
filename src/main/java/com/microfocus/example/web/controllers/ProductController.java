@@ -20,30 +20,18 @@
 package com.microfocus.example.web.controllers;
 
 import com.microfocus.example.entity.Product;
-import com.microfocus.example.entity.User;
-import com.microfocus.example.exception.BackupException;
-import com.microfocus.example.exception.InvalidPasswordException;
-import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.service.ProductService;
-import com.microfocus.example.service.UserService;
-import com.microfocus.example.utils.AdminUtils;
 import com.microfocus.example.utils.WebUtils;
-import com.microfocus.example.web.form.BackupForm;
-import com.microfocus.example.web.form.UserForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Currency;
 import java.util.List;
@@ -57,9 +45,9 @@ import java.util.Optional;
  */
 @RequestMapping("/products")
 @Controller
-public class WebProductController {
+public class ProductController {
 
-    private static final Logger log = LoggerFactory.getLogger(WebProductController.class);
+    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
 
     @Autowired
     private ProductService productService;
@@ -77,7 +65,7 @@ public class WebProductController {
 
     @GetMapping("/{id}")
     public String viewProduct(@PathVariable("id") Integer productId,
-                           Model model, Principal principal) {
+                              Model model, Principal principal) {
         Optional<Product> optionalProduct = productService.findById(productId);
         if (optionalProduct.isPresent()) {
             model.addAttribute("product", optionalProduct.get());

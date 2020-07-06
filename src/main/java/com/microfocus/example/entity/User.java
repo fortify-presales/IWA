@@ -26,12 +26,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.*;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.microfocus.example.web.validation.ValidPassword;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.context.annotation.Bean;
@@ -49,7 +50,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User implements Serializable {
 
-	private static final long serialVersionUID = -278013205501606255L;
+    private static final long serialVersionUID = 1L;
 
 	@Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -64,13 +65,13 @@ public class User implements Serializable {
 
     @ApiModelProperty(notes = "Username of the user.",
             example = "user1", required = true, position = 1)
-    @NotEmpty
+    @NotEmpty(message = "{user.username.notEmpty}")
+    @Size(min = 2, max = 10, message = "{user.username.invalidLength}")
     @Column(nullable = false, unique = true)
     private String username;
 
     @ApiModelProperty(notes = "Password of the user.", value = "password",
             example = "password", required = true, position = 2)
-    @NotEmpty
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
@@ -81,18 +82,21 @@ public class User implements Serializable {
 
     @ApiModelProperty(notes = "Name of the user.",
             example = "Test User", required = true, position = 3)
-    @NotEmpty
+    @NotEmpty(message = "{user.name.notEmpty}")
+    @Size(min = 6, max = 40, message = "{user.name.invalidLength}")
     private String name;
 
     @ApiModelProperty(notes = "Email of the user.",
             example = "user1@mydomain.com", required = true, position = 4)
-    @NotEmpty
+    @NotEmpty(message = "{user.email.notEmpty}")
+    @Email(message = "{user.email.invalidFormat")
     @Column(unique = true)
     private String email;
 
     @ApiModelProperty(notes = "Mobile number of the user.",
             example = "07777 123123", required = true, position = 5)
-    @NotEmpty
+    @NotEmpty(message = "{user.mobile.notEmpty")
+    @Pattern(regexp = "(^$|[0-9]{10})", message = "{user.mobile.invalidFormat}")
     @Column(unique = true)
     private String mobile;
 

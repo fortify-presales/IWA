@@ -23,7 +23,32 @@
                 </div>
 
                 <div class="col-md-10">
-                    <p>Messages go here</p>
+                    <table class="table">
+                        <caption>Your messages</caption>
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Summary</th>
+                            <th scope="col">Date Sent</th>
+                            <th scope="col">Read</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${messages.empty}">
+                            <td colspan="2"> You have no messages </td>
+                        </tr>
+                        <tr th:each="m : ${messages}">
+                            <td><a th:href="@{/users/messages/view/{id}(id=${m.id})}"><span th:text="View"> # </span></a></td>
+                            <td><span th:text="${#strings.abbreviate(m.text,40)}"> Text </span></td>
+                            <td><span th:text="${m.sentDate}"> Date Sent </span></td>
+                            <td>
+                                <span th:if="${m.read}"> <i class="fas fa-check"></i> </span>
+                                <span th:unless="${m.read}"> <i class="fas fa-times"></i> </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <!--a class="btn btn-primary" th:href="@{/user/messages/new}">New Message</a-->
                 </div>
 
             </div>

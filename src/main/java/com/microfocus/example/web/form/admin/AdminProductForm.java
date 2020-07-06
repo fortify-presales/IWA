@@ -17,18 +17,21 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.web.form;
+package com.microfocus.example.web.form.admin;
 
 import com.microfocus.example.entity.Product;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 /**
  * Form backing entity/DTO for updating product
  *
  * @author Kevin A. Lee
  */
-public class ProductForm {
+public class AdminProductForm {
 
     @Min(1)
     private Integer id;
@@ -67,10 +70,10 @@ public class ProductForm {
 
     private Boolean available;
 
-    public ProductForm() {
+    public AdminProductForm() {
     }
 
-    public ProductForm(Product product) {
+    public AdminProductForm(Product product) {
         this.id = product.getId();
         this.code = product.getCode();
         this.name = product.getName();

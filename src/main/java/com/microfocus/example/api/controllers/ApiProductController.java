@@ -17,13 +17,12 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.api;
+package com.microfocus.example.api.controllers;
 
 import com.microfocus.example.entity.ApiErrorResponse;
 import com.microfocus.example.entity.Product;
 import com.microfocus.example.exception.ProductNotFoundException;
 import com.microfocus.example.service.ProductService;
-import com.microfocus.example.utils.EncryptedPasswordUtils;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +40,9 @@ import java.util.Optional;
 @Api(description = "Retrieve, update, create and delete products.", tags = {"products"})
 @RequestMapping(value = "/api/v1")
 @RestController
-public class APIProductController {
+public class ApiProductController {
 
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(APIProductController.class);
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ApiProductController.class);
 
     @Autowired
     private ProductService productService;

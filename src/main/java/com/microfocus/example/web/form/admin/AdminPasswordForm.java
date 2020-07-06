@@ -17,26 +17,29 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.web.form;
-
-import javax.validation.constraints.NotEmpty;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+package com.microfocus.example.web.form.admin;
 
 import com.microfocus.example.entity.User;
 import com.microfocus.example.web.validation.ValidPassword;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * Form backing entity/DTO for changing password
  * @author Kevin A. Lee
  */
-public class PasswordForm {
+public class AdminPasswordForm {
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Min(1)
+    private Integer id;
 
     @NotEmpty
     private String username;
@@ -47,11 +50,22 @@ public class PasswordForm {
     @ValidPassword
     private String confirmPassword;
 
-    public PasswordForm() {
+    public AdminPasswordForm() {
     }
 
-    public PasswordForm(User user) {
+    public AdminPasswordForm(User user) {
+        this.id = user.getId();
         this.username = user.getUsername();
+        this.password = user.getPassword();
+        this.confirmPassword = user.getConfirmPassword();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -80,7 +94,7 @@ public class PasswordForm {
 
      @Override
     public String toString() {
-        return "PasswordForm{" +
+        return "AdminPasswordForm{" +
                 ", username='" + username + '\'' +
                 '}';
     }

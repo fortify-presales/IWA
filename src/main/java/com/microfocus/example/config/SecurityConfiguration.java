@@ -86,6 +86,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     "/v2/api-docs/**",
                     "/console/*",
                     "/site-message",
+                    "/user/message-count",
                     "/js/**/*",
                     "/css/**/*",
                     "/img/**/*",
