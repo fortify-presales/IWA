@@ -172,6 +172,38 @@ public class UserService {
         return newUser;
     }
 
+    //
+    // User Roles
+    //
+
+    public List<Authority> getAllRoles() {
+        return roleRepository.findAll();
+    }
+
+    //public List<Authority> getUserRoles(Integer userId) {
+    //    return roleRepository.findByUserId(userId);
+    //}
+
+    public boolean roleExistsById(Integer id) {
+        return roleRepository.existsById(id);
+    }
+
+    public Optional<Authority> findRoleById(Integer id) {
+        return roleRepository.findById(id);
+    }
+
+    public Authority saveRole(Authority role) {
+        return roleRepository.save(role);
+    }
+
+    public void deleteRoleById(Integer id) {
+        roleRepository.deleteById(id);
+    }
+
+    //
+    // User Messages
+    //
+
     public List<Message> getAllMessages() {
         return messageRepository.findAll();
     }
@@ -183,4 +215,21 @@ public class UserService {
     public List<Message> getUserMessages(Integer userId) {
         return messageRepository.findByUserId(userId);
     }
+
+    public boolean messageExistsById(Integer id) {
+        return messageRepository.existsById(id);
+    }
+
+    public Optional<Message> findMessageById(Integer id) {
+        return messageRepository.findById(id);
+    }
+
+    public Message saveMessage(Message message) {
+        return messageRepository.save(message);
+    }
+
+    public void deleteMessageById(Integer id) {
+        messageRepository.deleteById(id);
+    }
+
 }

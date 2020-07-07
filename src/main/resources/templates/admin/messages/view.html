@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>User Message</title>
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+
+    <div class="row">
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/admin/}">Site Admin</a></li>
+                <li class="breadcrumb-item" aria-current="page"><a th:href="@{/admin/messages/}">Messages</a></li>
+                <li class="breadcrumb-item active" aria-current="page">View</li>
+            </ol>
+        </nav>
+
+        <div th:replace="fragments/admin-menu.html
+                    :: adminMenu('/admin/', ${messageCount})">
+        </div>
+
+        <div class="col-md-10">
+            <div class="col-md-10">
+                <form>
+                    <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                        <span th:text="${message}">message</span>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="form-group row">
+                        <label for="sentTo" class="col-sm-2 col-form-label">User:</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control" id="sentTo" th:value="${messageForm.user.name}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="sentDate" class="col-sm-2 col-form-label">Sent:</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control" id="sentDate" th:value="${messageForm.sentDate}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="messageText" class="col-sm-2 col-form-label">Message:</label>
+                        <div class="col-sm-10">
+                            <textarea readonly class="form-control" rows="10" id="messageText" th:field="${messageForm.text}"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-10">
+                            <a class="btn btn-primary" th:href="@{/admin/messages}"> Back </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>

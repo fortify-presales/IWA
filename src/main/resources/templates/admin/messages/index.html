@@ -39,7 +39,7 @@
                     <td colspan="2"> No Messages Available </td>
                 </tr>
                 <tr th:each="m : ${messages}">
-                    <td><a th:href="@{/admin/messages/view/{id}(id=${m.id})}"><span th:text="${m.id}"> # </span></a></td>
+                    <td><a th:href="@{/admin/messages/{id}(id=${m.id})}"><span th:text="${m.id}"> # </span></a></td>
                     <td><span th:text="${m.user.username}"> To </span></td>
                     <td><span th:text="${#strings.abbreviate(m.text,40)}"> Text </span></td>
                     <td><span th:text="${m.sentDate}"> Date Sent </span></td>
@@ -50,7 +50,7 @@
                 </tr>
                 </tbody>
             </table>
-            <a class="btn btn-primary" th:href="@{/admin/messages/add}">New Message</a>
+            <!--a class="btn btn-primary" th:href="@{/admin/messages/add}">New Message</a-->
         </div>
 
     </div>

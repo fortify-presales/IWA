@@ -17,9 +17,11 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.exception;
+package com.microfocus.example.config.handlers;
 
 import com.microfocus.example.entity.ApiErrorResponse;
+import com.microfocus.example.exception.ProductNotFoundException;
+import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.repository.ProductRepositoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,19 +62,29 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
     // Custom exception handlers
 
     @ExceptionHandler({UserNotFoundException.class})
-    public ResponseEntity<ApiErrorResponse> customerNotFound(UserNotFoundException ex, WebRequest request){
+    public ResponseEntity<ApiErrorResponse> userNotFound(UserNotFoundException ex, WebRequest request) {
         ApiErrorResponse apiResponse = new ApiErrorResponse
                 .ApiErrorResponseBuilder()
-                    .withStatus(HttpStatus.NOT_FOUND)
-                    .atTime(LocalDateTime.now(ZoneOffset.UTC))
-                    .withMessage("User not found")
-                    .withDetails("Unable to find user. Please provide a valid user id.")
-                    .build();
+                .withStatus(HttpStatus.NOT_FOUND)
+                .atTime(LocalDateTime.now(ZoneOffset.UTC))
+                .withMessage("User not found")
+                .withDetails(ex.getMessage())
+                .build();
         return new ResponseEntity<ApiErrorResponse>(apiResponse, HttpStatus.NOT_FOUND);
-
     }
 
-    // Add other custom handlers
+    @ExceptionHandler({ProductNotFoundException.class})
+    public ResponseEntity<ApiErrorResponse> productNotFound(ProductNotFoundException ex, WebRequest request) {
+        ApiErrorResponse apiResponse = new ApiErrorResponse
+                .ApiErrorResponseBuilder()
+                .withStatus(HttpStatus.NOT_FOUND)
+                .atTime(LocalDateTime.now(ZoneOffset.UTC))
+                .withMessage("Product not found")
+                .withDetails(ex.getMessage())
+                .build();
+        return new ResponseEntity<ApiErrorResponse>(apiResponse, HttpStatus.NOT_FOUND);
+    }
+
 
     // Generic HTTP exception handlers
 
@@ -80,7 +92,6 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex, final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-        logger.info(ex.getClass().getName());
         final List<String> errors = new ArrayList<String>();
         for (final FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.add(error.getField() + ": " + error.getDefaultMessage());
@@ -90,11 +101,11 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
         }
         final ApiErrorResponse apiError = new ApiErrorResponse
                 .ApiErrorResponseBuilder()
-                    .withStatus(HttpStatus.BAD_REQUEST)
-                    .atTime(LocalDateTime.now(ZoneOffset.UTC))
-                    .withMessage(ex.getLocalizedMessage())
-                    .withDetails(errors.toString())
-                    .build();
+                .withStatus(HttpStatus.BAD_REQUEST)
+                .atTime(LocalDateTime.now(ZoneOffset.UTC))
+                .withMessage(ex.getLocalizedMessage())
+                .withDetails(errors.toString())
+                .build();
         return handleExceptionInternal(ex, apiError, headers, apiError.getStatus(), request);
     }
 
@@ -160,7 +171,7 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
-    @ExceptionHandler({ MethodArgumentTypeMismatchException.class })
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
     public ResponseEntity<Object> handleMethodArgumentTypeMismatch(final MethodArgumentTypeMismatchException ex, final WebRequest request) {
         logger.info(ex.getClass().getName());
         final String error = ex.getName() + " should be of type " + ex.getRequiredType().getName();
@@ -174,7 +185,7 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
-    @ExceptionHandler({ ConstraintViolationException.class })
+    @ExceptionHandler({ConstraintViolationException.class})
     public ResponseEntity<Object> handleConstraintViolation(final ConstraintViolationException ex, final WebRequest request) {
         logger.info(ex.getClass().getName());
         final List<String> errors = new ArrayList<String>();
@@ -195,9 +206,7 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(final NoHandlerFoundException ex, final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-        logger.info(ex.getClass().getName());
         final String error = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL();
-
         final ApiErrorResponse apiError = new ApiErrorResponse
                 .ApiErrorResponseBuilder()
                 .withStatus(HttpStatus.NOT_FOUND)
@@ -212,17 +221,16 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(final HttpRequestMethodNotSupportedException ex, final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-        logger.info(ex.getClass().getName());
         final StringBuilder builder = new StringBuilder();
         builder.append(ex.getMethod());
         builder.append(" method is not supported for this request. Supported methods are ");
         ex.getSupportedHttpMethods().forEach(t -> builder.append(t + " "));
         final ApiErrorResponse apiError = new ApiErrorResponse.ApiErrorResponseBuilder()
-            .withStatus(HttpStatus.METHOD_NOT_ALLOWED)
-            .atTime(LocalDateTime.now(ZoneOffset.UTC))
-            .withMessage(ex.getLocalizedMessage())
-            .withDetails(builder.toString())
-            .build();
+                .withStatus(HttpStatus.METHOD_NOT_ALLOWED)
+                .atTime(LocalDateTime.now(ZoneOffset.UTC))
+                .withMessage(ex.getLocalizedMessage())
+                .withDetails(builder.toString())
+                .build();
         return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
@@ -230,25 +238,23 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(final HttpMediaTypeNotSupportedException ex, final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
-        logger.info(ex.getClass().getName());
         final StringBuilder builder = new StringBuilder();
         builder.append(ex.getContentType());
         builder.append(" media type is not supported. Supported media types are ");
         ex.getSupportedMediaTypes().forEach(t -> builder.append(t + " "));
         final ApiErrorResponse apiError = new ApiErrorResponse.ApiErrorResponseBuilder()
-            .withStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-            .atTime(LocalDateTime.now(ZoneOffset.UTC))
-            .withMessage(ex.getLocalizedMessage())
-            .withDetails(builder.substring(0, builder.length() - 2))
-            .build();
+                .withStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                .atTime(LocalDateTime.now(ZoneOffset.UTC))
+                .withMessage(ex.getLocalizedMessage())
+                .withDetails(builder.substring(0, builder.length() - 2))
+                .build();
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
     // 500
 
-    @ExceptionHandler({ Exception.class })
+    @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> handleAll(final Exception ex, final WebRequest request) {
-        logger.info(ex.getClass().getName());
         logger.error("error", ex);
         final ApiErrorResponse apiError = new ApiErrorResponse.ApiErrorResponseBuilder()
                 .withStatus(HttpStatus.INTERNAL_SERVER_ERROR)

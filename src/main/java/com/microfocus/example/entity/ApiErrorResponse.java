@@ -20,14 +20,17 @@
 package com.microfocus.example.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class ApiErrorResponse {
 
     private HttpStatus status;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm", iso = DateTimeFormat.ISO.DATE_TIME)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime timeStamp;
     private String message;
     private String details;
@@ -40,9 +43,8 @@ public class ApiErrorResponse {
         this.status = status;
     }
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
-    public LocalDateTime getTimeStamp() {
-        return timeStamp;
+    public String getTimeStamp() {
+        return timeStamp.format(DateTimeFormatter.ISO_DATE_TIME);
     }
 
     public void setTimeStamp(LocalDateTime timeStamp) {

@@ -38,7 +38,7 @@
                             <td colspan="2"> You have no messages </td>
                         </tr>
                         <tr th:each="m : ${messages}">
-                            <td><a th:href="@{/users/messages/view/{id}(id=${m.id})}"><span th:text="View"> # </span></a></td>
+                            <td><a th:href="@{/user/messages/{id}(id=${m.id})}"><span th:text="View"> # </span></a></td>
                             <td><span th:text="${#strings.abbreviate(m.text,40)}"> Text </span></td>
                             <td><span th:text="${m.sentDate}"> Date Sent </span></td>
                             <td>

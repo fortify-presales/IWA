@@ -20,9 +20,10 @@
 package com.microfocus.example.api.controllers;
 
 import com.microfocus.example.entity.ApiErrorResponse;
-import com.microfocus.example.entity.Product;
-import com.microfocus.example.exception.ProductNotFoundException;
-import com.microfocus.example.service.ProductService;
+import com.microfocus.example.entity.Message;
+import com.microfocus.example.entity.Message;
+import com.microfocus.example.exception.MessageNotFoundException;
+import com.microfocus.example.service.UserService;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,120 +34,122 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 /**
- * A RESTFul controller for accessing product information.
+ * A RESTFul controller for accessing message information.
  *
  * @author Kevin A. Lee
  */
-@Api(description = "Retrieve, update, create and delete products.", tags = {"products"})
-@RequestMapping(value = "/api/v1/products")
+@Api(description = "Retrieve, update, create and delete messages.", tags = {"messages"})
+@RequestMapping(value = "/api/v1/messages")
 @RestController
-public class ApiProductController {
+public class ApiMessageController {
 
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ApiProductController.class);
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ApiMessageController.class);
 
     @Autowired
-    private ProductService productService;
+    private UserService userService;
 
-    @ApiOperation(value = "Find products", tags = {"products"})
+    @ApiOperation(value = "Find messages", tags = {"messages"})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Product.class, responseContainer = "List"),
+            @ApiResponse(code = 200, message = "Success", response = Message.class, responseContainer = "List"),
             @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
             @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class)
     })
     @GetMapping(value = {"/",""}, produces = "application/json")
-    public Iterable<Product> findProducts(
-            @ApiParam("Keyword(s) search for products to be found.")
+    public Iterable<Message> findMessages(
+            @ApiParam("Keyword(s) search for messages to be found.")
             @RequestParam("keywords") Optional<String> keywords,
-            @ApiParam("Page number of products to start from.")
+            @ApiParam("Page number of messages to start from.")
             @RequestParam("pageNum") Optional<Integer> pageNum) {
         if (keywords.equals(Optional.empty())) {
-            log.debug("Retrieving all products");
-            return productService.listAll();
+            log.debug("Retrieving all messages");
+            return userService.getAllMessages();
         } else {
             Integer pNum = 1;
             if (!pageNum.equals(Optional.empty())) {
                 pNum = pageNum.get();
             }
-            log.debug("Retrieving products with keywords: " + keywords);
-            return productService.listAll(pNum, keywords.get());
+            log.debug("Retrieving messages with keywords: " + keywords);
+            //return userService.listAll(pNum, keywords.get());
+            //TODO: paging/searching
+            return userService.getAllMessages();
         }
     }
 
-    @ApiOperation(value = "Find a specific product by its Id", tags = {"products"})
+    @ApiOperation(value = "Find a specific message by its Id", tags = {"messages"})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Product.class),
+            @ApiResponse(code = 200, message = "Success", response = Message.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
             @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class),
-            @ApiResponse(code = 404, message = "Product not found", response = ApiErrorResponse.class),
+            @ApiResponse(code = 404, message = "Message not found", response = ApiErrorResponse.class),
     })
     @GetMapping(value = {"/{id}"}, produces = "application/json")
-    public Optional<Product> findProductById(
+    public Optional<Message> findMessageById(
             @ApiParam(name = "id",
-                    value = "Id of the product to be found. Cannot be empty.",
+                    value = "Id of the message to be found. Cannot be empty.",
                     example = "1",
                     required = true)
             @PathVariable("id") Integer id) {
-        log.debug("Retrieving product id: " + id);
-        if (!productService.existsById(id))
-            throw new ProductNotFoundException("Product with id: " + id.toString() + " does not exist.");
-        return productService.findById(id);
+        log.debug("Retrieving message id: " + id);
+        if (!userService.messageExistsById(id))
+            throw new MessageNotFoundException("Message with id: " + id.toString() + " does not exist.");
+        return userService.findMessageById(id);
     }
 
-    @ApiOperation(value = "Create a new product", tags = {"products"})
+    @ApiOperation(value = "Create a new message", tags = {"messages"})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Product.class),
+            @ApiResponse(code = 200, message = "Success", response = Message.class),
             @ApiResponse(code = 400, message = "Bad request", response = ApiErrorResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
             @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class),
-            @ApiResponse(code = 409, message = "Product already exists", response = ApiErrorResponse.class)
+            @ApiResponse(code = 409, message = "Message already exists", response = ApiErrorResponse.class)
     })
     @PostMapping(value = {"/",""}, produces = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public Product newProduct(
-            @ApiParam("Details of the product to be created. Cannot be empty.")
-            @Valid @RequestBody Product newProduct) {
-        newProduct.setId(0); // set to 0 for sequence id generation
-        log.debug("Creating new product: " + newProduct.toString());
-        return productService.save(newProduct);
+    public Message newMessage(
+            @ApiParam("Details of the message to be created. Cannot be empty.")
+            @Valid @RequestBody Message newMessage) {
+        newMessage.setId(0); // set to 0 for sequence id generation
+        log.debug("Creating new message: " + newMessage.toString());
+        return userService.saveMessage(newMessage);
     }
 
-    @ApiOperation(value = "Update an existing product", tags = {"products"})
+    @ApiOperation(value = "Update an existing message", tags = {"messages"})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Product.class),
+            @ApiResponse(code = 200, message = "Success", response = Message.class),
             @ApiResponse(code = 400, message = "Bad request", response = ApiErrorResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
             @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class),
-            @ApiResponse(code = 404, message = "Product not found", response = ApiErrorResponse.class)
+            @ApiResponse(code = 404, message = "Message not found", response = ApiErrorResponse.class)
     })
     @PutMapping(value = {"/{id}"}, produces = "application/json")
-    public Product updateProduct(
-            @ApiParam("Details of the product to be updated. Cannot be empty.")
-            @Valid @RequestBody Product newProduct,
+    public Message updateMessage(
+            @ApiParam("Details of the message to be updated. Cannot be empty.")
+            @Valid @RequestBody Message newMessage,
             @ApiParam(name = "id",
-                    value = "Id of the product to be updated. Cannot be empty.",
+                    value = "Id of the message to be updated. Cannot be empty.",
                     example = "1",
                     required = true)
             @PathVariable Integer id) {
-        log.debug("Updating product id: " + id);
-        return productService.save(newProduct);
+        log.debug("Updating message id: " + id);
+        return userService.saveMessage(newMessage);
     }
 
-    @ApiOperation(value = "Delete a product", tags = {"products"})
+    @ApiOperation(value = "Delete a message", tags = {"messages"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
             @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class),
-            @ApiResponse(code = 404, message = "Product not found", response = ApiErrorResponse.class)
+            @ApiResponse(code = 404, message = "Message not found", response = ApiErrorResponse.class)
     })
     @DeleteMapping(value = "/{id}", produces = "application/json")
-    void deleteProduct(
+    void deleteMessage(
             @ApiParam(name = "id",
-                    value = "Id of the product to be deleted. Cannot be empty.",
+                    value = "Id of the message to be deleted. Cannot be empty.",
                     example = "1",
                     required = true)
             @PathVariable Integer id) {
-        log.debug("Deleting product id: " + id);
-        productService.delete(id);
+        log.debug("Deleting message id: " + id);
+        userService.deleteMessageById(id);
     }
 
 }

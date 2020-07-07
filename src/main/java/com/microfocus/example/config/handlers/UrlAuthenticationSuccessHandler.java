@@ -17,7 +17,7 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.web;
+package com.microfocus.example.config.handlers;
 
 import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.User;

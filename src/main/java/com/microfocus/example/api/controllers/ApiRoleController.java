@@ -20,10 +20,9 @@
 package com.microfocus.example.api.controllers;
 
 import com.microfocus.example.entity.ApiErrorResponse;
-import com.microfocus.example.entity.User;
-import com.microfocus.example.exception.UserNotFoundException;
+import com.microfocus.example.entity.Authority;
+import com.microfocus.example.exception.RoleNotFoundException;
 import com.microfocus.example.service.UserService;
-import com.microfocus.example.utils.EncryptedPasswordUtils;
 import io.swagger.annotations.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,117 +33,118 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 /**
- * A RESTFul controller for accessing user information.
+ * A RESTFul controller for accessing role information.
  *
  * @author Kevin A. Lee
  */
-@Api(description = "Retrieve, update, create and delete users.", tags = {"users"})
-@RequestMapping(value = "/api/v1/users")
+@Api(description = "Retrieve, update, create and delete roles.", tags = {"roles"})
+@RequestMapping(value = "/api/v1/roles")
 @RestController
-public class ApiUserController {
+public class ApiRoleController {
 
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ApiUserController.class);
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ApiRoleController.class);
 
     @Autowired
     private UserService userService;
 
-    @ApiOperation(value = "Find users",
+    @ApiOperation(value = "Find roles/authorities",
             notes = "",
-            tags = {"users"})
+            tags = {"roles"})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = User.class, responseContainer = "List"),
+            @ApiResponse(code = 200, message = "Success", response = Authority.class, responseContainer = "List"),
             @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
             @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class)
     })
-    @GetMapping(value = {"/",""}, produces = "application/json")
-    public Iterable<User> findUsers(
-            @ApiParam("Partial username of the user(s) to be found.")
-            @RequestParam("username") Optional<String> partialName) {
+    @GetMapping(value = {"/", ""}, produces = "application/json")
+    public Iterable<Authority> findRoles(
+            @ApiParam("Partial name of the role(s) to be found.")
+            @RequestParam("rolename") Optional<String> partialName) {
         if (partialName.equals(Optional.empty())) {
-            log.debug("Retrieving all users");
-            return userService.getAllUsers();
+            log.debug("Retrieving all roles");
+            return userService.getAllRoles();
         } else {
-            log.debug("Retrieving users with username: " + partialName);
-            return userService.findUsersByUsername(partialName.get());
+            log.debug("Retrieving roles with rolename: " + partialName);
+            //return userService.findRolesByRolename(partialName.get());
+            //TODO: paging/searching
+            return userService.getAllRoles();
         }
     }
 
-    @ApiOperation(value = "Find a specific user by their Id", tags = {"users"})
+    @ApiOperation(value = "Find a specific role by its Id", tags = {"roles"})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = User.class),
+            @ApiResponse(code = 200, message = "Success", response = Authority.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
             @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class),
-            @ApiResponse(code = 404, message = "User not found", response = ApiErrorResponse.class),
+            @ApiResponse(code = 404, message = "Role not found", response = ApiErrorResponse.class),
     })
     @GetMapping(value = {"/{id}"}, produces = "application/json")
-    public Optional<User> findUserById(
+    public Optional<Authority> findRoleById(
             @ApiParam(name = "id",
-                    value = "Id of the user to be found. Cannot be empty.",
+                    value = "Id of the role/authority to be found. Cannot be empty.",
                     example = "1",
                     required = true)
             @PathVariable("id") Integer id) {
-        log.debug("Retrieving user id: " + id);
-        if (!userService.userExistsById(id))
-            throw new UserNotFoundException("User with id: " + id.toString() + " does not exist.");
-        return userService.findUserById(id);
+        log.debug("Retrieving role id: " + id);
+        if (!userService.roleExistsById(id))
+            throw new RoleNotFoundException("Role with id: " + id.toString() + " does not exist.");
+        return userService.findRoleById(id);
     }
 
-    @ApiOperation(value = "Create a new user", tags = {"users"})
+    @ApiOperation(value = "Create a new role", tags = {"roles"})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = User.class),
+            @ApiResponse(code = 200, message = "Success", response = Authority.class),
             @ApiResponse(code = 400, message = "Bad request", response = ApiErrorResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
             @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class),
-            @ApiResponse(code = 409, message = "User already exists", response = ApiErrorResponse.class)
+            @ApiResponse(code = 409, message = "Role already exists", response = ApiErrorResponse.class)
     })
-    @PostMapping(value = {"/",""}, produces = "application/json")
+    @PostMapping(value = {"/", ""}, produces = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public User newUser(
-            @ApiParam("Details of the user to be created. Cannot be empty.")
-            @Valid @RequestBody User newUser) {
-        newUser.setId(0); // set to 0 for sequence id generation
-        newUser.setPassword(EncryptedPasswordUtils.encryptPassword(newUser.getPassword()));
-        log.debug("Creating new user: " + newUser.toString());
-        return userService.saveUser(newUser);
+    public Authority newRole(
+            @ApiParam("Details of the role to be created. Cannot be empty.")
+            @Valid @RequestBody Authority newRole) {
+        newRole.setId(0); // set to 0 for sequence id generation
+        log.debug("Creating new role: " + newRole.toString());
+        return userService.saveRole(newRole);
     }
 
-    @ApiOperation(value = "Update an existing user", tags = {"users"})
+    @ApiOperation(value = "Update an existing role", tags = {"roles"})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = User.class),
+            @ApiResponse(code = 200, message = "Success", response = Authority.class),
             @ApiResponse(code = 400, message = "Bad request", response = ApiErrorResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
             @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class),
-            @ApiResponse(code = 404, message = "User not found", response = ApiErrorResponse.class)
+            @ApiResponse(code = 404, message = "Role not found", response = ApiErrorResponse.class)
     })
     @PutMapping(value = {"/{id}"}, produces = "application/json")
-    public User updateUser(
-            @ApiParam("Details of the user to be updated. Cannot be empty.")
-            @Valid @RequestBody User newUser,
+    public Authority updateRole(
+            @ApiParam("Details of the role to be updated. Cannot be empty.")
+            @Valid @RequestBody Authority newRole,
             @ApiParam(name = "id",
-                    value = "Id of the user to be updated. Cannot be empty.",
+                    value = "Id of the role to be updated. Cannot be empty.",
                     example = "1",
                     required = true)
             @PathVariable Integer id) {
-        log.debug("Updating user id: " + id);
-        return userService.saveUser(newUser);
+        log.debug("Updating role id: " + id);
+        return userService.saveRole(newRole);
     }
 
-    @ApiOperation(value = "Delete a user", tags = {"users"})
+    @ApiOperation(value = "Delete a role", tags = {"roles"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
             @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class),
-            @ApiResponse(code = 404, message = "User not found", response = ApiErrorResponse.class)
+            @ApiResponse(code = 404, message = "Role not found", response = ApiErrorResponse.class)
     })
     @DeleteMapping(value = "/{id}", produces = "application/json")
-    void deleteUser(
+    void deleteRole(
             @ApiParam(name = "id",
-                    value = "Id of the user to be deleted. Cannot be empty.",
+                    value = "Id of the role to be deleted. Cannot be empty.",
                     example = "1",
                     required = true)
             @PathVariable Integer id) {
-        log.debug("Deleting user id: " + id);
-        userService.deleteUserById(id);
+        log.debug("Deleting role id: " + id);
+        userService.deleteRoleById(id);
     }
 
 }

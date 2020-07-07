@@ -19,16 +19,17 @@
 
 package com.microfocus.example.config;
 
+import com.microfocus.example.config.handlers.ApiAccessDeniedHandler;
+import com.microfocus.example.config.handlers.BasicAuthenticationEntryPointCustom;
 import com.microfocus.example.service.CustomUserDetailsService;
-import com.microfocus.example.web.BasicAuthenticationEntryPointCustom;
-import com.microfocus.example.web.UrlAuthenticationSuccessHandler;
+import com.microfocus.example.config.handlers.UrlAuthenticationSuccessHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -44,7 +45,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(SecurityConfiguration.class);
 
@@ -54,7 +55,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private CustomUserDetailsService userDetailsService;
 
     @Autowired
-    private BasicAuthenticationEntryPointCustom authenticationEntryPoint;
+    private BasicAuthenticationEntryPointCustom basicAuthenticationEntryPoint;
+
+    @Autowired
+    private ApiAccessDeniedHandler apiAccessDeniedHandler;
 
     @Value("${spring.profiles.active:Unknown}")
     private String activeProfile;
@@ -64,82 +68,95 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
-    @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
-        if (activeProfile.contains("dev")) {
-            log.info("Running development profile");
-            httpSecurity.csrf().disable();
-            httpSecurity.headers().frameOptions().disable();
+    @Configuration
+    @Order(1)
+    public class ApiConfigurationAdapter extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void configure(HttpSecurity httpSecurity) throws Exception {
+
+            httpSecurity.antMatcher("/api/**")
+                    .authorizeRequests().anyRequest().hasAnyRole("ADMIN", "API")
+                    .and().httpBasic().authenticationEntryPoint(basicAuthenticationEntryPoint)
+                    .and().exceptionHandling().accessDeniedHandler(apiAccessDeniedHandler);
         }
 
-        httpSecurity
-                .authorizeRequests()
-                .antMatchers(
-                    "/",
-                    "/products/**",
-                    "/services/**",
-                    "/login",
-                    "/logout",
-                    "/register",
-                    "/swagger-resources/**",
-                    "/swagger-ui.html",
-                    "/v2/api-docs/**",
-                    "/console/*",
-                    "/site-message",
-                    "/user/message-count",
-                    "/js/**/*",
-                    "/css/**/*",
-                    "/img/**/*",
-                    "/webjars/**/*").permitAll()
-                // Only admin can access /admin portal
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                // Only admin can perform HTTP delete operation
-                .antMatchers(HttpMethod.DELETE).hasRole("ADMIN")
-                // any admin/api user can perform api operations
-                .antMatchers("/api/**").hasAnyRole("ADMIN", "API")
-                .anyRequest().fullyAuthenticated();
+    }
 
-        httpSecurity.authorizeRequests().and()
-                .exceptionHandling()
-                .accessDeniedPage("/access-denied");
+    @Configuration
+    @Order(2)
+    public class UserConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
-        httpSecurity.authorizeRequests().and().httpBasic()
-                .realmName(REALM_NAME)
-                .authenticationEntryPoint(authenticationEntryPoint);
+        @Override
+        protected void configure(HttpSecurity httpSecurity) throws Exception {
+            if (activeProfile.contains("dev")) {
+                log.info("Running development profile");
+                httpSecurity.csrf().disable();
+                httpSecurity.headers().frameOptions().disable();
+            }
 
-        httpSecurity.authorizeRequests().and().formLogin()
-                .loginProcessingUrl("/j_spring_security_check")
+            httpSecurity.authorizeRequests()
+                    .antMatchers(
+                            "/",
+                            "/products/**",
+                            "/services/**",
+                            "/login",
+                            "/logout",
+                            "/register",
+                            "/swagger-resources/**",
+                            "/swagger-ui.html",
+                            "/v2/api-docs/**",
+                            "/console/*",
+                            "/site-message",
+                            "/user/message-count",
+                            "/js/**/*",
+                            "/css/**/*",
+                            "/img/**/*",
+                            "/webjars/**/*").permitAll()
+                    // Only admin can access /admin portal
+                    .antMatchers("/admin/**").hasRole("ADMIN")
+                    .anyRequest().fullyAuthenticated();
+
+            httpSecurity.authorizeRequests().and()
+                    .exceptionHandling()
+                    .accessDeniedPage("/access-denied");
+
+            httpSecurity.authorizeRequests().and().formLogin()
+                    .loginProcessingUrl("/j_spring_security_check")
 //                .successHandler(CustomAuthenticationSuccessHandler())
-                .loginPage("/login")
-                .failureUrl("/login?error=true")
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .permitAll();
+                    .loginPage("/login")
+                    .failureUrl("/login?error=true")
+                    .usernameParameter("username")
+                    .passwordParameter("password")
+                    .permitAll();
 
-        httpSecurity.authorizeRequests().and().logout()
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/login?logout")
-                .permitAll();
-    }
+            httpSecurity.authorizeRequests().and().logout()
+                    .invalidateHttpSession(true)
+                    .clearAuthentication(true)
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                    .logoutSuccessUrl("/login?logout")
+                    .permitAll();
 
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
+        }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) {
-        auth.authenticationProvider(authenticationProvider());
-    }
+        @Bean
+        public DaoAuthenticationProvider authenticationProvider() {
+            DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+            authProvider.setUserDetailsService(userDetailsService());
+            authProvider.setPasswordEncoder(passwordEncoder());
+            return authProvider;
+        }
 
-    @Bean
-    public AuthenticationSuccessHandler CustomAuthenticationSuccessHandler(){
-        return new UrlAuthenticationSuccessHandler();
+        @Override
+        protected void configure(AuthenticationManagerBuilder auth) {
+            auth.authenticationProvider(authenticationProvider());
+        }
+
+        @Bean
+        public AuthenticationSuccessHandler CustomAuthenticationSuccessHandler(){
+            return new UrlAuthenticationSuccessHandler();
+        }
+
     }
 
     @Bean

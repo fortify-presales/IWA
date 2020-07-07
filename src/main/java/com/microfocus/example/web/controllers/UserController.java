@@ -26,6 +26,7 @@ import com.microfocus.example.exception.InvalidPasswordException;
 import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.service.UserService;
 import com.microfocus.example.utils.WebUtils;
+import com.microfocus.example.web.form.MessageForm;
 import com.microfocus.example.web.form.PasswordForm;
 import com.microfocus.example.web.form.UserForm;
 import org.slf4j.Logger;
@@ -129,21 +130,34 @@ public class UserController {
         model.addAttribute("messageCount", messages.size());
         model.addAttribute("controllerName", "User");
         model.addAttribute("actionName", "messages");
-        return "user/messages";
+        return "user/messages/index";
     }
 
     @GetMapping("/message-count")
     @ResponseBody
     public String getUserMessageCount(Model model, Principal principal) {
         if (principal != null) {
-            log.debug("Retrieving user message count");
             CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
             long userMessageCount = userService.getUserMessageCount(loggedInUser.getId());
-            log.debug("Current user has " + userMessageCount + " messages");
             return Long.toString(userMessageCount);
         } else {
             return "0";
         }
+    }
+
+    @GetMapping("/messages/{id}")
+    public String viewMessage(@PathVariable("id") Integer messageId,
+                           Model model, Principal principal) {
+        Optional<Message> optionalMessage = userService.findMessageById(messageId);
+        if (optionalMessage.isPresent()) {
+            MessageForm messageForm = new MessageForm(optionalMessage.get());
+            model.addAttribute("messageForm", messageForm);
+        } else {
+            model.addAttribute("message", "Internal error accessing message!");
+            model.addAttribute("alertClass", "alert-danger");
+            return "message/not-found";
+        }
+        return "/user/messages/view";
     }
 
     @PostMapping("/saveProfile")

@@ -17,58 +17,55 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.entity;
+package com.microfocus.example.web.form;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.microfocus.example.entity.Message;
+import com.microfocus.example.entity.Product;
+import com.microfocus.example.entity.User;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.Calendar;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
- * A user message.
+ * Form backing entity/DTO for updating message
  *
  * @author Kevin A. Lee
  */
-@Entity
-@Table(name = "message")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Message implements Serializable {
+public class MessageForm {
 
-    private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Min(1)
     private Integer id;
 
-    @ManyToOne
     private User user;
 
-    @NotEmpty(message = "Message Text must not be blank")
+    @NotEmpty(message = "{message.text.notEmpty}")
+    @Size(min = 40, message = "{message.text.invalidLength}")
     private String text;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @DateTimeFormat(pattern = "MM-dd-yyyy")
-    @Column(name = "sent_date")
     private Date sentDate;
 
     @DateTimeFormat(pattern = "MM-dd-yyyy")
-    @Column(name = "read_date")
     private Date readDate;
 
-    @NotNull
     private Boolean read;
 
-    public Message() {
-        setRead(false);
-        Calendar calendar = Calendar.getInstance();
-        setSentDate(calendar.getTime());
+    public MessageForm() {
+    }
+
+    public MessageForm(Message message) {
+        this.id = message.getId();
+        this.user = message.getUser();
+        this.text = message.getText();
+        this.sentDate = message.getSentDate();
+        this.readDate = message.getReadDate();
+        this.read = message.getRead();
     }
 
     public Integer getId() {
@@ -80,7 +77,7 @@ public class Message implements Serializable {
     }
 
     public User getUser() {
-        return this.user;
+        return user;
     }
 
     public void setUser(User user) {
@@ -88,27 +85,23 @@ public class Message implements Serializable {
     }
 
     public String getText() {
-        return this.text;
+        return text;
     }
 
     public void setText(String text) {
         this.text = text;
     }
 
-    @Basic
-    @Temporal(TemporalType.DATE)
     public Date getSentDate() {
-        return this.sentDate;
+        return sentDate;
     }
 
     public void setSentDate(Date sentDate) {
         this.sentDate = sentDate;
     }
 
-    @Basic
-    @Temporal(TemporalType.DATE)
     public Date getReadDate() {
-        return this.readDate;
+        return readDate;
     }
 
     public void setReadDate(Date readDate) {
@@ -116,7 +109,7 @@ public class Message implements Serializable {
     }
 
     public Boolean getRead() {
-        return this.read;
+        return read;
     }
 
     public void setRead(Boolean read) {
@@ -125,7 +118,7 @@ public class Message implements Serializable {
 
     @Override
     public String toString() {
-        return "Message(" + id + " to: " + user.getUsername() + " on: " + sentDate.toString() + ")";
+        return "MessageForm(" + id + " : " + text.substring(0,40) + ")";
     }
 
 }
