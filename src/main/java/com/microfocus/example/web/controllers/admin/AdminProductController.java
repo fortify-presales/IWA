@@ -56,7 +56,7 @@ public class AdminProductController {
 
     @GetMapping(value = {"", "/"})
     public String listProducts(Model model, Principal principal) {
-        List<Product> products = productService.listAll();
+        List<Product> products = productService.getAllProducts();
         model.addAttribute("products", products);
         this.setModelDefaults(model, principal, "Admin", "products");
         return "admin/products/index";
@@ -65,7 +65,7 @@ public class AdminProductController {
     @GetMapping("/{id}")
     public String viewProducts(@PathVariable("id") Integer productId,
                                Model model, Principal principal) {
-        Optional<Product> optionalProduct = productService.findById(productId);
+        Optional<Product> optionalProduct = productService.findProductById(productId);
         if (optionalProduct.isPresent()) {
             AdminProductForm adminProductForm = new AdminProductForm(optionalProduct.get());
             model.addAttribute("adminProductForm", adminProductForm);
@@ -81,7 +81,7 @@ public class AdminProductController {
     @GetMapping("/{id}/edit")
     public String productEdit(@PathVariable("id") Integer productId,
                               Model model, Principal principal) {
-        Optional<Product> optionalProduct = productService.findById(productId);
+        Optional<Product> optionalProduct = productService.findProductById(productId);
         if (optionalProduct.isPresent()) {
             AdminProductForm adminProductForm = new AdminProductForm(optionalProduct.get());
             model.addAttribute("adminProductForm", adminProductForm);
@@ -101,7 +101,7 @@ public class AdminProductController {
                               Principal principal) {
         if (!bindingResult.hasErrors()) {
             try {
-                productService.adminSave(adminProductForm);
+                productService.saveProductFromAdminProductForm(adminProductForm);
                 redirectAttributes.addFlashAttribute("message", "Product updated successfully.");
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
                 return "redirect:/admin/products/" + adminProductForm.getId();
@@ -117,7 +117,7 @@ public class AdminProductController {
     @GetMapping("/{id}/delete")
     public String productDelete(@PathVariable("id") Integer productId,
                              Model model, Principal principal) {
-        Optional<Product> optionalProduct = productService.findById(productId);
+        Optional<Product> optionalProduct = productService.findProductById(productId);
         if (optionalProduct.isPresent()) {
             AdminProductForm adminProductForm = new AdminProductForm(optionalProduct.get());
             model.addAttribute("adminProductForm", adminProductForm);
@@ -136,7 +136,7 @@ public class AdminProductController {
                              Model model, RedirectAttributes redirectAttributes,
                              Principal principal) {
         if (action.equals("delete")) {
-            productService.delete(productId);
+            productService.deleteProductById(productId);
             redirectAttributes.addAttribute("message", "Product deleted successfully.");
             redirectAttributes.addFlashAttribute("alertClass", "alert-success");
         } else {
@@ -160,7 +160,7 @@ public class AdminProductController {
                               RedirectAttributes redirectAttributes,
                               Principal principal) {
         if (!bindingResult.hasErrors()) {
-            Product p = productService.adminAdd(adminNewProductForm);
+            Product p = productService.newProductFormAdminNewProductForm(adminNewProductForm);
             redirectAttributes.addFlashAttribute("message", "Product " + adminNewProductForm.getName() + " added successfully.");
             redirectAttributes.addFlashAttribute("alertClass", "alert-success");
             return "redirect:/admin/products/" + p.getId();

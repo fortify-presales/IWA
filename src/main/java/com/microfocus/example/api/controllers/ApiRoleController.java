@@ -19,17 +19,29 @@
 
 package com.microfocus.example.api.controllers;
 
-import com.microfocus.example.entity.ApiErrorResponse;
+import com.microfocus.example.entity.ApiStatusResponse;
 import com.microfocus.example.entity.Authority;
 import com.microfocus.example.exception.RoleNotFoundException;
 import com.microfocus.example.service.UserService;
-import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -37,114 +49,111 @@ import java.util.Optional;
  *
  * @author Kevin A. Lee
  */
-@Api(description = "Retrieve, update, create and delete roles.", tags = {"roles"})
-@RequestMapping(value = "/api/v1/roles")
 @RestController
+@RequestMapping(value = "/api/v3/roles")
+@Tag(name = "roles", description = "Role operations")
 public class ApiRoleController {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(ApiRoleController.class);
 
     @Autowired
-    private UserService userService;
+    private UserService roleService;
 
-    @ApiOperation(value = "Find roles/authorities",
-            notes = "",
-            tags = {"roles"})
+    @Operation(summary = "Find roles by keyword(s)", description = "Keyword search by %keyword% format", tags = {"roles"}, security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Authority.class, responseContainer = "List"),
-            @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class)
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Authority.class)))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
-    @GetMapping(value = {"/", ""}, produces = "application/json")
-    public Iterable<Authority> findRoles(
-            @ApiParam("Partial name of the role(s) to be found.")
-            @RequestParam("rolename") Optional<String> partialName) {
-        if (partialName.equals(Optional.empty())) {
-            log.debug("Retrieving all roles");
-            return userService.getAllRoles();
+    @GetMapping(value = {""}, produces = {"application/json"})
+    public ResponseEntity<List<Authority>> getRolesByKeywords(
+            @Parameter(description = "Keyword(s) search for roles to be found.") @RequestParam("keywords") Optional<String> keywords,
+            @Parameter(description = "Offset of the starting record. 0 indicates the first record.") @RequestParam("offset") Optional<Integer> offset,
+            @Parameter(description = "Maximum records to return. The maximum value allowed is 50.") @RequestParam("limit") Optional<Integer> limit) {
+        log.debug("API::Retrieving roles by keyword(s)");
+        // TODO: implement keywords, offset and limit
+        if (keywords.equals(Optional.empty())) {
+            return ResponseEntity.ok().body(roleService.getAllRoles());
         } else {
-            log.debug("Retrieving roles with rolename: " + partialName);
-            //return userService.findRolesByRolename(partialName.get());
-            //TODO: paging/searching
-            return userService.getAllRoles();
+            return new ResponseEntity<>(roleService.getAllRoles(), HttpStatus.OK);
         }
     }
 
-    @ApiOperation(value = "Find a specific role by its Id", tags = {"roles"})
+    @Operation(summary = "Find role by Id", description = "Find a specific role by its database Id", tags = {"roles"}, security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Authority.class),
-            @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class),
-            @ApiResponse(code = 404, message = "Role not found", response = ApiErrorResponse.class),
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Authority.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Message Not Found", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
-    @GetMapping(value = {"/{id}"}, produces = "application/json")
-    public Optional<Authority> findRoleById(
-            @ApiParam(name = "id",
-                    value = "Id of the role/authority to be found. Cannot be empty.",
-                    example = "1",
-                    required = true)
-            @PathVariable("id") Integer id) {
-        log.debug("Retrieving role id: " + id);
-        if (!userService.roleExistsById(id))
+    @GetMapping(value = {"/{id}"}, produces =  {"application/json"})
+    public ResponseEntity<Authority> findRoleById(
+            @Parameter(description = "Id of the role to be found. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
+        log.debug("API::Retrieving role id: " + id);
+        if (!roleService.roleExistsById(id))
             throw new RoleNotFoundException("Role with id: " + id.toString() + " does not exist.");
-        return userService.findRoleById(id);
+        Optional<Authority> role = roleService.findRoleById(id);
+        return new ResponseEntity<>(role.orElse(null), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Create a new role", tags = {"roles"})
+    @Operation(summary = "Create a new role", description = "Creates a new role", tags = {"roles"}, security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Authority.class),
-            @ApiResponse(code = 400, message = "Bad request", response = ApiErrorResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class),
-            @ApiResponse(code = 409, message = "Role already exists", response = ApiErrorResponse.class)
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Authority.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Role Already Exists", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
-    @PostMapping(value = {"/", ""}, produces = "application/json")
+    @PostMapping(value = {""}, produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
-    public Authority newRole(
-            @ApiParam("Details of the role to be created. Cannot be empty.")
-            @Valid @RequestBody Authority newRole) {
+    public ResponseEntity<Authority> createRole(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody Authority newRole) {
         newRole.setId(0); // set to 0 for sequence id generation
-        log.debug("Creating new role: " + newRole.toString());
-        return userService.saveRole(newRole);
+        log.debug("API::Creating new role: " + newRole.toString());
+        return new ResponseEntity<>(roleService.saveRole(newRole), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Update an existing role", tags = {"roles"})
+    @Operation(summary = "Update a role", description = "Update an existing role", tags = {"roles"}, security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Authority.class),
-            @ApiResponse(code = 400, message = "Bad request", response = ApiErrorResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class),
-            @ApiResponse(code = 404, message = "Role not found", response = ApiErrorResponse.class)
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Authority.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Role Not Found", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
-    @PutMapping(value = {"/{id}"}, produces = "application/json")
-    public Authority updateRole(
-            @ApiParam("Details of the role to be updated. Cannot be empty.")
-            @Valid @RequestBody Authority newRole,
-            @ApiParam(name = "id",
-                    value = "Id of the role to be updated. Cannot be empty.",
-                    example = "1",
-                    required = true)
-            @PathVariable Integer id) {
-        log.debug("Updating role id: " + id);
-        return userService.saveRole(newRole);
+    @PutMapping(value = {"/{id}"}, produces = {"application/json"}, consumes = {"application/json"})
+    public ResponseEntity<Authority> updateRole(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody Authority newRole,
+            @Parameter(description = "Id of the role to be updated. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
+        log.debug("API::Updating role id: " + id);
+        return new ResponseEntity<>(roleService.saveRole(newRole), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Delete a role", tags = {"roles"})
+    @Operation(summary = "Delete a role", description = "Delete an existing role", tags = {"roles"}, security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success"),
-            @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class),
-            @ApiResponse(code = 404, message = "Role not found", response = ApiErrorResponse.class)
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Role not found", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class)))
     })
-    @DeleteMapping(value = "/{id}", produces = "application/json")
-    void deleteRole(
-            @ApiParam(name = "id",
-                    value = "Id of the role to be deleted. Cannot be empty.",
-                    example = "1",
-                    required = true)
-            @PathVariable Integer id) {
-        log.debug("Deleting role id: " + id);
-        userService.deleteRoleById(id);
+    @DeleteMapping (value = {"/{id}"})
+    public ResponseEntity<ApiStatusResponse> deleteRole(
+            @Parameter(description = "Id of the role to be updated. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
+        log.debug("API@::Deleting role id: " + id);
+        roleService.deleteRoleById(id);
+        ApiStatusResponse apiStatusResponse = new ApiStatusResponse
+                .ApiResponseBuilder()
+                .withSuccess(true)
+                .atTime(LocalDateTime.now(ZoneOffset.UTC))
+                .build();
+        return new ResponseEntity<>(apiStatusResponse, HttpStatus.OK);
     }
 
 }

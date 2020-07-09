@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -76,9 +77,15 @@ public class SecurityConfiguration {
         protected void configure(HttpSecurity httpSecurity) throws Exception {
 
             httpSecurity.antMatcher("/api/**")
-                    .authorizeRequests().anyRequest().hasAnyRole("ADMIN", "API")
+                    .authorizeRequests()
+                        .antMatchers(HttpMethod.GET).authenticated()
+                        .antMatchers(HttpMethod.DELETE).hasAnyRole("ADMIN", "API")
+                        .antMatchers(HttpMethod.POST).hasAnyRole("ADMIN", "API")
+                        .antMatchers(HttpMethod.PUT).hasAnyRole("ADMIN", "API")
+                        .antMatchers(HttpMethod.PATCH).hasAnyRole("ADMIN", "API")
                     .and().httpBasic().authenticationEntryPoint(basicAuthenticationEntryPoint)
-                    .and().exceptionHandling().accessDeniedHandler(apiAccessDeniedHandler);
+                    .and().exceptionHandling().accessDeniedHandler(apiAccessDeniedHandler)
+                    .and().csrf().disable();
         }
 
     }
@@ -96,8 +103,7 @@ public class SecurityConfiguration {
             }
 
             httpSecurity.authorizeRequests()
-                    .antMatchers(
-                            "/",
+                    .antMatchers("/",
                             "/products/**",
                             "/services/**",
                             "/login",
@@ -105,7 +111,7 @@ public class SecurityConfiguration {
                             "/register",
                             "/swagger-resources/**",
                             "/swagger-ui.html",
-                            "/v2/api-docs/**",
+                            "/v3/api-docs/**",
                             "/console/*",
                             "/site-message",
                             "/user/message-count",

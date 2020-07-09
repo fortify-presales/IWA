@@ -45,10 +45,9 @@ public class UserForm {
     @Size(min = 2, max = 10, message = "{user.username.invalidLength}")
     private String username;
 
-    @ValidPassword
+    @NotEmpty(message = "{user.password.notEmpty}")
     private String password;
 
-    @ValidPassword
     private String confirmPassword;
 
     @NotEmpty(message = "{user.name.notEmpty}")

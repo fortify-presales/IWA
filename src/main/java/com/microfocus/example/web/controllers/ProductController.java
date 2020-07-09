@@ -55,7 +55,7 @@ public class ProductController {
     @GetMapping(value = {"", "/"})
     public String index(Model model, @Param("keywords") String keywords, Principal principal) {
         this.setModelDefaults(model, principal, "Product", "index");
-        List<Product> products = productService.listAll(1, keywords);
+        List<Product> products = productService.getAllProducts(1, keywords);
         model.addAttribute("keywords", keywords);
         model.addAttribute("products", products);
         model.addAttribute("productCount", products.size());
@@ -66,7 +66,7 @@ public class ProductController {
     @GetMapping("/{id}")
     public String viewProduct(@PathVariable("id") Integer productId,
                               Model model, Principal principal) {
-        Optional<Product> optionalProduct = productService.findById(productId);
+        Optional<Product> optionalProduct = productService.findProductById(productId);
         if (optionalProduct.isPresent()) {
             model.addAttribute("product", optionalProduct.get());
         } else {

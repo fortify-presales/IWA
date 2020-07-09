@@ -152,7 +152,7 @@ However, as this project has been already pre-configured to download, configure 
 you can use the following:
 
 ```
-mvn -Pwar,wlp clean package liberty:create liberty:install-feature liberty:deploy liberty:start
+l
 ```
 
 Then you can start a scan using the following:

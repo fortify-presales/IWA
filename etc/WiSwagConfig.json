@@ -1,0 +1,24 @@
+{
+  apiDefinition : 'https://localhost:6443/secure-web-app/v3/api-docs', /* can also be a local file (ex. C:/myapi.json) */
+  host : 'https://localhost:6443', /* replace the host in every generated request */
+  schemes : ['https', 'http'], /* generate output for both of these schemes */
+  servicePath : '/secure-web-app/', /* specify the base path of the API */
+  preferredContentType : 'application/json', /* if given a choice, prefer json */
+  excludeOperations : [ 'logoutUser', 'deleteUserUsingDELETE' ], /* generate no output for these operations */
+  parameterRules :
+  [
+    {
+      name : 'id',
+      value : 2,
+      location : 'path',
+      type : 'number',
+      includeOperations : ['updateUserUsingPUT', 'deleteUserUsingDELETE'] /* only apply this rule to these operations */
+    },
+    {
+      name : 'Authorization',
+      value : 'YWRtaW46cGFzc3dvcmQ=',
+      location : 'header',
+      inject : true /* add this header to every generated request */
+    }
+  ]
+}

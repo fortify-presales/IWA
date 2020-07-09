@@ -84,6 +84,9 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext context) {
+        if (password.isEmpty()) {
+            return false;
+        }
         PasswordValidator validator = new PasswordValidator(Arrays.asList(
 
                 // at least 8 characters

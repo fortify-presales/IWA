@@ -21,7 +21,7 @@ package com.microfocus.example.config.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microfocus.example.config.SecurityConfiguration;
-import com.microfocus.example.entity.ApiErrorResponse;
+import com.microfocus.example.entity.ApiStatusResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 
 @Component
 public class BasicAuthenticationEntryPointCustom extends BasicAuthenticationEntryPoint {
@@ -46,18 +47,19 @@ public class BasicAuthenticationEntryPointCustom extends BasicAuthenticationEntr
 
     @Override
     public void commence(
-            HttpServletRequest request, HttpServletResponse response, AuthenticationException authEx)
+            HttpServletRequest request, HttpServletResponse response, AuthenticationException ex)
             throws IOException, ServletException {
         response.addHeader("WWW-Authenticate", "Basic realm='" + getRealmName() + "'");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        ApiErrorResponse apiResponse = new ApiErrorResponse
-                .ApiErrorResponseBuilder()
-                    .withStatus(HttpStatus.UNAUTHORIZED)
-                    .atTime(LocalDateTime.now(ZoneOffset.UTC))
-                    .withMessage("Not authorised")
-                    .withDetails(authEx.getMessage())
-                    .build();
-        ResponseEntity<ApiErrorResponse> apiError = new ResponseEntity<ApiErrorResponse>(apiResponse, HttpStatus.UNAUTHORIZED);
+        ArrayList<String> errors = new ArrayList<>();
+        errors.add(ex.getLocalizedMessage());
+        ApiStatusResponse apiStatusResponse = new ApiStatusResponse
+                .ApiResponseBuilder()
+                .withSuccess(false)
+                .atTime(LocalDateTime.now(ZoneOffset.UTC))
+                .withErrors(errors)
+                .build();
+        ResponseEntity<ApiStatusResponse> apiError = new ResponseEntity<ApiStatusResponse>(apiStatusResponse, HttpStatus.UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
         ObjectMapper mapper = new ObjectMapper();
         String jsonString = mapper.writeValueAsString(apiError.getBody());

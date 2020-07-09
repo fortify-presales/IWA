@@ -51,19 +51,19 @@ public class ProductService {
     @Value("${app.data.page-size:25}")
     private Integer pageSize;
 
-    public Optional<Product> findById(Integer id) {
+    public Optional<Product> findProductById(Integer id) {
         return productRepository.findById(id);
     }
 
-    public Optional<Product> findByCode(String code) {
+    public Optional<Product> findProductByCode(String code) {
         return productRepository.findByCode(code);
     }
 
-    public List<Product> listAll() {
+    public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
-    public List<Product> listAll(Integer pageNo, String keywords) {
+    public List<Product> getAllProducts(Integer pageNo, String keywords) {
         if (keywords != null && !keywords.isEmpty()) {
             return productRepository.findProductsByKeywords(keywords, pageNo, pageSize);
         }
@@ -74,23 +74,23 @@ public class ProductService {
         return productRepository.count();
     }
 
-    public Product save(Product user) {
-        return productRepository.save(user);
+    public Product saveProduct(Product product) {
+        return productRepository.save(product);
     }
 
-    public Product get(Integer id) {
+    public Product getProductById(Integer id) {
         return productRepository.findById(id).get();
     }
 
-    public void delete(Integer id) {
+    public void deleteProductById(Integer id) {
         productRepository.deleteById(id);
     }
 
-    public boolean existsById(Integer id) {
+    public boolean productExistsById(Integer id) {
         return productRepository.existsById(id);
     }
 
-    public Product adminSave(AdminProductForm adminProductForm) throws ProductNotFoundException {
+    public Product saveProductFromAdminProductForm(AdminProductForm adminProductForm) throws ProductNotFoundException {
         Optional<Product> optionalProduct = productRepository.findByCode(adminProductForm.getCode());
         if (optionalProduct.isPresent()) {
             Product ptmp = optionalProduct.get();
@@ -109,7 +109,7 @@ public class ProductService {
         }
     }
 
-    public Product adminAdd(AdminNewProductForm adminNewProductForm) {
+    public Product newProductFormAdminNewProductForm(AdminNewProductForm adminNewProductForm) {
         Product ptmp = new Product();
         ptmp.setCode(adminNewProductForm.getCode());
         ptmp.setName(adminNewProductForm.getName());

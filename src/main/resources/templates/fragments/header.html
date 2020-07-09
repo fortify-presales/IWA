@@ -39,7 +39,7 @@
                                     <li><a th:href="@{/console}" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fas fa-database fa-fw"></i> Database Console</a></li>
                                     <li role="separator" class="divider"></li>
                                     <li sec:authorize="isAuthenticated()">
-                                        <a class="nav-link" target="_blank" th:href="@{/swagger-ui.html}"><i class="fas fa-code fa-fw"></i> API Documentation </a>
+                                        <a class="nav-link" target="_blank" th:href="@{/swagger-ui.html(url='@{/v3/api-docs}')}"><i class="fas fa-code fa-fw"></i> API Explorer </a>
                                         <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt fa-fw"></i> Logout </a>
                                     </li>
                                 </ul>

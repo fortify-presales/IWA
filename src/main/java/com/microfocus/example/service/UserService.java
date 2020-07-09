@@ -59,6 +59,7 @@ public class UserService {
     @Autowired
     private MessageRepository messageRepository;
 
+
     public Optional<User> findUserById(Integer id) {
         return userRepository.findById(id);
     }

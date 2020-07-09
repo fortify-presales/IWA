@@ -19,17 +19,28 @@
 
 package com.microfocus.example.api.controllers;
 
-import com.microfocus.example.entity.ApiErrorResponse;
+import com.microfocus.example.entity.ApiStatusResponse;
 import com.microfocus.example.entity.Product;
 import com.microfocus.example.exception.ProductNotFoundException;
 import com.microfocus.example.service.ProductService;
-import io.swagger.annotations.*;
-import org.slf4j.LoggerFactory;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -37,9 +48,9 @@ import java.util.Optional;
  *
  * @author Kevin A. Lee
  */
-@Api(description = "Retrieve, update, create and delete products.", tags = {"products"})
-@RequestMapping(value = "/api/v1/products")
 @RestController
+@RequestMapping(value = "/api/v3/products")
+@Tag(name = "products", description = "Product operations")
 public class ApiProductController {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(ApiProductController.class);
@@ -47,106 +58,101 @@ public class ApiProductController {
     @Autowired
     private ProductService productService;
 
-    @ApiOperation(value = "Find products", tags = {"products"})
+    @Operation(summary = "Find products by keyword(s)", description = "Keyword search by %keyword% format", tags = {"products"}, security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Product.class, responseContainer = "List"),
-            @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class)
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
-    @GetMapping(value = {"/",""}, produces = "application/json")
-    public Iterable<Product> findProducts(
-            @ApiParam("Keyword(s) search for products to be found.")
-            @RequestParam("keywords") Optional<String> keywords,
-            @ApiParam("Page number of products to start from.")
-            @RequestParam("pageNum") Optional<Integer> pageNum) {
+    @GetMapping(value = {""}, produces = {"application/json"})
+    public ResponseEntity<List<Product>> getProductsByKeywords(
+            @Parameter(description = "Keyword(s) search for products to be found.") @RequestParam("keywords") Optional<String> keywords,
+            @Parameter(description = "Offset of the starting record. 0 indicates the first record.") @RequestParam("offset") Optional<Integer> offset,
+            @Parameter(description = "Maximum records to return. The maximum value allowed is 50.") @RequestParam("limit") Optional<Integer> limit) {
+        log.debug("API::Retrieving products by keyword(s)");
+        // TODO: implement keywords, offset and limit
         if (keywords.equals(Optional.empty())) {
-            log.debug("Retrieving all products");
-            return productService.listAll();
+            return ResponseEntity.ok().body(productService.getAllProducts());
         } else {
-            Integer pNum = 1;
-            if (!pageNum.equals(Optional.empty())) {
-                pNum = pageNum.get();
-            }
-            log.debug("Retrieving products with keywords: " + keywords);
-            return productService.listAll(pNum, keywords.get());
+            return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
         }
     }
 
-    @ApiOperation(value = "Find a specific product by its Id", tags = {"products"})
+    @Operation(summary = "Find product by Id", description = "Find a specific product by its database Id", tags = {"products"}, security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Product.class),
-            @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class),
-            @ApiResponse(code = 404, message = "Product not found", response = ApiErrorResponse.class),
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Product.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Product Not Found", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
-    @GetMapping(value = {"/{id}"}, produces = "application/json")
-    public Optional<Product> findProductById(
-            @ApiParam(name = "id",
-                    value = "Id of the product to be found. Cannot be empty.",
-                    example = "1",
-                    required = true)
-            @PathVariable("id") Integer id) {
-        log.debug("Retrieving product id: " + id);
-        if (!productService.existsById(id))
+    @GetMapping(value = {"/{id}"}, produces =  {"application/json"})
+    public ResponseEntity<Product> findProductById(
+            @Parameter(description = "Id of the product to be found. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
+        log.debug("API::Retrieving product id: " + id);
+        if (!productService.productExistsById(id))
             throw new ProductNotFoundException("Product with id: " + id.toString() + " does not exist.");
-        return productService.findById(id);
+        Optional<Product> product = productService.findProductById(id);
+        return new ResponseEntity<>(product.orElse(null), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Create a new product", tags = {"products"})
+    @Operation(summary = "Create a new product", description = "Creates a new product", tags = {"products"}, security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Product.class),
-            @ApiResponse(code = 400, message = "Bad request", response = ApiErrorResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class),
-            @ApiResponse(code = 409, message = "Product already exists", response = ApiErrorResponse.class)
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Product.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Product Already Exists", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
-    @PostMapping(value = {"/",""}, produces = "application/json")
+    @PostMapping(value = {""}, produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
-    public Product newProduct(
-            @ApiParam("Details of the product to be created. Cannot be empty.")
-            @Valid @RequestBody Product newProduct) {
+    public ResponseEntity<Product> createProduct(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody Product newProduct) {
         newProduct.setId(0); // set to 0 for sequence id generation
-        log.debug("Creating new product: " + newProduct.toString());
-        return productService.save(newProduct);
+        log.debug("API::Creating new product: " + newProduct.toString());
+        return new ResponseEntity<>(productService.saveProduct(newProduct), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Update an existing product", tags = {"products"})
+    @Operation(summary = "Update a product", description = "Update an existing product", tags = {"products"}, security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Product.class),
-            @ApiResponse(code = 400, message = "Bad request", response = ApiErrorResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class),
-            @ApiResponse(code = 404, message = "Product not found", response = ApiErrorResponse.class)
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Product.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Product Not Found", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
-    @PutMapping(value = {"/{id}"}, produces = "application/json")
-    public Product updateProduct(
-            @ApiParam("Details of the product to be updated. Cannot be empty.")
-            @Valid @RequestBody Product newProduct,
-            @ApiParam(name = "id",
-                    value = "Id of the product to be updated. Cannot be empty.",
-                    example = "1",
-                    required = true)
-            @PathVariable Integer id) {
-        log.debug("Updating product id: " + id);
-        return productService.save(newProduct);
+    @PutMapping(value = {"/{id}"}, produces = {"application/json"}, consumes = {"application/json"})
+    public ResponseEntity<Product> updateProduct(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody Product newProduct,
+            @Parameter(description = "Id of the product to be updated. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
+        log.debug("API::Updating product id: " + id);
+        return new ResponseEntity<>(productService.saveProduct(newProduct), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Delete a product", tags = {"products"})
+    @Operation(summary = "Delete a product", description = "Delete an existing product", tags = {"products"}, security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success"),
-            @ApiResponse(code = 401, message = "Unauthorized", response = ApiErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ApiErrorResponse.class),
-            @ApiResponse(code = 404, message = "Product not found", response = ApiErrorResponse.class)
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Product Not Found", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class)))
     })
-    @DeleteMapping(value = "/{id}", produces = "application/json")
-    void deleteProduct(
-            @ApiParam(name = "id",
-                    value = "Id of the product to be deleted. Cannot be empty.",
-                    example = "1",
-                    required = true)
-            @PathVariable Integer id) {
-        log.debug("Deleting product id: " + id);
-        productService.delete(id);
+    @DeleteMapping (value = {"/{id}"})
+    public ResponseEntity<ApiStatusResponse> deleteProduct(
+            @Parameter(description = "Id of the product to be updated. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
+        log.debug("API@::Deleting product id: " + id);
+        productService.deleteProductById(id);
+        ApiStatusResponse apiStatusResponse = new ApiStatusResponse
+                .ApiResponseBuilder()
+                .withSuccess(true)
+                .atTime(LocalDateTime.now(ZoneOffset.UTC))
+                .build();
+        return new ResponseEntity<>(apiStatusResponse, HttpStatus.OK);
     }
 
 }

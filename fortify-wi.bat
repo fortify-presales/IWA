@@ -12,6 +12,12 @@ echo Starting application...
 echo ************************************************************
 call mvn -Pwlp liberty:create liberty:install-feature liberty:deploy liberty:start
 
+:: Generate API Settings
+echo ************************************************************
+echo Generating settings for API...
+echo ************************************************************
+call "C:\Micro Focus\Fortify WebInspect\WISwag.exe" -i ".\etc\WiSwagConfig.json" -ice -it Swagger -wiOutput ApiSettings.xml
+
 :: Execute dynamic scan
 echo ************************************************************
 echo Executing dynamic scan...

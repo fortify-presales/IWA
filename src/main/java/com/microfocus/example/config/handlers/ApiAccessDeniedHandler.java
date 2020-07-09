@@ -1,7 +1,7 @@
 package com.microfocus.example.config.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microfocus.example.entity.ApiErrorResponse;
+import com.microfocus.example.entity.ApiStatusResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 
 @Component
 public class ApiAccessDeniedHandler implements AccessDeniedHandler {
@@ -25,17 +26,18 @@ public class ApiAccessDeniedHandler implements AccessDeniedHandler {
     private static final Logger log = LoggerFactory.getLogger(ApiAccessDeniedHandler.class);
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException arg2)
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException ex)
             throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        ApiErrorResponse apiResponse = new ApiErrorResponse
-                .ApiErrorResponseBuilder()
-                .withStatus(HttpStatus.FORBIDDEN)
+        ArrayList<String> errors = new ArrayList<>();
+        errors.add(ex.getLocalizedMessage());
+        ApiStatusResponse apiStatusResponse = new ApiStatusResponse
+                .ApiResponseBuilder()
+                .withSuccess(false)
                 .atTime(LocalDateTime.now(ZoneOffset.UTC))
-                .withMessage("Forbidden")
-                .withDetails("You do not have the required authority to access this resource.")
+                .withErrors(errors)
                 .build();
-        ResponseEntity<ApiErrorResponse> apiError = new ResponseEntity<ApiErrorResponse>(apiResponse, HttpStatus.FORBIDDEN);
+        ResponseEntity<ApiStatusResponse> apiError = new ResponseEntity<ApiStatusResponse>(apiStatusResponse, HttpStatus.FORBIDDEN);
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
         ObjectMapper mapper = new ObjectMapper();
         String jsonString = mapper.writeValueAsString(apiError.getBody());

@@ -165,6 +165,8 @@ public class UserController {
                                   BindingResult bindingResult, Model model,
                                   RedirectAttributes redirectAttributes,
                                   Principal principal) {
+        log.debug(userForm.toString());
+        log.debug(userForm.getPassword());
         if (bindingResult.hasErrors()) {
             return "user/edit-profile";
         } else {

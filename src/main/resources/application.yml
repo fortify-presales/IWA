@@ -48,6 +48,23 @@ spring:
 #  resources:
 #    add-mappings: false
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+#    url: /v3/api-docs
+    path: /swagger-ui.html
+    display-request-duration: true
+ #   groups-order: DESC
+    disable-swagger-default-url: true
+  paths-to-match: /api/**
+#  group-configs:
+#    - group: application
+#      paths-to-match: /api/**
+#    - group: actuator
+#      paths-to-match: /actuator/**
+
+
 logging:
   level:
     root: WARN
@@ -56,6 +73,8 @@ logging:
     org.springframework.security: INFO
 
 app:
+  name: Secure Web App
+  version: 1.0
   currency: GBP
   data:
     page-size: 25

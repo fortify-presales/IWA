@@ -66,9 +66,9 @@ public class Message implements Serializable {
     private Boolean read;
 
     public Message() {
-        setRead(false);
+        this.read = false;
         Calendar calendar = Calendar.getInstance();
-        setSentDate(calendar.getTime());
+        this.sentDate = calendar.getTime();
     }
 
     public Integer getId() {
