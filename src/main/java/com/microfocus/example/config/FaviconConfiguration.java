@@ -19,6 +19,10 @@
 
 package com.microfocus.example.config;
 
+import com.microfocus.example.web.controllers.admin.AdminDefaultController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -36,11 +40,16 @@ import java.util.Collections;
 @Configuration
 public class FaviconConfiguration {
 
+    private static final Logger log = LoggerFactory.getLogger(FaviconConfiguration.class);
+
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
+
     @Bean
     public SimpleUrlHandlerMapping faviconHandlerMapping() {
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
         mapping.setOrder(Integer.MIN_VALUE);
-        mapping.setUrlMap(Collections.singletonMap("img/favicons/favicon.ico",
+        mapping.setUrlMap(Collections.singletonMap(contextPath + "/img/favicons/favicon.ico",
                 faviconRequestHandler()));
         return mapping;
     }

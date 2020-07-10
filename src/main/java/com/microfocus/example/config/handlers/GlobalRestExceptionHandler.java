@@ -42,6 +42,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
@@ -54,13 +55,14 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 
-@Order(Ordered.HIGHEST_PRECEDENCE)
-@ControllerAdvice
+//@Order(Ordered.HIGHEST_PRECEDENCE)
+@RestControllerAdvice
 public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(ProductRepositoryImpl.class);
 
     // Custom exception handlers
+
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ApiStatusResponse> userNotFound(final UserNotFoundException ex, final WebRequest request) {

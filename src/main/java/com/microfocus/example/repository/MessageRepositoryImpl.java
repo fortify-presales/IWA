@@ -52,7 +52,7 @@ public class MessageRepositoryImpl implements MessageRepositoryCustom {
     @SuppressWarnings("unchecked")
     public List<Message> findByUserId(Integer userId) {
         Query query = entityManager.createQuery(
-                "SELECT m FROM Message m where m.user.id = ?1",
+                "SELECT m FROM Message m WHERE m.user.id = ?1",
                 Message.class);
         query.setParameter(1, userId);
         return query.getResultList();
@@ -61,9 +61,26 @@ public class MessageRepositoryImpl implements MessageRepositoryCustom {
     @SuppressWarnings("unchecked")
     public long countByUserId(Integer userId) {
         Query query = entityManager.createQuery(
-                "SELECT count(m) FROM Message m where m.user.id = ?1",
+                "SELECT count(m) FROM Message m WHERE m.user.id = ?1",
                 Long.class);
         query.setParameter(1, userId);
         return (long)(query.getSingleResult());
+    }
+
+    @SuppressWarnings("unchecked")
+    public long countUnreadByUserId(Integer userId) {
+        Query query = entityManager.createQuery(
+                "SELECT count(m) FROM Message m WHERE m.user.id = ?1 AND m.read = false",
+                Long.class);
+        query.setParameter(1, userId);
+        return (long)(query.getSingleResult());
+    }
+
+    @SuppressWarnings("unchecked")
+    public void markMessageAsReadById(Integer messageId) {
+        Query query = entityManager.createQuery(
+                "UPDATE Message m SET m.read = true WHERE m.id = ?1");
+        query.setParameter(1, messageId);
+        query.executeUpdate();
     }
 }

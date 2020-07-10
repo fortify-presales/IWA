@@ -19,7 +19,7 @@
                 </nav>
 
                 <div th:replace="fragments/admin-menu.html
-                    :: adminMenu('/admin/', ${messageCount})">
+                    :: adminMenu('/admin/dashboard', ${messageCount})">
                 </div>
 
                 <div class="col-md-10">
@@ -30,7 +30,6 @@
                         </button>
                     </div>
 
-                    <h1 class="h2">Dashboard</h1>
                     <canvas class="my-4" id="myChart" width="900" height="380"></canvas>
 
                     <h2>Section title</h2>

@@ -80,6 +80,7 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>compile</scope>
+            <version>1.4.199</version>
         </dependency>
 
         <dependency>
@@ -108,12 +109,12 @@
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>bootstrap</artifactId>
-            <version>3.3.7</version>
+            <version>3.4.1</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>jquery</artifactId>
-            <version>3.2.1</version>
+            <version>3.4.1</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>

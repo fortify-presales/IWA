@@ -213,6 +213,10 @@ public class UserService {
         return messageRepository.countByUserId(userId);
     }
 
+    public long getUserUnreadMessageCount(Integer userId) {
+        return messageRepository.countUnreadByUserId(userId);
+    }
+
     public List<Message> getUserMessages(Integer userId) {
         return messageRepository.findByUserId(userId);
     }
@@ -232,5 +236,7 @@ public class UserService {
     public void deleteMessageById(Integer id) {
         messageRepository.deleteById(id);
     }
+
+    public void markMessageAsReadById(Integer id) { messageRepository.markMessageAsReadById(id); }
 
 }

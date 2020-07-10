@@ -14,14 +14,14 @@
                 </div>
             </footer>
 
-            <script type="text/javascript" th:src="@{/webjars/jquery/3.2.1/jquery.min.js}"></script>
-            <script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+            <script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+            <script type="text/javascript" th:src="@{/webjars/bootstrap/3.4.1/js/bootstrap.min.js}"></script>
 
             <script th:inline="javascript">
 
                 /*<![CDATA[*/
 
-                var user_message_count_url = /*[[@{/user/message-count}]]*/ '0';
+                var user_message_count_url = /*[[@{/user/unread-message-count}]]*/ '0';
                 var user_message_count = 0;
                 var req = new XMLHttpRequest();
                 req.open("GET", user_message_count_url, true);

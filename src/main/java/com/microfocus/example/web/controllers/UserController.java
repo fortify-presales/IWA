@@ -34,6 +34,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -41,6 +46,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
@@ -63,6 +70,9 @@ public class UserController {
 
     @Value("${app.messages.home}")
     private final String message = "Hello World";
+
+    @Autowired
+    private SessionRegistry sessionRegistry;
 
     @GetMapping(value = {"", "/"})
     public String userHome(Model model, Principal principal) {
@@ -127,18 +137,19 @@ public class UserController {
         CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         List<Message> messages = userService.getUserMessages(user.getId());
         model.addAttribute("messages", messages);
-        model.addAttribute("messageCount", messages.size());
+        model.addAttribute("unreadMessageCount", userService.getUserUnreadMessageCount(user.getId()));
+        model.addAttribute("totalMessageCount", messages.size());
         model.addAttribute("controllerName", "User");
         model.addAttribute("actionName", "messages");
         return "user/messages/index";
     }
 
-    @GetMapping("/message-count")
+    @GetMapping("/unread-message-count")
     @ResponseBody
     public String getUserMessageCount(Model model, Principal principal) {
         if (principal != null) {
             CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-            long userMessageCount = userService.getUserMessageCount(loggedInUser.getId());
+            long userMessageCount = userService.getUserUnreadMessageCount(loggedInUser.getId());
             return Long.toString(userMessageCount);
         } else {
             return "0";
@@ -152,6 +163,8 @@ public class UserController {
         if (optionalMessage.isPresent()) {
             MessageForm messageForm = new MessageForm(optionalMessage.get());
             model.addAttribute("messageForm", messageForm);
+            // mark messages as read
+            userService.markMessageAsReadById(messageId);
         } else {
             model.addAttribute("message", "Internal error accessing message!");
             model.addAttribute("alertClass", "alert-danger");
@@ -165,8 +178,6 @@ public class UserController {
                                   BindingResult bindingResult, Model model,
                                   RedirectAttributes redirectAttributes,
                                   Principal principal) {
-        log.debug(userForm.toString());
-        log.debug(userForm.getPassword());
         if (bindingResult.hasErrors()) {
             return "user/edit-profile";
         } else {
@@ -204,7 +215,7 @@ public class UserController {
                 }
                 redirectAttributes.addFlashAttribute("message", "Password updated successfully.");
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
-                return "redirect:/user";
+                return "redirect:/logout";
             } catch (InvalidPasswordException ex) {
                 log.error("InvalidPasswordException saving user: " + principal.toString());
                 FieldError passwordError = new FieldError("passwordForm", "password", ex.getMessage());
@@ -215,7 +226,16 @@ public class UserController {
                 bindingResult.addError(usernameError);
             }
         }
-        return "user/change-password";
+        return "user/index";
+    }
+
+    @PostMapping("/messages/delete/{id}")
+    public String userDeleteMessage(@PathVariable("id") Integer messageId,
+                              Model model, Principal principal) {
+        userService.deleteMessageById(messageId);
+        model.addAttribute("message", "Successfully deleted message!");
+        model.addAttribute("alertClass", "alert-success");
+        return "redirect:/user/messages/";
     }
 
 }

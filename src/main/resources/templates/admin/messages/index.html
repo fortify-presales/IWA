@@ -30,8 +30,8 @@
                     <th scope="col">#</th>
                     <th scope="col">To</th>
                     <th scope="col">Summary</th>
-                    <th scope="col">Date Sent</th>
-                    <th scope="col">User Read</th>
+                    <th scope="col">Sent</th>
+                    <th scope="col">Read</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -42,7 +42,7 @@
                     <td><a th:href="@{/admin/messages/{id}(id=${m.id})}"><span th:text="${m.id}"> # </span></a></td>
                     <td><span th:text="${m.user.username}"> To </span></td>
                     <td><span th:text="${#strings.abbreviate(m.text,40)}"> Text </span></td>
-                    <td><span th:text="${m.sentDate}"> Date Sent </span></td>
+                    <td><span th:text="${#dates.format(m.sentDate, 'dd-MM-yyyy HH:mm')}"> Sent </span></td>
                     <td>
                         <span th:if="${m.read}"> <i class="fas fa-check"></i> </span>
                         <span th:unless="${m.read}"> <i class="fas fa-times"></i> </span>
@@ -51,6 +51,7 @@
                 </tbody>
             </table>
             <!--a class="btn btn-primary" th:href="@{/admin/messages/add}">New Message</a-->
+
         </div>
 
     </div>

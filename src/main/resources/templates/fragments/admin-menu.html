@@ -5,6 +5,9 @@
         <div class="col-md-2">
             <div class="list-group list-group-flush">
                 <a class="list-group-item list-group-item-action"
+                   th:classappend="${#strings.contains(activeItem,'dashboard')} ? active : ''"
+                   th:href="@{/admin/}"><i class="fas fa-shopping-bag fa-fw"></i> Dashboard </a>
+                <a class="list-group-item list-group-item-action"
                    th:classappend="${#strings.contains(activeItem,'products')} ? active : ''"
                    th:href="@{/admin/products}"><i class="fas fa-shopping-bag fa-fw"></i> Products </a>
                 <a class="list-group-item list-group-item-action"

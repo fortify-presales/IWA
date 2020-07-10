@@ -19,18 +19,11 @@
 
 package com.microfocus.example;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class Application {
-
-    @Value("${app.name}")
-    private String appName;
-
-    @Value("${app.version}")
-    private String appVersion;
 
     public static void main(String... args) throws Exception {
         SpringApplication.run(Application.class, args);

@@ -35,4 +35,8 @@ public interface MessageRepositoryCustom {
 
     public long countByUserId(Integer userId);
 
+    public long countUnreadByUserId(Integer userId);
+
+    public void markMessageAsReadById(Integer messageId);
+
 }

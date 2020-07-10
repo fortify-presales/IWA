@@ -56,7 +56,7 @@ public class AdminDefaultController {
     @GetMapping(value = {"", "/"})
     public String index(Model model, Principal principal) {
         this.setModelDefaults(model, principal, "Admin", "index");
-        return "admin/index";
+        return "admin/dashboard";
     }
 
     @GetMapping("/backup")
