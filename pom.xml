@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>com.microfocus.example</groupId>
-    <artifactId>secure-web-app</artifactId>
+    <artifactId>ring2park-web</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>${project.artifactId}</name>
     <packaging>${packaging.type}</packaging>
@@ -367,7 +367,7 @@
 		                	<clean>false</clean>
 		                	<serverName>integration</serverName>
 		                	<template>webProfile8</template>
-		                	<applications>secure-web-app</applications>
+		                	<applications>ring2park-web</applications>
 		                	<timeout>180</timeout>
 		                	<verifyTimeout>180</verifyTimeout>
 		            	    <features>
