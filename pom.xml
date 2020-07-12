@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>com.microfocus.example</groupId>
-    <artifactId>ring2park-web</artifactId>
+    <artifactId>iwa</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>${project.artifactId}</name>
     <packaging>${packaging.type}</packaging>
@@ -367,7 +367,7 @@
 		                	<clean>false</clean>
 		                	<serverName>integration</serverName>
 		                	<template>webProfile8</template>
-		                	<applications>ring2park-web</applications>
+		                	<applications>iwa</applications>
 		                	<timeout>180</timeout>
 		                	<verifyTimeout>180</verifyTimeout>
 		            	    <features>
