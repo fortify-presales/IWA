@@ -19,8 +19,8 @@
 //
 // Credentials setup:
 // Create the following "Secret text" credentials in Jenkins and enter values as follows:
-//      secure-web-app-fod-bsi-token-id     - Fortify on Demand BSI token as Jenkins Secret
-//      secure-web-app-ssc-auth-token-id    - Fortify Software Security Center "ArtifactUpload" authentication token as Jenkins Secret
+//      iwa-fod-bsi-token-id     - Fortify on Demand BSI token as Jenkins Secret
+//      iwa-ssc-auth-token-id    - Fortify Software Security Center "ArtifactUpload" authentication token as Jenkins Secret
 //      docker-hub-credentials              - DockerHub authentication token as Jenkins Secret
 // All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
 // For Fortify on Demand (FOD) Global Authentication should be used rather than Personal Access Tokens.
@@ -61,20 +61,20 @@ pipeline {
         //
         // Application settings
         //
-        APP_NAME = "Secure Web App"                      	// Application name
+        APP_NAME = "Insecure Web App"                      	// Application name
         APP_VER = "1.0"                                     // Application release
-        COMPONENT_NAME = "secure-web-app"                   // Component name
+        COMPONENT_NAME = "iwa-web"                          // Component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         JAVA_VERSION = 8                                    // Java version to compile as
-        APP_WEBURL = "https://localhost:6443/secure-web-app/" // URL of where the application is deployed to (for integration testing, WebInspect etc)
+        APP_WEBURL = "https://localhost:6443/iwa/" // URL of where the application is deployed to (for integration testing, WebInspect etc)
         ISSUE_IDS = ""                                      // List of issues found from commit
         DOCKER_ORG = "mfdemouk"                             // Docker organisation (in Docker Hub) to push images to
 
         //
         // Fortify On Demand (FOD) settings
         //
-        FOD_BSI_TOKEN = credentials('secure-web-app-fod-bsi-token-id') // FOD BSI Token
-        FOD_UPLOAD_DIR = 'fod'                                      // Directory where FOD upload Zip is constructed
+        FOD_BSI_TOKEN = credentials('iwa-fod-bsi-token-id') // FOD BSI Token
+        FOD_UPLOAD_DIR = 'fod'                              // Directory where FOD upload Zip is constructed
 
         //
         // Micro Focus Deployment Automation (DA) settings
@@ -93,7 +93,7 @@ pipeline {
         // Fortify Software Security Center (SSC) settings
         //
         SSC_WEBURL = "http://localhost:8080/ssc"                    // URL of SSC
-        SSC_AUTH_TOKEN = credentials('secure-web-app-ssc-auth-token-id') // Authentication token for SSC
+        SSC_AUTH_TOKEN = credentials('iwa-app-ssc-auth-token-id') // Authentication token for SSC
 
         //
         // Fortify WebInspect settings
@@ -101,7 +101,7 @@ pipeline {
         WI_CLIENT_PATH = "C:\\Micro Focus\\Fortify WebInspect\\WI.exe"  // Path to WebInspect executable on the "webinspect" Agent
         WI_SETTINGS_FILE = "${env.WORKSPACE}\\etc\\DefaultSettings.xml" // Settings file to run
         WI_LOGIN_MACRO = "${env.WORKSPACE}\\etc\\Login.webmacro"        // Login macro to use
-        WI_OUTPUT_FILE = "${env.WORKSPACE}\\wi-secure-web-app.fpr"      // Output file (FPR) to create
+        WI_OUTPUT_FILE = "${env.WORKSPACE}\\wi-iwa.fpr"      // Output file (FPR) to create
     }
 
     tools {
