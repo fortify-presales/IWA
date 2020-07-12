@@ -1,9 +1,9 @@
-Ring2Park Web
-=============
+IWA (Insecure Web App)
+======================
 
-_Ring2Park Web_ is an example Java/Spring Web Application for use in DevSecOps scenarios and demonstrations.
-The source code includes some insecure coding examples for use in static and dynamic application security 
-testing scenarios and so should not be used in a production environment.
+_IWA (Insecure Web App)_ is an example Java/Spring Web Application for use in DevSecOps scenarios and demonstrations.
+The source code includes some examples of insecure coding practices that can be found using tools for static and dynamic 
+application security testing scenarios. The application should not be used in a production environment!
 
 Building the application
 ------------------------ 
@@ -14,7 +14,7 @@ To build (and unit test) the application execute the following from the command 
 mvn clean package
 ```
 
-This will create a JAR file (called `ring2park-web.jar`) in the `target` directory.
+This will create a JAR file (called `iwa.jar`) in the `target` directory.
 
 To build a WAR file for deployment to an application server such as [Apache Tomcat](http://tomcat.apache.org/) 
 execute the following:
@@ -23,7 +23,7 @@ execute the following:
 mvn -Pwar clean package
 ```
 
-This will create a WAR file (called `ring2park-web.war`) in the `target` directory.
+This will create a WAR file (called `iwa.war`) in the `target` directory.
 
 Running the application
 -----------------------
@@ -53,8 +53,8 @@ mvn -Pwar,wlp clean package liberty:create liberty:install-feature liberty:deplo
 This will download a copy of WebSphere Liberty from the Internet, create a new server and
 deploy the application into it. You can then navigate to either of the following URLS:
 
- - [http://localhost:6060/ring2park-web](http://localhost:6060/ring2park-web)
- - [https://localhost:6643/ring2park-web](https://localhost:6643/ring2park-web)
+ - [http://localhost:6060/iwa](http://localhost:6060/iwa)
+ - [https://localhost:6643/iwa](https://localhost:6643/iwa)
 
 You can stop the WebSphere Liberty server using the following command:
 
@@ -67,7 +67,7 @@ provided `Dockerfile` and the following commands:
 
 ```
 mvn -Pjar package
-docker build -t ring2park-app .
+docker build -t iwa .
 ```
 
 The `Dockerfile` provided is for creating Linux image (recommended). There is also a
@@ -120,7 +120,7 @@ a PDF report. You can execute it using the following command:
 fortify-sca.bat
 ```
 
-This will produce a PDF report called `ring2park-web.pdf` in the root directory.
+This will produce a PDF report called `iwa.pdf` in the root directory.
 
 Carrying out a Fortify SCA scan (via Maven plugin)
 --------------------------------------------------
@@ -139,7 +139,7 @@ This will product an FPR file in the `target\fortify` directory. You can optiona
 PDF report using the `ReportGenerator` tool with the following command:
 
 ```
-ReportGenerator -Dcom.fortify.sca.ProjectRoot=target\fortify -user "Demo User" -format pdf -f target\fortify\ring2park-web.pdf -source target\fortify\ring2park-web-1.0-SNAPSHOT.fpr
+ReportGenerator -Dcom.fortify.sca.ProjectRoot=target\fortify -user "Demo User" -format pdf -f target\fortify\iwa.pdf -source target\fortify\iwab-1.0-SNAPSHOT.fpr
 ```
 
 or use the _fortify-sca.bat_ script from the command line.
@@ -158,14 +158,14 @@ l
 Then you can start a scan using the following:
 
 ```
-"WEBINSPECT_INSTALL_DIR\WI.exe" -s ".\etc\DefaultSettings.xml" -macro ".\etc\Login.webmacro" -u "-i/" -ep ".\target\wi-ring2park-web.fpr" -ps 1008
+"WEBINSPECT_INSTALL_DIR\WI.exe" -s ".\etc\DefaultSettings.xml" -macro ".\etc\Login.webmacro" -u "-i/" -ep ".\target\wi-iwa.fpr" -ps 1008
 ```
 
 This will start a scan using the Default Settings and Login Macro files provided in the `etc` directory. 
 It will run a "Critical and High Priority" scan using the policy with id 1008. Once completed you can
 open the WebInspect "Desktop Client" and navigate to the scan created for this execution.
 
-An FPR called `wi-ring2park-web.fpr` will be available in the `target` directory. You can generate a 
+An FPR called `wi-iwa.fpr` will be available in the `target` directory. You can generate a 
 PDF report from this file using `ReportGenerator` or upload it to Fortify SSC or Fortify on Demand.
 
 There is an example Windows `.bat` file that you can use to run `WI.exe` and produce a PDF report. 
@@ -201,4 +201,4 @@ The exact command will depend on your own setup, so please check the documentati
 
 ---
 
-If you have any problems, please consult [GitHub Issues](https://github.com/mfdemo/ring2park-web/issues) to see if has already been discussed.
+If you have any problems, please consult [GitHub Issues](https://github.com/mfdemo/iwa/issues) to see if has already been discussed.
