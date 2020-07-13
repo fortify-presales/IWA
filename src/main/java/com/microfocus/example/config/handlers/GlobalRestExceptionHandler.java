@@ -1,5 +1,5 @@
 /*
-        Java Web App
+        Insecure Web App (IWA)
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -32,6 +32,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -54,6 +55,8 @@ import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 //@Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice
@@ -124,6 +127,11 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex,
                                                                   final HttpHeaders headers, final HttpStatus status,
                                                                   final WebRequest request) {
+
+        HttpHeaders httpHeader = new HttpHeaders();
+        List<MediaType> acceptHeader = MediaType.parseMediaTypes(Arrays.asList(request.getHeaderValues(HttpHeaders.ACCEPT)));
+        log.debug(acceptHeader.toString());
+
         ArrayList<String> errors = new ArrayList<>();
         for (final FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.add(error.getField() + ": " + error.getDefaultMessage());
@@ -131,15 +139,24 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
         for (final ObjectError error : ex.getBindingResult().getGlobalErrors()) {
             errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
         }
-        final ApiStatusResponse apiStatusResponse = new ApiStatusResponse
-                .ApiResponseBuilder()
-                .withSuccess(false)
-                .atTime(LocalDateTime.now(ZoneOffset.UTC))
-                .withErrors(errors)
-                .build();
-        ResponseEntity<ApiStatusResponse> apiError = new ResponseEntity<ApiStatusResponse>(apiStatusResponse, HttpStatus.BAD_REQUEST);
-        return handleExceptionInternal(ex, apiError, headers, HttpStatus.BAD_REQUEST, request);
-    }
+
+        if (acceptHeader.stream().anyMatch(mediaType -> mediaType.isCompatibleWith(MediaType.APPLICATION_JSON))) {
+             httpHeader.setContentType(MediaType.APPLICATION_JSON);
+             final ApiStatusResponse apiStatusResponse = new ApiStatusResponse
+                     .ApiResponseBuilder()
+                     .withSuccess(false)
+                     .atTime(LocalDateTime.now(ZoneOffset.UTC))
+                     .withErrors(errors)
+                     .build();
+             ResponseEntity<ApiStatusResponse> apiError = new ResponseEntity<ApiStatusResponse>(apiStatusResponse, HttpStatus.BAD_REQUEST);
+             return handleExceptionInternal(ex, apiError, headers, HttpStatus.BAD_REQUEST, request);
+        } else if (acceptHeader.stream().anyMatch(mediaType -> mediaType.isCompatibleWith(MediaType.TEXT_PLAIN))) {
+             httpHeader.setContentType(MediaType.TEXT_PLAIN);
+             return new ResponseEntity<>(errors.toString(), httpHeader, status);
+        } else {
+             return ResponseEntity.status(status).body(null);
+        }
+}
 
     @Override
     protected ResponseEntity<Object> handleBindException(final BindException ex, final HttpHeaders headers,

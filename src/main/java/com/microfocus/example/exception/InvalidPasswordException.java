@@ -1,5 +1,5 @@
 /*
-        Secure Web App
+        Insecure Web App (IWA)
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 

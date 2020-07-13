@@ -15,7 +15,7 @@
     <version>1.0-SNAPSHOT</version>
     <name>${project.artifactId}</name>
     <packaging>${packaging.type}</packaging>
-    <description>Secure Web App</description>
+    <description>Insecure Web App (IWA)</description>
 
     <licenses>
         <license>

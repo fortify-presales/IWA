@@ -1,5 +1,5 @@
 /*
-        Secure Web App
+        Insecure Web App (IWA)
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -19,8 +19,6 @@
 
 package com.microfocus.example.web.controllers.admin;
 
-import com.microfocus.example.entity.CustomUserDetails;
-import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.InvalidPasswordException;
 import com.microfocus.example.exception.UserNotFoundException;
@@ -33,7 +31,6 @@ import com.microfocus.example.web.form.UserForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;

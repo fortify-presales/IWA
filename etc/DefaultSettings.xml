@@ -145,18 +145,18 @@
     <StartSessionState>Crawl</StartSessionState>
     <StartUrlXmlDocument />
     <StartUrlXmlDocumentFilePath />
-    <StartUrl>https://localhost:6443/secure-web-app</StartUrl>
+    <StartUrl>https://localhost:6443/iwa</StartUrl>
     <SimplifiedRestrictToFolderOptions>None</SimplifiedRestrictToFolderOptions>
     <MacroName />
     <WorkflowMacros />
-    <ScanName>Site: https://localhost:6443/secure-web-app</ScanName>
+    <ScanName>Site: https://localhost:6443/iwa</ScanName>
     <ApiDefinitionPath />
     <ApiType>Swagger</ApiType>
   </StartParameters>
   <ScanStrategy>ConcurrentCrawlAudit</ScanStrategy>
   <UsePolicyFile>false</UsePolicyFile>
   <PolicyPath />
-  <ScanSettingsPath>C:\Tools\Jenkins\workspace\secure-web-app@2\etc\DefaultSettings.xml</ScanSettingsPath>
+  <ScanSettingsPath>C:\Tools\Jenkins\workspace\iwa@2\etc\DefaultSettings.xml</ScanSettingsPath>
   <PolicyID>CB72A7C2-9207-4EE7-94D0-EDD14A47C15C</PolicyID>
   <PathTruncationCrawlDisabled>false</PathTruncationCrawlDisabled>
   <RecursionDepthLimit>2</RecursionDepthLimit>

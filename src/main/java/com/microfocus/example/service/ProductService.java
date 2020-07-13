@@ -1,5 +1,5 @@
 /*
-        Secure Web App
+        Insecure Web App (IWA)
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -63,11 +63,18 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public List<Product> getAllProducts(Integer pageNo, String keywords) {
+    public List<Product> getAllProducts(Integer offset, String keywords) {
         if (keywords != null && !keywords.isEmpty()) {
-            return productRepository.findProductsByKeywords(keywords, pageNo, pageSize);
+            return productRepository.findProductsByKeywords(keywords, offset, pageSize);
         }
-        return productRepository.listProducts(pageNo, pageSize);
+        return productRepository.listProducts(offset, pageSize);
+    }
+
+    public List<Product> getAllActiveProducts(Integer offset, String keywords) {
+        if (keywords != null && !keywords.isEmpty()) {
+            return productRepository.findAvailableProductsByKeywords(keywords, offset, pageSize);
+        }
+        return productRepository.listAvailableProducts(offset, pageSize);
     }
 
     public long count() {

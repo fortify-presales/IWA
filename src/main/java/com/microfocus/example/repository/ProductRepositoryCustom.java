@@ -1,5 +1,5 @@
 /*
-        Secure Web App
+        Insecure Web App (IWA)
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -33,8 +33,13 @@ public interface ProductRepositoryCustom {
 
     Optional<Product> findByCode(String code);
 
-    List<Product> listProducts(int pageNumber, int pageSize);
+    List<Product> listProducts(int offset, int limit);
 
-    List<Product> findProductsByKeywords(String keywords, int pageNumber, int pageSize);
+    List<Product> listAvailableProducts(int offset, int limit);
+
+    List<Product> findProductsByKeywords(String keywords, int offset, int limit);
+
+    List<Product> findAvailableProductsByKeywords(String keywords, int offset, int limit);
+
 
 }

@@ -9,7 +9,7 @@ VOLUME C:\\data
 EXPOSE 8080
 
 # The application's jar file
-ARG JAR_FILE=target/secure-web-app.jar
+ARG JAR_FILE=target/iwa.jar
 
 # Copy the application's jar to the container
 COPY ${JAR_FILE} app.jar

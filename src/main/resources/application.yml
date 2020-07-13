@@ -73,7 +73,7 @@ logging:
     org.springframework.security: INFO
 
 app:
-  name: Secure Web App
+  name: Insecure Web App
   version: 1.0
   currency: GBP
   data:

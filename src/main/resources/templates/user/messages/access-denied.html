@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+    <head>
+        <title>Message Access Denied</title>
+    </head>
+    <body>
+        <div layout:fragment="content" th:remove="tag">
+            <h1>Message Access Denied</h1>
+            <h2 th:if="${message != null}" th:utext="${message}" style="color: red;"></h2>
+            <p><a href="/" th:href="@{/}">Back to home page</a></p>
+        </div>
+    </body>
+</html>

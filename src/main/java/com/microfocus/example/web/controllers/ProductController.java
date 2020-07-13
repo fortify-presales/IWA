@@ -1,5 +1,5 @@
 /*
-        Secure Web App
+        Insecure Web App (IWA)
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -55,7 +55,7 @@ public class ProductController {
     @GetMapping(value = {"", "/"})
     public String index(Model model, @Param("keywords") String keywords, Principal principal) {
         this.setModelDefaults(model, principal, "Product", "index");
-        List<Product> products = productService.getAllProducts(1, keywords);
+        List<Product> products = productService.getAllActiveProducts(1, keywords);
         model.addAttribute("keywords", keywords);
         model.addAttribute("products", products);
         model.addAttribute("productCount", products.size());

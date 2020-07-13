@@ -1,5 +1,5 @@
 /*
-        Secure Web App
+        Insecure Web App (IWA)
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -20,6 +20,8 @@
 package com.microfocus.example.repository;
 
 import com.microfocus.example.entity.Product;
+import org.hibernate.Session;
+import org.hibernate.jdbc.ReturningWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +29,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -65,29 +71,109 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Product> listProducts(int pageNumber, int pageSize) {
+    public List<Product> listProducts(int offset, int limit) {
         List<Product> result = new ArrayList<>();
-        int offset = (pageNumber == 1 ? 0 : ((pageNumber-1)*pageSize));
         Query q = entityManager.createQuery(
                 "SELECT p FROM Product p",
                 Product.class);
         q.setFirstResult(offset);
-        q.setMaxResults(pageSize);
+        q.setMaxResults(limit);
         result = (List<Product>)q.getResultList();
         return result;
     }
 
     @SuppressWarnings("unchecked")
-    public List<Product> findProductsByKeywords(String keywords, int pageNumber, int pageSize) {
+    public List<Product> listAvailableProducts(int offset, int limit) {
         List<Product> result = new ArrayList<>();
-        int offset = (pageNumber == 1 ? 0 : ((pageNumber-1)*pageSize));
         Query q = entityManager.createQuery(
-                "SELECT p FROM Product p WHERE lower(p.name) LIKE lower('%"+ keywords + "%')",
+                "SELECT p FROM Product p WHERE p.available = true",
                 Product.class);
-        //q.setParameter(1, keywords);
         q.setFirstResult(offset);
-        q.setMaxResults(pageSize);
+        q.setMaxResults(limit);
         result = (List<Product>)q.getResultList();
         return result;
     }
+
+    @SuppressWarnings("unchecked")
+    public List<Product> findProductsByKeywords(String keywords, int offset, int limit) {
+        List<Product> result = new ArrayList<>();
+        Query q = entityManager.createQuery(
+                "SELECT p FROM Product p WHERE lower(p.name) LIKE lower(?1)",
+                Product.class);
+        q.setParameter(1, "%"+keywords+"%");
+        q.setFirstResult(offset);
+        q.setMaxResults(limit);
+        result = (List<Product>)q.getResultList();
+        return result;
+    }
+
+
+// MORE SECURE EXAMPLE:
+
+// Uncomment the following for more secure method:
+
+    /*
+    @SuppressWarnings("unchecked")
+    public List<Product> findAvailableProductsByKeywords(String keywords, int offset, int limit) {
+        List<Product> result = new ArrayList<>();
+        Query q = entityManager.createQuery(
+                "SELECT p FROM Product p WHERE p.available = true AND lower(p.name) LIKE lower(?1)",
+                Product.class);
+        q.setParameter(1, "%"+keywords+"%");
+        q.setFirstResult(offset);
+        q.setMaxResults(limit);
+        result = (List<Product>)q.getResultList();
+        return result;
+    }
+    */
+
+    @SuppressWarnings("unchecked")
+    public List<Product> findAvailableProductsByKeywords(String keywords, int offset, int limit) {
+        List<Product> products = new ArrayList<>();
+
+// INSECURE EXAMPLE: SQL Injection
+
+        Session session = entityManager.unwrap(Session.class);
+        Integer productCount = session.doReturningWork(new ReturningWork<Integer>() {
+
+            @Override
+            public Integer execute(Connection con) throws SQLException {
+                Integer productCount = 0;
+                try {
+                    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                    ResultSet results = stmt.executeQuery("SELECT id, code, name, summary, description, image, trade_price, " +
+                            "retail_price, delivery_time, average_rating, available FROM product WHERE lower(name) LIKE '%" +
+                            keywords.toLowerCase() + "%' LIMIT " + limit + " OFFSET " + offset);
+                    if (results.getStatement() != null) {
+                        while (results.next()) {
+                            productCount++;
+                            products.add(new Product(results.getInt("id"),
+                                    results.getString("code"),
+                                    results.getString("name"),
+                                    results.getString("summary"),
+                                    results.getString("description"),
+                                    results.getString("image"),
+                                    results.getFloat("trade_price"),
+                                    results.getFloat("retail_price"),
+                                    results.getInt("delivery_time"),
+                                    results.getInt("average_rating"),
+                                    results.getBoolean("available")
+                            ));
+                        }
+                    } else {
+                        log.debug("No products found");
+                    }
+                } catch (SQLException ex) {
+                    log.error(ex.getLocalizedMessage());
+                }
+                return productCount;
+            }
+        });
+        log.debug("Found " + productCount + " products.");
+
+// END EXAMPLE
+
+        return products;
+    }
+
 }

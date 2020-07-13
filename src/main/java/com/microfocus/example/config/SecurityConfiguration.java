@@ -1,5 +1,5 @@
 /*
-        Secure Web App
+        Insecure Web App (IWA)
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -52,7 +52,7 @@ public class SecurityConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(SecurityConfiguration.class);
 
-    public static final String REALM_NAME = "secure-web-app";
+    public static final String REALM_NAME = "IWA";
 
     @Autowired
     private CustomUserDetailsService userDetailsService;

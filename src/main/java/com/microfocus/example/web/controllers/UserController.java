@@ -1,5 +1,5 @@
 /*
-        Secure Web App
+        Insecure Web App (IWA)
 
         Copyright (C) 2020 Micro Focus or one of its affiliates
 
@@ -34,11 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -46,8 +42,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
@@ -133,7 +127,7 @@ public class UserController {
     }
 
     @GetMapping("/messages")
-    public String adminMessages(Model model, Principal principal) {
+    public String userMessages(Model model, Principal principal) {
         CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         List<Message> messages = userService.getUserMessages(user.getId());
         model.addAttribute("messages", messages);
@@ -159,8 +153,18 @@ public class UserController {
     @GetMapping("/messages/{id}")
     public String viewMessage(@PathVariable("id") Integer messageId,
                            Model model, Principal principal) {
+        int loggedInUserId = 0;
+        if (principal != null) {
+            CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+            loggedInUserId = loggedInUser.getId();
+        } else {
+            return "/user/error";
+        }
         Optional<Message> optionalMessage = userService.findMessageById(messageId);
         if (optionalMessage.isPresent()) {
+            // does user have permission to read this message?
+            if (optionalMessage.get().getUser().getId() != loggedInUserId)
+                return "/user/messages/access-denied";
             MessageForm messageForm = new MessageForm(optionalMessage.get());
             model.addAttribute("messageForm", messageForm);
             // mark messages as read
@@ -168,7 +172,7 @@ public class UserController {
         } else {
             model.addAttribute("message", "Internal error accessing message!");
             model.addAttribute("alertClass", "alert-danger");
-            return "message/not-found";
+            return "/user/messages/not-found";
         }
         return "/user/messages/view";
     }
