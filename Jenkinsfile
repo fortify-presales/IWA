@@ -13,7 +13,7 @@
 // Node setup:
 // - For Fortify on-premise software: Apply the label "fortify" to Fortify SCA agent and "webinspect" 
 //   to the WebInspect agent.
-// - For Fortfy on Demand: apply the label "fortify" to the agent or master that will connect to 
+// - For Fortify on Demand: apply the label "fortify" to the agent or master that will connect to
 //   Fortify on Demand.
 // - Also ensure the label "master" has been applied to your Jenkins master.
 //
@@ -21,7 +21,7 @@
 // Create the following "Secret text" credentials in Jenkins and enter values as follows:
 //      iwa-fod-bsi-token-id     - Fortify on Demand BSI token as Jenkins Secret
 //      iwa-ssc-auth-token-id    - Fortify Software Security Center "ArtifactUpload" authentication token as Jenkins Secret
-//      docker-hub-credentials              - DockerHub authentication token as Jenkins Secret
+//      docker-hub-credentials   - DockerHub authentication token as Jenkins Secret
 // All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
 // For Fortify on Demand (FOD) Global Authentication should be used rather than Personal Access Tokens.
 //
@@ -53,8 +53,6 @@ pipeline {
             description: 'Use Deployment Automation for automated deployment of WAR file')
         booleanParam(name: 'DOCKER_ENABLED',    defaultValue: false,
             description: 'Use Docker for automated deployment of JAR file into container')
-        booleanParam(name: 'INSECURE_EXAMPLES', defaultValue: false,
-            description: 'Copy source code with insecure examples into the build')
     }
 
     environment {
@@ -66,7 +64,7 @@ pipeline {
         COMPONENT_NAME = "iwa-web"                          // Component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         JAVA_VERSION = 8                                    // Java version to compile as
-        APP_WEBURL = "https://localhost:6443/iwa/" // URL of where the application is deployed to (for integration testing, WebInspect etc)
+        APP_WEBURL = "https://localhost:6443/iwa/"          // URL of where the application is deployed to (for integration testing, WebInspect etc)
         ISSUE_IDS = ""                                      // List of issues found from commit
         DOCKER_ORG = "mfdemouk"                             // Docker organisation (in Docker Hub) to push images to
 
@@ -215,15 +213,6 @@ pipeline {
                 script {
                     // Get code from Git repository so we can recompile it
                     git "${env.GIT_URL}"
-
-                    if (params.INSECURE_EXAMPLES) {
-                        println "Copying insecure example source code into build ..."
-                        if (isUnix()) {
-                            sh 'cp -rf ./etc/insecure-examples/src ./src'
-                        } else {
-                            bat "xcopy /f /i /r /s /u /y .\\etc\\insecure-examples\\src .\\src"
-                        }
-                    }
 
                     // Run Maven debug compile, download dependencies (if required) and package up for FOD
                     if (isUnix()) {
