@@ -55,6 +55,6 @@ jobs:
 
     - name: Heroku Deployment with Maven
       run: mvn -Pwar heroku:deploy-war
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
 
