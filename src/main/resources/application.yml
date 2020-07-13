@@ -55,6 +55,7 @@ springdoc:
 #    url: /v3/api-docs
     path: /swagger-ui.html
     display-request-duration: true
+
  #   groups-order: DESC
     disable-swagger-default-url: true
   paths-to-match: /api/**

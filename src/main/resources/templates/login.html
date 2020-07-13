@@ -4,28 +4,6 @@
       layout:decorate="~{fragments/layout}">
     <head>
         <title>Login</title>
-        <!-- INSECURE EXAMPLE: Potential JavaScript Hijacking -->
-        <script th:inline="javascript">
-            /*<![CDATA[*/
-            var site_message;
-            var site_message_url = /*[[@{/site-message}]]*/ '0';
-            var req = new XMLHttpRequest();
-            req.open("GET", site_message_url, true);
-            req.onreadystatechange = function () {
-                if (req.readyState === 4) {
-                    site_message = eval("new String(\"" + req.responseText + "\")");
-                    var sm_div = document.getElementById("site-message");
-                    if (typeof(sm_div) != 'undefined' && sm_div != null) {
-                        sm_div.className = "bg-info";
-                        sm_div.innerText = site_message;
-                    }
-                    req = null;
-                }
-            };
-            req.send(null);
-            /*]]>*/
-        </script>
-        <!-- END EXAMPLE -->
     </head>
     <body class="text-center">
         <div layout:fragment="content" th:remove="tag">

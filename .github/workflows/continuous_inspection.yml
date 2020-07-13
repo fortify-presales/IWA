@@ -52,3 +52,9 @@ jobs:
         update_commit: true
         update_pr: false
         use_test_data: false
+
+    - name: Heroku Deployment with Maven
+      run: mvn -Pwar heroku:deploy-war
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+

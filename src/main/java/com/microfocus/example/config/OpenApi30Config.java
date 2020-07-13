@@ -23,13 +23,30 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.servers.Server;
+import io.swagger.v3.oas.annotations.servers.ServerVariable;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(info = @Info(
         title = "Insecure Web App (IWA) API",
-        description = "This is the REST API for Insecure Web App (IWA). Basic authentication only is currently used.",
-        version = "v3"))
+        description = "This is the REST API for Insecure Web App (IWA). You can select a development or production server to test the API. Currently only basic authentication is supported.",
+        version = "v3"),
+        servers = @Server(
+                url = "{protocol}://{environment}",
+                variables = {
+                    @ServerVariable(
+                            name = "protocol",
+                            allowableValues = {"http","https"},
+                            defaultValue = "https"),
+                    @ServerVariable(
+                            name = "environment",
+                            allowableValues = {"localhost:9080/iwa", "insecurewebapp.herokuapp.com"},
+                            defaultValue = "insecurewebapp.herokuapp.com"
+                    )
+                }
+        )
+)
 @SecurityScheme(
         name = "basicAuth",
         type = SecuritySchemeType.HTTP,

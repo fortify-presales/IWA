@@ -455,6 +455,18 @@
 			  </configuration>
 			</plugin>
 
+            <!-- heroku deployment -->
+            <plugin>
+                <groupId>com.heroku.sdk</groupId>
+                <artifactId>heroku-maven-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <appName>insecurewebapp</appName>
+                    <jdkVersion>1.8</jdkVersion>
+                    <warFile>target/iwa.war</warFile>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
