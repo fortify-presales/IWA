@@ -55,9 +55,11 @@ public class CustomUserDetailsService implements UserDetailsService {
             if (!user.isPresent()) {
                 throw new UsernameNotFoundException("User not found.");
             }
+// INSECURE EXAMPLE: Empty Catch Block
         } catch (UserLockedOutException ignored) {
-            log.error(ignored.getMessage());
+
         }
+// END EXAMPLE
         return new CustomUserDetails(user.get());
     }
 }

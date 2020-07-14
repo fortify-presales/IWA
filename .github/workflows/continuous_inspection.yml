@@ -1,5 +1,5 @@
-# This workflow will build a Java project with Maven
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+# This workflow will build a Java project with Maven, upload source code to Fortify on Demand (for static analysis)
+# and if successful deploy the application to Heroku
 
 name: Continuous Inspection
 
@@ -7,32 +7,39 @@ on:
   push:
     branches:
       - master
-  #    - feature/**
+      - feature/**
+      - release/**
   pull_request:
     branches:
       - master
 
 jobs:
-  build:
+  build-test-deploy:
     runs-on: ubuntu-latest
+
+    # Checkout the code
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
+    # Setup JDK 1.8 of host
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
 
+    # Build with Maven (debug) and
     - name: Build with Maven
       run: mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dtest=!UserServiceTest -P fortify,jar -B clean package --file pom.xml
 
+    # Package up the source code and pom so that it can be uploaded to FOD
     - name: Zip up source code
       uses: papeloto/action-zip@v1
       with:
         files: src/main/java pom.xml
         dest: fod.zip
 
+    # Upload to FOD and run static analysis
     - name: Static Analysis with FOD
       uses: fortify-community-plugins/fod-github-action@v1-alpha
       with:
@@ -53,8 +60,11 @@ jobs:
         update_pr: false
         use_test_data: false
 
+    # Create WAR file for deployment to Heroku (testing is skipped as we already did it earlier)
+    # then deploy it using Heroku Maven plugin
     - name: Heroku Deployment with Maven
-      run: mvn -Pwar heroku:deploy-war
+      run: mvn -P war -DskipTests -B heroku:deploy-war --file pom.xml
+      if: always() # always deploy for now as we are expecting static analysis issues for this application
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
 

@@ -77,10 +77,12 @@ public class DefaultController {
         return "/error/403-access-denied";
     }
 
+    /*
     @GetMapping("/site-message")
     @ResponseBody
     public String siteMessage() {
         return "This site is currently healthy.";
     }
+    */
 
 }

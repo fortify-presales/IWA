@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,9 @@ public class AdminUtils {
 
     public static int startDbBackup(String profile) throws BackupException {
         int backupId = 0;
+
+// Uncomment the following for more secure example:
+/*
         String profileName = "default";
         switch (profile) {
         	case "quick": 	profileName = "quick";
@@ -51,9 +55,12 @@ public class AdminUtils {
         }
         if (profile.matches("^.*[^a-zA-Z0-9 ].*$"))
             throw new BackupException("Profile contains non alpha numeric characters, cannot start backup");
+*/
+
+// INSECURE EXAMPLE: Command Injection
         String[] backupCommand = {
                 "cmd.exe", "/K", "dir", "c:\\util\\backup.bat",
-                "-profile", profileName
+                "-profile", profile
         };
         String[] cleanupCommand = {
                 "cmd.exe", "/K", "c:\\util\\cleanup.bat"
@@ -61,7 +68,9 @@ public class AdminUtils {
         log.info("Running: " + Arrays.toString(backupCommand));
         // call backup tool API
         log.info("Running: " + Arrays.toString(cleanupCommand));
-        // call bacup tool API
+// END EXAMPLE
+
+        // call backup tool API
         backupId = getBackupId();
         return backupId;
     }
@@ -73,9 +82,19 @@ public class AdminUtils {
     }
 
     public static String getDbStatus(int backupId) {
+
+// Uncomment the following for more secure example:
+/*
         if (Boolean.parseBoolean(isLocked(backupId))) {
             return "LOCKED";
         }
+*/
+
+// INSECURE EXAMPLE: Often Misused: Boolean.getBoolean()
+        if(Boolean.getBoolean(isLocked(backupId))){
+            return"LOCKED";
+        }
+// END EXAMPLE
         return isReady(backupId);
     }
 
@@ -88,6 +107,9 @@ public class AdminUtils {
     //
 
     private static int genId() {
+
+// Uncomment the following for more secure example:
+/*
         SecureRandom sr = new SecureRandom();
         try {
             sr = SecureRandom.getInstance("SHA1PRNG");
@@ -95,6 +117,13 @@ public class AdminUtils {
             log.error(ignored.getMessage());
         }
         return sr.nextInt(Integer.MAX_VALUE);
+ */
+
+// INSECURE EXAMPLE: Insecure Randomness and Hardcoded Seed
+        Random r=new Random();
+        r.setSeed(12345);
+        return r.nextInt();
+// END EXAMPLE
     }
 
     private static String isLocked(int backupId) {

@@ -83,11 +83,12 @@ public class SecurityConfiguration {
 
             httpSecurity.antMatcher("/api/**")
                     .authorizeRequests()
-                        .antMatchers(HttpMethod.GET).authenticated()
-                        .antMatchers(HttpMethod.DELETE).hasAnyRole("ADMIN", "API")
-                        .antMatchers(HttpMethod.POST).hasAnyRole("ADMIN", "API")
-                        .antMatchers(HttpMethod.PUT).hasAnyRole("ADMIN", "API")
-                        .antMatchers(HttpMethod.PATCH).hasAnyRole("ADMIN", "API")
+                        .antMatchers(HttpMethod.GET,"/api/v3/site/status").permitAll()
+                        .antMatchers(HttpMethod.GET, "/api/**").authenticated()
+                        .antMatchers(HttpMethod.DELETE, "/api/**").hasAnyRole("ADMIN", "API")
+                        .antMatchers(HttpMethod.POST, "/api/**").hasAnyRole("ADMIN", "API")
+                        .antMatchers(HttpMethod.PUT, "/api/**").hasAnyRole("ADMIN", "API")
+                        .antMatchers(HttpMethod.PATCH, "/api/**").hasAnyRole("ADMIN", "API")
                     .and().httpBasic().authenticationEntryPoint(basicAuthenticationEntryPoint)
                     .and().exceptionHandling().accessDeniedHandler(apiAccessDeniedHandler)
                     .and().csrf().disable();

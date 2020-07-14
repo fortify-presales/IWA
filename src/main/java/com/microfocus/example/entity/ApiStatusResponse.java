@@ -20,19 +20,19 @@
 package com.microfocus.example.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class ApiStatusResponse {
 
     private Boolean success;
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm", iso = DateTimeFormat.ISO.DATE_TIME)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-    private LocalDateTime timeStamp;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+    private LocalDateTime timestamp;
     private ArrayList<String> errors;
-
     public Boolean getSuccess() {
         return success;
     }
@@ -41,12 +41,13 @@ public class ApiStatusResponse {
         this.success = success;
     }
 
-    public LocalDateTime getTimeStamp() {
-        return timeStamp;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 
-    public void setTimeStamp(LocalDateTime timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 
     public ArrayList<String> getErrors() {
@@ -59,7 +60,8 @@ public class ApiStatusResponse {
 
     public static final class ApiResponseBuilder {
         private Boolean success;
-        private LocalDateTime timeStamp;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+        private LocalDateTime timestamp;
         private ArrayList<String> errors;
 
         public ApiResponseBuilder() {
@@ -74,8 +76,8 @@ public class ApiStatusResponse {
             return this;
         }
 
-        public ApiResponseBuilder atTime(LocalDateTime timeStamp) {
-            this.timeStamp = timeStamp;
+        public ApiResponseBuilder atTime(LocalDateTime timestamp) {
+            this.timestamp = timestamp;
             return this;
         }
 
@@ -87,7 +89,7 @@ public class ApiStatusResponse {
         public ApiStatusResponse build() {
             ApiStatusResponse apiErrorResponse = new ApiStatusResponse();
             apiErrorResponse.success = this.success;
-            apiErrorResponse.timeStamp = this.timeStamp;
+            apiErrorResponse.timestamp = this.timestamp;
             apiErrorResponse.errors = this.errors;
             return apiErrorResponse;
         }
