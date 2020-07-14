@@ -108,6 +108,10 @@ public class SecurityConfiguration {
                 httpSecurity.headers().frameOptions().disable();
             }
 
+            /*
+            http.headers()
+           .contentSecurityPolicy("script-src 'self' https://trustedscripts.example.com; object-src https://trustedplugins.example.com; report-uri /csp-report-endpoint/");
+             */
             httpSecurity.authorizeRequests()
                     .antMatchers("/",
                             "/products/**",
