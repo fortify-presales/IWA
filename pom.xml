@@ -30,6 +30,13 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 		<fod.dir>fod</fod.dir>
+        <h2.version>1.4.197</h2.version>
+        <passay.version>1.5.0</passay.version>
+        <bootstrap.version>3.4.1</bootstrap.version>
+        <jquery.version>3.4.1</jquery.version>
+        <font-awesome.version>5.12.0</font-awesome.version>
+        <chartjs.version>2.9.3</chartjs.version>
+        <springdoc-openapi.version>1.4.3</springdoc-openapi.version>
     </properties>
 
     <!--repositories>
@@ -76,18 +83,64 @@
             <artifactId>spring-boot-starter-tomcat</artifactId>
         </dependency>
 
-        <!-- INSECURE EXAMPLE FOUND BY SONATYPE -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>compile</scope>
-            <version>1.4.197</version>
+            <version>${h2.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.passay</groupId>
             <artifactId>passay</artifactId>
-            <version>1.5.0</version>
+            <version>${passay.version}</version>
+        </dependency>
+
+        <!-- css/javascript webjars -->
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>${bootstrap.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>jquery</artifactId>
+            <version>${jquery.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>font-awesome</artifactId>
+            <version>${font-awesome.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>chartjs</artifactId>
+            <version>${chartjs.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc-openapi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-security</artifactId>
+            <version>${springdoc-openapi.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
 
         <dependency>
@@ -106,59 +159,11 @@
             </exclusions>
         </dependency>
 
-        <!-- webjar bootstrap and jquery dependencies -->
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>bootstrap</artifactId>
-            <version>3.4.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>jquery</artifactId>
-            <version>3.4.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>font-awesome</artifactId>
-            <version>5.12.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>chartjs</artifactId>
-            <version>2.9.3</version>
-        </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.4.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-security</artifactId>
-            <version>1.4.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-        </dependency>
-
-        <!--dependency>
-            <groupId>com.google.collections</groupId>
-            <artifactId>google-collections</artifactId>
-            <version>1.0</version>
-        </dependency-->
 
         <!-- Fortify SCA Annotations
         <dependency>
@@ -166,15 +171,11 @@
             <artifactId>FortifyAnnotations</artifactId>
             <version>2020.05</version>
         </dependency-->
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
         
     </dependencies>
 
     <profiles>
+        <!-- Default profile for testing/debugging with Spring Boot DevTools -->
         <profile>
             <id>dev</id>
             <activation>
@@ -192,7 +193,8 @@
 		<profile>
 			<id>release</id>
 		</profile>
-        
+
+        <!-- Profile for creating executable JAR file -->
         <profile>
             <id>jar</id>
             <activation>
@@ -203,6 +205,7 @@
             </properties>
         </profile>
 
+        <!-- Profile for creating deployable WAR file -->
         <profile>
             <id>war</id>
             <properties>
@@ -322,7 +325,7 @@
             </build>
         </profile>
         
-        <!-- Profile for preparing/deploying application to (downloaded) Websphere Liberty instance -->
+        <!-- Profile for preparing/deploying application to (downloaded) WebSphere Liberty instance -->
         <profile>
         	<id>wlp</id>
  	        <properties>
@@ -396,11 +399,29 @@
                 </executions>
                 <configuration>
                     <finalName>${project.artifactId}</finalName>
-                    <outputFile>${project.artifactId}.war</outputFile>
+                    <!--outputFile>${project.build.directory}/${project.artifactId}.war</outputFile-->
                     <profiles>
                         <profile>dev</profile>
                     </profiles>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <id>build-classpath</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>build-classpath</goal>
+                        </goals>
+                        <configuration>
+                            <!-- configure the plugin here -->
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- Cleanup FOD upload directory -->
@@ -438,7 +459,8 @@
 			  </configuration>
 			</plugin>
 
-            <!-- generate OpenAPI descriptor during integrate phase -->
+            <!-- Generate OpenAPI descriptor during integrate phase -->
+            <!-- Requires application to be running: "mvn spring-boot:run" and then "mvn integration-test" -->
             <plugin>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-maven-plugin</artifactId>
@@ -452,13 +474,13 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <!--apiDocsUrl>http://localhost:8080/v3/api-docs</apiDocsUrl-->
+                    <apiDocsUrl>http://localhost:9080/iwa/v3/api-docs</apiDocsUrl>
                     <outputFileName>openapi.json</outputFileName>
                     <outputDir>etc</outputDir>
                 </configuration>
             </plugin>
 
-            <!-- heroku deployment -->
+            <!-- Deployment to Heroku -->
             <plugin>
                 <groupId>com.heroku.sdk</groupId>
                 <artifactId>heroku-maven-plugin</artifactId>
@@ -466,7 +488,7 @@
                 <configuration>
                     <appName>insecurewebapp</appName>
                     <jdkVersion>1.8</jdkVersion>
-                    <warFile>target/iwa.war</warFile>
+                    <warFile>${project.build.directory}/${project.artifactId}.war</warFile>
                 </configuration>
             </plugin>
 

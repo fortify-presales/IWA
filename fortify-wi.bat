@@ -16,7 +16,7 @@ call mvn -Pwlp liberty:create liberty:install-feature liberty:deploy liberty:sta
 echo ************************************************************
 echo Generating settings for API...
 echo ************************************************************
-call "C:\Micro Focus\Fortify WebInspect\WISwag.exe" -i ".\etc\WiSwagConfig.json" -ice -it Swagger -wiOutput ApiSettings.xml
+call "C:\Micro Focus\Fortify WebInspect\WISwag.exe" -i ".\etc\WISwagConfig.json" -ice -it Swagger -wiOutput ApiScanSettings.xml
 
 :: Execute dynamic scan
 echo ************************************************************
