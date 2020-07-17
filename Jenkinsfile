@@ -51,7 +51,7 @@ pipeline {
             description: 'Enable WebInspect for Dynamic Application Security Testing')
         booleanParam(name: 'DA_ENABLED',        defaultValue: false,
             description: 'Use Deployment Automation for automated deployment of WAR file')
-        booleanParam(name: 'DOCKER_ENABLED',    defaultValue: false,
+        booleanParam(name: 'DOCKER_ENABLED',    defaultValue: true,
             description: 'Use Docker for automated deployment of JAR file into container')
     }
 
@@ -91,7 +91,7 @@ pipeline {
         // Fortify Software Security Center (SSC) settings
         //
         SSC_WEBURL = "http://localhost:8080/ssc"                    // URL of SSC
-        SSC_AUTH_TOKEN = credentials('iwa-app-ssc-auth-token-id') // Authentication token for SSC
+        SSC_AUTH_TOKEN = credentials('iwa-ssc-auth-token-id') // Authentication token for SSC
 
         //
         // Fortify WebInspect settings
@@ -353,11 +353,11 @@ pipeline {
                         // Stop the container if still running
                         dockerContainer.stop()
                         // Example publish to Docker Hub
-                        //docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-                        //    dockerImage.push("${env.APP_VER}.${BUILD_NUMBER}")
-                        // and tag as "latest"
-                        //    dockerImage.push("latest")
-                        //}
+                        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                            dockerImage.push("${env.APP_VER}.${BUILD_NUMBER}")
+                            // and tag as "latest"
+                            dockerImage.push("latest")
+                        }
                     } else {
                        	
                     }
