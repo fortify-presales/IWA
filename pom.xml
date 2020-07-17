@@ -246,7 +246,7 @@
                                         junit,org.easymock,${project.groupId}
                                     </excludeGroupIds>
                                     <!-- uncomment to only include direct dependencies -->
-                                    <excludeTransitive>true</excludeTransitive>
+                                    <excludeTransitive>false</excludeTransitive>
                                 </configuration>
                             </execution>
                             <execution>
@@ -263,7 +263,7 @@
                                         junit,org.easymock,${project.groupId}
                                     </excludeGroupIds>
                                     <!-- uncomment to only include direct dependencies -->
-                                    <excludeTransitive>true</excludeTransitive>
+                                    <excludeTransitive>false</excludeTransitive>
                                 </configuration>
                             </execution>
                         </executions>

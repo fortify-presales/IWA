@@ -30,13 +30,13 @@ jobs:
 
     # Build with Maven (debug) and
     - name: Build with Maven
-      run: mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dtest=!UserServiceTest -P fortify,jar -B clean package --file pom.xml
+      run: mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dtest=!UserServiceTest -P fortify,jar -B clean verify package --file pom.xml
 
     # Package up the source code and pom so that it can be uploaded to FOD
     - name: Zip up source code
       uses: papeloto/action-zip@v1
       with:
-        files: src/main/java pom.xml
+        files: fod/ pom.xml
         dest: fod.zip
 
     # Upload to FOD and run static analysis
