@@ -61,7 +61,7 @@ pipeline {
         //
         APP_NAME = "Insecure Web App"                      	// Application name
         APP_VER = "1.0"                                     // Application release
-        COMPONENT_NAME = "iwa-web"                          // Component name
+        COMPONENT_NAME = "iwa"                              // Component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         JAVA_VERSION = 8                                    // Java version to compile as
         APP_WEBURL = "https://localhost:6443/iwa/"          // URL of where the application is deployed to (for integration testing, WebInspect etc)
