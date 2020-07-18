@@ -153,7 +153,7 @@ pipeline {
                     // Archive the built file
                     archiveArtifacts "target/${env.COMPONENT_NAME}.jar,target/${env.COMPONENT_NAME}.war"
                     // Stash the deployable files
-                    stash includes: "target/${env.COMPONENT_NAME}.war,target/${env.COMPONENT_NAME}.war", name: "${env.COMPONENT_NAME}_release"
+                    stash includes: "target/${env.COMPONENT_NAME}.jar,target/${env.COMPONENT_NAME}.war", name: "${env.COMPONENT_NAME}_release"
                 }
                 failure {
                     // Record the test results (failures)
