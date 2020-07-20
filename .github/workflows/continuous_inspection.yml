@@ -43,7 +43,7 @@ jobs:
     - name: Static Analysis with FOD
       run: fortify-fod.ps1
       shell: pwsh
-      with:
+      env:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         fod_zip_file: 'fod.zip'
         fod_release_id: 56327
