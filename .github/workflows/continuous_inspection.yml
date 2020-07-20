@@ -39,26 +39,21 @@ jobs:
         files: fod/ pom.xml
         dest: fod.zip
 
-    # Upload to FOD and run static analysis
+    # Upload fod.zip to Fortify on Demand for static analysis
     - name: Static Analysis with FOD
-      uses: fortify-community-plugins/fod-github-action@v1-alpha
+      run: fortify-fod.ps1
+      shell: pwsh
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        fod_credential_type: 'api'
-        fod_access_key: ${{ secrets.FOD_ACCESS_KEY }}
-        fod_secret_key: ${{ secrets.FOD_SECRET_KEY }}
-        bsi_token: ${{ secrets.BSI_TOKEN }}
-        fod_release_id: 'master'
-        entitlement_preference: 'SubscriptionOnly'
-        remediation_scan_preference: 'NonRemediationScanOnly'
-        in_progress_scan_action: 'DoNotStartScan'
-        audit_preference_id: 'Automated'
-        zip_location: 'fod.zip'
-        polling_interval: '2'
-        notes: 'GitHub Action initiated scan'
-        update_commit: true
-        update_pr: false
-        use_test_data: false
+        fod_zip_file: 'fod.zip'
+        fod_release_id: 56327
+        fod_api_uri: 'https://api.emea.fortify.com'
+        fod_api_username: ${{ secrets.FOD_API_USERNAME }}
+        fod_api_password: ${{ secrets.FOD_API_PASSWORD }}
+        fod_api_grant_type: 'UsernamePassword'
+        fod_api_scope: 'api-tenant'
+        note: 'GitHub Action initiated scan'
+
 
     # Create WAR file for deployment to Heroku (testing is skipped as we already did it earlier)
     # then deploy it using Heroku Maven plugin

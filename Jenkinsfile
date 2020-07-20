@@ -19,7 +19,8 @@
 //
 // Credentials setup:
 // Create the following "Secret text" credentials in Jenkins and enter values as follows:
-//      iwa-fod-bsi-token-id     - Fortify on Demand BSI token as Jenkins Secret
+//      iwa-fod-bsi-token-id     - Fortify on Demand BSI token as Jenkins Secret - deprecated use iwa-fod-release-id
+//      iwa-fod-release-id       - Fortify on Demand Release Id as Jenkins Secret
 //      iwa-ssc-auth-token-id    - Fortify Software Security Center "ArtifactUpload" authentication token as Jenkins Secret
 //      docker-hub-credentials   - DockerHub authentication token as Jenkins Secret
 // All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
@@ -71,7 +72,8 @@ pipeline {
         //
         // Fortify On Demand (FOD) settings
         //
-        FOD_BSI_TOKEN = credentials('iwa-fod-bsi-token-id') // FOD BSI Token
+        FOD_BSI_TOKEN = credentials('iwa-fod-bsi-token-id') // FOD BSI Token - deprecated use FOD_RELEASE_ID
+        FOD_RELEASE_ID = credentials('iwa-fod-release-id')  // FOD Release Id
         FOD_UPLOAD_DIR = 'fod'                              // Directory where FOD upload Zip is constructed
 
         //
@@ -221,22 +223,29 @@ pipeline {
 
                     // Run Maven debug compile, download dependencies (if required) and package up for FOD
                     if (isUnix()) {
-                        sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean package'
+                        sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify'
+                        sh 'mvn dependency:build-classpath -Dmdep.outputFile=./target/cp.txt'
                     } else {
-                        bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean package"
+                        bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify"
+                        bat "mvn dependency:build-classpath -Dmdep.outputFile=.\\target\\cp.txt"
                     }
 
+                    // read contents of classpath file
+                    env.WORKSPACE = pwd()
+                    def classpath = readFile "${env.WORKSPACE}/cp.txt"
 
                     if (params.FOD_ENABLED) {
                         // Upload built application to Fortify on Demand and carry out Static Assessment
-                        fodStaticAssessment bsiToken: "${env.FOD_BSI_TOKEN}",
+                        fodStaticAssessment releaseId: ${env.FOD_RELEASE_ID}
+                            // bsiToken: "${env.FOD_BSI_TOKEN}",
                             entitlementPreference: 'SubscriptionOnly',
                             inProgressScanActionType: 'CancelInProgressScan',
                             remediationScanPreferenceType: 'NonRemediationScanOnly',
                             srcLocation: "${env.FOD_UPLOAD_DIR}"
 
                         // optional: wait for FOD assessment to complete
-                        fodPollResults bsiToken: "${env.FOD_BSI_TOKEN}",
+                        fodPollResults releaseId: ${env.FOD_RELEASE_ID}
+                            //bsiToken: "${env.FOD_BSI_TOKEN}",
                             //policyFailureBuildResultPreference: 1,
                             pollingInterval: 5
                     } else if (params.SCA_ENABLED) {
@@ -250,8 +259,9 @@ pipeline {
                         // Translate source files
                         fortifyTranslate buildID: "${env.COMPONENT_NAME}",
                             projectScanType: fortifyJava(javaSrcFiles:
-                                '\""src/main/java/**/*.java\"" \""src/main/resources/**/*.html\""',
-                                javaVersion: "${env.JAVA_VERSION}"),
+                                '\""src/main/java/**/*\"" \""src/main/resources/**/*\""',
+                            javaVersion: "${env.JAVA_VERSION}"),
+                            javaClassPath: $classpath,
                             logFile: "${env.COMPONENT_NAME}-translate.log"
 
                         // optional: translate directly using Maven
