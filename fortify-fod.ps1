@@ -5,10 +5,10 @@
 [CmdletBinding()]
 param (
     [Parameter(Mandatory)]
-    [string]$ZipFile = $env:FOD_ZIP_FILE,
+    [string]$ZipFile = '.\fod.zip',
 
     [Parameter(Mandatory)]
-    [int]$FODReleaseId = $ENV:FOD_RELEASE_ID,
+    [int]$FODReleaseId,
 
     [Parameter(Mandatory)]
     [string]$FODApiUri = $env:FOD_API_URI,
@@ -29,7 +29,7 @@ param (
     [string]$Notes = 'Uploaded from PowerShellForFOD',
 
     [Parameter()]
-    [init]$PollingInterval = 30
+    [int]$PollingInterval = 30
 )
 begin {
     if (-not (Test-Path -Path $ZipFile)) {

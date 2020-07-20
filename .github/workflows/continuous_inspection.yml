@@ -43,11 +43,9 @@ jobs:
     - name: Static Analysis with FOD
       shell: pwsh
       run: |
-        .\fortify-fod.ps1 -Notes 'GitHub Action initiated scan'
+        .\fortify-fod.ps1 -ZipFile '.\fod.zip' -ReleaseId 56327 -Notes 'GitHub Action initiated scan'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        FOD_ZIP_FILE: 'fod.zip'
-        FOD_RELEASE_ID: 56327
         FOD_API_URI: 'https://api.emea.fortify.com'
         FOD_API_USERNAME: ${{ secrets.FOD_API_USERNAME }}
         FOD_API_PASSWORD: ${{ secrets.FOD_API_PASSWORD }}
