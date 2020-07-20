@@ -8,7 +8,7 @@ param (
     [string]$ZipFile = '.\fod.zip',
 
     [Parameter(Mandatory)]
-    [int]$FODReleaseId,
+    [int]$ReleaseId,
 
     [Parameter(Mandatory)]
     [string]$FODApiUri = $env:FOD_API_URI,
