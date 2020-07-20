@@ -10,13 +10,13 @@ param (
     [Parameter(Mandatory)]
     [int]$ReleaseId,
 
-    [Parameter(Mandatory)]
+    [Parameter()]
     [string]$FODApiUri = $env:FOD_API_URI,
 
-    [Parameter(Mandatory)]
+    [Parameter()]
     [string]$FODApiUsername = $env:FOD_API_USERNAME,
 
-    [Parameter(Mandatory)]
+    [Parameter()]
     [string]$FODApiPassword = $env:FOD_API_PASSWORD,
 
     [Parameter()]
