@@ -44,6 +44,7 @@ jobs:
       shell: pwsh
       run: |
         .\fortify-fod.ps1 -ZipFile '.\fod.zip' -ReleaseId 56327 -Notes 'GitHub Action initiated scan' -FodApiUri 'https://api.emea.fortify.com' -FodApiUsername ${{ secrets.FOD_API_USERNAME }} -FodApiPassword ${{ secrets.FOD_API_PASSWORD }}
+        cat /home/runner/.ps4fod
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

@@ -44,6 +44,11 @@ process {
 
     # Configure API
     Write-Verbose "Configuring FOD API ..."
+    Write-Host $FODApiUri
+    Write-Host $FODApiUsername
+    Write-Host $FODApiPassword
+    Write-Host $FODApiGrantType
+    Write-Host $FODApiScope
     $PWord = ConvertTo-SecureString -String $FODApiPassword -AsPlainText -Force
     $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $FODApiUsername, $PWord
     Set-FODConfig -ApiUri $FODApiUri -GrantType $FODApiGrantType -Scope $FODApiScope
