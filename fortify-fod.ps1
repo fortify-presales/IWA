@@ -10,20 +10,20 @@ param (
     [Parameter(Mandatory)]
     [int]$ReleaseId,
 
-    [Parameter()]
-    [string]$FODApiUri = $env:FOD_API_URI,
+    [Parameter(Mandatory)]
+    [string]$FODApiUri,
+
+    [Parameter(Mandatory)]
+    [string]$FODApiUsername,
+
+    [Parameter(Mandatory)]
+    [string]$FODApiPassword,
 
     [Parameter()]
-    [string]$FODApiUsername = $env:FOD_API_USERNAME,
+    [string]$FODApiGrantType = 'UsernamePassword',
 
     [Parameter()]
-    [string]$FODApiPassword = $env:FOD_API_PASSWORD,
-
-    [Parameter()]
-    [string]$FODApiGrantType = $env:FOD_API_GRANT_TYPE,
-
-    [Parameter()]
-    [string]$FODApiScope = $env:FOD_API_SCOPE,
+    [string]$FODApiScope = 'api-tenant',
 
     [Parameter()]
     [string]$Notes = 'Uploaded from PowerShellForFOD',
