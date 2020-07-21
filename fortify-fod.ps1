@@ -1,5 +1,5 @@
 #
-# Example script to perform Fortify On Demand static analysis
+# Example script to perform Fortify On Demand static analysis including verification and polling
 #
 
 [CmdletBinding()]
@@ -20,7 +20,7 @@ param (
     [string]$FODApiPassword,
 
     [Parameter()]
-    [string]$FODApiGrantType = 'UsernamePassword',
+    [string]$FODApiGrantType = 'ClientCredentials',
 
     [Parameter()]
     [string]$FODApiScope = 'api-tenant',
@@ -44,11 +44,6 @@ process {
 
     # Configure API
     Write-Verbose "Configuring FOD API ..."
-    Write-Host $FODApiUri
-    Write-Host $FODApiUsername
-    Write-Host $FODApiPassword
-    Write-Host $FODApiGrantType
-    Write-Host $FODApiScope
     $PWord = ConvertTo-SecureString -String $FODApiPassword -AsPlainText -Force
     $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $FODApiUsername, $PWord
     Set-FODConfig -ApiUri $FODApiUri -GrantType $FODApiGrantType -Scope $FODApiScope
@@ -56,29 +51,33 @@ process {
 
     try
     {
-        $release = Get-FODRelease -Id $FODReleaseId
-        if ($release.releaseName) {
-            Write-Host "Found release:" $release.releaseName "of application: " $release.applicationName
+        $Release = Get-FODRelease -Id $ReleaseId -Raw
+        $ReleaseName = $Release.releaseName
+        $ApplicationName = $Release.applicationName
+        if ($ReleaseName) {
+            Write-Host "Found release '$ReleaseName' of application '$ApplicationName'"
         } else{
-            Write-Error "Could not find release with id: " $FODReleaseId
+            Write-Error "Could not find release with id: $ReleaseId" -ErrorAction Stop
         }
     } catch {
         Write-Error "Error finding release: $_" -ErrorAction Stop
     }
 
+    Break
+
     # Start Scan
-    $fodZipFile = Resolve-Path -Path $ZipFile
+    $ZipFilePath = Resolve-Path -Path $ZipFile
     Write-Host "Uploading" $ZipFile "for scanning ..."
-    $fodStaticScan = Start-FODStaticScan -ReleaseId $FODReleaseId -ZipFile $fodZipFile.Path -EntitlementPreference SubscriptionOnly `
+    $StaticScan = Start-FODStaticScan -ReleaseId $ReleaseId -ZipFile $ZipFilePath.Path -EntitlementPreference SubscriptionOnly `
         -RemediationScanPreference NonRemediationScanOnly -InProgressScanPreference DoNotStartScan `
         -Notes $Notes -Raw
-    $ScanId = $fodStaticScan.scanId
+    $ScanId = $StaticScan.scanId
 
     Write-Host "Polling status of scan id: $ScanId"
     do {
         Start-Sleep -s $PollingInterval # sleep for 30 seconds
-        $fodScan = Get-FODScanSummary -ScanId $ScanId
-        $ScanStatus = $fodScan.analysisStatusType
+        $ScanSummary = Get-FODScanSummary -ScanId $ScanId
+        $ScanStatus = $ScanSummary.analysisStatusType
         Write-Host "Scan $ScanId status: $ScanStatus"
     } until (
         -not ($ScanStatus -eq "Queued" -or
@@ -89,7 +88,7 @@ process {
 }
 end {
     if ($Raw) {
-        $fodScan
+        $ScanSummary
     } else {
         Write-Host "Finished scan with scan id: $ScanId"
     }

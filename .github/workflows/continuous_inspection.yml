@@ -42,9 +42,7 @@ jobs:
     # Upload fod.zip to Fortify on Demand for static analysis
     - name: Static Analysis with FOD
       shell: pwsh
-      run: |
-        .\fortify-fod.ps1 -ZipFile '.\fod.zip' -ReleaseId 56327 -Notes 'GitHub Action initiated scan' -FodApiUri 'https://api.emea.fortify.com' -FodApiUsername ${{ secrets.FOD_API_USERNAME }} -FodApiPassword ${{ secrets.FOD_API_PASSWORD }}
-        cat /home/runner/.ps4fod
+      run: .\fortify-fod.ps1 -ZipFile '.\fod.zip' -ReleaseId 56327 -Notes 'GitHub Action initiated scan' -FodApiUri 'https://api.emea.fortify.com' -FodApiUsername '${{ secrets.FOD_ACCESS_KEY }}' -FodApiPassword '${{ secrets.FOD_SECRET_KEY }}'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
