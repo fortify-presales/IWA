@@ -29,7 +29,10 @@ param (
     [string]$Notes = 'Uploaded from PowerShellForFOD',
 
     [Parameter()]
-    [int]$PollingInterval = 30
+    [int]$PollingInterval = 30,
+
+    [Parameter()]
+    [switch]$Raw
 )
 begin {
     if (-not (Test-Path -Path $ZipFile)) {
@@ -73,7 +76,7 @@ process {
 
     Write-Host "Polling status of scan id: $ScanId"
     do {
-        Start-Sleep -s $PollingInterval # sleep for 30 seconds
+        Start-Sleep -s $PollingInterval # sleep for X seconds
         $ScanSummary = Get-FODScanSummary -ScanId $ScanId
         $ScanStatus = $ScanSummary.analysisStatusType
         Write-Host "Scan $ScanId status: $ScanStatus"

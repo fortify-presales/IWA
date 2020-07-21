@@ -48,7 +48,7 @@ jobs:
         $ReleaseName = $ScanSummary.releaseName
         $ScanStatus = $ScanSummary.analysisStatusType
         $StarRating = $ScanSummary.starRating
-        Write-Host "Scan $ScanId has $ScanStatus - Release $ReleaseName has $StarRating star rating"
+        Write-Host "Finished scan $ScanId with status '$ScanStatus' - Release '$ReleaseName' now has $StarRating star rating"
         Write-Host "Critical Issues:  " $ScanSummary.issueCountCritical
         Write-Host "High Issues:      " $ScanSummary.issueCountHigh
         Write-Host "Medium Issues:    " $ScanSummary.issueCountMedium
