@@ -52,7 +52,7 @@ pipeline {
             description: 'Enable WebInspect for Dynamic Application Security Testing')
         booleanParam(name: 'DA_ENABLED',        defaultValue: false,
             description: 'Use Deployment Automation for automated deployment of WAR file')
-        booleanParam(name: 'DOCKER_ENABLED',    defaultValue: true,
+        booleanParam(name: 'DOCKER_ENABLED',    defaultValue: false,
             description: 'Use Docker for automated deployment of JAR file into container')
     }
 
@@ -236,7 +236,7 @@ pipeline {
 
                     if (params.FOD_ENABLED) {
                         // Upload built application to Fortify on Demand and carry out Static Assessment
-                        fodStaticAssessment releaseId: ${env.FOD_RELEASE_ID}
+                        fodStaticAssessment releaseId: ${env.FOD_RELEASE_ID},
                             // bsiToken: "${env.FOD_BSI_TOKEN}",
                             entitlementPreference: 'SubscriptionOnly',
                             inProgressScanActionType: 'CancelInProgressScan',
@@ -262,6 +262,7 @@ pipeline {
                                 '\""src/main/java/**/*\"" \""src/main/resources/**/*\""',
                             javaVersion: "${env.JAVA_VERSION}"),
                             javaClassPath: $classpath,
+                            addJVMOptions: '-Xmx2G',
                             logFile: "${env.COMPONENT_NAME}-translate.log"
 
                         // optional: translate directly using Maven
@@ -273,6 +274,7 @@ pipeline {
                         fortifyScan buildID: "${env.COMPONENT_NAME}",
                             addOptions: '"-filter" "etc\\sca-filter.txt"',
                             resultsFile: "${env.COMPONENT_NAME}.fpr",
+                            addJVMOptions: '-Xmx2G',
                             logFile: "${env.COMPONENT_NAME}-scan.log"
 
                         if (params.SSC_ENABLED) {

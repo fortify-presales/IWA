@@ -5,6 +5,7 @@
 #### Table of Contents
 
 *   [Overview](#overview)
+*   [Forking the Repository](#forking-the-repository)
 *   [Building the Application](#building-the-application)
 *   [Running the Application](#running-the-application)
 *   [Application Security Testing Integrations](#application-security-testing-integrations) 
@@ -17,6 +18,7 @@
     * [Jenkins Pipeline](#jenkins-pipeline)
     * [GitHub Actions](#github-actions)
     * [Azure DevOps Pipeline](#azure-devops-pipelines)
+    * [GitLab CI/CD](#gitlab-cicd)
     * [Micro Focus Deployment Automation](#micro-focus-deployment-automation)
 *   [Developing and Contributing](#developing-and-contributing)
 *   [Licensing](#licensing)
@@ -33,7 +35,13 @@ the development lifecycle - so a number of "integrations" to common build and pi
 
 Please note: the application should not be used in a live or production environment!
 
-![Screenshot](media/example-screenshot.gif)
+![Screenshot](media/screenshot.png)
+
+## Forking the Repository
+
+> In order to execute the example scenarios described here you will need to "fork" a copy of this repository into
+your own GitHub account. The process of "forking" is described in detail in the [GitHub documentation](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) - you can 
+start process by clicking on the "Fork" button at the top right. 
 
 ## Building the Application
 
@@ -152,15 +160,21 @@ code to be uploaded you can execute the following command:
 mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify package
 ```
 
-This will create a directory called `fod` which you can *Zip* and upload using [fod-uploader-java](https://github.com/fod-dev/fod-uploader-java/)
-with a command similar to the following:
+This will create a directory called `fod` which you can *Zip* and upload to Fortify on Demand.
 
-```
-java -jar _PATH_TO_DIR_/FodUpload.jar -bsi <token> -z fod.zip -uc <username> <password> -ep 1 -rp 2 -pp 0 -a 1
-```
+There is an example PowerShell script file `fortify-fod.ps1` that you can run to start a Fortify on Demand static scan.
+It can be invoked via the following from a PowerShell prompt:
 
-The exact command will depend on your own setup, so please check the documentation first.
+```aidl
+# Create the fod.zip Zip file
+Compress-Archive -Path .\fod -DestinationPath .\fod.zip
+# Upload and start the static scan
+.\fortify-fod.ps1 -ZipFile '.\fod.zip' -ApplicationName 'IWA' -ReleaseName 'master' -Notes 'GitHub Action initiated scan' `
+    -FodApiUri 'https://api.emea.fortify.com' -FodApiUsername 'FOD_ACCESS_KEY' -FodApiPassword 'FOD_SECRET_KEY'
+``` 
 
+where `FOD_ACCESS_KEY` and `FOD_SECRET_KEY` are the values of an API Key and Secret you have created in the Fortify on
+Demand portal.
 
 ### Dynamic Analysis using Fortify WebInspect
 
@@ -191,8 +205,6 @@ mvn -Pwlp liberty:stop
 ```
 
 There is an example PowerShell script file `fortify-wi.ps1` that you can run to execute all of the above commands.
-
-
 
 ### Dynamic Analysis of Swagger based OpenAPI using Fortify WebInspect 
 
@@ -232,8 +244,18 @@ This repository includes a [GitHub Actions](https://github.com/features/actions)
 automates the build of the application and uploads the source code to
 [Fortify on Demand](https://www.microfocus.com/en-us/products/application-security-testing) for static analysis. 
 
-To integrate with Fortify on Demand it makes use of [fod-github-action](https://github.com/fortify-community-plugins/fod-github-action).
+To integrate with Fortify on Demand it makes use of the PowerShell module [PowerShellForFOD](https://www.powershellgallery.com/packages/PowerShellForFOD).
+The PowerShell script that it runs automatically installs and configures this module - to make use it you will need to
+create the following GitHub repository "Secrets" in your "forked" copy of this repository:
+
+ - `FOD_ACCESS_KEY` - A Client Credentials Access Key that has been created in the Fortify on Demand portal
+ - `FOD_SECRET_KEY` - A Client Credentials Secret that has been created in the Fortify on Demand portal
+
 The example workflow runs on every push to the *master* branch and on every "pull request" that is created.
+
+### GitLab CI/CD
+
+TBD
 
 ### Azure DevOps Pipelines
 

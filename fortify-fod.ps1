@@ -61,7 +61,7 @@ process {
         if ($ReleaseId) {
             Write-Host "Found release id: '$ReleaseId' in application '$ApplicationName'"
         } else{
-            Write-Error "Could not find release id for release: '$ReleaseId'" -ErrorAction Stop
+            Write-Error "Could not find release id for release: '$ReleaseName'" -ErrorAction Stop
         }
     } catch {
         Write-Error "Error finding release id: $_" -ErrorAction Stop
@@ -75,7 +75,8 @@ process {
         -Notes $Notes -Raw
     $ScanId = $StaticScan.scanId
 
-    Write-Host "Polling status of scan id: '$ScanId'"
+    Write-Host "Upload complete - started scan id: '$ScanId'"
+    Write-Host "Polling status of scan ..."
     do {
         Start-Sleep -s $PollingInterval # sleep for X seconds
         $ScanSummary = Get-FODScanSummary -ScanId $ScanId
