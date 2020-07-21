@@ -63,8 +63,6 @@ process {
         Write-Error "Error finding release: $_" -ErrorAction Stop
     }
 
-    Break
-
     # Start Scan
     $ZipFilePath = Resolve-Path -Path $ZipFile
     Write-Host "Uploading" $ZipFile "for scanning ..."

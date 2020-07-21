@@ -22,7 +22,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    # Setup JDK 1.8 of host
+    # Setup JDK 1.8 on host
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
@@ -42,9 +42,21 @@ jobs:
     # Upload fod.zip to Fortify on Demand for static analysis
     - name: Static Analysis with FOD
       shell: pwsh
-      run: .\fortify-fod.ps1 -ZipFile '.\fod.zip' -ReleaseId 56327 -Notes 'GitHub Action initiated scan' -FodApiUri 'https://api.emea.fortify.com' -FodApiUsername '${{ secrets.FOD_ACCESS_KEY }}' -FodApiPassword '${{ secrets.FOD_SECRET_KEY }}'
+      run: |
+        $ScanSummary = .\fortify-fod.ps1 -ZipFile '.\fod.zip' -ReleaseId 56327 -Notes 'GitHub Action initiated scan' -FodApiUri 'https://api.emea.fortify.com' -FodApiUsername '${{ secrets.FOD_ACCESS_KEY }}' -FodApiPassword '${{ secrets.FOD_SECRET_KEY }}' -Raw
+        $ScanId = $ScanSummary.scanId
+        $ReleaseName = $ScanSummary.releaseName
+        $ScanStatus = $ScanSummary.analysisStatusType
+        $StarRating = $ScanSummary.starRating
+        Write-Host "Scan $ScanId has $ScanStatus - Release $ReleaseName has $StarRating star rating"
+        Write-Host "Critical Issues:  " $ScanSummary.issueCountCritical
+        Write-Host "High Issues:      " $ScanSummary.issueCountHigh
+        Write-Host "Medium Issues:    " $ScanSummary.issueCountMedium
+        Write-Host "Low Issues:       " $ScanSummary.issueCountLow
+        Write-Host "Total Issues:     " $ScanSummary.totalIssues
+        #if ($StarRating -lt 3) { exit 1 }
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
 
     # Create WAR file for deployment to Heroku (testing is skipped as we already did it earlier)
     # then deploy it using Heroku Maven plugin
@@ -52,5 +64,5 @@ jobs:
       run: mvn -P war -DskipTests -B heroku:deploy-war --file pom.xml
       if: always() # always deploy for now as we are expecting static analysis issues for this application
       env:
-        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        HEROKU_API_KEY: "${{ secrets.HEROKU_API_KEY }}"
 
