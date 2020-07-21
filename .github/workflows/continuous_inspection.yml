@@ -43,7 +43,7 @@ jobs:
     - name: Static Analysis with FOD
       shell: pwsh
       run: |
-        $ScanSummary = .\fortify-fod.ps1 -ZipFile '.\fod.zip' -ReleaseId 56327 -Notes 'GitHub Action initiated scan' -FodApiUri 'https://api.emea.fortify.com' -FodApiUsername '${{ secrets.FOD_ACCESS_KEY }}' -FodApiPassword '${{ secrets.FOD_SECRET_KEY }}' -Raw
+        $ScanSummary = .\fortify-fod.ps1 -ZipFile '.\fod.zip' -ApplicationName 'IWA' -ReleaseName ${GITHUB_REF##*/} -Notes 'GitHub Action initiated scan' -FodApiUri 'https://api.emea.fortify.com' -FodApiUsername '${{ secrets.FOD_ACCESS_KEY }}' -FodApiPassword '${{ secrets.FOD_SECRET_KEY }}' -Raw
         $ScanId = $ScanSummary.scanId
         $ReleaseName = $ScanSummary.releaseName
         $ScanStatus = $ScanSummary.analysisStatusType

@@ -2,13 +2,16 @@
 # Example script to perform Fortify On Demand static analysis including verification and polling
 #
 
-[CmdletBinding()]
+    [CmdletBinding()]
 param (
     [Parameter(Mandatory)]
     [string]$ZipFile = '.\fod.zip',
 
     [Parameter(Mandatory)]
-    [int]$ReleaseId,
+    [string]$ApplicationName,
+
+    [Parameter(Mandatory)]
+    [string]$ReleaseName,
 
     [Parameter(Mandatory)]
     [string]$FODApiUri,
@@ -54,16 +57,14 @@ process {
 
     try
     {
-        $Release = Get-FODRelease -Id $ReleaseId -Raw
-        $ReleaseName = $Release.releaseName
-        $ApplicationName = $Release.applicationName
-        if ($ReleaseName) {
-            Write-Host "Found release '$ReleaseName' of application '$ApplicationName'"
+        $ReleaseId = Get-FODReleaseId -ApplicationName $ApplicationName -ReleaseName $ReleaseName
+        if ($ReleaseId) {
+            Write-Host "Found release id: '$ReleaseId' in application '$ApplicationName'"
         } else{
-            Write-Error "Could not find release with id: $ReleaseId" -ErrorAction Stop
+            Write-Error "Could not find release id for release: '$ReleaseId'" -ErrorAction Stop
         }
     } catch {
-        Write-Error "Error finding release: $_" -ErrorAction Stop
+        Write-Error "Error finding release id: $_" -ErrorAction Stop
     }
 
     # Start Scan
@@ -74,14 +75,14 @@ process {
         -Notes $Notes -Raw
     $ScanId = $StaticScan.scanId
 
-    Write-Host "Polling status of scan id: $ScanId"
+    Write-Host "Polling status of scan id: '$ScanId'"
     do {
         Start-Sleep -s $PollingInterval # sleep for X seconds
         $ScanSummary = Get-FODScanSummary -ScanId $ScanId
         $ScanStatus = $ScanSummary.analysisStatusType
-        Write-Host "Scan $ScanId status: $ScanStatus"
+        Write-Host "Scan id: '$ScanId' status: $ScanStatus"
     } until (
-        -not ($ScanStatus -eq "Queued" -or
+    -not ($ScanStatus -eq "Queued" -or
             $ScanStatus -eq "In_Progress" -or
             $ScanStatus -eq "Cancelled")
     )
@@ -91,6 +92,6 @@ end {
     if ($Raw) {
         $ScanSummary
     } else {
-        Write-Host "$ScanStatus scan - scan id: $ScanId"
+        Write-Host "$ScanStatus scan id: $ScanId"
     }
 }
