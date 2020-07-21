@@ -67,9 +67,9 @@ process {
     }
 
     # Start Scan
-    $ZipFilePath = Resolve-Path -Path $ZipFile
+    $ZipFilePath = (Resolve-Path -Path $ZipFile).Path
     Write-Host "Uploading" $ZipFile "for scanning ..."
-    $StaticScan = Start-FODStaticScan -ReleaseId $ReleaseId -ZipFile $ZipFilePath.Path -EntitlementPreference SubscriptionOnly `
+    $StaticScan = Start-FODStaticScan -ReleaseId $ReleaseId -ZipFile $ZipFilePath -EntitlementPreference SubscriptionOnly `
         -RemediationScanPreference NonRemediationScanOnly -InProgressScanPreference DoNotStartScan `
         -Notes $Notes -Raw
     $ScanId = $StaticScan.scanId
@@ -91,6 +91,6 @@ end {
     if ($Raw) {
         $ScanSummary
     } else {
-        Write-Host "Finished scan with scan id: $ScanId"
+        Write-Host "$ScanStatus scan - scan id: $ScanId"
     }
 }
