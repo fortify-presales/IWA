@@ -48,13 +48,19 @@ jobs:
         $ReleaseName = $ScanSummary.releaseName
         $ScanStatus = $ScanSummary.analysisStatusType
         $StarRating = $ScanSummary.starRating
+        $IssueCountCritical = $ScanSummary.issueCountCritical
+        $IssueCountHigh = $ScanSummary.issueCountHigh
+        $IssueCountMedium = $ScanSummary.issueCountMedium
+        $IssueCountLow = $ScanSummary.issueCountLow
+        $TotalIssues = $ScanSummary.issueCountTotal
         Write-Host "Finished scan $ScanId with status '$ScanStatus'
         Write-Host "Release '$ReleaseName' has a $StarRating star rating"
-        Write-Host "Critical Issues:  " $ScanSummary.issueCountCritical
-        Write-Host "High Issues:      " $ScanSummary.issueCountHigh
-        Write-Host "Medium Issues:    " $ScanSummary.issueCountMedium
-        Write-Host "Low Issues:       " $ScanSummary.issueCountLow
-        if ($StarRating -lt 1) { exit 1 }
+        Write-Host "Critical Issues:  $IssueCountCritical"
+        Write-Host "High Issues:      $IssueCountHigh"
+        Write-Host "Medium Issues:    $IssueCountMedium"
+        Write-Host "Low Issues:       $IssueCountLow"
+        Write-Host "Total Issues:     $IssueCountTotal"
+        if ($StarRating -lt 1) { exit 1 } # set to your own criteria
       env:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
 
