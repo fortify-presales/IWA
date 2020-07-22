@@ -53,7 +53,7 @@ jobs:
         $IssueCountMedium = $ScanSummary.issueCountMedium
         $IssueCountLow = $ScanSummary.issueCountLow
         $TotalIssues = $ScanSummary.issueCountTotal
-        Write-Host "Finished scan $ScanId with status '$ScanStatus'
+        Write-Host "Finished scan $ScanId with status '$ScanStatus'"
         Write-Host "Release '$ReleaseName' has a $StarRating star rating"
         Write-Host "Critical Issues:  $IssueCountCritical"
         Write-Host "High Issues:      $IssueCountHigh"
