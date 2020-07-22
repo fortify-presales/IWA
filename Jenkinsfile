@@ -48,6 +48,8 @@ pipeline {
             description: 'Enable Fortify on Demand for Static Application Security Testing')
         booleanParam(name: 'SSC_ENABLED',       defaultValue: false,
             description: 'Enable upload of scans to Fortify Software Security Center')
+        booleanParam(name: 'SCAN_CENTRAL_ENABLED', defaultValue: false,
+            description: 'Enable remote scanning via Fortify Scan Central')
         booleanParam(name: 'WI_ENABLED',        defaultValue: false,
             description: 'Enable WebInspect for Dynamic Application Security Testing')
         booleanParam(name: 'DA_ENABLED',        defaultValue: false,
@@ -93,7 +95,8 @@ pipeline {
         // Fortify Software Security Center (SSC) settings
         //
         SSC_WEBURL = "http://localhost:8080/ssc"                    // URL of SSC
-        SSC_AUTH_TOKEN = credentials('iwa-ssc-auth-token-id') // Authentication token for SSC
+        SSC_AUTH_TOKEN = credentials('iwa-ssc-auth-token-id')       // Authentication token for SSC
+        SSC_SENSOR_POOL_UUID = "00000000-0000-0000-0000-000000000002" // UUID of Scan Central Sensor Pool to use
 
         //
         // Fortify WebInspect settings
@@ -248,6 +251,34 @@ pipeline {
                             //bsiToken: "${env.FOD_BSI_TOKEN}",
                             //policyFailureBuildResultPreference: 1,
                             pollingInterval: 5
+                    } else if (params.SCAN_CENTRAL_ENABLED) {
+
+                        // set any standard remote translation/scan options
+                        fortifyRemoteArguments transOptions: '',
+                              scanOptions: ''
+
+                        if (params.SSC_ENABLED) {
+                            // Remote analysis (using Scan Central) and upload to SSC
+                            fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
+                                remoteOptionalConfig: [
+                                    customRulepacks: '',
+                                    filterFile: "etc\\sca-filter.txt",
+                                    notifyEmail: '${env.GIT_COMMITTER_EMAIL}',
+                                    sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
+                                ],
+                                uploadSSC: [appName: "${env.APP_NAME}", appVersion: "${env.APP_VER}"]
+
+                        } else {
+                            // Remote analysis (using Scan Central)
+                            fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
+                                remoteOptionalConfig: [
+                                    customRulepacks: '',
+                                    filterFile: '"-filter" "etc\\sca-filter.txt',
+                                    notifyEmail: '${env.GIT_COMMITTER_EMAIL}',
+                                    sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
+                                ]
+                        }
+
                     } else if (params.SCA_ENABLED) {
                         // optional: update scan rules
                         //fortifyUpdate updateServerURL: 'https://update.fortify.com'
@@ -262,19 +293,14 @@ pipeline {
                                 '\""src/main/java/**/*\"" \""src/main/resources/**/*\""',
                             javaVersion: "${env.JAVA_VERSION}"),
                             javaClassPath: $classpath,
-                            addJVMOptions: '-Xmx2G',
+                            addJVMOptions: '',
                             logFile: "${env.COMPONENT_NAME}-translate.log"
-
-                        // optional: translate directly using Maven
-                        //fortifyTranslate buildID: "${env.COMPONENT_NAME}",
-                        //    projectScanType: fortifyMaven3(mavenOptions: "-Dmaven.compiler.debuglevel=lines,vars,source -DskipTests clean verify"),
-                        //    logFile: "${env.COMPONENT_NAME}-translate.log"
 
                         // Scan source files
                         fortifyScan buildID: "${env.COMPONENT_NAME}",
                             addOptions: '"-filter" "etc\\sca-filter.txt"',
                             resultsFile: "${env.COMPONENT_NAME}.fpr",
-                            addJVMOptions: '-Xmx2G',
+                            addJVMOptions: '',
                             logFile: "${env.COMPONENT_NAME}-scan.log"
 
                         if (params.SSC_ENABLED) {
