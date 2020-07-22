@@ -54,9 +54,7 @@ jobs:
         Write-Host "High Issues:      " $ScanSummary.issueCountHigh
         Write-Host "Medium Issues:    " $ScanSummary.issueCountMedium
         Write-Host "Low Issues:       " $ScanSummary.issueCountLow
-        #Write-Host "Total Issues:     " $ScanSummary.totalIssues
-        # Uncomment/change if you wish to stop the workflow based on issue counts
-        #if ($StarRating -lt 3) { exit 1 }
+        if ($StarRating -lt 1) { exit 1 }
       env:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
 
