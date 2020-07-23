@@ -20,9 +20,9 @@
 // Credentials setup:
 // Create the following "Secret text" credentials in Jenkins and enter values as follows:
 //      iwa-fod-bsi-token-id     - Fortify on Demand BSI token as Jenkins Secret - deprecated use iwa-fod-release-id
-//      iwa-fod-release-id       - Fortify on Demand Release Id as Jenkins Secret
-//      iwa-ssc-auth-token-id    - Fortify Software Security Center "ArtifactUpload" authentication token as Jenkins Secret
-//      docker-hub-credentials   - DockerHub authentication token as Jenkins Secret
+//      iwa-fod-release-id       - Fortify on Demand Release Id as Jenkins Secret credential
+//      iwa-ssc-auth-token-id    - Fortify Software Security Center "ArtifactUpload" authentication token as Jenkins Secret credential
+//      docker-hub-credentials   - DockerHub login as "Username/Password" credentials
 // All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
 // For Fortify on Demand (FOD) Global Authentication should be used rather than Personal Access Tokens.
 //
@@ -74,7 +74,7 @@ pipeline {
         //
         // Fortify On Demand (FOD) settings
         //
-        FOD_BSI_TOKEN = credentials('iwa-fod-bsi-token-id') // FOD BSI Token - deprecated use FOD_RELEASE_ID
+        //FOD_BSI_TOKEN = credentials('iwa-fod-bsi-token-id') // FOD BSI Token - deprecated use FOD_RELEASE_ID
         FOD_RELEASE_ID = credentials('iwa-fod-release-id')  // FOD Release Id
         FOD_UPLOAD_DIR = 'fod'                              // Directory where FOD upload Zip is constructed
 
@@ -227,10 +227,10 @@ pipeline {
                     // Run Maven debug compile, download dependencies (if required) and package up for FOD
                     if (isUnix()) {
                         sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify'
-                        sh 'mvn dependency:build-classpath -Dmdep.outputFile=./target/cp.txt'
+                        sh 'mvn dependency:build-classpath -Dmdep.outputFile=${env.WORKSPACE}/cp.txt'
                     } else {
                         bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify"
-                        bat "mvn dependency:build-classpath -Dmdep.outputFile=.\\target\\cp.txt"
+                        bat "mvn dependency:build-classpath -Dmdep.outputFile=${env.WORKSPACE}/cp.txt"
                     }
 
                     // read contents of classpath file
