@@ -5,6 +5,12 @@ name: Continuous Inspection
 
 on:
   push:
+    paths-ignore:
+      - 'etc/**'
+      - 'media/**'
+      - 'Jenkinsfile'
+      - 'azure-pipelines.yml'
+      - 'README.md'
     branches:
       - master
       #- feature/**

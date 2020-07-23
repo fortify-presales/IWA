@@ -224,6 +224,8 @@ pipeline {
                     // Get code from Git repository so we can recompile it
                     git "${env.GIT_URL}"
 
+                    env.WORKSPACE = pwd()
+
                     // Run Maven debug compile, download dependencies (if required) and package up for FOD
                     if (isUnix()) {
                         sh 'mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify'
@@ -234,7 +236,6 @@ pipeline {
                     }
 
                     // read contents of classpath file
-                    env.WORKSPACE = pwd()
                     def classpath = readFile "${env.WORKSPACE}/cp.txt"
 
                     if (params.FOD_ENABLED) {
