@@ -89,7 +89,7 @@ pipeline {
         //
         // Fortify Static Code Analyzer (SCA) settings
         //
-        SCA_CLIENT_PATH = "C:\\Micro Focus\\Fortify SCA and Apps 20.1.0\\bin\\fortifyclient.bat"   // Path to "fortifyclient.bat" on the "fortify" Agent
+        SCA_HOME = "/opt/Fortify/Fortify_SCA_and_Apps_20.1.0/"      // Home directory for Fortify SCA on agent
 
         //
         // Fortify Software Security Center (SSC) settings
@@ -224,8 +224,6 @@ pipeline {
                     // Get code from Git repository so we can recompile it
                     git "${env.GIT_URL}"
 
-                    env.WORKSPACE = pwd()
-
                     // Run Maven debug compile, download dependencies (if required) and package up for FOD
                     if (isUnix()) {
                         sh "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify"
@@ -281,34 +279,38 @@ pipeline {
                         }
 
                     } else if (params.SCA_ENABLED) {
-                        // optional: update scan rules
-                        //fortifyUpdate updateServerURL: 'https://update.fortify.com'
+                        withEnv(['PATH+SCA_HOME=$SCA_HOME/bin']) {
+                              echo "PATH is: $PATH"
 
-                        // Clean project and scan results from previous run
-                        fortifyClean buildID: "${env.COMPONENT_NAME}",
-                            logFile: "${env.COMPONENT_NAME}-clean.log"
+                            // optional: update scan rules
+                            //fortifyUpdate updateServerURL: 'https://update.fortify.com'
 
-                        // Translate source files
-                        fortifyTranslate buildID: "${env.COMPONENT_NAME}",
-                            projectScanType: fortifyJava(javaSrcFiles:
-                                '\""src/main/java/**/*\"" \""src/main/resources/**/*\""',
-                            javaVersion: "${env.JAVA_VERSION}"),
-                            javaClassPath: $classpath,
-                            addJVMOptions: '',
-                            logFile: "${env.COMPONENT_NAME}-translate.log"
+                            // Clean project and scan results from previous run
+                            fortifyClean buildID: "${env.COMPONENT_NAME}",
+                                logFile: "${env.COMPONENT_NAME}-clean.log"
 
-                        // Scan source files
-                        fortifyScan buildID: "${env.COMPONENT_NAME}",
-                            addOptions: '"-filter" "etc\\sca-filter.txt"',
-                            resultsFile: "${env.COMPONENT_NAME}.fpr",
-                            addJVMOptions: '',
-                            logFile: "${env.COMPONENT_NAME}-scan.log"
+                            // Translate source files
+                            fortifyTranslate buildID: "${env.COMPONENT_NAME}",
+                                projectScanType: fortifyJava(javaSrcFiles:
+                                    '\""src/main/java/**/*\"" \""src/main/resources/**/*\""',
+                                javaVersion: "${env.JAVA_VERSION}"),
+                                javaClassPath: $classpath,
+                                addJVMOptions: '',
+                                logFile: "${env.COMPONENT_NAME}-translate.log"
 
-                        if (params.SSC_ENABLED) {
-                            // Upload to SSC
-                            fortifyUpload appName: "${env.APP_NAME}",
-                                appVersion: "${env.APP_VER}",
-                                resultsFile: "${env.COMPONENT_NAME}.fpr"
+                            // Scan source files
+                            fortifyScan buildID: "${env.COMPONENT_NAME}",
+                                addOptions: '"-filter" "etc\\sca-filter.txt"',
+                                resultsFile: "${env.COMPONENT_NAME}.fpr",
+                                addJVMOptions: '',
+                                logFile: "${env.COMPONENT_NAME}-scan.log"
+
+                            if (params.SSC_ENABLED) {
+                                // Upload to SSC
+                                fortifyUpload appName: "${env.APP_NAME}",
+                                    appVersion: "${env.APP_VER}",
+                                    resultsFile: "${env.COMPONENT_NAME}.fpr"
+                            }
                         }
 
                     } else {
@@ -369,7 +371,7 @@ pipeline {
                             if (params.FOD_ENABLED) {
                                 //TODO: upload FPR to FOD
                             } else if (params.SSC_ENABLED) {
-                                bat(/"${env.SCA_CLIENT_PATH}" uploadFPR -f "${env.WI_OUTPUT_FILE}" -url "${env.SSC_WEBURL}" -authtoken "${env.SSC_AUTH_TOKEN}" -application "${env.APP_NAME}" -applicationVersion "${env.APP_VER}"/)
+                                bat(/"fortifyclient.bat uploadFPR -f "${env.WI_OUTPUT_FILE}" -url "${env.SSC_WEBURL}" -authtoken "${env.SSC_AUTH_TOKEN}" -application "${env.APP_NAME}" -applicationVersion "${env.APP_VER}"/)
                             }
                             bat "mvn -Pwlp liberty:stop"
                         }
