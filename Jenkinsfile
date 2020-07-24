@@ -89,7 +89,7 @@ pipeline {
         //
         // Fortify Static Code Analyzer (SCA) settings
         //
-        SCA_HOME = "/opt/Fortify/Fortify_SCA_and_Apps_20.1.0/"      // Home directory for Fortify SCA on agent
+        FORTIFY_HOME = "/opt/Fortify/Fortify_SCA_and_Apps_20.1.0"      // Home directory for Fortify SCA on agent
 
         //
         // Fortify Software Security Center (SSC) settings
@@ -279,40 +279,35 @@ pipeline {
                         }
 
                     } else if (params.SCA_ENABLED) {
-                        withEnv(['PATH+SCA_HOME=/opt/Fortify/Fortify_SCA_and_Apps_20.1.0/bin']) {
-                              echo "PATH is: $PATH"
+                        // optional: update scan rules
+                        //fortifyUpdate updateServerURL: 'https://update.fortify.com'
 
-                            // optional: update scan rules
-                            //fortifyUpdate updateServerURL: 'https://update.fortify.com'
+                        // Clean project and scan results from previous run
+                        fortifyClean buildID: "${env.COMPONENT_NAME}",
+                            logFile: "${env.COMPONENT_NAME}-clean.log"
 
-                            // Clean project and scan results from previous run
-                            fortifyClean buildID: "${env.COMPONENT_NAME}",
-                                logFile: "${env.COMPONENT_NAME}-clean.log"
+                        // Translate source files
+                        fortifyTranslate buildID: "${env.COMPONENT_NAME}",
+                            projectScanType: fortifyJava(javaSrcFiles:
+                                '\""src/main/java/**/*\"" \""src/main/resources/**/*\""',
+                            javaVersion: "${env.JAVA_VERSION}"),
+                            javaClassPath: $classpath,
+                            addJVMOptions: '',
+                            logFile: "${env.COMPONENT_NAME}-translate.log"
 
-                            // Translate source files
-                            fortifyTranslate buildID: "${env.COMPONENT_NAME}",
-                                projectScanType: fortifyJava(javaSrcFiles:
-                                    '\""src/main/java/**/*\"" \""src/main/resources/**/*\""',
-                                javaVersion: "${env.JAVA_VERSION}"),
-                                javaClassPath: $classpath,
-                                addJVMOptions: '',
-                                logFile: "${env.COMPONENT_NAME}-translate.log"
+                        // Scan source files
+                        fortifyScan buildID: "${env.COMPONENT_NAME}",
+                            addOptions: '"-filter" "etc\\sca-filter.txt"',
+                            resultsFile: "${env.COMPONENT_NAME}.fpr",
+                            addJVMOptions: '',
+                            logFile: "${env.COMPONENT_NAME}-scan.log"
 
-                            // Scan source files
-                            fortifyScan buildID: "${env.COMPONENT_NAME}",
-                                addOptions: '"-filter" "etc\\sca-filter.txt"',
-                                resultsFile: "${env.COMPONENT_NAME}.fpr",
-                                addJVMOptions: '',
-                                logFile: "${env.COMPONENT_NAME}-scan.log"
-
-                            if (params.SSC_ENABLED) {
-                                // Upload to SSC
-                                fortifyUpload appName: "${env.APP_NAME}",
-                                    appVersion: "${env.APP_VER}",
-                                    resultsFile: "${env.COMPONENT_NAME}.fpr"
-                            }
+                        if (params.SSC_ENABLED) {
+                            // Upload to SSC
+                            fortifyUpload appName: "${env.APP_NAME}",
+                                appVersion: "${env.APP_VER}",
+                                resultsFile: "${env.COMPONENT_NAME}.fpr"
                         }
-
                     } else {
                         println "No Static Application Security Testing (SAST) to do  ..."
                     }
