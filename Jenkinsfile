@@ -279,7 +279,7 @@ pipeline {
                         }
 
                     } else if (params.SCA_ENABLED) {
-                        withEnv(['PATH+SCA_HOME=$SCA_HOME/bin']) {
+                        withEnv(['PATH+SCA_HOME=/opt/Fortify/Fortify_SCA_and_Apps_20.1.0/bin']) {
                               echo "PATH is: $PATH"
 
                             // optional: update scan rules
