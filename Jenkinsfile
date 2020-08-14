@@ -11,11 +11,9 @@
 // - Deployment Automation has been installed (for automated deployment to different environments)
 //
 // Node setup:
-// - For Fortify on-premise software: Apply the label "fortify" to Fortify SCA agent and "webinspect" 
-//   to the WebInspect agent.
-// - For Fortify on Demand: apply the label "fortify" to the agent or master that will connect to
-//   Fortify on Demand.
-// - Also ensure the label "master" has been applied to your Jenkins master.
+// - For Fortify on-premise software: Apply the label "fortify" to Fortify SCA agent and "webinspect" to the WebInspect agent.
+// - For Fortify on Demand: apply the label "fortify" to the agent or master that will connect to Fortify on Demand.
+// Also ensure the label "master" has been applied to your Jenkins master.
 //
 // Credentials setup:
 // Create the following "Secret text" credentials in Jenkins and enter values as follows:
@@ -28,6 +26,9 @@
 // For Fortify on Demand (FOD) Global Authentication should be used rather than Personal Access Tokens.
 //
 //********************************************************************************
+
+import jenkins.model.*
+jenkins = Jenkins.instance
 
 // The instances of Docker image and container that are created
 def dockerImage
