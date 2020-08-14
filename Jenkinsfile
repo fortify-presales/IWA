@@ -235,6 +235,7 @@ pipeline {
 
                     // read contents of classpath file
                     def classpath = readFile "${env.WORKSPACE}/cp.txt"
+                    println "Using classpath: $classpath"
 
                     if (params.FOD_ENABLED) {
                         // Upload built application to Fortify on Demand and carry out Static Assessment
@@ -291,7 +292,7 @@ pipeline {
                             projectScanType: fortifyJava(javaSrcFiles:
                                 '\""src/main/java/**/*\"" \""src/main/resources/**/*\""',
                             javaVersion: "${env.JAVA_VERSION}"),
-                            javaClassPath: $classpath,
+                            javaClassPath: "$classpath",
                             addJVMOptions: '',
                             logFile: "${env.COMPONENT_NAME}-translate.log"
 
