@@ -27,8 +27,8 @@
 //
 //********************************************************************************
 
-import jenkins.model.*
-jenkins = Jenkins.instance
+//import jenkins.model.*
+//jenkins = Jenkins.instance
 
 // The instances of Docker image and container that are created
 def dockerImage
