@@ -19,9 +19,10 @@
 //
 // Credentials setup:
 // Create the following "Secret text" credentials in Jenkins and enter values as follows:
+//		iwa-git-creds-id		 - Git login as Jenkins "Username with Password" credential
 //      iwa-fod-bsi-token-id     - Fortify on Demand BSI token as Jenkins Secret - deprecated use iwa-fod-release-id
 //      iwa-fod-release-id       - Fortify on Demand Release Id as Jenkins Secret credential
-//      iwa-ssc-auth-token-id    - Fortify Software Security Center "ArtifactUpload" authentication token as Jenkins Secret credential
+//      iwa-ssc-auth-token-id    - Fortify Software Security Center "AnalysisUploadToken" authentication token as Jenkins Secret credential
 //      docker-hub-credentials   - DockerHub login as "Username/Password" credentials
 // All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
 // For Fortify on Demand (FOD) Global Authentication should be used rather than Personal Access Tokens.
@@ -66,6 +67,7 @@ pipeline {
         APP_VER = "1.0"                                     // Application release
         COMPONENT_NAME = "iwa"                              // Component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
+        GIT_CREDS = credentials('iwa-git-creds-id')			// Git Credentials
         JAVA_VERSION = 8                                    // Java version to compile as
         APP_WEBURL = "https://localhost:6443/iwa/"          // URL of where the application is deployed to (for integration testing, WebInspect etc)
         ISSUE_IDS = ""                                      // List of issues found from commit
@@ -118,7 +120,7 @@ pipeline {
             agent { label 'master' }
             steps {
                 // Get some code from a GitHub repository
-                git "${env.GIT_URL}"
+                git credentialsId: "${env.GIT_CREDS}", url: "${env.GIT_URL}"
 
                 // Get Git commit details
                 script {
@@ -222,7 +224,7 @@ pipeline {
             steps {
                 script {
                     // Get code from Git repository so we can recompile it
-                    git "${env.GIT_URL}"
+                	git credentialsId: "${env.GIT_CREDS}", url: "${env.GIT_URL}"
 
                     // Run Maven debug compile, download dependencies (if required) and package up for FOD
                     if (isUnix()) {
