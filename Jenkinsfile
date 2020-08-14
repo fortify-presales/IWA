@@ -120,7 +120,7 @@ pipeline {
             agent { label 'master' }
             steps {
                 // Get some code from a GitHub repository
-                git credentialsId: "${env.GIT_CREDS}", url: "${env.GIT_URL}"
+                git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
 
                 // Get Git commit details
                 script {
@@ -224,7 +224,7 @@ pipeline {
             steps {
                 script {
                     // Get code from Git repository so we can recompile it
-                	git credentialsId: "${env.GIT_CREDS}", url: "${env.GIT_URL}"
+                	git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
 
                     // Run Maven debug compile, download dependencies (if required) and package up for FOD
                     if (isUnix()) {
