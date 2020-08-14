@@ -230,10 +230,10 @@ pipeline {
                     // Run Maven debug compile, download dependencies (if required) and package up for FOD
                     if (isUnix()) {
                         sh "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify"
-                        sh "mvn dependency:build-classpath -Dmdep.outputFile=${env.WORKSPACE}/cp.txt"
+                        sh "mvn dependency:build-classpath -Dmdep.regenerateFile=true -Dmdep.outputFile=${env.WORKSPACE}/cp.txt"
                     } else {
                         bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify"
-                        bat "mvn dependency:build-classpath -Dmdep.outputFile=${env.WORKSPACE}/cp.txt"
+                        bat "mvn dependency:build-classpath -Dmdep.regenerateFile=true -Dmdep.outputFile=${env.WORKSPACE}/cp.txt"
                     }
 
                     // read contents of classpath file
