@@ -291,8 +291,8 @@ pipeline {
                         fortifyTranslate buildID: "${env.COMPONENT_NAME}",
                             projectScanType: fortifyJava(javaSrcFiles:
                                 '\""src/main/java/**/*\"" \""src/main/resources/**/*\""',
-                            javaVersion: "${env.JAVA_VERSION}"),
-                            javaClasspath: "$classpath",
+                            javaVersion: "${env.JAVA_VERSION}",
+                            javaClasspath: "$classpath"),
                             addJVMOptions: '',
                             logFile: "${env.COMPONENT_NAME}-translate.log"
 
