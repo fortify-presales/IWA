@@ -61,7 +61,7 @@ pipeline {
         //
         // Application settings
         //
-        APP_NAME = "Insecure Web App"                      	// Application name
+        APP_NAME = "IWA"                      				// Application name
         APP_VER = "1.0"                                     // Application release
         COMPONENT_NAME = "iwa"                              // Component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
@@ -292,7 +292,7 @@ pipeline {
                             projectScanType: fortifyJava(javaSrcFiles:
                                 '\""src/main/java/**/*\"" \""src/main/resources/**/*\""',
                             javaVersion: "${env.JAVA_VERSION}"),
-                            javaClassPath: "$classpath",
+                            javaClasspath: "$classpath",
                             addJVMOptions: '',
                             logFile: "${env.COMPONENT_NAME}-translate.log"
 
