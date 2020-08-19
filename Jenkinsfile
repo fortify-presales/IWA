@@ -350,7 +350,7 @@ pipeline {
                     	if (isUnix()) {
                         	sh "cp -f \"${env.WORKSPACE}/target/iwa.war\" \"${WLP_DROPINS_DIR}\""
                     	} else {
-                        	bat("copy /Y \"${env.WORKSPACE}\\target\\iwa.war\" \"${WLP_DROPINS_DIR}\"")
+                        	bat("xcopy /Y /R \"${env.WORKSPACE}\\target\\iwa.war\" \"${WLP_DROPINS_DIR}\"")
                     	}
                     } else if (params.DOCKER_ENABLED) {
                         // Stop the container if still running
