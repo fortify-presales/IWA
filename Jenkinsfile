@@ -343,7 +343,6 @@ pipeline {
             agent { label 'master' }
             steps {
                 script {
-                    // Mark version as "Release Candidate" using VERIFIED status in Deployment Automation
                     if (params.WLP_ENABLED) {
                     	bat "mvn -Pwlp liberty:stop"
                     	// Copy WAR file to "dropins" directory
@@ -351,7 +350,7 @@ pipeline {
                     	if (isUnix()) {
                         	sh "cp -f \"${env.WORKSPACE}/target/iwa.war\" \"${WLP_DROPINS_DIR}\""
                     	} else {
-                        	bat("copy /Y \"${env.WORKSPACE}target\\iwa.war\" \"${WLP_DROPINS_DIR}\"")
+                        	bat("copy /Y \"${env.WORKSPACE}\\target\\iwa.war\" \"${WLP_DROPINS_DIR}\"")
                     	}
                     } else if (params.DOCKER_ENABLED) {
                         // Stop the container if still running
