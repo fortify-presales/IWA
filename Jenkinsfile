@@ -354,7 +354,6 @@ pipeline {
                     	} else {
                         	//bat("xcopy /Y /R \"${env.WORKSPACE}\\target\\iwa.war\" \"${WLP_DROPINS_DIR}\"")
                         	bat("mvn -Pwlp -DserverHome=\"${WLP_SERVER_HOME}\" -DserverName=${WLP_SERVER_NAME} liberty:deploy")
-                        	//mvn liberty:deploy -DserverHome="C:\Tools\wlp\usr\servers\wlpProd" -DserverName=wlpProd "C:\Tools\Jenkins\workspace\IWA.pipeline@2\target\iwa.war"
                     	}
                     } else if (params.DOCKER_ENABLED) {
                         // Stop the container if still running
