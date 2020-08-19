@@ -352,10 +352,10 @@ pipeline {
                 		// release to "next" liberty server, i.e. test/productions                    	                  
                     	if (isUnix()) {
                     		sh "mvn -Pwlp.int liberty:stop"
-                        	sh "mvn -Pwlp.prod liberty:deploy"
+                        	sh "mvn -Pwlp.prod liberty:stop liberty:deploy liberty:start"
                     	} else {
 	                    	bat("mvn -Pwlp.int liberty:stop")
-	                    	bat("mvn -Pwlp.prod liberty:deploy")
+	                    	bat("mvn -Pwlp.prod liberty:stop liberty:deploy liberty:start")
                     	}
                     } else if (params.DOCKER_ENABLED) {
                         // Stop the container if still running
