@@ -365,6 +365,44 @@
                 </plugins>
             </build>                
         </profile>
+        
+         <!-- Profile for preparing/deploying application to (downloaded) WebSphere Liberty instance -->
+        <profile>
+        	<id>wlp.prod</id>
+ 	        <properties>
+                <packaging.type>war</packaging.type>
+            </properties>
+            <dependencies>
+            </dependencies>
+             <build>
+                <plugins>
+		            <plugin>
+		                <groupId>io.openliberty.tools</groupId>
+		                <artifactId>liberty-maven-plugin</artifactId>
+		                <version>3.2.1</version>
+		                <executions>
+		                	<execution></execution>
+		                </executions>
+		                <configuration>
+							<installDirectory>C:/Tools/wlp</installDirectory>
+		                	<serverXmlFile>C:/Tools/wlp/usr/servers/wlpProd/etc/server.xml</serverXmlFile>
+		                	<stripVersion>true</stripVersion>
+		                	<looseApplication>false</looseApplication>
+		                	<clean>false</clean>
+		                	<serverName>wlpProd</serverName>
+		                	<template>webProfile8</template>
+		                	<applications>iwa</applications>
+		                	<timeout>180</timeout>
+		                	<verifyTimeout>180</verifyTimeout>
+		            	    <features>
+		            	    	<feature>webProfile-8.0</feature>
+		                   		<acceptLicense>true</acceptLicense>
+		               		</features>
+		                </configuration>
+		            </plugin>
+                </plugins>
+            </build>                
+        </profile>
     </profiles>
 
     <build>

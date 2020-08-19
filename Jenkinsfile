@@ -77,14 +77,7 @@ pipeline {
         //FOD_BSI_TOKEN = credentials('iwa-fod-bsi-token-id') // FOD BSI Token - deprecated use FOD_RELEASE_ID
         FOD_RELEASE_ID = credentials('iwa-fod-release-id')  // FOD Release Id
         FOD_UPLOAD_DIR = 'fod'                              // Directory where FOD upload Zip is constructed
-
-        //
-        // WebSphere Liberty Profile (WLP) settings
-        //
-        WLP_SERVER_NAME = "wlpProd"											// name of WLP server profile
-        WLP_SERVER_HOME = "C:\\Tools\\wlp\\usr\\servers\\wlpProd"			// location of WLP server profile
-        //WLP_DROPINS_DIR = "C:\\Tools\\wlp\\usr\\servers\\wlpProd\\dropins"	// path to WLP "dropins" directory
-        
+       
         //
         // Fortify Static Code Analyzer (SCA) settings
         //
@@ -301,9 +294,9 @@ pipeline {
                     	unstash name: "${env.COMPONENT_NAME}_release"                        
                     	// Start WebSphere Liberty server integration instance  
                     	if (isUnix()) {
-                        	sh "mvn -Pwlp liberty:create liberty:install-feature liberty:deploy liberty:start"
+                        	sh "mvn -Pwlp.int liberty:create liberty:install-feature liberty:deploy liberty:start"
                         } else {	
-                    		bat "mvn -Pwlp liberty:create liberty:install-feature liberty:deploy liberty:start"
+                    		bat "mvn -Pwlp.int liberty:create liberty:install-feature liberty:deploy liberty:start"
                     	}	 
                     } else if (params.DOCKER_ENABLED) {
                         // Run Docker container
@@ -353,11 +346,11 @@ pipeline {
                     	unstash name: "${env.COMPONENT_NAME}_release"      
                 		// release to "next" liberty server, i.e. test/productions                    	                  
                     	if (isUnix()) {
-                    		sh "mvn -Pwlp liberty:stop"
-                        	sh "mvn -Pwlp -DserverHome=\"${WLP_SERVER_HOME}\" -DserverName=${WLP_SERVER_NAME} liberty:deploy"
+                    		sh "mvn -Pwlp.int liberty:stop"
+                        	sh "mvn -Pwlp.prod liberty:deploy"
                     	} else {
-	                    	bat("mvn -Pwlp liberty:stop")
-	                    	bat("mvn -Pwlp -DserverHome=\"${WLP_SERVER_HOME}\" -DserverName=${WLP_SERVER_NAME} liberty:deploy")
+	                    	bat("mvn -Pwlp.int liberty:stop")
+	                    	bat("mvn -Pwlp.prod liberty:deploy")
                     	}
                     } else if (params.DOCKER_ENABLED) {
                         // Stop the container if still running
