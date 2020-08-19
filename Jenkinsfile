@@ -341,11 +341,11 @@ pipeline {
         stage('Release') {
             agent { label 'master' }
             steps {
-	            input {
-	                message "Release to production?"
-	                ok "Yes, let's go."
-	                submitter "admin" // should be users who can approve, default to "admin" user
-	            }
+            	input id: 'Release', 
+            		message: 'Ready to Production?', 
+            		ok: 'Yes, let\'s go', 
+            		submitter: 'admin', 
+            		submitterParameter: 'approver'
                 script {
                     if (params.WLP_ENABLED) {
                     	unstash name: "${env.COMPONENT_NAME}_release"      
