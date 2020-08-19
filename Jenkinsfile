@@ -8,7 +8,7 @@
 // - Fortify WebInspect has been installed (for on-premise dynamic analysis)
 // - A Fortify On Demand account and API access are available (for cloud based static analysis)
 // Optional:
-// - Deployment Automation has been installed (for automated deployment to different environments)
+// - WebSphere Liberty has been installed (for automated deployment of WAR file)
 //
 // Node setup:
 // - For Fortify on-premise software: Apply the label "fortify" to Fortify SCA agent and "webinspect" to the WebInspect agent.
@@ -48,11 +48,11 @@ pipeline {
         booleanParam(name: 'SSC_ENABLED',       defaultValue: false,
             description: 'Enable upload of scans to Fortify Software Security Center')
         booleanParam(name: 'SCAN_CENTRAL_ENABLED', defaultValue: false,
-            description: 'Enable remote scanning via Fortify Scan Central')
+            description: 'Run a remote scan via Scan Central')
         booleanParam(name: 'WI_ENABLED',        defaultValue: false,
             description: 'Enable WebInspect for Dynamic Application Security Testing')
-        booleanParam(name: 'DA_ENABLED',        defaultValue: false,
-            description: 'Use Deployment Automation for automated deployment of WAR file')
+        booleanParam(name: 'WLP_ENABLED',        defaultValue: false,
+            description: 'Deploy WAR file to WebSphere Liberty Profile server')
         booleanParam(name: 'DOCKER_ENABLED',    defaultValue: false,
             description: 'Use Docker for automated deployment of JAR file into container')
     }
@@ -79,17 +79,14 @@ pipeline {
         FOD_UPLOAD_DIR = 'fod'                              // Directory where FOD upload Zip is constructed
 
         //
-        // Micro Focus Deployment Automation (DA) settings
-        // Download Jenkins plugin from: https://community.microfocus.com/dcvta86296/board/message?board.id=DA_Plugins&message.id=15#M15)
+        // WebSphere Liberty Profile (WLP) settings
         //
-        DA_SITE = "localhost-release"                               // DA Site Name (in Jenkins->Configuration)
-        DA_DEPLOY_PROCESS = "Deploy Web App"                        // Deployment process to use
-        DA_ENV_NAME = "Integration"                         		// Deployment automation environment name
+        WLP_DROPINS_DIR = "C:\\Tools\\wlp\\usr\\servers\\wlpProd\\dropins"	// Full path to WLP "dropins" directory
         
         //
         // Fortify Static Code Analyzer (SCA) settings
         //
-        FORTIFY_HOME = "/opt/Fortify/Fortify_SCA_and_Apps_20.1.0"      // Home directory for Fortify SCA on agent
+        FORTIFY_HOME = "C:\\Micro Focus\\Fortify SCA and Apps 20.1.2"	// Home directory for Fortify SCA on agent
 
         //
         // Fortify Software Security Center (SSC) settings
@@ -174,31 +171,8 @@ pipeline {
                 script {
                     // unstash the built files
                     unstash name: "${env.COMPONENT_NAME}_release"
-                    if (params.DA_ENABLED) {
-                            def verProperties =
-                                """job.url=${env.BUILD_URL}
-                                jenkins.url=${env.JENKINS_URL}
-                                commit.id=${env.GIT_COMMIT_ID}
-                                issueIds=${env.ISSUE_IDS}""" // Not yet in current publish version
-                            step([$class: 'SerenaDAPublisher',
-                    			siteName: "${env.DA_SITE}",
-                    			component: "${env.COMPONENT_NAME}",
-                    			baseDir: "${env.WORKSPACE}/target",
-                    			versionName: "${env.APP_VER}.${env.BUILD_NUMBER}",
-                    			fileIncludePatterns: "${env.COMPONENT_NAME}.war",
-                    			fileExcludePatterns: "**/*tmp*,**/.git",
-                    			versionProps: "${verProperties}",
-                    			skip: false,
-                    			addStatus: true,
-                    			statusName: 'BUILT',
-                    			deploy: false, // we will deploy later after SAST
-                    			deployIf: 'false',
-                    			deployUpdateJobStatus: true,
-                    			deployApp: "${env.APP_NAME}",
-                    			deployEnv: "${env.DA_ENV_NAME}",
-                    			deployProc: "${env.DA_DEPLOY_PROCESS}"
-                    			// deployProps: "${verProperties}"
-                    		])
+                    if (params.WLP_ENABLED) {
+						// WAR file should already exist
                     } else if (params.DOCKER_ENABLED) {
                         // Create docker image using JAR file
                         dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
@@ -321,25 +295,16 @@ pipeline {
             agent { label 'master' }
             steps {
                  script {
-                    if (params.DA_ENABLED) {
-                        def procProperties =
-                            """job.url=${env.JOB_URL}
-                            jenkins.url=${env.JENKINS_URL}"""
-                        step([$class: 'RunApplicationProcessNotifier',
-                                siteName: "${env.DA_SITE}",
-                                runApplicationProcessIf: 'true',
-                                updateJobStatus: true,
-                                applicationName: "${env.APP_NAME}",
-                                environmentName: "${env.DA_ENV_NAME}",
-                                applicationProcessName: "${env.DA_DEPLOY_PROCESS}",
-                                componentName: "${env.COMPONENT_NAME}",
-                                versionName: "${env.APP_VER}.${env.BUILD_NUMBER}",
-                                applicationProcessProperties: "${procProperties}"
-                        ])
+                    if (params.WLP_ENABLED) {
+                    	unstash name: "${env.COMPONENT_NAME}_release"                        
+                    	// Start WebSphere Liberty server integration instance  
+                    	bat "mvn -Pwlp liberty:create liberty:install-feature liberty:deploy liberty:start" 
                     } else if (params.DOCKER_ENABLED) {
                         // Run Docker container
                         dockerContainer = dockerImage.run()
-                    } 
+                    } else {
+                    	println "No deployment to do  ..."
+                    }
                  }
              }
         }
@@ -359,9 +324,6 @@ pipeline {
                         if (isUnix()) {
                             println "Sorry, WebInspect is only supported on Windows..."
                         } else {     
-                        	unstash name: "${env.COMPONENT_NAME}_release"                        
-                        	// Start WebSphere Liberty server   
-                        	bat "mvn -Pwlp liberty:create liberty:install-feature liberty:deploy liberty:start"        
                             // Run WebInspect "Critial and High" policy
                             bat(/"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP_WEBURL}" -ep "${env.WI_OUTPUT_FILE}" -ps 1008 & EXIT \/B 0/)
                             if (params.FOD_ENABLED) {
@@ -369,7 +331,6 @@ pipeline {
                             } else if (params.SSC_ENABLED) {
                                 bat(/"fortifyclient.bat uploadFPR -f "${env.WI_OUTPUT_FILE}" -url "${env.SSC_WEBURL}" -authtoken "${env.SSC_AUTH_TOKEN}" -application "${env.APP_NAME}" -applicationVersion "${env.APP_VER}"/)
                             }
-                            bat "mvn -Pwlp liberty:stop"
                         }
                     } else {
                         println "No Dynamic Application Security Testing (DAST) to do ...."
@@ -383,14 +344,15 @@ pipeline {
             steps {
                 script {
                     // Mark version as "Release Candidate" using VERIFIED status in Deployment Automation
-                    if (params.DA_ENABLED) {
-                        step([$class: 'UpdateComponentVersionStatusNotifier',
-                            siteName: "${env.DA_SITE}",
-                            action: 'ADD',
-                            componentName: "${env.COMPONENT_NAME}",
-                            versionName: "${env.APP_VER}.${env.BUILD_NUMBER}",
-                            statusName: 'VERIFIED'
-                        ])
+                    if (params.WLP_ENABLED) {
+                    	bat "mvn -Pwlp liberty:stop"
+                    	// Copy WAR file to "dropins" directory
+                    	unstash name: "${env.COMPONENT_NAME}_release"                        
+                    	if (isUnix()) {
+                        	sh "cp -f target/iwa.war ${WLP_DROPINS_DIR}"
+                    	} else {
+                        	bat "copy /Y target\iwa.war ${WLP_DROPINS_DIR}"
+                    	}
                     } else if (params.DOCKER_ENABLED) {
                         // Stop the container if still running
                         dockerContainer.stop()
@@ -401,7 +363,7 @@ pipeline {
                             dockerImage.push("latest")
                         }
                     } else {
-                       	
+                       	println "No releaseing to do..."
                     }
                 }
             }
