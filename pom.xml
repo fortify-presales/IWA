@@ -37,6 +37,7 @@
         <font-awesome.version>5.12.0</font-awesome.version>
         <chartjs.version>2.9.3</chartjs.version>
         <springdoc-openapi.version>1.4.3</springdoc-openapi.version>
+        <wlp.dir>C:/Tools/wlp</wlp.dir>
     </properties>
 
     <!--repositories>
@@ -325,9 +326,9 @@
             </build>
         </profile>
         
-        <!-- Profile for preparing/deploying application to (downloaded) WebSphere Liberty instance -->
+        <!-- Profile for preparing/deploying application to (downloaded) WebSphere Liberty Integration instance -->
         <profile>
-        	<id>wlp</id>
+        	<id>wlp.int</id>
  	        <properties>
                 <packaging.type>war</packaging.type>
             </properties>
@@ -366,7 +367,7 @@
             </build>                
         </profile>
         
-         <!-- Profile for preparing/deploying application to (downloaded) WebSphere Liberty instance -->
+         <!-- Profile for deploying application to (existing) WebSphere Liberty Production instance -->
         <profile>
         	<id>wlp.prod</id>
  	        <properties>
@@ -384,12 +385,12 @@
 		                	<execution></execution>
 		                </executions>
 		                <configuration>
-							<installDirectory>C:/Tools/wlp</installDirectory>
-		                	<serverXmlFile>C:/Tools/wlp/usr/servers/wlpProd/etc/server.xml</serverXmlFile>
+							<installDirectory>${wlp.dir}</installDirectory>
+		                	<serverXmlFile>${wlp.dir}/usr/servers/production/etc/server.xml</serverXmlFile>
 		                	<stripVersion>true</stripVersion>
 		                	<looseApplication>false</looseApplication>
 		                	<clean>false</clean>
-		                	<serverName>wlpProd</serverName>
+		                	<serverName>production</serverName>
 		                	<template>webProfile8</template>
 		                	<applications>iwa</applications>
 		                	<timeout>180</timeout>
