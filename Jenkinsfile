@@ -81,9 +81,9 @@ pipeline {
         //
         // WebSphere Liberty Profile (WLP) settings
         //
-        WLP_SERVER_NAME = "C:\\Tools\\wlp\\usr\\servers\\wlpProd"
-        WLP_SERVER_HOME = "wlpProd"
-        WLP_DROPINS_DIR = "C:\\Tools\\wlp\\usr\\servers\\wlpProd\\dropins"	// Full path to WLP "dropins" directory
+        WLP_SERVER_NAME = "wlpProd"											// name of WLP server profile
+        WLP_SERVER_HOME = "C:\\Tools\\wlp\\usr\\servers\\wlpProd"			// location of WLP server profile
+        //WLP_DROPINS_DIR = "C:\\Tools\\wlp\\usr\\servers\\wlpProd\\dropins"	// path to WLP "dropins" directory
         
         //
         // Fortify Static Code Analyzer (SCA) settings
@@ -300,7 +300,11 @@ pipeline {
                     if (params.WLP_ENABLED) {
                     	unstash name: "${env.COMPONENT_NAME}_release"                        
                     	// Start WebSphere Liberty server integration instance  
-                    	bat "mvn -Pwlp liberty:create liberty:install-feature liberty:deploy liberty:start" 
+                    	if (isUnix()) {
+                        	sh "mvn -Pwlp liberty:create liberty:install-feature liberty:deploy liberty:start"
+                        } else {	
+                    		bat "mvn -Pwlp liberty:create liberty:install-feature liberty:deploy liberty:start"
+                    	}	 
                     } else if (params.DOCKER_ENABLED) {
                         // Run Docker container
                         dockerContainer = dockerImage.run()
@@ -346,14 +350,14 @@ pipeline {
             steps {
                 script {
                     if (params.WLP_ENABLED) {
-                    	bat "mvn -Pwlp liberty:stop"
-                    	// Copy WAR file to "dropins" directory
-                    	unstash name: "${env.COMPONENT_NAME}_release"                        
+                    	unstash name: "${env.COMPONENT_NAME}_release"      
+                		// release to "next" liberty server, i.e. test/productions                    	                  
                     	if (isUnix()) {
-                        	sh "cp -f \"${env.WORKSPACE}/target/iwa.war\" \"${WLP_DROPINS_DIR}\""
+                    		sh "mvn -Pwlp liberty:stop"
+                        	sh "mvn -Pwlp -DserverHome=\"${WLP_SERVER_HOME}\" -DserverName=${WLP_SERVER_NAME} liberty:deploy"
                     	} else {
-                        	//bat("xcopy /Y /R \"${env.WORKSPACE}\\target\\iwa.war\" \"${WLP_DROPINS_DIR}\"")
-                        	bat("mvn -Pwlp -DserverHome=\"${WLP_SERVER_HOME}\" -DserverName=${WLP_SERVER_NAME} liberty:deploy")
+	                    	bat("mvn -Pwlp liberty:stop")
+	                    	bat("mvn -Pwlp -DserverHome=\"${WLP_SERVER_HOME}\" -DserverName=${WLP_SERVER_NAME} liberty:deploy")
                     	}
                     } else if (params.DOCKER_ENABLED) {
                         // Stop the container if still running
@@ -365,7 +369,7 @@ pipeline {
                             dockerImage.push("latest")
                         }
                     } else {
-                       	println "No releaseing to do..."
+                       	println "No release-ing to do..."
                     }
                 }
             }
