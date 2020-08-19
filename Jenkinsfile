@@ -329,7 +329,7 @@ pipeline {
                             if (params.FOD_ENABLED) {
                                 //TODO: upload FPR to FOD
                             } else if (params.SSC_ENABLED) {
-                                bat(/"fortifyclient.bat uploadFPR -f "${env.WI_OUTPUT_FILE}" -url "${env.SSC_WEBURL}" -authtoken "${env.SSC_AUTH_TOKEN}" -application "${env.APP_NAME}" -applicationVersion "${env.APP_VER}"/)
+                                bat(/fortifyclient.bat uploadFPR -f "${env.WI_OUTPUT_FILE}" -url "${env.SSC_WEBURL}" -authtoken "${env.SSC_AUTH_TOKEN}" -application "${env.APP_NAME}" -applicationVersion "${env.APP_VER}"/)
                             }
                         }
                     } else {
@@ -351,7 +351,7 @@ pipeline {
                     	if (isUnix()) {
                         	sh "cp -f target/iwa.war ${WLP_DROPINS_DIR}"
                     	} else {
-                        	bat "copy /Y target\iwa.war ${WLP_DROPINS_DIR}"
+                        	bat(/"copy /Y target\iwa.war "${WLP_DROPINS_DIR}"/)
                     	}
                     } else if (params.DOCKER_ENABLED) {
                         // Stop the container if still running
