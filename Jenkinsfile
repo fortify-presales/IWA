@@ -349,9 +349,9 @@ pipeline {
                     	// Copy WAR file to "dropins" directory
                     	unstash name: "${env.COMPONENT_NAME}_release"                        
                     	if (isUnix()) {
-                        	sh "cp -f target/iwa.war ${WLP_DROPINS_DIR}"
+                        	sh "cp -f \"${env.WORKSPACE}/target/iwa.war\" \"${WLP_DROPINS_DIR}\""
                     	} else {
-                        	bat(/"copy /Y target\iwa.war "${WLP_DROPINS_DIR}"/)
+                        	bat("copy /Y \"${env.WORKSPACE}target\iwa.war\" \"${WLP_DROPINS_DIR}\"")
                     	}
                     } else if (params.DOCKER_ENABLED) {
                         // Stop the container if still running
