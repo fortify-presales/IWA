@@ -94,9 +94,9 @@ pipeline {
         // Fortify WebInspect settings
         //
         WI_CLIENT_PATH = "C:\\Micro Focus\\Fortify WebInspect\\WI.exe"  // Path to WebInspect executable on the "webinspect" Agent
-        WI_SETTINGS_FILE = "${env.WORKSPACE}\\etc\\DefaultSettings.xml" // Settings file to run
+        WI_SETTINGS_FILE = "${env.WORKSPACE}\\etc\\WebScanSettings.xml" // Settings file to run
         WI_LOGIN_MACRO = "${env.WORKSPACE}\\etc\\Login.webmacro"        // Login macro to use
-        WI_OUTPUT_FILE = "${env.WORKSPACE}\\wi-iwa.fpr"      // Output file (FPR) to create
+        WI_OUTPUT_FILE = "${env.WORKSPACE}\\wi-iwa.fpr"      			// Output file (FPR) to create
     }
 
     tools {
