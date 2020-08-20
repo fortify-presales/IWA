@@ -49,7 +49,7 @@ pipeline {
             description: 'Enable upload of scans to Fortify Software Security Center')
         booleanParam(name: 'SCAN_CENTRAL_ENABLED', defaultValue: false,
             description: 'Run a remote scan via Scan Central')
-        booleanParam(name: 'WI_ENABLED',        defaultValue: false,
+        booleanParam(name: 'WEBINSPECT_ENABLED', defaultValue: false,
             description: 'Enable WebInspect for Dynamic Application Security Testing')
         booleanParam(name: 'WLP_ENABLED',        defaultValue: false,
             description: 'Deploy WAR file to WebSphere Liberty Profile server')
@@ -290,19 +290,17 @@ pipeline {
             agent { label 'master' }
             steps {
                  script {
-                    if (params.WLP_ENABLED) {
-                    	unstash name: "${env.COMPONENT_NAME}_release"                        
-                    	// Start WebSphere Liberty server integration instance  
-                    	if (isUnix()) {
-                        	sh "mvn -Pwlp.int liberty:create liberty:install-feature liberty:deploy liberty:start"
-                        } else {	
-                    		bat "mvn -Pwlp.int liberty:create liberty:install-feature liberty:deploy liberty:start"
-                    	}	 
-                    } else if (params.DOCKER_ENABLED) {
+                	unstash name: "${env.COMPONENT_NAME}_release"                        
+                    if (params.DOCKER_ENABLED) {
                         // Run Docker container
                         dockerContainer = dockerImage.run()
                     } else {
-                    	println "No deployment to do  ..."
+	                	// Start WebSphere Liberty server integration instance  
+	                	if (isUnix()) {
+	                    	sh "mvn -Pwlp.int liberty:create liberty:install-feature liberty:deploy liberty:start"
+	                    } else {	
+	                		bat "mvn -Pwlp.int liberty:create liberty:install-feature liberty:deploy liberty:start"
+	                	}	
                     }
                  }
              }
@@ -311,14 +309,14 @@ pipeline {
         stage('DAST') {
         	when {
             	beforeAgent true
-        	    expression { params.WI_ENABLED == true }
+        	    expression { params.WEBINSPECT_ENABLED == true }
             }
             // Run on an Agent with "webinspect" label applied - assumes WebInspect command line installed
             // Needs JDK and Maven installed
             agent {label "webinspect"}
             steps {
                 script {
-                    if (params.WI_ENABLED) {
+                    if (params.WEBINSPECT_ENABLED) {
                         // Run WebInspect on deployed application and upload to SSC
                         if (isUnix()) {
                             println "Sorry, WebInspect is only supported on Windows..."
@@ -337,15 +335,29 @@ pipeline {
                 }
             }
         }
+        
+        stage('Prepare') {
+        	agent { label 'master' }
+        	steps {
+        		script {
+                	// Stop WebSphere Liberty server integration instance  
+                	if (isUnix()) {
+                		sh "mvn -Pwlp.int liberty:stop"
+                	} else {
+                    	bat("mvn -Pwlp.int liberty:stop")
+                	}
+        		}
+            	input id: 'Release', 
+            		message: 'Ready to Release?', 
+            		ok: 'Yes, let\'s go', 
+            		submitter: 'admin', 
+            		submitterParameter: 'approver'
+        	}
+        }
 
         stage('Release') {
             agent { label 'master' }
             steps {
-            	input id: 'Release', 
-            		message: 'Ready to Production?', 
-            		ok: 'Yes, let\'s go', 
-            		submitter: 'admin', 
-            		submitterParameter: 'approver'
                 script {
                     if (params.WLP_ENABLED) {
                     	unstash name: "${env.COMPONENT_NAME}_release"      
