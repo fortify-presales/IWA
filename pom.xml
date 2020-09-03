@@ -166,6 +166,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-http</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+
         <!-- Fortify SCA Annotations
         <dependency>
             <groupId>com.microfocus.fortify</groupId>
