@@ -22,8 +22,7 @@ on:
 jobs:
   build-test-deploy:
     runs-on: ubuntu-latest
-	#runs-on: self-hosted
-
+    #runs-on: self-hosted
 
     # Checkout the code
     steps:
@@ -83,7 +82,7 @@ jobs:
   webinspect:
     if: github.ref == 'master' 
     runs-on: [self-hosted Fortify]
-	
+
     # Run dynamic application security testing with WebInspect on-premise and upload results to FOD
 
     steps:
@@ -91,6 +90,6 @@ jobs:
       shell: pwsh
       run: |
         wi -s ".\etc\WebScanSettings.xml" -macro ".\etc\Login.webmacro" -u https://insecurewebapp.herokuapp.com/ -ep ".\wi-iwa.fpr" 
-		# -ps $WIPolicyId
+        # -ps $WIPolicyId
       env:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
