@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Maven, upload source code to Fortify on Demand (for static analysis)
 # and if successful deploy the application to Heroku
 
-name: Continuous Inspection
+name: Dynamic Application Security Testing
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
   
   webinspect:
     #if: github.ref == 'master' 
-    runs-on: [self-hosted Fortify]
+    runs-on: Fortify
 
     # Run dynamic application security testing with WebInspect on-premise and upload results to FOD
 
