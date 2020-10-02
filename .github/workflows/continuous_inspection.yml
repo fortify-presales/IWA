@@ -82,11 +82,11 @@ jobs:
 
   webinspect:
     if: github.ref == 'master' 
-	runs-on: [self-hosted Fortify]
+    runs-on: [self-hosted Fortify]
 	
     # Run dynamic application security testing with WebInspect on-premise and upload results to FOD
 
-	steps:
+    steps:
     - name: DAST with WebInspect
       shell: pwsh
       run: |
