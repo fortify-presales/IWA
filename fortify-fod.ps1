@@ -79,7 +79,7 @@ process {
     Write-Host "Polling status of scan ..."
     do {
         Start-Sleep -s $PollingInterval # sleep for X seconds
-        $ScanSummary = Get-FODScanSummary -ScanId $ScanId
+        $ScanSummary = Get-FODScanSummary -Id $ScanId
         $ScanStatus = $ScanSummary.analysisStatusType
         Write-Host "Scan id: '$ScanId' status: $ScanStatus"
     } until (
