@@ -47,6 +47,9 @@ Write-Host ************************************************************
 & sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' -b iwa -findbugs -cp $ClassPath  -java-build-dir "target/classes" `
     -build-project "Insecure Web App" -build-version "v1.0" -build-label "SNAPSHOT" -scan -f target\iwa.fpr
 # -filter etc\sca-filter.txt
+#& sourceandlibscanner -sca -b iwa -clean -targs "-verbose -cp $ClassPath -java-build-dir 'target/classes' src" `
+#	-sargs "-verbose" -sonatype -libscanurl https://ds.sonatype.com -nexusauth $Env:NEXUS_AUTH_TOKEN `
+#	-upload -ssc https://localhost:8080/ssc/ -ssctoken $Env:SSC_AUTH_TOKEN -versionid 10000
 
 Write-Host ************************************************************
 Write-Host Generating PDF report

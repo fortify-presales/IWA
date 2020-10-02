@@ -22,6 +22,8 @@ on:
 jobs:
   build-test-deploy:
     runs-on: ubuntu-latest
+	#runs-on: self-hosted
+
 
     # Checkout the code
     steps:
@@ -45,8 +47,8 @@ jobs:
         files: fod/ pom.xml
         dest: fod.zip
 
-    # Upload fod.zip to Fortify on Demand for static analysis
-    - name: Static Analysis with FOD
+    # Upload fod.zip to Fortify on Demand for static application security testing
+    - name: SAST with FOD/SCA
       shell: pwsh
       run: |
         $ScanSummary = .\fortify-fod.ps1 -ZipFile '.\fod.zip' -ApplicationName 'IWA' -ReleaseName 'master' -Notes 'GitHub Action initiated scan' -FodApiUri 'https://api.emea.fortify.com' -FodApiUsername '${{ secrets.FOD_ACCESS_KEY }}' -FodApiPassword '${{ secrets.FOD_SECRET_KEY }}' -Raw
@@ -78,3 +80,17 @@ jobs:
       env:
         HEROKU_API_KEY: "${{ secrets.HEROKU_API_KEY }}"
 
+  webinspect:
+    if: github.ref == 'master' 
+	runs-on: [self-hosted Fortify]
+	
+    # Run dynamic application security testing with WebInspect on-premise and upload results to FOD
+
+	steps:
+    - name: DAST with WebInspect
+      shell: pwsh
+      run: |
+        wi -s ".\etc\WebScanSettings.xml" -macro ".\etc\Login.webmacro" -u https://insecurewebapp.herokuapp.com/ -ep ".\wi-iwa.fpr" 
+		# -ps $WIPolicyId
+      env:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"

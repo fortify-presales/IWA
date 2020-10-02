@@ -294,7 +294,7 @@ pipeline {
                     if (params.DOCKER_ENABLED) {
                         // Run Docker container
                         dockerContainer = dockerImage.run()
-                    } else {
+                    } else if (params.WLP_ENABLED) {
 	                	// Start WebSphere Liberty server integration instance  
 	                	if (isUnix()) {
 	                    	sh "mvn -Pwlp.int liberty:create liberty:install-feature liberty:deploy liberty:start"
@@ -340,12 +340,14 @@ pipeline {
         	agent { label 'master' }
         	steps {
         		script {
-                	// Stop WebSphere Liberty server integration instance  
-                	if (isUnix()) {
-                		sh "mvn -Pwlp.int liberty:stop"
-                	} else {
-                    	bat("mvn -Pwlp.int liberty:stop")
-                	}
+        		    if (params.WLP_ENABLED) {
+                        // Stop WebSphere Liberty server integration instance
+                        if (isUnix()) {
+                            sh "mvn -Pwlp.int liberty:stop"
+                        } else {
+                            bat("mvn -Pwlp.int liberty:stop")
+                        }
+                    }
         		}
             	input id: 'Release', 
             		message: 'Ready to Release?', 
@@ -363,10 +365,8 @@ pipeline {
                     	unstash name: "${env.COMPONENT_NAME}_release"      
                 		// release to "next" liberty server, i.e. test/productions                    	                  
                     	if (isUnix()) {
-                    		sh "mvn -Pwlp.int liberty:stop"
                         	sh "mvn -Pwlp.prod liberty:stop liberty:deploy liberty:start"
                     	} else {
-	                    	bat("mvn -Pwlp.int liberty:stop")
 	                    	bat("mvn -Pwlp.prod liberty:stop liberty:deploy liberty:start")
                     	}
                     } else if (params.DOCKER_ENABLED) {

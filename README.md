@@ -19,7 +19,6 @@
     * [GitHub Actions](#github-actions)
     * [Azure DevOps Pipeline](#azure-devops-pipelines)
     * [GitLab CI/CD](#gitlab-cicd)
-    * [Micro Focus Deployment Automation](#micro-focus-deployment-automation)
 *   [Developing and Contributing](#developing-and-contributing)
 *   [Licensing](#licensing)
 
@@ -258,10 +257,6 @@ The example workflow runs on every push to the *master* branch and on every "pul
 TBD
 
 ### Azure DevOps Pipelines
-
-TBD
-
-### Micro Focus Deployment Automation
 
 TBD
 
