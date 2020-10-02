@@ -1,23 +1,19 @@
 # This workflow will build a Java project with Maven, upload source code to Fortify on Demand (for static analysis)
 # and if successful deploy the application to Heroku
 
-name: Dynamic Application Security Testing
+name: Dynamic Security Testing
 
 on:
-  push:
-    paths-ignore:
-      - 'etc/**'
-      - 'media/**'
-      - 'Jenkinsfile'
-      - 'azure-pipelines.yml'
-      - 'README.md'
-    branches:
-      - master
-      #- feature/**
-      #- release/**
-  pull_request:
-    branches:
-      - master
+  workflow_dispatch:
+    inputs:
+      app-url:
+        description: 'Web Application URL'
+        required: true
+        default: 'https://insecurewebapp.herokuapp.com/'
+      wi-policy-id:
+        description: 'WebInspect Security Policy Id'
+        default: 1008
+        required: true
 
 jobs:
   
@@ -29,9 +25,8 @@ jobs:
 
     steps:
     - name: DAST with WebInspect
-      shell: pwsh
+      shell: cmd
       run: |
-        wi -s ".\etc\WebScanSettings.xml" -macro ".\etc\Login.webmacro" -u https://insecurewebapp.herokuapp.com/ -ep ".\wi-iwa.fpr" 
-        # -ps $WIPolicyId
+        wi -s ".\etc\WebScanSettings.xml" -macro ".\etc\Login.webmacro" -u ${{ github.event.inputs.app-url }} -ep ".\wi-iwa.fpr" -ps ${{ github.event.inputs.wi-policy-id }}
       env:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
