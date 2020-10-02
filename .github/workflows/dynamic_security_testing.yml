@@ -1,0 +1,37 @@
+# This workflow will build a Java project with Maven, upload source code to Fortify on Demand (for static analysis)
+# and if successful deploy the application to Heroku
+
+name: Continuous Inspection
+
+on:
+  push:
+    paths-ignore:
+      - 'etc/**'
+      - 'media/**'
+      - 'Jenkinsfile'
+      - 'azure-pipelines.yml'
+      - 'README.md'
+    branches:
+      - master
+      #- feature/**
+      #- release/**
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  
+  webinspect:
+    #if: github.ref == 'master' 
+    runs-on: [self-hosted Fortify]
+
+    # Run dynamic application security testing with WebInspect on-premise and upload results to FOD
+
+    steps:
+    - name: DAST with WebInspect
+      shell: pwsh
+      run: |
+        wi -s ".\etc\WebScanSettings.xml" -macro ".\etc\Login.webmacro" -u https://insecurewebapp.herokuapp.com/ -ep ".\wi-iwa.fpr" 
+        # -ps $WIPolicyId
+      env:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
