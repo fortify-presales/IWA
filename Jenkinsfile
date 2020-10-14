@@ -292,7 +292,7 @@ pipeline {
             	beforeAgent true
             	anyOf {
             	    expression { params.DOCKER_ENABLED == true }
-            	    expression { params.params.WLP_ENABLED == true }         	     
+            	    expression { params.WLP_ENABLED == true }         	     
         	    }
             }
             // Run on "master" node
