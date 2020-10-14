@@ -183,6 +183,7 @@ pipeline {
             	beforeAgent true
             	anyOf {
             	    expression { params.SCA_ENABLED == true }
+            	    expression { params.SCANCENTRAL_ENABLED == true }
             	    expression { params.FOD_ENABLED == true }         	     
         	    }
             }
@@ -286,6 +287,13 @@ pipeline {
         }
 
         stage('Deploy') {
+            when {
+            	beforeAgent true
+            	anyOf {
+            	    expression { params.DOCKER_ENABLED == true }
+            	    expression { params.params.WLP_ENABLED == true }         	     
+        	    }
+            }
             // Run on "master" node
             agent { label 'master' }
             steps {
