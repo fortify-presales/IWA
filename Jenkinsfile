@@ -88,7 +88,7 @@ pipeline {
         //
         SSC_WEBURL = "http://localhost:8080/ssc"                    // URL of SSC
         SSC_AUTH_TOKEN = credentials('iwa-ssc-auth-token-id')       // Authentication token for SSC
-        SSC_SENSOR_POOL_UUID = "00000000-0000-0000-0000-000000000002" // UUID of Scan Central Sensor Pool to use
+        SSC_SENSOR_POOL_UUID = "00000000-0000-0000-0000-000000000002" // UUID of Scan Central Sensor Pool to use - leave for Default Pool
 
         //
         // Fortify WebInspect settings
@@ -294,7 +294,7 @@ pipeline {
                     if (params.DOCKER_ENABLED) {
                         // Run Docker container
                         dockerContainer = dockerImage.run()
-                    } else if (params.WLP_ENABLED) {
+                    } else { // if (params.WLP_ENABLED) {
 	                	// Start WebSphere Liberty server integration instance  
 	                	if (isUnix()) {
 	                    	sh "mvn -Pwlp.int liberty:create liberty:install-feature liberty:deploy liberty:start"
