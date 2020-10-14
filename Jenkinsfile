@@ -47,7 +47,7 @@ pipeline {
             description: 'Enable Fortify on Demand for Static Application Security Testing')
         booleanParam(name: 'SSC_ENABLED',       defaultValue: false,
             description: 'Enable upload of scans to Fortify Software Security Center')
-        booleanParam(name: 'SCAN_CENTRAL_ENABLED', defaultValue: false,
+        booleanParam(name: 'SCANCENTRAL_ENABLED', defaultValue: false,
             description: 'Run a remote scan via Scan Central')
         booleanParam(name: 'WEBINSPECT_ENABLED', defaultValue: false,
             description: 'Enable WebInspect for Dynamic Application Security Testing')
@@ -220,7 +220,7 @@ pipeline {
                             //bsiToken: "${env.FOD_BSI_TOKEN}",
                             //policyFailureBuildResultPreference: 1,
                             pollingInterval: 5
-                    } else if (params.SCAN_CENTRAL_ENABLED) {
+                    } else if (params.SCANCENTRAL_ENABLED) {
 
                         // set any standard remote translation/scan options
                         fortifyRemoteArguments transOptions: '',
