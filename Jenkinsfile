@@ -89,7 +89,8 @@ pipeline {
         SSC_WEBURL = "http://localhost:8080/ssc"                    // URL of SSC
         SSC_AUTH_TOKEN = credentials('iwa-ssc-auth-token-id')       // Authentication token for SSC
         SSC_SENSOR_POOL_UUID = "00000000-0000-0000-0000-000000000002" // UUID of Scan Central Sensor Pool to use - leave for Default Pool
-
+		SSC_NOTIFIY_EMAIL = "test@test.com"							// User to notify with SSC/ScanCentral information
+		
         //
         // Fortify WebInspect settings
         //
@@ -233,7 +234,7 @@ pipeline {
                                 remoteOptionalConfig: [
                                     customRulepacks: '',
                                     filterFile: "etc\\sca-filter.txt",
-                                    notifyEmail: '${env.GIT_COMMITTER_EMAIL}',
+                                    notifyEmail: '${env.SSC_NOTIFIY_EMAIL}',
                                     sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
                                 ],
                                 uploadSSC: [appName: "${env.APP_NAME}", appVersion: "${env.APP_VER}"]
@@ -244,7 +245,7 @@ pipeline {
                                 remoteOptionalConfig: [
                                     customRulepacks: '',
                                     filterFile: '"-filter" "etc\\sca-filter.txt',
-                                    notifyEmail: '${env.GIT_COMMITTER_EMAIL}',
+                                    notifyEmail: '${env.SSC_NOTIFIY_EMAIL}',
                                     sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
                                 ]
                         }
