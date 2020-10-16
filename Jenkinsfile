@@ -6,14 +6,12 @@
 //
 //
 // Pre-requisites:
-// - Fortify SCA has been installed (for on-premise static analysis) 
-// - Fortify WebInspect has been installed (for on-premise dynamic analysis)
-// - A Fortify On Demand account and API access are available (for cloud based static analysis)
-// Optional:
-// - WebSphere Liberty has been installed (for automated deployment of WAR file)
+// - Fortify SCA has been installed (for on premise SAST) 
+// - Fortify WebInspect has been installed (for on premise DAST)
+// - A Fortify On Demand account and API access are available (for cloud based SAST)
 //
 // Node setup:
-// - For Fortify on-premise software: Apply the label "fortify" to Fortify SCA agent and "webinspect" to the WebInspect agent.
+// - For Fortify on premise software: Apply the label "fortify" to Fortify SCA agent and "webinspect" to the WebInspect agent.
 // - For Fortify on Demand: apply the label "fortify" to the agent or master that will connect to Fortify on Demand.
 // Also ensure the label "master" has been applied to your Jenkins master.
 //
@@ -67,7 +65,7 @@ pipeline {
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         GIT_CREDS = credentials('iwa-git-creds-id')			// Git Credentials
         JAVA_VERSION = 8                                    // Java version to compile as
-        APP_WEBURL = "https://localhost:6443/iwa/"          // URL of where the application is deployed to (for integration testing, WebInspect etc)
+        APP_URL = "https://localhost:6443/iwa/"             // URL of where the application is deployed to (for integration testing, WebInspect etc)
         ISSUE_IDS = ""                                      // List of issues found from commit
         DOCKER_ORG = "mfdemouk"                             // Docker organisation (in Docker Hub) to push images to
 
@@ -94,11 +92,9 @@ pipeline {
         //
         // Fortify WebInspect settings
         //
-        WI_API = "http://localhost:8083/webinspect"
-        WI_CLIENT_PATH = "C:\\Micro Focus\\Fortify WebInspect\\WI.exe"  // Path to WebInspect executable on the "webinspect" Agent
-        WI_SETTINGS_FILE = "${env.WORKSPACE}\\etc\\WebScanSettings.xml" // Settings file to run
-        WI_LOGIN_MACRO = "${env.WORKSPACE}\\etc\\Login.webmacro"        // Login macro to use
-        WI_OUTPUT_FILE = "${env.WORKSPACE}\\wi-iwa.fpr"      			// Output file (FPR) to create
+        WI_API = "http://localhost:8083/webinspect"			// WebInspect API - no authentication assumed
+        WI_POLICY_ID = 1008									// WebInspect Scan Policy Id - 1008 = Critical and High
+        WI_OUTPUT_FILE = "${env.WORKSPACE}\\wi-iwa.fpr"     // Output file (FPR) to create
     }
 
     tools {
@@ -311,8 +307,7 @@ pipeline {
             	beforeAgent true
         	    expression { params.WEBINSPECT_ENABLED == true }
             }
-            // Run on an Agent with "webinspect" label applied - assumes WebInspect command line installed
-            // Needs JDK and Maven installed
+            // Run on an Agent with "webinspect" label applied - needs JDK and Maven installed
             agent {label "webinspect"}
             steps {
                 script {
@@ -326,7 +321,7 @@ pipeline {
 	                	}	
 
 						// run WebInspect scan
-                        runWebInspectScan("http://localhost:8083/webinspect", "IWA-UI", "IWA Web Scan", "https://localhost:6443/iwa/", "Login", 1008)   
+                        runWebInspectScan("${env.WI_API}", "IWA-UI", "IWA Web Scan", "${env.APP_URL}", "Login", 1008)   
 
                         // Stop WebSphere Liberty server integration instance
                         if (isUnix()) {
