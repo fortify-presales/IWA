@@ -1,3 +1,5 @@
+#!/usr/bin/env groovy
+
 //********************************************************************************
 // An example pipeline for DevSecOps using Micro Focus Fortify and Deployment Automation products
 // @author: Kevin A. Lee (kevin.lee@microfocus.com)
@@ -94,6 +96,7 @@ pipeline {
         //
         // Fortify WebInspect settings
         //
+        WI_API = "http://localhost:8083/webinspect"
         WI_CLIENT_PATH = "C:\\Micro Focus\\Fortify WebInspect\\WI.exe"  // Path to WebInspect executable on the "webinspect" Agent
         WI_SETTINGS_FILE = "${env.WORKSPACE}\\etc\\WebScanSettings.xml" // Settings file to run
         WI_LOGIN_MACRO = "${env.WORKSPACE}\\etc\\Login.webmacro"        // Login macro to use
@@ -326,7 +329,7 @@ pipeline {
             steps {
                 script {
                     if (params.WEBINSPECT_ENABLED) {
-                        // Run WebInspect on deployed application and upload to SSC
+                        /*// Run WebInspect on deployed application and upload to SSC
                         if (isUnix()) {
                             println "Sorry, WebInspect is only supported on Windows..."
                         } else {     
@@ -337,7 +340,8 @@ pipeline {
                             } else if (params.SSC_ENABLED) {
                                 bat(/fortifyclient.bat uploadFPR -f "${env.WI_OUTPUT_FILE}" -url "${env.SSC_WEBURL}" -authtoken "${env.SSC_AUTH_TOKEN}" -application "${env.APP_NAME}" -applicationVersion "${env.APP_VER}"/)
                             }
-                        }
+                        }*/
+                        runWebInspectScan()
                     } else {
                         println "No Dynamic Application Security Testing (DAST) to do ...."
                     }
@@ -394,4 +398,28 @@ pipeline {
             }
         }
     }
+}
+
+def runWebInspectScan() {
+	def post = new URL("${env.WI_API}/scanner/scans").openConnection();
+	def body '''{
+		"settingsName": "IWA-UI",
+		"overrides": {
+			"scanName": "IWA Web Scan",
+			"startUrls": ["${env.APP_WEBURL}"]
+			"loginMacro": "Login",
+			"policyId": 1008
+	}
+	'''
+	println body
+	post.setRequestMethod("POST")
+	post.setDoOutput(true)
+	post.setRequestProperty("Accept", "application/json")
+	post.setRequestProperty("Content-Type", "application/json")
+	post.getOutputStream().write(message.getBytes("UTF-8"));
+	def postRC = post.getResponseCode();
+	println(postRC);
+	if (postRC.equals(200)) {
+	    println(post.getInputStream().getText());
+	}
 }
