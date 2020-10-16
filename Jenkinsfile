@@ -417,7 +417,7 @@ def runWebInspectScan() {
 	post.setDoOutput(true)
 	post.setRequestProperty("Accept", "application/json")
 	post.setRequestProperty("Content-Type", "application/json")
-	post.getOutputStream().write(message.getBytes("UTF-8"));
+	post.getOutputStream().write(body.getBytes("UTF-8"));
 	def postRC = post.getResponseCode();
 	println(postRC);
 	if (postRC.equals(200)) {
