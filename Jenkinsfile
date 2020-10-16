@@ -403,7 +403,8 @@ pipeline {
 @NonCPS
 def runWebInspectScan(url) {
 	def post = new URL("${env.WI_API}/scanner/scans").openConnection();
-	def body = '''{
+	def body = """\
+	{
 		"settingsName": "IWA-UI",
 		"overrides": {
 			"scanName": "IWA Web Scan",
@@ -411,7 +412,7 @@ def runWebInspectScan(url) {
 			"loginMacro": "Login",
 			"policyId": 1008
 	}
-	'''
+	"""
 	println body
 	post.setRequestMethod("POST")
 	post.setDoOutput(true)
