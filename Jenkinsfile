@@ -53,8 +53,6 @@ pipeline {
             description: 'Run a remote scan via Scan Central')
         booleanParam(name: 'WEBINSPECT_ENABLED', defaultValue: false,
             description: 'Enable WebInspect for Dynamic Application Security Testing')
-        booleanParam(name: 'WLP_ENABLED',        defaultValue: false,
-            description: 'Deploy WAR file to WebSphere Liberty Profile server')
         booleanParam(name: 'DOCKER_ENABLED',    defaultValue: false,
             description: 'Use Docker for automated deployment of JAR file into container')
     }
@@ -170,9 +168,7 @@ pipeline {
                 script {
                     // unstash the built files
                     unstash name: "${env.COMPONENT_NAME}_release"
-                    if (params.WLP_ENABLED) {
-						// WAR file should already exist
-                    } else if (params.DOCKER_ENABLED) {
+                    if (params.DOCKER_ENABLED) {
                         // Create docker image using JAR file
                         dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
                     } else {
@@ -294,9 +290,7 @@ pipeline {
             when {
             	beforeAgent true
             	anyOf {
-            	    expression { params.DOCKER_ENABLED == true }
-            	    expression { params.WLP_ENABLED == true }    
-            	    expression { params.WEBINSPECT_ENABLED == true }     	     
+            	    expression { params.DOCKER_ENABLED == true }   	     
         	    }
             }
             // Run on "master" node
@@ -307,13 +301,6 @@ pipeline {
                     if (params.DOCKER_ENABLED) {
                         // Run Docker container
                         dockerContainer = dockerImage.run()
-                    } else { // if (params.WLP_ENABLED) {
-	                	// Start WebSphere Liberty server integration instance  
-	                	if (isUnix()) {
-	                    	sh "mvn -Pwlp.int liberty:create liberty:install-feature liberty:deploy liberty:start"
-	                    } else {	
-	                		bat "mvn -Pwlp.int liberty:create liberty:install-feature liberty:deploy liberty:start"
-	                	}	
                     }
                  }
              }
@@ -330,20 +317,23 @@ pipeline {
             steps {
                 script {
                     if (params.WEBINSPECT_ENABLED) {
-                        /*// Run WebInspect on deployed application and upload to SSC
+                    
+	                	// Start WebSphere Liberty server integration instance  
+	                	if (isUnix()) {
+	                    	sh "mvn -Pwlp.int liberty:create liberty:install-feature liberty:deploy liberty:start"
+	                    } else {	
+	                		bat "mvn -Pwlp.int liberty:create liberty:install-feature liberty:deploy liberty:start"
+	                	}	
+
+						// run WebInspect scan
+                        runWebInspectScan("http://localhost:8083/webinspect", "IWA-UI", "IWA Web Scan", "https://localhost:6443/iwa/", "Login", 1008)   
+
+                        // Stop WebSphere Liberty server integration instance
                         if (isUnix()) {
-                            println "Sorry, WebInspect is only supported on Windows..."
-                        } else {     
-                            // Run WebInspect "Critial and High" policy
-                            bat(/"${env.WI_CLIENT_PATH}" -s "${env.WI_SETTINGS_FILE}" -macro "${env.WI_LOGIN_MACRO}" -u "${env.APP_WEBURL}" -ep "${env.WI_OUTPUT_FILE}" -ps 1008 & EXIT \/B 0/)
-                            if (params.FOD_ENABLED) {
-                                //TODO: upload FPR to FOD
-                            } else if (params.SSC_ENABLED) {
-                                bat(/fortifyclient.bat uploadFPR -f "${env.WI_OUTPUT_FILE}" -url "${env.SSC_WEBURL}" -authtoken "${env.SSC_AUTH_TOKEN}" -application "${env.APP_NAME}" -applicationVersion "${env.APP_VER}"/)
-                            }
-                        }*/
-                        //runWebInspectScan("${env.APP_WEBURL}")
-                        runWebInspectScan("http://localhost:8083/webinspect", "IWA-UI", "IWA Web Scan", "https://localhost:6443/iwa/", "Login", 1008)        
+                            sh "mvn -Pwlp.int liberty:stop"
+                        } else {
+                            bat("mvn -Pwlp.int liberty:stop")
+                        }    
                     } else {
                         println "No Dynamic Application Security Testing (DAST) to do ...."
                     }
@@ -354,16 +344,6 @@ pipeline {
         stage('Prepare') {
         	agent { label 'master' }
         	steps {
-        		script {
-        		    if (params.WLP_ENABLED || params.WEBINSPECT_ENABLED) {
-                        // Stop WebSphere Liberty server integration instance
-                        if (isUnix()) {
-                            sh "mvn -Pwlp.int liberty:stop"
-                        } else {
-                            bat("mvn -Pwlp.int liberty:stop")
-                        }
-                    }
-        		}
             	input id: 'Release', 
             		message: 'Ready to Release?', 
             		ok: 'Yes, let\'s go', 
@@ -376,15 +356,7 @@ pipeline {
             agent { label 'master' }
             steps {
                 script {
-                    if (params.WLP_ENABLED) {
-                    	unstash name: "${env.COMPONENT_NAME}_release"      
-                		// release to "next" liberty server, i.e. test/productions                    	                  
-                    	if (isUnix()) {
-                        	sh "mvn -Pwlp.prod liberty:stop liberty:deploy liberty:start"
-                    	} else {
-	                    	bat("mvn -Pwlp.prod liberty:stop liberty:deploy liberty:start")
-                    	}
-                    } else if (params.DOCKER_ENABLED) {
+                    if (params.DOCKER_ENABLED) {
                         // Stop the container if still running
                         dockerContainer.stop()
                         // Example publish to Docker Hub
