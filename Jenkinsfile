@@ -402,7 +402,7 @@ pipeline {
 
 @NonCPS
 def runWebInspectScan(url) {
-	def post = new URL("${env.WI_API}/scanner/scans").openConnection();
+	def post = new URL("http://localhost:8083/webinspect/scanner/scans").openConnection()
 	def body = """\
 	{
 		"settingsName": "IWA-UI",
@@ -418,10 +418,10 @@ def runWebInspectScan(url) {
 	post.setDoOutput(true)
 	post.setRequestProperty("Accept", "application/json")
 	post.setRequestProperty("Content-Type", "application/json")
-	post.getOutputStream().write(body.getBytes("UTF-8"));
-	def postRC = post.getResponseCode();
-	println(postRC);
+	post.getOutputStream().write(body.getBytes("UTF-8"))
+	def postRC = post.getResponseCode()
+	println(postRC)
 	if (postRC.equals(200)) {
-	    println(post.getInputStream().getText());
+	    println(post.getInputStream().getText())
 	}
 }
