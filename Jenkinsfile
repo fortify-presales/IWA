@@ -400,9 +400,10 @@ pipeline {
     }
 }
 
+@NonCPS
 def runWebInspectScan() {
 	def post = new URL("${env.WI_API}/scanner/scans").openConnection();
-	def body '''{
+	def body = '''{
 		"settingsName": "IWA-UI",
 		"overrides": {
 			"scanName": "IWA Web Scan",
