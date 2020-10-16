@@ -295,7 +295,8 @@ pipeline {
             	beforeAgent true
             	anyOf {
             	    expression { params.DOCKER_ENABLED == true }
-            	    expression { params.WLP_ENABLED == true }         	     
+            	    expression { params.WLP_ENABLED == true }    
+            	    expression { params.WEBINSPECT_ENABLED == true }     	     
         	    }
             }
             // Run on "master" node
@@ -354,7 +355,7 @@ pipeline {
         	agent { label 'master' }
         	steps {
         		script {
-        		    if (params.WLP_ENABLED) {
+        		    if (params.WLP_ENABLED || params.WEBINSPECT_ENABLED) {
                         // Stop WebSphere Liberty server integration instance
                         if (isUnix()) {
                             sh "mvn -Pwlp.int liberty:stop"
