@@ -407,7 +407,7 @@ def runWebInspectScan() {
 		"settingsName": "IWA-UI",
 		"overrides": {
 			"scanName": "IWA Web Scan",
-			"startUrls": ["${env.APP_WEBURL}"]
+			"startUrls": [${env.APP_WEBURL}]
 			"loginMacro": "Login",
 			"policyId": 1008
 	}
