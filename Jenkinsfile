@@ -341,7 +341,7 @@ pipeline {
                                 bat(/fortifyclient.bat uploadFPR -f "${env.WI_OUTPUT_FILE}" -url "${env.SSC_WEBURL}" -authtoken "${env.SSC_AUTH_TOKEN}" -application "${env.APP_NAME}" -applicationVersion "${env.APP_VER}"/)
                             }
                         }*/
-                        runWebInspectScan()
+                        runWebInspectScan("${env.APP_WEBURL}")
                     } else {
                         println "No Dynamic Application Security Testing (DAST) to do ...."
                     }
@@ -401,13 +401,13 @@ pipeline {
 }
 
 @NonCPS
-def runWebInspectScan() {
+def runWebInspectScan(url) {
 	def post = new URL("${env.WI_API}/scanner/scans").openConnection();
 	def body = '''{
 		"settingsName": "IWA-UI",
 		"overrides": {
 			"scanName": "IWA Web Scan",
-			"startUrls": [${env.APP_WEBURL}]
+			"startUrls": [ url ]
 			"loginMacro": "Login",
 			"policyId": 1008
 	}
