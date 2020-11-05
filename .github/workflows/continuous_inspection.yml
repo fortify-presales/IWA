@@ -6,7 +6,7 @@ name: Continuous Inspection
 on:
   push:
     paths-ignore:
-      - .github/workflows/*.yml
+#      - .github/workflows/*.yml
       - 'etc/**'
       - 'media/**'
       - 'Jenkinsfile'
