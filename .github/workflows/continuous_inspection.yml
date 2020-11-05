@@ -60,7 +60,7 @@ jobs:
       env:
         PACKAGE_OPTS: "-bt mvn"
 
-    # Start Fortify on Demand SAST scan. Be sure to set secrets/variables for your desired configuration.
+    # Start Fortify on Demand SAST scan. Be sure to set secrets/variables for your desired configuration and appropriate URLs
     - name: Download Fortify on Demand Universal CI Tool
       uses: fortify/gha-setup-fod-uploader@v1
     - name: Perform SAST Scan
@@ -75,11 +75,11 @@ jobs:
         FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -I 1 -apf"
         FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'          
 
-    # Once scan completes, pull SAST issues from Fortify on Demand and generate SARIF output.
+    # Once scan completes, pull SAST issues from Fortify on Demand and generate SARIF output. Be sure to set secrets/variables for your desired configuration and appropriate URLs
     - name: Download Results
       uses: fortify/gha-fod-generate-sarif@1.1.0
       with:
-        base-url: https://ams.fortify.com/
+        base-url: https://emea.fortify.com/
         tenant: ${{ secrets.FOD_TENANT }}
         user: ${{ secrets.FOD_USER }}
         password: ${{ secrets.FOD_PAT }}
