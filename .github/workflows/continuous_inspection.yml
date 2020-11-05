@@ -72,9 +72,25 @@ jobs:
         FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
         FOD_URL: "https://emea.fortify.com/"
         FOD_API_URL: "https://api.emea.fortify.com/"
-        FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -l 1"
+        FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -I 1 -apf"
         FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'          
 
+    # Once scan completes, pull SAST issues from Fortify on Demand and generate SARIF output.
+    - name: Download Results
+      uses: fortify/gha-fod-generate-sarif@1.1.0
+      with:
+        base-url: https://ams.fortify.com/
+        tenant: ${{ secrets.FOD_TENANT }}
+        user: ${{ secrets.FOD_USER }}
+        password: ${{ secrets.FOD_PAT }}
+        release-id: ${{ secrets.FOD_RELEASE_ID }}
+        output: ./sarif/output.sarif
+
+    # Import Fortify on Demand results to GitHub Security Code Scanning
+    - name: Import Results
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: ./sarif/output.sarif
 #
 # Fortify on Demand static scan using PowerShellForFOD module
 # 
