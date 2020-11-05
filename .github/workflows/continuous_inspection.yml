@@ -77,7 +77,7 @@ jobs:
 
     # Once scan completes, pull SAST issues from Fortify on Demand and generate SARIF output. Be sure to set secrets/variables for your desired configuration and appropriate URLs
     - name: Download Results
-      uses: fortify/gha-fod-generate-sarif@1.1.0
+      uses: fortify/gha-fod-generate-sarif@master
       with:
         base-url: https://emea.fortify.com/
         tenant: ${{ secrets.FOD_TENANT }}
