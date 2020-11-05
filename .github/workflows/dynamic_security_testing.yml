@@ -1,37 +1,39 @@
-# This workflow will build a Java project with Maven, upload source code to Fortify on Demand (for static analysis)
-# and if successful deploy the application to Heroku
+# This workflow will execute a DAST scan of the Application URL specified
 
-name: Continuous Inspection
+name: Dynamic Security Testing
 
 on:
-  push:
-    paths-ignore:
-      - 'etc/**'
-      - 'media/**'
-      - 'Jenkinsfile'
-      - 'azure-pipelines.yml'
-      - 'README.md'
-    branches:
-      - master
-      #- feature/**
-      #- release/**
-  pull_request:
-    branches:
-      - master
+  workflow_dispatch:
+    inputs:
+      app-url:
+        description: 'Web Application URL'
+        required: true
+        default: 'https://insecurewebapp.herokuapp.com/'
+      wi-policy-id:
+        description: 'WebInspect Security Policy Id'
+        default: 1008
+        required: true
 
 jobs:
   
   webinspect:
     #if: github.ref == 'master' 
-    runs-on: [self-hosted Fortify]
+    runs-on: Fortify
 
     # Run dynamic application security testing with WebInspect on-premise and upload results to FOD
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v2
     - name: DAST with WebInspect
-      shell: pwsh
+      shell: powershell
       run: |
-        wi -s ".\etc\WebScanSettings.xml" -macro ".\etc\Login.webmacro" -u https://insecurewebapp.herokuapp.com/ -ep ".\wi-iwa.fpr" 
-        # -ps $WIPolicyId
+        $env:Path += ";C:\Micro Focus\Fortify WebInspect"
+        wi -s ".\etc\WebScanSettings.xml" -macro ".\etc\Login.webmacro" -u ${{ github.event.inputs.app-url }} -ep ".\iwa.fpr" -ps ${{ github.event.inputs.wi-policy-id }}
       env:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
+    - name: Upload Scan Results
+      uses: actions/upload-artifact@v2.2.0
+      with:
+        path: .\iwa.fpr
+ 
