@@ -63,19 +63,19 @@ jobs:
         PACKAGE_OPTS: "-bt mvn"
 
     # Start Fortify on Demand SAST scan. Be sure to set secrets/variables for your desired configuration and appropriate URLs
-#    - name: Download Fortify on Demand Universal CI Tool
-#      uses: fortify/gha-setup-fod-uploader@v1
-#    - name: Perform SAST Scan
-#      run: java -jar $FOD_UPLOAD_JAR -z package.zip -aurl $FOD_API_URL -purl $FOD_URL -rid "$FOD_RELEASE_ID" -tc "$FOD_TENANT" -uc "$FOD_USER" "$FOD_PAT" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
-#      env: 
-#        FOD_TENANT: ${{ secrets.FOD_TENANT }}  
-#        FOD_USER: ${{ secrets.FOD_USER }}
-#        FOD_PAT: ${{ secrets.FOD_PAT }}
-#        FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
-#        FOD_URL: "https://emea.fortify.com/"
-#        FOD_API_URL: "https://api.emea.fortify.com/"
-#        FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -I 1 -apf"
-#        FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'          
+    - name: Download Fortify on Demand Universal CI Tool
+      uses: fortify/gha-setup-fod-uploader@v1
+    - name: Perform SAST Scan
+      run: java -jar $FOD_UPLOAD_JAR -z package.zip -aurl $FOD_API_URL -purl $FOD_URL -rid "$FOD_RELEASE_ID" -tc "$FOD_TENANT" -uc "$FOD_USER" "$FOD_PAT" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
+      env:
+        FOD_TENANT: ${{ secrets.FOD_TENANT }}
+        FOD_USER: ${{ secrets.FOD_USER }}
+        FOD_PAT: ${{ secrets.FOD_PAT }}
+        FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
+        FOD_URL: "https://emea.fortify.com/"
+        FOD_API_URL: "https://api.emea.fortify.com/"
+        FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -I 1 -apf"
+        FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
 
     # Once scan completes, pull SAST issues from Fortify on Demand and generate SARIF output. Be sure to set secrets/variables for your desired configuration and appropriate URLs
     - name: Download Results
