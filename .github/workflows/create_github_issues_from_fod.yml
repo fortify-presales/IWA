@@ -35,7 +35,7 @@ jobs:
 
       # Pull issues from Fortify on Demand and generate SARIF output.
       - name: Download Results
-        uses: akevinlee/gha-fod-generate-sarif@master
+        uses: fortify/gha-fod-generate-sarif@1.1.0
         with:
           base-url: https://emea.fortify.com/
           tenant: ${{ secrets.FOD_TENANT }}
