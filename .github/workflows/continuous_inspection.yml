@@ -7,6 +7,8 @@ on:
   push:
     paths-ignore:
 #      - .github/workflows/*.yml
+      - .github/workflows/create_github_issues_from_fod.yml
+      - .github/workflows/dynamic_security_testing.yml
       - 'etc/**'
       - 'media/**'
       - 'Jenkinsfile'
@@ -79,7 +81,7 @@ jobs:
     - name: Download Results
       uses: akevinlee/gha-fod-generate-sarif@master
       with:
-        base-url: https://emea.fortify.com/
+        base-url: https://emea.fortify.com
         tenant: ${{ secrets.FOD_TENANT }}
         user: ${{ secrets.FOD_USER }}
         password: ${{ secrets.FOD_PAT }}

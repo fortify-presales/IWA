@@ -1,6 +1,6 @@
-# This workflow is for testing GitHub Actions on a previously created/scanned release
+# This workflow is for generating GitHub Issues from an existing FOD Release
 
-name: Fortify GitHub Actions Test
+name: GitHub Issues from FOD Release
 
 on:
   workflow_dispatch:
@@ -12,8 +12,7 @@ on:
 
 jobs:
   
-  Fortify-GHA-Test:
-    #if: github.ref == 'master' 
+  Generate-GitHub-Issues:
     runs-on: ubuntu-latest
     
     steps:
@@ -34,12 +33,11 @@ jobs:
         with:
           java-version: 1.8
 
-      # Once scan completes, pull SAST issues from Fortify on Demand and generate SARIF output.
-      # TODO: Review Action inputs. For most users, these will be the same as used in the Perform SAST Scan step.
+      # Pull issues from Fortify on Demand and generate SARIF output.
       - name: Download Results
         uses: akevinlee/gha-fod-generate-sarif@master
         with:
-          base-url: https://emea.fortify.com
+          base-url: https://emea.fortify.com/
           tenant: ${{ secrets.FOD_TENANT }}
           user: ${{ secrets.FOD_USER }}
           password: ${{ secrets.FOD_PAT }}
