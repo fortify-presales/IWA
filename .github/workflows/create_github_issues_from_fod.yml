@@ -37,10 +37,16 @@ jobs:
       - name: Download Results
         uses: fortify/gha-fod-generate-sarif@1.1.0
         with:
-          base-url: https://emea.fortify.com/
+          base-url: https://emea.fortify.com
           tenant: ${{ secrets.FOD_TENANT }}
           user: ${{ secrets.FOD_USER }}
           password: ${{ secrets.FOD_PAT }}
           release-id: ${{ github.event.inputs.release-id }}
-          output: ./sarif/output.sarif        
+          output: ./sarif/output.sarif
+
+      # Import Fortify on Demand results to GitHub Security Code Scanning
+      - name: Import Results
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: ./sarif/output.sarif
  

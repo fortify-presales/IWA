@@ -85,7 +85,7 @@ jobs:
         tenant: ${{ secrets.FOD_TENANT }}
         user: ${{ secrets.FOD_USER }}
         password: ${{ secrets.FOD_PAT }}
-        release-id: 56327
+        release-id: ${{ secrets.FOD_RELEASE_ID }}
         output: ./sarif/output.sarif
 
     # Import Fortify on Demand results to GitHub Security Code Scanning
