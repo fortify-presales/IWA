@@ -84,6 +84,8 @@ public class SecurityConfiguration {
             httpSecurity.antMatcher("/api/**")
                     .authorizeRequests()
                         .antMatchers(HttpMethod.GET,"/api/v3/site/status").permitAll()
+                        .antMatchers(HttpMethod.GET,"/api/v3/products").permitAll()
+                        .antMatchers(HttpMethod.GET,"/api/v3/products/**").permitAll()
                         .antMatchers(HttpMethod.GET, "/api/**").authenticated()
                         .antMatchers(HttpMethod.DELETE, "/api/**").hasAnyRole("ADMIN", "API")
                         .antMatchers(HttpMethod.POST, "/api/**").hasAnyRole("ADMIN", "API")
@@ -120,6 +122,7 @@ public class SecurityConfiguration {
                             "/logout",
                             "/register",
                             "/swagger-resources/**",
+                            "/swagger-ui/**",
                             "/swagger-ui.html",
                             "/v3/api-docs/**",
                             "/console/*",
@@ -154,9 +157,6 @@ public class SecurityConfiguration {
                     .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                     .logoutSuccessUrl("/login?logout")
                     .permitAll();
-
-            httpSecurity.headers()
-                    .contentSecurityPolicy("default-src 'self';");
 
             httpSecurity.sessionManagement().maximumSessions(10)
                     .sessionRegistry(sessionRegistry())

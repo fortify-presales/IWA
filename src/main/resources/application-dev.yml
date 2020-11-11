@@ -3,8 +3,6 @@ server:
   error:
     whitelabel:
       enabled: false
-  servlet:
-    context-path: /iwa
 
 spring:
   profiles:

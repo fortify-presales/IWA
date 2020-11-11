@@ -182,7 +182,7 @@ However, as this project has been already pre-configured to download, configure 
 you can use the following:
 
 ```
-mvn -P war,wlp -DskipTests clean package liberty:create liberty:install-feature liberty:deploy liberty:start
+mvn -P war,wlp.int -DskipTests clean package liberty:create liberty:install-feature liberty:deploy liberty:start
 ```
 
 Then you can start a scan using the following:
@@ -200,7 +200,7 @@ PDF report from this file using `ReportGenerator` or upload it to Fortify SSC or
 
 Once you have finished testing the application with WebInspect you can stop WebSphere Liberty using the following:
 ```
-mvn -Pwlp liberty:stop
+mvn -Pwlp.int liberty:stop
 ```
 
 There is an example PowerShell script file `fortify-wi.ps1` that you can run to execute all of the above commands.

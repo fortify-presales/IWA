@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Configuration;
                             defaultValue = "https"),
                     @ServerVariable(
                             name = "environment",
-                            allowableValues = {"localhost:9080/iwa", "insecurewebapp.herokuapp.com"},
+                            allowableValues = {"localhost:9080", "insecurewebapp.herokuapp.com"},
                             defaultValue = "insecurewebapp.herokuapp.com"
                     )
                 }
