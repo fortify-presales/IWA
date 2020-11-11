@@ -139,6 +139,5 @@ jobs:
     - name: Heroku Deployment with Maven
       run: mvn -P war -DskipTests -B heroku:deploy-war --file pom.xml
       if: ${{ secrets.HEROKU_API_KEY }}
-      if: always() # always deploy for now as we are expecting static analysis issues for this application
       env:
         HEROKU_API_KEY: "${{ secrets.HEROKU_API_KEY }}"
