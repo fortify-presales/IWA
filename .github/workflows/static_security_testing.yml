@@ -1,6 +1,6 @@
 # This workflow will execute a SAST scan of the Application Release specified
 
-name: Continuous Inspection
+name: Static Security Testing
 
 on:
   workflow_dispatch:
