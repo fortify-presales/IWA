@@ -480,33 +480,10 @@
                     </filesets>
                 </configuration>
             </plugin>
-            
-            <!-- Generate CycloneDX POM -->
-            <plugin>
-			  <groupId>org.cyclonedx</groupId>
-			  <artifactId>cyclonedx-maven-plugin</artifactId>
-			  <version>1.6.4</version>
-			  <executions>
-			    <execution>
-			      <phase>verify</phase>
-			      <goals>
-			        <goal>makeAggregateBom</goal>
-			      </goals>
-			    </execution>
-			  </executions>
-			  <configuration>
-			    <includeCompileScope>true</includeCompileScope>
-			    <includeProvidedScope>true</includeProvidedScope>
-			    <includeRuntimeScope>true</includeRuntimeScope>
-			    <includeSystemScope>true</includeSystemScope>
-			    <includeTestScope>false</includeTestScope>
-			    <includeDependencyGraph>true</includeDependencyGraph>
-			  </configuration>
-			</plugin>
 
             <!-- Generate OpenAPI descriptor during integrate phase -->
             <!-- Requires application to be running: "mvn spring-boot:run" and then "mvn integration-test" -->
-            <plugin>
+            <!--plugin>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-maven-plugin</artifactId>
                 <version>1.0</version>
@@ -523,7 +500,7 @@
                     <outputFileName>openapi.json</outputFileName>
                     <outputDir>etc</outputDir>
                 </configuration>
-            </plugin>
+            </plugin-->
 
             <!-- Deployment to Heroku -->
             <plugin>

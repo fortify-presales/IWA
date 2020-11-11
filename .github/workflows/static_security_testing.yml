@@ -1,30 +1,18 @@
-# This workflow will build a Java project with Maven, upload source code to Fortify on Demand (for static analysis)
-# and if successful deploy the application to Heroku
+# This workflow will execute a SAST scan of the Application Release specified
 
 name: Continuous Inspection
 
 on:
-  push:
-    paths-ignore:
-#      - .github/workflows/*.yml
-      - .github/workflows/create_github_issues_from_fod.yml
-      - .github/workflows/static_security_testing.yml
-      - .github/workflows/dynamic_security_testing.yml
-      - 'etc/**'
-      - 'media/**'
-      - 'Jenkinsfile'
-      - 'azure-pipelines.yml'
-      - 'README.md'
-    branches:
-      - master
-      #- feature/**
-      #- release/**
-  pull_request:
-    branches:
-      - master
+  workflow_dispatch:
+    inputs:
+      release-id:
+        description: 'Fortify Release Id'
+        required: true
+        default: 56327
 
 jobs:
-  build-test-deploy:
+
+  fortify-on-demand:
     runs-on: ubuntu-latest
     #runs-on: self-hosted
 
@@ -44,10 +32,6 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-
-    # Build / Test with Maven (debug)
-    - name: Build with Maven
-      run: mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dtest=!UserServiceTest -P fortify,jar -B clean verify package --file pom.xml
 
 #
 # Fortify on Demand static scan using "official" GitHub Actions
@@ -72,7 +56,7 @@ jobs:
         FOD_TENANT: ${{ secrets.FOD_TENANT }}
         FOD_USER: ${{ secrets.FOD_USER }}
         FOD_PAT: ${{ secrets.FOD_PAT }}
-        FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
+        FOD_RELEASE_ID: ${{ github.event.inputs.release-id }}
         FOD_URL: "https://emea.fortify.com/"
         FOD_API_URL: "https://api.emea.fortify.com/"
         FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -I 1 -apf"
@@ -86,7 +70,7 @@ jobs:
         tenant: ${{ secrets.FOD_TENANT }}
         user: ${{ secrets.FOD_USER }}
         password: ${{ secrets.FOD_PAT }}
-        release-id: ${{ secrets.FOD_RELEASE_ID }}
+        release-id: ${{ github.event.inputs.release-id }}
         output: ./sarif/output.sarif
 
     # Import Fortify on Demand results to GitHub Security Code Scanning
@@ -128,11 +112,3 @@ jobs:
     #    if ($StarRating -lt 1) { exit 1 } # set to your own criteria
     #  env:
     #    repo-token: "${{ secrets.GITHUB_TOKEN }}"
-
-    # Create WAR file for deployment to Heroku (testing is skipped as we already did it earlier)
-    # then deploy it using Heroku Maven plugin
-    - name: Heroku Deployment with Maven
-      run: mvn -P war -DskipTests -B heroku:deploy-war --file pom.xml
-      if: always() # always deploy for now as we are expecting static analysis issues for this application
-      env:
-        HEROKU_API_KEY: "${{ secrets.HEROKU_API_KEY }}"

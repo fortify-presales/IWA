@@ -155,6 +155,9 @@ public class SecurityConfiguration {
                     .logoutSuccessUrl("/login?logout")
                     .permitAll();
 
+            httpSecurity.headers()
+                    .contentSecurityPolicy("default-src 'self';");
+
             httpSecurity.sessionManagement().maximumSessions(10)
                     .sessionRegistry(sessionRegistry())
                     .expiredUrl("/login?expire");

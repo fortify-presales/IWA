@@ -51,7 +51,7 @@ public class AdminMessageController {
     public String adminMessages(Model model, Principal principal) {
         List<Message> messages = userService.getAllMessages();
         model.addAttribute("messages", messages);
-        this.setModelDefaults(model, principal, "Admin", "nessages");
+        this.setModelDefaults(model, principal, "Admin", "messages");
         return "admin/messages/index";
     }
 

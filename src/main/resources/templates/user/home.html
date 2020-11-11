@@ -19,7 +19,7 @@
             </nav>
 
             <div th:replace="fragments/user-menu.html
-                    :: userMenu('/user/profile', ${messageCount})">
+                    :: userMenu('/user/profile', ${unreadMessageCount})">
             </div>
 
             <div class="col-md-10">

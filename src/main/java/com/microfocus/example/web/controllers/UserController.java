@@ -76,13 +76,12 @@ public class UserController {
             UserForm userForm = new UserForm(optionalUser.get());
             model.addAttribute("userForm", userForm);
             model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
-
+            model.addAttribute("unreadMessageCount", userService.getUserUnreadMessageCount(user.getId()));
         } else {
             model.addAttribute("message", "Internal error accessing user!");
             model.addAttribute("alertClass", "alert-danger");
             return "user/not-found";
         }
-        model.addAttribute("messageCount", "0");
         model.addAttribute("controllerName", "User");
         model.addAttribute("actionName", "index");
         return "user/home";

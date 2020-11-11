@@ -19,9 +19,9 @@
 
     </div>
 
-    <div class="row" style="padding-bottom: 25px">
-        <form th:action="@{/products}" method="GET">
-            <div class="col-md-10 col-md-offset-1">
+    <div class="row">
+        <div class="col-md-12">
+            <form th:action="@{/products}" method="GET">
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="Search" name="keywords" id="keywords" th:value="${keywords}" />
                     <div class="input-group-btn">
@@ -30,8 +30,14 @@
                         </button>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <p></p>
+        </div>
     </div>
 
     <div class="row">
