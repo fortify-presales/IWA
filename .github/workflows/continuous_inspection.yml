@@ -14,6 +14,7 @@ on:
       - 'media/**'
       - 'Jenkinsfile'
       - 'azure-pipelines.yml'
+      - '.gitlab-ci.yml'
       - 'README.md'
     branches:
       - master
@@ -60,6 +61,7 @@ jobs:
       uses: fortify/gha-setup-scancentral-client@v1
     - name: Package Code + Dependencies
       run: scancentral package $PACKAGE_OPTS -o package.zip
+      if: ${{ secrets.FOD_RELEASE_ID }}
       env:
         PACKAGE_OPTS: "-bt mvn"
 
@@ -68,6 +70,7 @@ jobs:
       uses: fortify/gha-setup-fod-uploader@v1
     - name: Perform SAST Scan
       run: java -jar $FOD_UPLOAD_JAR -z package.zip -aurl $FOD_API_URL -purl $FOD_URL -rid "$FOD_RELEASE_ID" -tc "$FOD_TENANT" -uc "$FOD_USER" "$FOD_PAT" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
+      if: ${{ secrets.FOD_RELEASE_ID }}
       env:
         FOD_TENANT: ${{ secrets.FOD_TENANT }}
         FOD_USER: ${{ secrets.FOD_USER }}
@@ -81,6 +84,7 @@ jobs:
     # Once scan completes, pull SAST issues from Fortify on Demand and generate SARIF output. Be sure to set secrets/variables for your desired configuration and appropriate URLs
     - name: Download Results
       uses: fortify/gha-fod-generate-sarif@1.1.0
+      if: ${{ secrets.FOD_RELEASE_ID }}
       with:
         base-url: https://emea.fortify.com
         tenant: ${{ secrets.FOD_TENANT }}
@@ -92,6 +96,7 @@ jobs:
     # Import Fortify on Demand results to GitHub Security Code Scanning
     - name: Import Results
       uses: github/codeql-action/upload-sarif@v1
+      if: ${{ secrets.FOD_RELEASE_ID }}
       with:
         sarif_file: ./sarif/output.sarif
 #
@@ -133,6 +138,7 @@ jobs:
     # then deploy it using Heroku Maven plugin
     - name: Heroku Deployment with Maven
       run: mvn -P war -DskipTests -B heroku:deploy-war --file pom.xml
+      if: ${{ secrets.HEROKU_API_KEY }}
       if: always() # always deploy for now as we are expecting static analysis issues for this application
       env:
         HEROKU_API_KEY: "${{ secrets.HEROKU_API_KEY }}"
