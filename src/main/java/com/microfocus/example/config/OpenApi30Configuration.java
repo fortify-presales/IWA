@@ -20,6 +20,7 @@
 package com.microfocus.example.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
@@ -30,7 +31,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(info = @Info(
         title = "Insecure Web App (IWA) API",
-        description = "This is the REST API for Insecure Web App (IWA). You can select a development or production server to test the API. Currently only basic authentication is supported.",
+        description = "This is the REST API for Insecure Web App (IWA). You can select a development or production server to test the API. " +
+                "Most operations require authentication by a user specific JWT token. To retrieve a JWT token for a user you can use the " +
+                " '/authentication/sign-in' operation below and then copy the value of the 'accessToken' field. This value can then be " +
+                "entered when you click on the 'Authorize' button or lock icons.",
         version = "v3"),
         servers = @Server(
                 url = "{protocol}://{environment}",
@@ -47,11 +51,19 @@ import org.springframework.context.annotation.Configuration;
                 }
         )
 )
-@SecurityScheme(
+/*@SecurityScheme(
         name = "basicAuth",
         type = SecuritySchemeType.HTTP,
         scheme = "basic"
+)*/
+@SecurityScheme(
+        name = "JWT Authentication",
+        description = "Type into the textbox: {your JWT token}.",
+        type = SecuritySchemeType.HTTP,
+        bearerFormat = "JWT",
+        in = SecuritySchemeIn.HEADER,
+        scheme = "bearer"
 )
-public class OpenApi30Config {
+public class OpenApi30Configuration {
 
 }

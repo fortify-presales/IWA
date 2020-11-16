@@ -59,7 +59,7 @@ public class ApiMessageController {
     @Autowired
     private UserService userService;
 
-    @Operation(summary = "Finds messages by keyword(s)", description = "Keyword search by %keyword% format", tags = {"message"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Finds messages by keyword(s)", description = "Keyword search by %keyword% format", tags = {"message"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Message.class)))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -81,7 +81,7 @@ public class ApiMessageController {
         }
     }
 
-    @Operation(summary = "Find message by Id", description = "Find a specific message by its database Id", tags = {"message"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Find message by Id", description = "Find a specific message by its database Id", tags = {"message"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Message.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -100,7 +100,7 @@ public class ApiMessageController {
         return new ResponseEntity<>(message.orElse(null), HttpStatus.OK);
     }
 
-    @Operation(summary = "Create a new message", description = "Creates a new message for a user", tags = {"messages"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Create a new message", description = "Creates a new message for a user", tags = {"messages"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Message.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -118,7 +118,7 @@ public class ApiMessageController {
         return new ResponseEntity<>(userService.saveMessage(newMessage), HttpStatus.OK);
     }
 
-    @Operation(summary = "Update a message", description = "Update a users existing message", tags = {"messages"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Update a message", description = "Update a users existing message", tags = {"messages"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Message.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -135,7 +135,7 @@ public class ApiMessageController {
         return new ResponseEntity<>(userService.saveMessage(newMessage), HttpStatus.OK);
     }
 
-    @Operation(summary = "Delete a message", description = "Delete a users existing message", tags = {"messages"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Delete a message", description = "Delete a users existing message", tags = {"messages"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),

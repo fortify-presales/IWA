@@ -87,3 +87,6 @@ app:
     page-size: 25
   messages:
     home: Hello, Guest!
+  jwt:
+    secret: iwaSecretKey
+    expiration-ms: 86400000

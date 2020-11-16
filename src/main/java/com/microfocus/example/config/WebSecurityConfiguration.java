@@ -19,10 +19,8 @@
 
 package com.microfocus.example.config;
 
-import com.microfocus.example.config.handlers.ApiAccessDeniedHandler;
-import com.microfocus.example.config.handlers.BasicAuthenticationEntryPointCustom;
+import com.microfocus.example.config.handlers.*;
 import com.microfocus.example.service.CustomUserDetailsService;
-import com.microfocus.example.config.handlers.UrlAuthenticationSuccessHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +29,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
@@ -48,9 +49,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration {
+public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private static final Logger log = LoggerFactory.getLogger(SecurityConfiguration.class);
+    private static final Logger log = LoggerFactory.getLogger(WebSecurityConfiguration.class);
 
     public static final String REALM_NAME = "IWA";
 
@@ -64,6 +65,14 @@ public class SecurityConfiguration {
     private ApiAccessDeniedHandler apiAccessDeniedHandler;
 
     @Autowired
+    private AuthenticationEntryPointJwt unauthorizedHandler;
+
+    @Bean
+    public AuthenticationTokenFilter authenticationJwtTokenFilter() {
+        return new AuthenticationTokenFilter();
+    }
+
+    @Autowired
     private SessionRegistry sessionRegistry;
 
     @Value("${spring.profiles.active:Unknown}")
@@ -74,6 +83,12 @@ public class SecurityConfiguration {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
     @Configuration
     @Order(1)
     public class ApiConfigurationAdapter extends WebSecurityConfigurerAdapter {
@@ -81,8 +96,16 @@ public class SecurityConfiguration {
         @Override
         protected void configure(HttpSecurity httpSecurity) throws Exception {
 
+            /*http.cors().and().csrf().disable()
+                    .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                    .authorizeRequests().antMatchers("/api/auth/**").permitAll()
+                    .antMatchers("/api/test/**").permitAll()
+                    .anyRequest().authenticated();*/
+
             httpSecurity.antMatcher("/api/**")
                     .authorizeRequests()
+                        .antMatchers(HttpMethod.POST, "/api/v3/authentication/**").permitAll()
                         .antMatchers(HttpMethod.GET,"/api/v3/site/status").permitAll()
                         .antMatchers(HttpMethod.GET,"/api/v3/products").permitAll()
                         .antMatchers(HttpMethod.GET,"/api/v3/products/**").permitAll()
@@ -91,9 +114,14 @@ public class SecurityConfiguration {
                         .antMatchers(HttpMethod.POST, "/api/**").hasAnyRole("ADMIN", "API")
                         .antMatchers(HttpMethod.PUT, "/api/**").hasAnyRole("ADMIN", "API")
                         .antMatchers(HttpMethod.PATCH, "/api/**").hasAnyRole("ADMIN", "API")
-                    .and().httpBasic().authenticationEntryPoint(basicAuthenticationEntryPoint)
+                    .and().exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
+                    .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    //.and().httpBasic().authenticationEntryPoint(basicAuthenticationEntryPoint)
                     .and().exceptionHandling().accessDeniedHandler(apiAccessDeniedHandler)
                     .and().csrf().disable();
+
+            httpSecurity.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
         }
 
     }

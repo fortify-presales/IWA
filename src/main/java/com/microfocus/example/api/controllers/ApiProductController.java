@@ -58,7 +58,7 @@ public class ApiProductController {
     @Autowired
     private ProductService productService;
 
-    @Operation(summary = "Find products by keyword(s)", description = "Keyword search by %keyword% format", tags = {"products"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Find products by keyword(s)", description = "Keyword search by %keyword% format", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -80,7 +80,7 @@ public class ApiProductController {
         }
     }
 
-    @Operation(summary = "Find product by Id", description = "Find a specific product by its database Id", tags = {"products"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Find product by Id", description = "Find a specific product by its database Id", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Product.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -99,7 +99,7 @@ public class ApiProductController {
         return new ResponseEntity<>(product.orElse(null), HttpStatus.OK);
     }
 
-    @Operation(summary = "Create a new product", description = "Creates a new product", tags = {"products"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Create a new product", description = "Creates a new product", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Product.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -117,7 +117,7 @@ public class ApiProductController {
         return new ResponseEntity<>(productService.saveProduct(newProduct), HttpStatus.OK);
     }
 
-    @Operation(summary = "Update a product", description = "Update an existing product", tags = {"products"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Update a product", description = "Update an existing product", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Product.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -134,7 +134,7 @@ public class ApiProductController {
         return new ResponseEntity<>(productService.saveProduct(newProduct), HttpStatus.OK);
     }
 
-    @Operation(summary = "Delete a product", description = "Delete an existing product", tags = {"products"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Delete a product", description = "Delete an existing product", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),

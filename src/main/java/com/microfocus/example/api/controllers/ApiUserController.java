@@ -59,7 +59,7 @@ public class ApiUserController {
     @Autowired
     private UserService userService;
 
-    @Operation(summary = "Find users by keyword(s)", description = "Keyword search by %keyword% format", tags = {"users"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Find users by keyword(s)", description = "Keyword search by %keyword% format", tags = {"users"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(array = @ArraySchema(schema = @Schema(implementation = User.class)))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -81,7 +81,7 @@ public class ApiUserController {
         }
     }
 
-    @Operation(summary = "Find user by Id", description = "Find a specific user by its database Id", tags = {"users"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Find user by Id", description = "Find a specific user by its database Id", tags = {"users"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -100,7 +100,7 @@ public class ApiUserController {
         return new ResponseEntity<>(user.orElse(null), HttpStatus.OK);
     }
 
-    @Operation(summary = "Create a new user", description = "Creates a new user", tags = {"users"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Create a new user", description = "Creates a new user", tags = {"users"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -118,7 +118,7 @@ public class ApiUserController {
         return new ResponseEntity<>(userService.saveUser(newUser), HttpStatus.OK);
     }
 
-    @Operation(summary = "Update a user", description = "Update an existing user", tags = {"users"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Update a user", description = "Update an existing user", tags = {"users"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -135,7 +135,7 @@ public class ApiUserController {
         return new ResponseEntity<>(userService.saveUser(newUser), HttpStatus.OK);
     }
 
-    @Operation(summary = "Delete a user", description = "Delete an existing user", tags = {"users"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Delete a user", description = "Delete an existing user", tags = {"users"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),

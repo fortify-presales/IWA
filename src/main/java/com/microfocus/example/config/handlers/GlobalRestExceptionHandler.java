@@ -66,7 +66,6 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     // Custom exception handlers
 
-
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ApiStatusResponse> userNotFound(final UserNotFoundException ex, final WebRequest request) {
         ArrayList<String> errors = new ArrayList<>();

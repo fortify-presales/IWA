@@ -37,6 +37,7 @@
         <font-awesome.version>5.12.0</font-awesome.version>
         <chartjs.version>2.9.3</chartjs.version>
         <springdoc-openapi.version>1.4.3</springdoc-openapi.version>
+        <jwt.version>0.9.1</jwt.version>
         <wlp.dir>C:/Tools/wlp</wlp.dir>
     </properties>
 
@@ -158,6 +159,12 @@
                     <artifactId>android-json</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>${jwt.version}</version>
         </dependency>
 
         <dependency>

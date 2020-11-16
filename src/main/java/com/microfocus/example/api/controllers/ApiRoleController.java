@@ -59,7 +59,7 @@ public class ApiRoleController {
     @Autowired
     private UserService roleService;
 
-    @Operation(summary = "Find roles by keyword(s)", description = "Keyword search by %keyword% format", tags = {"roles"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Find roles by keyword(s)", description = "Keyword search by %keyword% format", tags = {"roles"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Authority.class)))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -81,7 +81,7 @@ public class ApiRoleController {
         }
     }
 
-    @Operation(summary = "Find role by Id", description = "Find a specific role by its database Id", tags = {"roles"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Find role by Id", description = "Find a specific role by its database Id", tags = {"roles"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Authority.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -100,7 +100,7 @@ public class ApiRoleController {
         return new ResponseEntity<>(role.orElse(null), HttpStatus.OK);
     }
 
-    @Operation(summary = "Create a new role", description = "Creates a new role", tags = {"roles"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Create a new role", description = "Creates a new role", tags = {"roles"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Authority.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -118,7 +118,7 @@ public class ApiRoleController {
         return new ResponseEntity<>(roleService.saveRole(newRole), HttpStatus.OK);
     }
 
-    @Operation(summary = "Update a role", description = "Update an existing role", tags = {"roles"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Update a role", description = "Update an existing role", tags = {"roles"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Authority.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -135,7 +135,7 @@ public class ApiRoleController {
         return new ResponseEntity<>(roleService.saveRole(newRole), HttpStatus.OK);
     }
 
-    @Operation(summary = "Delete a role", description = "Delete an existing role", tags = {"roles"}, security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Delete a role", description = "Delete an existing role", tags = {"roles"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),

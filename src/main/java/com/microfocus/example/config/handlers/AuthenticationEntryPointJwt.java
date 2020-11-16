@@ -19,8 +19,17 @@
 
 package com.microfocus.example.config.handlers;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microfocus.example.config.WebSecurityConfiguration;
 import com.microfocus.example.entity.ApiStatusResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,28 +37,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-
 @Component
-public class BasicAuthenticationEntryPointCustom extends BasicAuthenticationEntryPoint {
+public class AuthenticationEntryPointJwt implements AuthenticationEntryPoint {
 
-    private static final Logger log = LoggerFactory.getLogger(BasicAuthenticationEntryPointCustom.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationEntryPointJwt.class);
 
     @Override
-    public void commence(
-            HttpServletRequest request, HttpServletResponse response, AuthenticationException ex)
-            throws IOException, ServletException {
-        response.addHeader("WWW-Authenticate", "Basic realm='" + getRealmName() + "'");
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+                         AuthenticationException ex) throws IOException, ServletException {
+        //logger.error("Unauthorized error: {}", authException.getMessage());
+        //response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         ArrayList<String> errors = new ArrayList<>();
         errors.add(ex.getLocalizedMessage());
@@ -67,9 +67,4 @@ public class BasicAuthenticationEntryPointCustom extends BasicAuthenticationEntr
         writer.println(jsonString);
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        setRealmName(WebSecurityConfiguration.REALM_NAME);
-        super.afterPropertiesSet();
-    }
 }
