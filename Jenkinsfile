@@ -43,12 +43,12 @@ pipeline {
     parameters {
         booleanParam(name: 'SCA_ENABLED',       defaultValue: false,
             description: 'Enable Fortify SCA for Static Application Security Testing')
+        booleanParam(name: 'SCANCENTRAL_ENABLED', defaultValue: false,
+            description: 'Run a remote scan via Scan Central')           
+        booleanParam(name: 'SSC_ENABLED',       defaultValue: false,
+            description: 'Enable upload of scans to Fortify Software Security Center')             
         booleanParam(name: 'FOD_ENABLED',       defaultValue: false,
             description: 'Enable Fortify on Demand for Static Application Security Testing')
-        booleanParam(name: 'SSC_ENABLED',       defaultValue: false,
-            description: 'Enable upload of scans to Fortify Software Security Center')
-        booleanParam(name: 'SCANCENTRAL_ENABLED', defaultValue: false,
-            description: 'Run a remote scan via Scan Central')
         booleanParam(name: 'WEBINSPECT_ENABLED', defaultValue: false,
             description: 'Enable WebInspect for Dynamic Application Security Testing')
         booleanParam(name: 'DOCKER_ENABLED',    defaultValue: false,
@@ -321,7 +321,8 @@ pipeline {
 	                	}	
 
 						// run WebInspect scan
-                        runWebInspectScan("${env.WI_API}", "IWA-UI", "IWA Web Scan", "${env.APP_URL}", "Login", 1008)   
+						code = load 'etc/wi-scan.groovy'
+                        code.runWebInspectScan("${env.WI_API}", "IWA-UI", "IWA Web Scan", "${env.APP_URL}", "Login", 1008)   
 
                         // Stop WebSphere Liberty server integration instance
                         if (isUnix()) {
@@ -367,57 +368,4 @@ pipeline {
             }
         }
     }
-}
-
-@NonCPS
-def runWebInspectScan(wiApiUrl, settingsName, scanName, scanUrl, loginMacroName, policyId) {
-	def scanId
-	def scanStatus
-	
-	// start a new scan
-	def postUrl = "${wiApiUrl}/scanner/scans"
-	println "WebInspect POST request: $postUrl with body:"
-	def post = new URL(postUrl).openConnection()
-	def body = """\
-	{
-		"settingsName": "$settingsName",
-		"overrides": {
-			"scanName": "$scanName",
-			"startUrls": [ "$scanUrl" ],
-			"loginMacro": "$loginMacroName",
-			"policyId": $policyId
-		}
-	}
-	"""
-	println body
-	post.setRequestMethod("POST")
-	post.setDoOutput(true)
-	post.setRequestProperty("Accept", "application/json")
-	post.setRequestProperty("Content-Type", "application/json")
-	post.getOutputStream().write(body.getBytes("UTF-8"))
-	def postRC = post.getResponseCode()
-	if (postRC.equals(200) || postRC.equals(201)) {
-		def parsedJson = new groovy.json.JsonSlurper().parseText(post.getInputStream().getText())
-		scanId = parsedJson.ScanId
-		println "Scan Id: $scanId"
-	} else {
-		System.exit(1)
-	}
-	
-	// get status of scan
-	def getUrl = "${wiApiUrl}/scanner/scans/${scanId}?action=WaitForStatusChange"
-	println "WebInspect GET request: $getUrl"
-	def get = new URL(getUrl).openConnection()
-	get.setRequestMethod("GET")
-	get.setDoOutput(true)
-	get.setRequestProperty("Accept", "application/json")
-	def getRC = get.getResponseCode()
-	if (getRC.equals(200) || getRC.equals(201)) {
-		def parsedJson = new groovy.json.JsonSlurper().parseText(get.getInputStream().getText())
-		scanStatus = parsedJson.ScanStatus
-		println "Scan Status: $scanStatus"
-	} 
-	
-	// download scan results
-
 }
