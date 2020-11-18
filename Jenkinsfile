@@ -165,8 +165,13 @@ pipeline {
                     // unstash the built files
                     unstash name: "${env.COMPONENT_NAME}_release"
                     if (params.DOCKER_ENABLED) {
-                        // Create docker image using JAR file
-                        dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
+                    	if (isWindows()) {
+                        	// Create docker image using JAR file
+                        	dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win"
+                        } else {
+                        	// Create docker image using JAR file
+                        	dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
+                        }	
                     } else {
                         println "No packaging to do ..."
                     }
