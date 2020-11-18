@@ -51,8 +51,6 @@ pipeline {
             description: 'Enable Fortify on Demand for Static Application Security Testing')
         booleanParam(name: 'WEBINSPECT_ENABLED', defaultValue: false,
             description: 'Enable WebInspect for Dynamic Application Security Testing')
-        booleanParam(name: 'DOCKER_ENABLED',    defaultValue: false,
-            description: 'Use Docker for automated deployment of JAR file into container')
     }
 
     environment {
@@ -65,7 +63,7 @@ pipeline {
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         GIT_CREDS = credentials('iwa-git-creds-id')			// Git Credentials
         JAVA_VERSION = 8                                    // Java version to compile as
-        APP_URL = "https://localhost:6443/iwa/"             // URL of where the application is deployed to (for integration testing, WebInspect etc)
+        APP_URL = "https://localhost:8888"                  // URL of where the application it is run using docker
         ISSUE_IDS = ""                                      // List of issues found from commit
         DOCKER_ORG = "mfdemouk"                             // Docker organisation (in Docker Hub) to push images to
 
@@ -126,17 +124,9 @@ pipeline {
 
                     // Run maven to build WAR/JAR application
                     if (isUnix()) {
-                        if (params.DOCKER_ENABLED) {
-                            sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P jar,release clean package'
-                        } else {
-                            sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P war,release clean package'
-                        }
+                        sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P jar,release clean package'
                     } else {
-                        if (params.DOCKER_ENABLED) {
-                            bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P jar,release clean package"
-                        } else {
-                            bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P war,release clean package"
-                        }
+                        bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P jar,release clean package"
                     }
                 }
             }
@@ -164,17 +154,13 @@ pipeline {
                 script {
                     // unstash the built files
                     unstash name: "${env.COMPONENT_NAME}_release"
-                    if (params.DOCKER_ENABLED) {
-                    	if (isUnix()) {
-                        	// Create docker image using JAR file
-                        	dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
-                        } else {
-                        	// Create docker image using JAR file
-                        	dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
-                        }	
+                	if (isUnix()) {
+                    	// Create docker image using JAR file
+                    	dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
                     } else {
-                        println "No packaging to do ..."
-                    }
+                    	// Create docker image using JAR file
+                    	dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
+                    }	
                 }
             }
         }
@@ -287,7 +273,7 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+/*        stage('Deploy') {
             when {
             	beforeAgent true
             	anyOf {
@@ -301,11 +287,12 @@ pipeline {
                 	unstash name: "${env.COMPONENT_NAME}_release"                        
                     if (params.DOCKER_ENABLED) {
                         // Run Docker container
-                        dockerContainer = dockerImage.run()
+                        dockerContainer = dockerImage.run("-p 8888:8080")
                     }
                  }
              }
         }
+*/
 
         stage('DAST') {
         	when {
@@ -317,24 +304,15 @@ pipeline {
             steps {
                 script {
                     if (params.WEBINSPECT_ENABLED) {
-                    
-	                	// Start WebSphere Liberty server integration instance  
-	                	if (isUnix()) {
-	                    	sh "mvn -Pwlp.int liberty:create liberty:install-feature liberty:deploy liberty:start"
-	                    } else {	
-	                		bat "mvn -Pwlp.int liberty:create liberty:install-feature liberty:deploy liberty:start"
-	                	}	
+                        // start docker container
+                        dockerContainer = dockerImage.run("-p 8888:8080")
 
 						// run WebInspect scan
 						code = load 'etc/wi-scan.groovy'
                         code.runWebInspectScan("${env.WI_API}", "IWA-UI", "IWA Web Scan", "${env.APP_URL}", "Login", 1008)   
 
-                        // Stop WebSphere Liberty server integration instance
-                        if (isUnix()) {
-                            sh "mvn -Pwlp.int liberty:stop"
-                        } else {
-                            bat("mvn -Pwlp.int liberty:stop")
-                        }    
+                        // stop docker container
+                        dockerContainer.stop()
                     } else {
                         println "No Dynamic Application Security Testing (DAST) to do ...."
                     }
@@ -357,18 +335,13 @@ pipeline {
             agent { label 'master' }
             steps {
                 script {
-                    if (params.DOCKER_ENABLED) {
-                        // Stop the container if still running
-                        dockerContainer.stop()
-                        // Example publish to Docker Hub
-                        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-                            dockerImage.push("${env.APP_VER}.${BUILD_NUMBER}")
-                            // and tag as "latest"
-                            dockerImage.push("latest")
-                        }
-                    } else {
-                       	println "No release-ing to do..."
+                    // Example publish to Docker Hub
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                        dockerImage.push("${env.APP_VER}.${BUILD_NUMBER}")
+                        // and tag as "latest"
+                        dockerImage.push("latest")
                     }
+
                 }
             }
         }
