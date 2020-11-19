@@ -29,6 +29,7 @@
 // The instances of Docker image and container that are created
 def dockerImage
 def dockerContainer
+def dockerContainerName = "iwa-jenkins"
 
 pipeline {
     agent any
@@ -68,7 +69,7 @@ pipeline {
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         GIT_CREDS = credentials('iwa-git-creds-id')			// Git Credentials
         JAVA_VERSION = 8                                    // Java version to compile as
-        APP_URL = "https://localhost:8888"                  // URL of where the application is running using docker
+        APP_URL = "http://localhost:8888"                   // URL of where the application is running using docker
         ISSUE_IDS = ""                                      // List of issues found from commit
         DOCKER_ORG = "mfdemouk"                             // Docker organisation (in Docker Hub) to push released images to
 
@@ -296,14 +297,20 @@ pipeline {
                 script {
                     if (params.DAST_WEBINSPECT) {
                         // start docker container
-                        dockerContainer = dockerImage.run("-p 8888:8080")
+                        dockerContainer = dockerImage.run("--name ${dockerContainerName}", "-p 8888:8080")
 
 						// run WebInspect scan
 						code = load 'etc/wi-scan.groovy'
                         code.runWebInspectScan("${env.WI_API}", "IWA-UI", "IWA Web Scan", "${env.APP_URL}", "Login", 1008)   
 
                         // stop docker container
-                        dockerContainer.stop()
+						if (isUnix()) {
+							dockerContainer.stop()
+						} else {
+							// hack for windows: stop & rm container with dockerContainerName
+							bat(script: "docker stop ${dockerContainerName}")
+							bat(script: "docker rm -f ${dockerContainerName}")
+						}
 						if (params.UPLOAD_TO_SSC) {
 							println "DAST Upload to SSC is not yet implemented"
 						}

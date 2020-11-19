@@ -3,7 +3,7 @@
 #
 
 # Application URL when deployed
-$AppUrl = "https://localhost:6443/iwa/"
+$AppUrl = "http://localhost:8888"
 
 # WebInspect policy to use - 1008 = Crtical and High only
 $WIPolicyId = 1008
