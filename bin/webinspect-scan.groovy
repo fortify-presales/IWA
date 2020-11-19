@@ -57,5 +57,6 @@ def runWebInspectScan(wiApiUrl, settingsName, scanName, scanUrl, loginMacroName,
 
 }
 
+// example invocation
 //runWebInspectScan("http://localhost:8083/webinspect", "IWA-UI", "IWA Web Scan", "http://localhost:8888", "Login", 1008)
 return this
