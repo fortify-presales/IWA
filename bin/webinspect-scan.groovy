@@ -29,6 +29,9 @@ def runWebInspectScan(wiApiUrl, settingsName, scanName, scanUrl, loginMacroName,
 		scanId = parsedJson.ScanId
 		println "Scan Id: $scanId"
 	} else {
+		println "Got error response: $postRC"
+		def parsedJson = new groovy.json.JsonSlurper().parseText(post.getInputStream().getText())
+		if (parsedJson) { println parsedJson.Message }
 		return false
 	}
 	
@@ -50,4 +53,5 @@ def runWebInspectScan(wiApiUrl, settingsName, scanName, scanUrl, loginMacroName,
 
 }
 
+//runWebInspectScan("http://localhost:8083/webinspect", "IWA-UI", "IWA Web Scan", "http://localhost:8888", "Login", 1008)
 return this

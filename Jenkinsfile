@@ -299,9 +299,9 @@ pipeline {
                         // start docker container
                         dockerContainer = dockerImage.run("--name ${dockerContainerName}", "-p 8888:8080")
 
-						// run WebInspect scan
-						code = load 'etc/wi-scan.groovy'
-                        code.runWebInspectScan("${env.WI_API}", "IWA-UI", "IWA Web Scan", "${env.APP_URL}", "Login", 1008)   
+						// run WebInspect scan - this assumes a settings file called "IWA-UI" already exists (can be imported from etc)
+						code = load 'bin/webinspect-scan.groovy'
+                        code.runWebInspectScan("${env.WI_API}", "IWA-UI", "IWA Web Scan", "${env.APP_URL}", "Login", $WI_POLICY_ID)   
 
                         // stop docker container
 						if (isUnix()) {
