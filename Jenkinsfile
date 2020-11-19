@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 //********************************************************************************
-// An example pipeline for DevSecOps using Micro Focus Fortify and Deployment Automation products
+// An example pipeline for DevSecOps using Micro Focus Fortify Application Security products
 // @author: Kevin A. Lee (kevin.lee@microfocus.com)
 //
 //
@@ -11,8 +11,7 @@
 // - A Fortify On Demand account and API access are available (for cloud based SAST)
 //
 // Node setup:
-// - For Fortify on premise software: Apply the label "fortify" to Fortify SCA agent and "webinspect" to the WebInspect agent.
-// - For Fortify on Demand: apply the label "fortify" to the agent or master that will connect to Fortify on Demand.
+// - Apply the label "fortify" to Fortify SCA and WebInspect agent.
 // Also ensure the label "master" has been applied to your Jenkins master.
 //
 // Credentials setup:
@@ -41,16 +40,22 @@ pipeline {
     // Note: the pipeline needs to be executed at least once for the parameters to be available
     //
     parameters {
-        booleanParam(name: 'SCA_ENABLED',       defaultValue: false,
-            description: 'Enable Fortify SCA for Static Application Security Testing')
-        booleanParam(name: 'SCANCENTRAL_ENABLED', defaultValue: false,
-            description: 'Run a remote scan via Scan Central')           
-        booleanParam(name: 'SSC_ENABLED',       defaultValue: false,
-            description: 'Enable upload of scans to Fortify Software Security Center')             
-        booleanParam(name: 'FOD_ENABLED',       defaultValue: false,
+        booleanParam(name: 'SAST_SCA',       	defaultValue: false,
+            description: 'Use local Fortify SCA for Static Application Security Testing')
+        booleanParam(name: 'SAST_SCA_OSS',      defaultValue: false,
+            description: 'Use local Fortify SCA and Sonatype Nexus IQ for Static Application Security Testing and Open Source Component Analysis')			
+        booleanParam(name: 'SAST_SCANCENTRAL', 	defaultValue: false,
+            description: 'Run a remote scan using Scan Central for Static Application Security Testing')       
+        booleanParam(name: 'DAST_WEBINSPECT', 	defaultValue: false,
+            description: 'Use local WebInspect for Dynamic Application Security Testing')		
+        booleanParam(name: 'DAST_SCANCENTRAL', 	defaultValue: false,
+            description: 'Run a remote WebInspect scan using Scan Central for Dynamic Application Security Testing')				
+        booleanParam(name: 'UPLOAD_TO_SSC',		defaultValue: false,
+            description: 'Enable upload of scan results to Fortify Software Security Center')             
+        booleanParam(name: 'SAST_FOD',       	defaultValue: false,
             description: 'Enable Fortify on Demand for Static Application Security Testing')
-        booleanParam(name: 'WEBINSPECT_ENABLED', defaultValue: false,
-            description: 'Enable WebInspect for Dynamic Application Security Testing')
+        booleanParam(name: 'DAST_FOD',       	defaultValue: false,
+            description: 'Enable Fortify on Demand for Dynamic Application Security Testing')			
     }
 
     environment {
@@ -63,9 +68,9 @@ pipeline {
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         GIT_CREDS = credentials('iwa-git-creds-id')			// Git Credentials
         JAVA_VERSION = 8                                    // Java version to compile as
-        APP_URL = "https://localhost:8888"                  // URL of where the application it is run using docker
+        APP_URL = "https://localhost:8888"                  // URL of where the application is running using docker
         ISSUE_IDS = ""                                      // List of issues found from commit
-        DOCKER_ORG = "mfdemouk"                             // Docker organisation (in Docker Hub) to push images to
+        DOCKER_ORG = "mfdemouk"                             // Docker organisation (in Docker Hub) to push released images to
 
         //
         // Fortify On Demand (FOD) settings
@@ -77,7 +82,8 @@ pipeline {
         //
         // Fortify Static Code Analyzer (SCA) settings
         //
-        FORTIFY_HOME = "C:\\Micro Focus\\Fortify SCA and Apps 20.1.2"	// Home directory for Fortify SCA on agent
+		// Should really set an environment variable in Jenkins similar to this:
+        FORTIFY_HOME = "C:\\Micro Focus\\Fortify SCA and Apps 20.2.0"	// Home directory for Fortify SCA on agent
 
         //
         // Fortify Software Security Center (SSC) settings
@@ -169,12 +175,12 @@ pipeline {
             when {
             	beforeAgent true
             	anyOf {
-            	    expression { params.SCA_ENABLED == true }
-            	    expression { params.SCANCENTRAL_ENABLED == true }
-            	    expression { params.FOD_ENABLED == true }         	     
+            	    expression { params.SAST_SCA == true }
+            	    expression { params.SAST_SCANCENTRAL == true }
+            	    expression { params.SAST_FOD == true }         	     
         	    }
             }
-            // Run on an Agent with "fortify" label applied - assumes Fortify SCA command line tools are installed
+            // Run on an Agent with "fortify" label applied
             agent {label "fortify"}
             steps {
                 script {
@@ -194,7 +200,7 @@ pipeline {
                     def classpath = readFile "${env.WORKSPACE}/cp.txt"
                     println "Using classpath: $classpath"
 
-                    if (params.FOD_ENABLED) {
+                    if (params.SAST_FOD) {
                         // Upload built application to Fortify on Demand and carry out Static Assessment
                         fodStaticAssessment releaseId: ${env.FOD_RELEASE_ID},
                             // bsiToken: "${env.FOD_BSI_TOKEN}",
@@ -208,13 +214,13 @@ pipeline {
                             //bsiToken: "${env.FOD_BSI_TOKEN}",
                             //policyFailureBuildResultPreference: 1,
                             pollingInterval: 5
-                    } else if (params.SCANCENTRAL_ENABLED) {
+                    } else if (params.SAST_SCANCENTRAL) {
 
                         // set any standard remote translation/scan options
                         fortifyRemoteArguments transOptions: '',
                               scanOptions: ''
 
-                        if (params.SSC_ENABLED) {
+                        if (params.UPLOAD_TO_SSC) {
                             // Remote analysis (using Scan Central) and upload to SSC
                             fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
                                 remoteOptionalConfig: [
@@ -236,7 +242,7 @@ pipeline {
                                 ]
                         }
 
-                    } else if (params.SCA_ENABLED) {
+                    } else if (params.SAST_SCA) {
                         // optional: update scan rules
                         //fortifyUpdate updateServerURL: 'https://update.fortify.com'
 
@@ -260,50 +266,35 @@ pipeline {
                             addJVMOptions: '',
                             logFile: "${env.COMPONENT_NAME}-scan.log"
 
-                        if (params.SSC_ENABLED) {
+                        if (params.UPLOAD_TO_SSC) {
                             // Upload to SSC
                             fortifyUpload appName: "${env.APP_NAME}",
                                 appVersion: "${env.APP_VER}",
                                 resultsFile: "${env.COMPONENT_NAME}.fpr"
                         }
+					} else if (params.SAST_SCA_OSS) {
+						println "SAST and OSS via SCA and Sonatype is not yet implemented."
                     } else {
-                        println "No Static Application Security Testing (SAST) to do  ..."
+                        println "No Static Application Security Testing (SAST) to do."
                     }
                 }
             }
         }
 
-/*        stage('Deploy') {
+        stage('DAST') {
             when {
             	beforeAgent true
             	anyOf {
-            	    expression { params.DOCKER_ENABLED == true }   	     
+            	    expression { params.DAST_WEBINSPECT == true }
+            	    expression { params.DAST_SCANCENTRAL == true }
+            	    expression { params.DAST_FOD == true }         	     
         	    }
             }
-            // Run on "master" node
-            agent { label 'master' }
-            steps {
-                 script {
-                	unstash name: "${env.COMPONENT_NAME}_release"                        
-                    if (params.DOCKER_ENABLED) {
-                        // Run Docker container
-                        dockerContainer = dockerImage.run("-p 8888:8080")
-                    }
-                 }
-             }
-        }
-*/
-
-        stage('DAST') {
-        	when {
-            	beforeAgent true
-        	    expression { params.WEBINSPECT_ENABLED == true }
-            }
-            // Run on an Agent with "webinspect" label applied - needs JDK and Maven installed
-            agent {label "webinspect"}
+            // Run on an Agent with "fortify" label applied
+            agent {label "fortify"}
             steps {
                 script {
-                    if (params.WEBINSPECT_ENABLED) {
+                    if (params.DAST_WEBINSPECT) {
                         // start docker container
                         dockerContainer = dockerImage.run("-p 8888:8080")
 
@@ -313,13 +304,21 @@ pipeline {
 
                         // stop docker container
                         dockerContainer.stop()
+						if (params.UPLOAD_TO_SSC) {
+							println "DAST Upload to SSC is not yet implemented"
+						}
+					} else if (params.DAST_SCANCENTRAL) {
+						println "DAST via ScanCentral is not yet implemented."
+					} else if (params.DAST_FOD) {
+						println "DAST via FOD is not yet implemented."						
                     } else {
-                        println "No Dynamic Application Security Testing (DAST) to do ...."
+                        println "No Dynamic Application Security Testing (DAST) to do."
                     }
                 }
             }
         }
         
+		// An example manual release checkpoint
         stage('Prepare') {
         	agent { label 'master' }
         	steps {
@@ -341,7 +340,6 @@ pipeline {
                         // and tag as "latest"
                         dockerImage.push("latest")
                     }
-
                 }
             }
         }
