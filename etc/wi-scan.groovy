@@ -29,7 +29,7 @@ def runWebInspectScan(wiApiUrl, settingsName, scanName, scanUrl, loginMacroName,
 		scanId = parsedJson.ScanId
 		println "Scan Id: $scanId"
 	} else {
-		System.exit(1)
+		return false
 	}
 	
 	// get status of scan
