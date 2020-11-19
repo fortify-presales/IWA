@@ -27,7 +27,7 @@ def runWebInspectScan(wiApiUrl, settingsName, scanName, scanUrl, loginMacroName,
 	if (postRC.equals(200) || postRC.equals(201)) {
 		def parsedJson = new groovy.json.JsonSlurper().parseText(post.getInputStream().getText())
 		scanId = parsedJson.ScanId
-		println "Scan Id: $scanId"
+		println "Started scan Id: $scanId"
 	} else {
 		println "Got error response: $postRC"
 		def parsedJson = new groovy.json.JsonSlurper().parseText(post.getInputStream().getText())
@@ -35,21 +35,25 @@ def runWebInspectScan(wiApiUrl, settingsName, scanName, scanUrl, loginMacroName,
 		return false
 	}
 	
-	// get status of scan
-	def getUrl = "${wiApiUrl}/scanner/scans/${scanId}?action=WaitForStatusChange"
-	println "WebInspect GET request: $getUrl"
-	def get = new URL(getUrl).openConnection()
-	get.setRequestMethod("GET")
-	get.setDoOutput(true)
-	get.setRequestProperty("Accept", "application/json")
-	def getRC = get.getResponseCode()
-	if (getRC.equals(200) || getRC.equals(201)) {
-		def parsedJson = new groovy.json.JsonSlurper().parseText(get.getInputStream().getText())
-		scanStatus = parsedJson.ScanStatus
-		println "Scan Status: $scanStatus"
-	}
-	
-	// download scan results
+	do {
+		println "Polling status of scan id: $scanId"
+		sleep(5000)
+		// get status of scan
+		def getUrl = "${wiApiUrl}/scanner/scans/${scanId}?action=WaitForStatusChange"
+		println "WebInspect GET request: $getUrl"
+		def get = new URL(getUrl).openConnection()
+		get.setRequestMethod("GET")
+		get.setDoOutput(true)
+		get.setRequestProperty("Accept", "application/json")
+		def getRC = get.getResponseCode()
+		if (getRC.equals(200) || getRC.equals(201)) {
+			def parsedJson = new groovy.json.JsonSlurper().parseText(get.getInputStream().getText())
+			scanStatus = parsedJson.ScanStatus
+			println "Scan Status: $scanStatus"
+		}
+	} while (scanStatus == "NotRunning" || scanStatus == "Running")	
+
+	// TODO: download scan results as FPR
 
 }
 
