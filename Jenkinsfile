@@ -305,7 +305,7 @@ pipeline {
 						scanStatus = code.getWebInspectScanStatus("${env.WI_API}", scanId).toLowerCase()
 						while (scanStatus != "complete" || scanStatus != "interrupted") {
 							sleep(120) // seconds
-							scanStatus = code.getWebInspectScanStatus("${env.WI_API}", scanId)
+							scanStatus = code.getWebInspectScanStatus("${env.WI_API}", scanId).toLowerCase()
 						}	
 
                         // stop docker container
