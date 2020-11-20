@@ -37,7 +37,7 @@ def runWebInspectScan(wiApiUrl, settingsName, scanName, scanUrl, loginMacroName,
 	return scanId
 }
 
-def getWebInspectScanStatus(scanId) {
+def getWebInspectScanStatus(wiApiUrl, scanId) {
     def scanStatus
 
 	// get status of scan
