@@ -100,6 +100,7 @@ pipeline {
         WI_API = "http://localhost:8083/webinspect"			// WebInspect API - no authentication assumed
         WI_POLICY_ID = 1008									// WebInspect Scan Policy Id - 1008 = Critical and High
         WI_OUTPUT_FILE = "${env.WORKSPACE}\\wi-iwa.fpr"     // Output file (FPR) to create
+		WI_LOGIN_MACRO = "IWA-Login"						// This macro "etc\IWA-Login.webmacro" needs to exist in "C:\Windows\system32\config\systemprofile\AppData\Local\HP\HP WebInspect\Tools\Settings"
     }
 
     tools {
