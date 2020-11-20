@@ -297,14 +297,14 @@ pipeline {
                 script {
                     if (params.DAST_WEBINSPECT) {
                         // start docker container
-                        dockerContainer = dockerImage.run("--name ${dockerContainerName}", "-p 8888:8080")
+                        dockerContainer = dockerImage.run("--name ${dockerContainerName} -p 8888:8080")
 
 						// run WebInspect scan - this assumes a settings file called "IWA-UI" already exists (can be imported from etc)
 						code = load 'bin/webinspect-scan.groovy'
                         scanId = code.runWebInspectScan("${env.WI_API}", "IWA-UI", "IWA Web Scan", "${env.APP_URL}", "Login", "${env.WI_POLICY_ID}")
 						scanStatus = code.getWebInspectScanStatus("${env.WI_API}", scanId)
 						while (scanStatus == "NotRunning" || scanStatus == "Running") {
-							sleep(3000)
+							sleep(120) // seconds
 							scanStatus = code.getWebInspectScanStatus("${env.WI_API}", scanId)
 						}	
 
