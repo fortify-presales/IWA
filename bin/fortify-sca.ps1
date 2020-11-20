@@ -2,7 +2,6 @@
 # Example script to perform Fortify SCA static analysis
 #
 
-$DoOssScan = $True
 $UploadToSSC = $True
 $FortifySSCUrl = "http://localhost:8080/ssc/"
 $FortifySSCAppId = 10000
@@ -22,18 +21,10 @@ if ((Get-Command "sourceanalyzer.exe" -ErrorAction SilentlyContinue) -eq $null)
     Break
 }
 
-# Check Source And Lib Analyzer is installed
-if ((Get-Command "sourceandlibscanner.bat" -ErrorAction SilentlyContinue) -eq $null)
-{
-    Write-Host "sourceandlibscanner.bat is not in your PATH, will not run open source scanning"
-    $DoOssScan = $False
-}
-
 # Check Fortify Client is installed
 if ((Get-Command "fortifyclient.bat" -ErrorAction SilentlyContinue) -eq $null)
 {
     Write-Host "fortifyclient.bat is not in your PATH, will not upload to SSC"
-    $DoOssScan = $False
 }
 
 # Clean Project and scan results from previous run
@@ -64,14 +55,9 @@ Write-Host ************************************************************
 Write-Host Scanning source files...
 Write-Host ************************************************************
 & sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' -b iwa -findbugs -cp $ClassPath  -java-build-dir "target/classes" `
-    -build-project "Insecure Web App" -build-version "v1.0" -build-label "SNAPSHOT" -scan -f target\iwa.fpr
+	-build-project "Insecure Web App" -build-version "v1.0" -build-label "SNAPSHOT" -scan -f target\iwa.fpr
 # -filter etc\sca-filter.txt
-if ($DoOssScan) {
-	& sourceandlibscanner -auto -bt mvn -bf pom.xml -sonatype -libscanurl https://ds.sonatype.com -nexusauth $Env:NEXUS_AUTH_TOKEN `
-		-upload -ssc $FortifySSCUrl -ssctoken $Env:SSC_AUTH_TOKEN -versionid $FortifySSCAppVersionId
-	& sourceandlibscanner -auto -scan -bt mvn -sonatype -libscanurl https://ds.sonatype.com -nexusauth $Env:NEXUS_AUTH_TOKEN `
-		-upload -ssc $FortifySSCUrl -ssctoken $Env:SSC_AUTH_TOKEN -versionid $FortifySSCAppVersionId
-}		
+
 
 # Generate a PDF Report
 Write-Host ************************************************************
