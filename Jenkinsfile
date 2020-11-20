@@ -305,9 +305,11 @@ pipeline {
 						code = load 'bin/webinspect-scan.groovy'
                         scanId = code.runWebInspectScan("${env.WI_API}", "${env.WI_SETTINGS}", "IWA Web UI Scan", "${env.APP_URL}", "${env.WI_LOGIN_MACRO}", "${env.WI_POLICY_ID}")
 						scanStatus = code.getWebInspectScanStatus("${env.WI_API}", scanId)
-						while (scanStatus != "Complete" || scanStatus != "Interrupted") {
+						println "Returned scanStatus: $scanStatus"
+						if (scanStatus != "Complete") {
 							sleep(120) // seconds
 							scanStatus = code.getWebInspectScanStatus("${env.WI_API}", scanId)
+							println "Returned scanStatus: $scanStatus"
 						}	
 
                         // stop docker container
