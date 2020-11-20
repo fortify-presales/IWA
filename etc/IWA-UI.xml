@@ -146,11 +146,11 @@
     <StartSessionState>Crawl</StartSessionState>
     <StartUrlXmlDocument />
     <StartUrlXmlDocumentFilePath />
-    <StartUrl>https://localhost:8888/</StartUrl>
+    <StartUrl>http://localhost:8888/</StartUrl>
     <SimplifiedRestrictToFolderOptions>None</SimplifiedRestrictToFolderOptions>
     <MacroName />
     <WorkflowMacros />
-    <ScanName>Site: https://localhost:8888</ScanName>
+    <ScanName>IWA Local Site: http://localhost:8888/</ScanName>
     <ApiDefinitionPath />
     <ApiType>Swagger</ApiType>
   </StartParameters>
