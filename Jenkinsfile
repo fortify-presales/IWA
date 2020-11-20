@@ -303,7 +303,7 @@ pipeline {
 						code = load 'bin/webinspect-scan.groovy'
                         scanId = code.runWebInspectScan("${env.WI_API}", "IWA-UI", "IWA Web Scan", "${env.APP_URL}", "Login", "${env.WI_POLICY_ID}")
 						scanStatus = code.getWebInspectScanStatus("${env.WI_API}", scanId)
-						while (scanStatus == "NotRunning" || scanStatus == "Running") {
+						while (scanStatus == "Running") {
 							sleep(120) // seconds
 							scanStatus = code.getWebInspectScanStatus("${env.WI_API}", scanId)
 						}	
