@@ -100,6 +100,7 @@ pipeline {
         WI_API = "http://localhost:8083/webinspect"			// WebInspect API - no authentication assumed
         WI_POLICY_ID = 1008									// WebInspect Scan Policy Id - 1008 = Critical and High
         WI_OUTPUT_FILE = "${env.WORKSPACE}\\wi-iwa.fpr"     // Output file (FPR) to create
+		WI_SETTINGS = "IWA-UI"								// Name of WebInspect scan settings file to use
 		WI_LOGIN_MACRO = "IWA-Login"						// This macro "etc\IWA-Login.webmacro" needs to exist in "C:\Windows\system32\config\systemprofile\AppData\Local\HP\HP WebInspect\Tools\Settings"
     }
 
@@ -302,11 +303,11 @@ pipeline {
 
 						// run WebInspect scan - this assumes a settings file called "IWA-UI" already exists (can be imported from etc)
 						code = load 'bin/webinspect-scan.groovy'
-                        scanId = code.runWebInspectScan("${env.WI_API}", "IWA-UI", "IWA Web UI Scan", "${env.APP_URL}", "IWA-Login", "${env.WI_POLICY_ID}")
-						scanStatus = code.getWebInspectScanStatus("${env.WI_API}", scanId).toLowerCase()
-						while (scanStatus != "complete" || scanStatus != "interrupted") {
+                        scanId = code.runWebInspectScan("${env.WI_API}", "${env.WI_SETTINGS}", "IWA Web UI Scan", "${env.APP_URL}", "${env.WI_LOGIN_MACRO}", "${env.WI_POLICY_ID}")
+						scanStatus = code.getWebInspectScanStatus("${env.WI_API}", scanId)
+						while (scanStatus != "Complete" || scanStatus != "Interrupted") {
 							sleep(120) // seconds
-							scanStatus = code.getWebInspectScanStatus("${env.WI_API}", scanId).toLowerCase()
+							scanStatus = code.getWebInspectScanStatus("${env.WI_API}", scanId)
 						}	
 
                         // stop docker container
