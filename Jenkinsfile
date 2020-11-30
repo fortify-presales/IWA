@@ -78,12 +78,6 @@ pipeline {
         FOD_UPLOAD_DIR = 'fod'                              // Directory where FOD upload Zip is constructed
        
         //
-        // Fortify Static Code Analyzer (SCA) settings
-        //
-		// Should really set an environment variable in Jenkins similar to this:
-        FORTIFY_HOME = "C:\\Micro Focus\\Fortify SCA and Apps 20.2.0"	// Home directory for Fortify SCA on agent
-
-        //
         // Fortify Software Security Center (SSC) settings
         //
         SSC_WEBURL = "http://localhost:8080/ssc"                    // URL of SSC
@@ -101,10 +95,10 @@ pipeline {
         EDAST_OUTPUT_FILE = "${env.WORKSPACE}\\edast-iwa.fpr"       // Output file (FPR) to create
         
         //
+        // SonaType Nexus IQ settings
         //
-        //
-        NEXUS_IQ_URL = ""
-        NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-auth-token-id')
+        NEXUS_IQ_URL = "http://fortify.mfdemouk.com:8070"           // Nexus IQ URL
+        NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-auth-token-id') // Nexus IQ authentication in user:password encoded format
 	}
 
     tools {
@@ -327,8 +321,10 @@ pipeline {
                         edastApi.setAuthToken("${env.EDAST_AUTH_TOKEN}")
                         edastApi.setDebug(true)
                         def scanId = edastApi.startScan("Jenkins initiated scan", "${env.EDAST_CICD}")
-                        println "Started scan with id: ${scanId}"
-
+                        def scanStatusId = edastApi.getScanStatus(scanId)
+                        def scanStatus = edastApi.getScanStatusValue(scanStatusId)
+                        println "Started ScanCentral DAST scan id: ${scanId} - status: ${scanStatus}"
+                        println "Not waiting for scan to complete ..."
 					} else if (params.FOD) {
 						println "DAST via FOD is not yet implemented."						
                     } else {
@@ -374,7 +370,7 @@ pipeline {
                     dockerContainer.stop()
                 } else {
                     // hack for windows: stop & rm container with dockerContainerName
-                    $containerId = bat(script: "docker container ls -q --filter name=iwa-jenkins*")
+                    $containerId = bat(script: "docker container ls -q --filter name=iwa-jenkins*", returnStdout: true)
                     if ($containerId) {
                         bat(script: "docker stop ${$containerId}")
                         bat(script: "docker rm -f ${$containerId}")
