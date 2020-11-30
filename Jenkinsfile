@@ -81,7 +81,7 @@ pipeline {
         //
         // Fortify Software Security Center (SSC) settings
         //
-        SSC_WEBURL = "http://fortify.mfdemouk.com"                  // URL of SSC
+        SSC_URL = "http://fortify.mfdemouk.com"                  // URL of SSC
         SSC_AUTH_TOKEN = credentials('iwa-ssc-auth-token-id')       // Authentication token for SSC
         SSC_SENSOR_POOL_UUID = "00000000-0000-0000-0000-000000000002" // UUID of Scan Central Sensor Pool to use - leave for Default Pool
 		SSC_NOTIFY_EMAIL = "test@test.com"							// User to notify with SSC/ScanCentral information
@@ -369,10 +369,10 @@ pipeline {
             script {
                 // stop docker container
                 if (isUnix()) {
-                    if (dockerContainer.id) dockerContainer.stop()
+                    if (dockerContainer) dockerContainer.stop()
                 } else {
                     // hack for windows: stop & rm container with dockerContainerName
-                    if (dockerContainer.id) {
+                    if (dockerContainer) {
                         bat(script: "docker stop ${dockerContainer.id}")
                         bat(script: "docker rm -f ${dockerContainer.id}")
                     }
