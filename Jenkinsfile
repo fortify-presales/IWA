@@ -299,7 +299,7 @@ pipeline {
 						edastApi = load 'bin/fortify-scancentral-dast.groovy'
                         edastApi.setApiUri("${env.EDAST_API}")
                         edastApi.setAuthToken("${env.EDAST_AUTHTOKEN}")
-                        edastApi.setDebug(true)
+                        edastApi.setDebug(false)
 
                         def scanId = edastApi.startScan("Jenkins initiated scan", "${env.EDAST_CICD}")
                         println "Started scan with id: ${scanId}"
