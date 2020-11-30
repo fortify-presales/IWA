@@ -322,32 +322,12 @@ pipeline {
                         // start docker container
                         dockerContainer = dockerImage.run("--name ${dockerContainerName} -p 8888:8080")
 
-                        try {
-                            edastApi = load 'bin/fortify-scancentral-dast.groovy'
-                            edastApi.setApiUri("${env.EDAST_API}")
-                            edastApi.setAuthToken("${env.EDAST_AUTH_TOKEN}")
-                            edastApi.setDebug(true)
-                            def scanId = edastApi.startScanAndWait("Jenkins initiated scan", "${env.EDAST_CICD}", 120)
-                            println "Scan id: ${scanId}"
-                        } catch (Exception ex) {
-                            // stop docker container
-                            if (isUnix()) {
-                                dockerContainer.stop()
-                            } else {
-                                // hack for windows: stop & rm container with dockerContainerName
-                                bat(script: "docker stop ${dockerContainerName}")
-                                bat(script: "docker rm -f ${dockerContainerName}")
-                            }
-                        }
-
-                        // stop docker container
-						if (isUnix()) {
-							dockerContainer.stop()
-						} else {
-							// hack for windows: stop & rm container with dockerContainerName
-							bat(script: "docker stop ${dockerContainerName}")
-							bat(script: "docker rm -f ${dockerContainerName}")
-						}
+                        edastApi = load 'bin/fortify-scancentral-dast.groovy'
+                        edastApi.setApiUri("${env.EDAST_API}")
+                        edastApi.setAuthToken("${env.EDAST_AUTH_TOKEN}")
+                        edastApi.setDebug(true)
+                        def scanId = edastApi.startScan("Jenkins initiated scan", "${env.EDAST_CICD}")
+                        println "Started scan with id: ${scanId}"
 
 					} else if (params.FOD) {
 						println "DAST via FOD is not yet implemented."						
@@ -383,5 +363,28 @@ pipeline {
                 }
             }
         }
+
     }
+
+    post {
+        always {
+            // stop docker container
+            if (isUnix()) {
+                docker container ls -q --filter name=iwa-jenkins*
+                dockerContainer.stop()
+            } else {
+                // hack for windows: stop & rm container with dockerContainerName
+                $containerId = bat(script: "docker container ls -q --filter name=iwa-jenkins*")
+                if ($containerId) {
+                    bat(script: "docker stop ${$containerId}")
+                    bat(script: "docker rm -f ${$containerId}")
+                }
+            }
+        }
+        failure {
+
+        }
+    }
+
+
 }
