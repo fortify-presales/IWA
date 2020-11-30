@@ -328,6 +328,7 @@ pipeline {
                             edastApi.setAuthToken("${env.EDAST_AUTH_TOKEN}")
                             edastApi.setDebug(true)
                             def scanId = edastApi.startScanAndWait("Jenkins initiated scan", "${env.EDAST_CICD}", 120)
+                            println "Scan id: ${scanId}"
                         } catch (Exception ex) {
                             // stop docker container
                             if (isUnix()) {
