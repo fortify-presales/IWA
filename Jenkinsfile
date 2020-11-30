@@ -9,6 +9,7 @@
 // - Fortify SCA has been installed (for on premise SAST) 
 // - Fortify WebInspect has been installed (for on premise DAST)
 // - A Fortify On Demand account and API access are available (for cloud based SAST)
+// - Docker Pipeline plugin has been installed (Jenkins)
 //
 // Node setup:
 // - Apply the label "fortify" to Fortify SCA and WebInspect agent.
@@ -41,22 +42,18 @@ pipeline {
     // Note: the pipeline needs to be executed at least once for the parameters to be available
     //
     parameters {
-        booleanParam(name: 'SAST_SCA',       	defaultValue: false,
+        booleanParam(name: 'SCA_LOCAL',       	defaultValue: false,
             description: 'Use local Fortify SCA for Static Application Security Testing')
-        booleanParam(name: 'SAST_SCA_OSS',      defaultValue: false,
+        booleanParam(name: 'SCA_NEXUS_IQ',      defaultValue: false,
             description: 'Use local Fortify SCA and Sonatype Nexus IQ for Static Application Security Testing and Open Source Component Analysis')			
-        booleanParam(name: 'SAST_SCANCENTRAL', 	defaultValue: false,
+        booleanParam(name: 'SCANCENTRAL_SAST', 	defaultValue: false,
             description: 'Run a remote scan using Scan Central for Static Application Security Testing')       
-        booleanParam(name: 'DAST_WEBINSPECT', 	defaultValue: false,
-            description: 'Use local WebInspect for Dynamic Application Security Testing')		
-        booleanParam(name: 'DAST_SCANCENTRAL', 	defaultValue: false,
-            description: 'Run a remote WebInspect scan using Scan Central for Dynamic Application Security Testing')				
+        booleanParam(name: 'SCANCENTRAL_DAST', 	defaultValue: false,
+            description: 'Run a remote scan using Scan Central (WebInspect) for Dynamic Application Security Testing')
         booleanParam(name: 'UPLOAD_TO_SSC',		defaultValue: false,
             description: 'Enable upload of scan results to Fortify Software Security Center')             
-        booleanParam(name: 'SAST_FOD',       	defaultValue: false,
-            description: 'Enable Fortify on Demand for Static Application Security Testing')
-        booleanParam(name: 'DAST_FOD',       	defaultValue: false,
-            description: 'Enable Fortify on Demand for Dynamic Application Security Testing')			
+        booleanParam(name: 'FOD',       	    defaultValue: false,
+            description: 'Use Fortify on Demand for Static Application Security Testing')
     }
 
     environment {
@@ -95,14 +92,13 @@ pipeline {
 		SSC_NOTIFY_EMAIL = "test@test.com"							// User to notify with SSC/ScanCentral information
 		
         //
-        // Fortify WebInspect settings
+        // Fortify ScanCentral DAST settings
         //
-        WI_API = "http://localhost:8083/webinspect"			// WebInspect API - no authentication assumed
-        WI_POLICY_ID = 1008									// WebInspect Scan Policy Id - 1008 = Critical and High
-        WI_OUTPUT_FILE = "${env.WORKSPACE}\\wi-iwa.fpr"     // Output file (FPR) to create
-		WI_SETTINGS = "IWA-UI"								// Name of WebInspect scan settings file to use
-		WI_LOGIN_MACRO = "IWA-Login"						// This macro "etc\IWA-Login.webmacro" needs to exist in "C:\Windows\system32\config\systemprofile\AppData\Local\HP\HP WebInspect\Tools\Settings"
-    }
+        EDAST_API = "http://fortify.mfdemouk.com:8500/api"	        // ScanCentral DAST API URI
+        EDAST_AUTHTOKEN = credentials('iwa-edast-auth-token-id')	// ScanCentral DAST Authentication Token (encrypted CiCd token from SSC)
+        EDAST_CICD = "31279b79-376a-46e7-90b1-2fbe11cfbb2e"         // ScanCentral DAST CICD identifier
+        EDAST_OUTPUT_FILE = "${env.WORKSPACE}\\edast-iwa.fpr"       // Output file (FPR) to create
+	}
 
     tools {
         // Install the Maven version configured as "M3" and add it to the path.
@@ -178,9 +174,9 @@ pipeline {
             when {
             	beforeAgent true
             	anyOf {
-            	    expression { params.SAST_SCA == true }
-            	    expression { params.SAST_SCANCENTRAL == true }
-            	    expression { params.SAST_FOD == true }         	     
+            	    expression { params.SCA_LOCAL == true }
+            	    expression { params.SCANCENTRAL_SAST == true }
+            	    expression { params.FOD == true }
         	    }
             }
             // Run on an Agent with "fortify" label applied
@@ -203,7 +199,7 @@ pipeline {
                     def classpath = readFile "${env.WORKSPACE}/cp.txt"
                     println "Using classpath: $classpath"
 
-                    if (params.SAST_FOD) {
+                    if (params.FOD) {
                         // Upload built application to Fortify on Demand and carry out Static Assessment
                         fodStaticAssessment releaseId: ${env.FOD_RELEASE_ID},
                             // bsiToken: "${env.FOD_BSI_TOKEN}",
@@ -217,7 +213,7 @@ pipeline {
                             //bsiToken: "${env.FOD_BSI_TOKEN}",
                             //policyFailureBuildResultPreference: 1,
                             pollingInterval: 5
-                    } else if (params.SAST_SCANCENTRAL) {
+                    } else if (params.SCANCENTRAL_SAST) {
 
                         // set any standard remote translation/scan options
                         fortifyRemoteArguments transOptions: '',
@@ -245,7 +241,7 @@ pipeline {
                                 ]
                         }
 
-                    } else if (params.SAST_SCA) {
+                    } else if (params.SCA_LOCAL) {
                         // optional: update scan rules
                         //fortifyUpdate updateServerURL: 'https://update.fortify.com'
 
@@ -275,7 +271,7 @@ pipeline {
                                 appVersion: "${env.APP_VER}",
                                 resultsFile: "${env.COMPONENT_NAME}.fpr"
                         }
-					} else if (params.SAST_SCA_OSS) {
+					} else if (params.SCA_NEXUS_IQ) {
 						println "SAST and OSS via SCA and Sonatype is not yet implemented."
                     } else {
                         println "No Static Application Security Testing (SAST) to do."
@@ -288,29 +284,40 @@ pipeline {
             when {
             	beforeAgent true
             	anyOf {
-            	    expression { params.DAST_WEBINSPECT == true }
-            	    expression { params.DAST_SCANCENTRAL == true }
-            	    expression { params.DAST_FOD == true }         	     
+            	    expression { params.SCANCENTRAL_DAST == true }
+            	    expression { params.FOD == true }
         	    }
             }
             // Run on an Agent with "fortify" label applied
             agent {label "fortify"}
             steps {
                 script {
-                    if (params.DAST_WEBINSPECT) {
+                    if (params.SCANCENTRAL_DAST) {
                         // start docker container
                         dockerContainer = dockerImage.run("--name ${dockerContainerName} -p 8888:8080")
 
-						// run WebInspect scan - this assumes a settings file called "IWA-UI" already exists (can be imported from etc)
-						code = load 'bin/webinspect-scan.groovy'
-                        scanId = code.runWebInspectScan("${env.WI_API}", "${env.WI_SETTINGS}", "IWA Web UI Scan", "${env.APP_URL}", "${env.WI_LOGIN_MACRO}", "${env.WI_POLICY_ID}")
-						scanStatus = code.getWebInspectScanStatus("${env.WI_API}", scanId)
-						println "Returned scanStatus: $scanStatus"
-						if (scanStatus != "Complete") {
-							sleep(120) // seconds
-							scanStatus = code.getWebInspectScanStatus("${env.WI_API}", scanId)
-							println "Returned scanStatus: $scanStatus"
-						}	
+						edastAPi = load 'bin/fortify-scancentral-dast.groovy'
+                        edastAPi.apiUri = "${env.EDAST_API}"
+                        edastAPi.authToken = "${env.EDAST_AUTHTOKEN}"
+
+                        def scanId = edastApi.startScan("Jenkins initiated scan", "${env.EDAST_CICD}")
+                        println "Started scan with id: ${scanId}"
+
+                        def isScanActive = true
+                        def scanInActiveRange1 = 5..7
+                        def scanInActiveRange2 = 15..17
+                        def scanStatus = ""
+                        while (isScanActive) {
+                            def scanStatusId = edastApi.getScanStatus(scanId)
+                            if (scanInActiveRange1.contains(scanStatusId) || scanInActiveRange2.contains(scanStatusId)) {
+                                isScanActive = false
+                            } else {
+                                scanStatus = edastApi.getScanStatusValue(scanStatusId)
+                                println "Scan status: ${scanStatus} ..."
+                                sleep(120) // seconds
+                            }
+                        }
+                        println "Scan id: ${scanId} - ${scanStatus}"
 
                         // stop docker container
 						if (isUnix()) {
@@ -320,12 +327,8 @@ pipeline {
 							bat(script: "docker stop ${dockerContainerName}")
 							bat(script: "docker rm -f ${dockerContainerName}")
 						}
-						if (params.UPLOAD_TO_SSC) {
-							println "DAST Upload to SSC is not yet implemented"
-						}
-					} else if (params.DAST_SCANCENTRAL) {
-						println "DAST via ScanCentral is not yet implemented."
-					} else if (params.DAST_FOD) {
+
+					} else if (params.FOD) {
 						println "DAST via FOD is not yet implemented."						
                     } else {
                         println "No Dynamic Application Security Testing (DAST) to do."
