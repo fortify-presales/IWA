@@ -6,10 +6,11 @@
 //
 //
 // Pre-requisites:
-// - Fortify SCA has been installed (for on premise SAST) 
-// - Fortify WebInspect has been installed (for on premise DAST)
+// - Fortify SCA/ScanCentral SAST has been installed (for on premise SAST)
+// - Fortify WebInspect/ScanCentral DAST has been installed (for on premise DAST)
 // - A Fortify On Demand account and API access are available (for cloud based SAST)
 // - Docker Pipeline plugin has been installed (Jenkins)
+// - [Optional] Sonatype Nexus IQ server has been installed for OSS vulnerabilities
 //
 // Node setup:
 // - Apply the label "fortify" to Fortify SCA and WebInspect agent.
@@ -21,9 +22,10 @@
 //      iwa-fod-bsi-token-id     - Fortify on Demand BSI token as Jenkins Secret - deprecated use iwa-fod-release-id
 //      iwa-fod-release-id       - Fortify on Demand Release Id as Jenkins Secret credential
 //      iwa-ssc-auth-token-id    - Fortify Software Security Center "AnalysisUploadToken" authentication token as Jenkins Secret credential
+//      iwa-edast-auth-token-id  - Fortify Software Security Center "CIToken" for invoking ScanCentral DAST scans
 //      docker-hub-credentials   - DockerHub login as "Username/Password" credentials
 // All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
-// For Fortify on Demand (FOD) Global Authentication should be used rather than Personal Access Tokens.
+// For Fortify on Demand (FOD) Global Authentication is used rather than Personal Access Tokens.
 //
 //********************************************************************************
 
@@ -66,7 +68,6 @@ pipeline {
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         GIT_CREDS = credentials('iwa-git-creds-id')			// Git Credentials
         JAVA_VERSION = 8                                    // Java version to compile as
-        APP_URL = "http://localhost:8888"                   // URL of where the application is running using docker
         ISSUE_IDS = ""                                      // List of issues found from commit
         DOCKER_ORG = "mfdemouk"                             // Docker organisation (in Docker Hub) to push released images to
 
@@ -80,7 +81,7 @@ pipeline {
         //
         // Fortify Software Security Center (SSC) settings
         //
-        SSC_WEBURL = "http://localhost:8080/ssc"                    // URL of SSC
+        SSC_WEBURL = "http://fortify.mfdemouk.com"                  // URL of SSC
         SSC_AUTH_TOKEN = credentials('iwa-ssc-auth-token-id')       // Authentication token for SSC
         SSC_SENSOR_POOL_UUID = "00000000-0000-0000-0000-000000000002" // UUID of Scan Central Sensor Pool to use - leave for Default Pool
 		SSC_NOTIFY_EMAIL = "test@test.com"							// User to notify with SSC/ScanCentral information
@@ -98,7 +99,7 @@ pipeline {
         // SonaType Nexus IQ settings
         //
         NEXUS_IQ_URL = "http://fortify.mfdemouk.com:8070"           // Nexus IQ URL
-        NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-auth-token-id') // Nexus IQ authentication in user:password encoded format
+        NEXUS_IQ_AUTH = credentials('iwa-nexus-iq-auth-token-id')   // Nexus IQ authentication in user:password encoded format
 	}
 
     tools {
@@ -314,8 +315,9 @@ pipeline {
                 script {
                     if (params.SCANCENTRAL_DAST) {
                         // start docker container
-                        dockerContainer = dockerImage.run("--name ${dockerContainerName} -p 8888:8080")
+                        dockerContainer = dockerImage.run("--name ${dockerContainerName} -p 9090:8080")
 
+                        // run ScanCentral DAST scan using groovy script
                         edastApi = load 'bin/fortify-scancentral-dast.groovy'
                         edastApi.setApiUri("${env.EDAST_API}")
                         edastApi.setAuthToken("${env.EDAST_AUTH_TOKEN}")
@@ -367,13 +369,12 @@ pipeline {
             script {
                 // stop docker container
                 if (isUnix()) {
-                    dockerContainer.stop()
+                    if (dockerContainer.id) dockerContainer.stop()
                 } else {
                     // hack for windows: stop & rm container with dockerContainerName
-                    $containerId = bat(script: "docker container ls -q --filter name=iwa-jenkins*", returnStdout: true)
-                    if ($containerId) {
-                        bat(script: "docker stop ${$containerId}")
-                        bat(script: "docker rm -f ${$containerId}")
+                    if (dockerContainer.id) {
+                        bat(script: "docker stop ${dockerContainer.id}")
+                        bat(script: "docker rm -f ${dockerContainer.id}")
                     }
                 }
             }
