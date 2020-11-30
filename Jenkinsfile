@@ -296,9 +296,10 @@ pipeline {
                         // start docker container
                         dockerContainer = dockerImage.run("--name ${dockerContainerName} -p 8888:8080")
 
-						edastAPi = load 'bin/fortify-scancentral-dast.groovy'
-                        edastAPi.apiUri = "${env.EDAST_API}"
-                        edastAPi.authToken = "${env.EDAST_AUTHTOKEN}"
+						edastApi = load 'bin/fortify-scancentral-dast.groovy'
+                        edastApi.setApiUri("${env.EDAST_API}")
+                        edastApi.setAuthToken("${env.EDAST_AUTHTOKEN}")
+                        edastApi.setDebug(true)
 
                         def scanId = edastApi.startScan("Jenkins initiated scan", "${env.EDAST_CICD}")
                         println "Started scan with id: ${scanId}"

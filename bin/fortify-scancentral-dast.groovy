@@ -13,6 +13,18 @@ class edastApi {
 		this.debug = false
 	}
 
+	def setApiUri(StringapiUri) {
+		this.apiUri = apiUri
+	}
+
+	def setAuthToken(String authToken) {
+		this.authToken = authToken
+	}
+
+	def setDebug(boolean debug) {
+		this.debug = debug
+	}
+
 	def startScan(scanName, cicdToken) {
 		def scanId
 
