@@ -368,16 +368,17 @@ pipeline {
 
     post {
         always {
-            // stop docker container
-            if (isUnix()) {
-                docker container ls -q --filter name=iwa-jenkins*
-                dockerContainer.stop()
-            } else {
-                // hack for windows: stop & rm container with dockerContainerName
-                $containerId = bat(script: "docker container ls -q --filter name=iwa-jenkins*")
-                if ($containerId) {
-                    bat(script: "docker stop ${$containerId}")
-                    bat(script: "docker rm -f ${$containerId}")
+            script {
+                // stop docker container
+                if (isUnix()) {
+                    dockerContainer.stop()
+                } else {
+                    // hack for windows: stop & rm container with dockerContainerName
+                    $containerId = bat(script: "docker container ls -q --filter name=iwa-jenkins*")
+                    if ($containerId) {
+                        bat(script: "docker stop ${$containerId}")
+                        bat(script: "docker rm -f ${$containerId}")
+                    }
                 }
             }
         }
