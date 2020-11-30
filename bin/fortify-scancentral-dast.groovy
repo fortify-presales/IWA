@@ -107,34 +107,38 @@ class edastApi {
 			if (debug) println parsedJson
 			scanStatus = parsedJson.item.scanStatusType
 		}
-
 		return scanStatus
+	}
 
+	def startScanAndWait(scanName, cicdToken, sleepTime) {
+		def scanId = this.startScan(scanName, cicdToken)
+		if (debug) println "Started scan with id: ${scanId}"
+
+		def isScanActive = true
+		def scanInActiveRange1 = 5..7
+		def scanInActiveRange2 = 15..17
+		def scanStatus = ""
+		while (isScanActive) {
+			def scanStatusId = edastApi.getScanStatus(scanId)
+			scanStatus = edastApi.getScanStatusValue(scanStatusId)
+			if (debug) println "Scan status ${scanStatusId} - ${scanStatus}"
+			if (scanInActiveRange1.contains(scanStatusId) || scanInActiveRange2.contains(scanStatusId)) {
+				isScanActive = false
+			} else {
+				sleep(sleepTime * 1000)
+			}
+		}
+
+		if (debug) println "Scan id: ${scanId} - ${scanStatus}"
+		return scanId
 	}
 }
 
 // example invocation
 
 /*
-def edastApi = new edastApi("http://fortify.mfdemouk.com:8500/api", "MmEyYjkyNjMtYWQ5MC00MjFmLTg4ODItZjZjN2JhYjliZGI1")
-def scanId = edastApi.startScan("Jenkins initiated scan", "31279b79-376a-46e7-90b1-2fbe11cfbb2e")
-println "Started scan with id: ${scanId}"
-
-def isScanActive = true
-def scanInActiveRange1 = 5..7
-def scanInActiveRange2 = 15..17
-def scanStatus = ""
-while (isScanActive) {
-	def scanStatusId = edastApi.getScanStatus(scanId)
-	if (scanInActiveRange1.contains(scanStatusId) || scanInActiveRange2.contains(scanStatusId)) {
-		isScanActive = false
-	} else {
-		scanStatus = edastApi.getScanStatusValue(scanStatusId)
-		println "Scan status: ${scanStatus} ..."
-		sleep(5000)
-	}
-}
-println "Scan id: ${scanId} - ${scanStatus}"
+def edastApi = new edastApi("http://localhost:8500/api", "SSC_CITOKEN")
+edastApi.startScanAndWait("Test Scan", "SCAN_SETTINGS_ID")
 */
 
 return new edastApi()

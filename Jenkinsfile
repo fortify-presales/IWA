@@ -90,14 +90,21 @@ pipeline {
         SSC_AUTH_TOKEN = credentials('iwa-ssc-auth-token-id')       // Authentication token for SSC
         SSC_SENSOR_POOL_UUID = "00000000-0000-0000-0000-000000000002" // UUID of Scan Central Sensor Pool to use - leave for Default Pool
 		SSC_NOTIFY_EMAIL = "test@test.com"							// User to notify with SSC/ScanCentral information
+        SSC_APP_VERSION_ID = "10005"
 		
         //
         // Fortify ScanCentral DAST settings
         //
         EDAST_API = "http://fortify.mfdemouk.com:8500/api"	        // ScanCentral DAST API URI
-        EDAST_AUTHTOKEN = credentials('iwa-edast-auth-token-id')	// ScanCentral DAST Authentication Token (encrypted CiCd token from SSC)
+        EDAST_AUTH_TOKEN = credentials('iwa-edast-auth-token-id')	// ScanCentral DAST Authentication Token (encrypted CiCd token from SSC)
         EDAST_CICD = "31279b79-376a-46e7-90b1-2fbe11cfbb2e"         // ScanCentral DAST CICD identifier
         EDAST_OUTPUT_FILE = "${env.WORKSPACE}\\edast-iwa.fpr"       // Output file (FPR) to create
+        
+        //
+        //
+        //
+        NEXUS_IQ_URL = ""
+        NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-auth-token-id')
 	}
 
     tools {
@@ -271,10 +278,29 @@ pipeline {
                                 appVersion: "${env.APP_VER}",
                                 resultsFile: "${env.COMPONENT_NAME}.fpr"
                         }
-					} else if (params.SCA_SONATYPE) {
-						println "SAST and OSS via SCA and Sonatype is not yet implemented."
                     } else {
                         println "No Static Application Security Testing (SAST) to do."
+                    }
+                }
+            }
+        }
+
+        stage('OSS') {
+            when {
+                beforeAgent true
+                anyOf {
+                    expression { params.SCA_SONATYPE == true }
+                }
+            }
+            // Run on an Agent with "fortify" label applied
+            agent {label "fortify"}
+            steps {
+                script {
+                    // run sourceandlibscanner
+                    if (isUnix()) {
+                        sh "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}"
+                    } else {
+                        bat(script: "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}")
                     }
                 }
             }
@@ -299,27 +325,9 @@ pipeline {
                         try {
                             edastApi = load 'bin/fortify-scancentral-dast.groovy'
                             edastApi.setApiUri("${env.EDAST_API}")
-                            edastApi.setAuthToken("${env.EDAST_AUTHTOKEN}")
-                            edastApi.setDebug(false)
-
-                            def scanId = edastApi.startScan("Jenkins initiated scan", "${env.EDAST_CICD}")
-                            println "Started scan with id: ${scanId}"
-
-                            def isScanActive = true
-                            def scanInActiveRange1 = 5..7
-                            def scanInActiveRange2 = 15..17
-                            def scanStatus = ""
-                            while (isScanActive) {
-                                def scanStatusId = edastApi.getScanStatus(scanId)
-                                if (scanInActiveRange1.contains(scanStatusId) || scanInActiveRange2.contains(scanStatusId)) {
-                                    isScanActive = false
-                                } else {
-                                    scanStatus = edastApi.getScanStatusValue(scanStatusId)
-                                    println "Scan status: ${scanStatus} ..."
-                                    sleep(120) // seconds
-                                }
-                            }
-                            println "Scan id: ${scanId} - ${scanStatus}"
+                            edastApi.setAuthToken("${env.EDAST_AUTH_TOKEN}")
+                            edastApi.setDebug(true)
+                            def scanId = edastApi.startScanAndWait("Jenkins initiated scan", "${env.EDAST_CICD}", 120)
                         } catch (Exception ex) {
                             // stop docker container
                             if (isUnix()) {
