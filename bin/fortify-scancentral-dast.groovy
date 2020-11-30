@@ -13,7 +13,7 @@ class edastApi {
 		this.debug = false
 	}
 
-	def setApiUri(StringapiUri) {
+	def setApiUri(String apiUri) {
 		this.apiUri = apiUri
 	}
 

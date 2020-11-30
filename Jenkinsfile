@@ -43,11 +43,11 @@ pipeline {
     //
     parameters {
         booleanParam(name: 'SCA_LOCAL',       	defaultValue: false,
-            description: 'Use local Fortify SCA for Static Application Security Testing')
-        booleanParam(name: 'SCA_NEXUS_IQ',      defaultValue: false,
-            description: 'Use local Fortify SCA and Sonatype Nexus IQ for Static Application Security Testing and Open Source Component Analysis')			
+            description: 'Use (local) Fortify SCA for Static Application Security Testing')
+        booleanParam(name: 'SCA_SONATYPE',      defaultValue: false,
+            description: 'Use Fortify SCA with Sonatype Nexus IQ for Open Source Susceptibility Analysis')
         booleanParam(name: 'SCANCENTRAL_SAST', 	defaultValue: false,
-            description: 'Run a remote scan using Scan Central for Static Application Security Testing')       
+            description: 'Run a remote scan using Scan Central (SCA) for Static Application Security Testing')
         booleanParam(name: 'SCANCENTRAL_DAST', 	defaultValue: false,
             description: 'Run a remote scan using Scan Central (WebInspect) for Dynamic Application Security Testing')
         booleanParam(name: 'UPLOAD_TO_SSC',		defaultValue: false,
@@ -271,7 +271,7 @@ pipeline {
                                 appVersion: "${env.APP_VER}",
                                 resultsFile: "${env.COMPONENT_NAME}.fpr"
                         }
-					} else if (params.SCA_NEXUS_IQ) {
+					} else if (params.SCA_SONATYPE) {
 						println "SAST and OSS via SCA and Sonatype is not yet implemented."
                     } else {
                         println "No Static Application Security Testing (SAST) to do."
