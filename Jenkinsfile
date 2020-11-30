@@ -296,29 +296,40 @@ pipeline {
                         // start docker container
                         dockerContainer = dockerImage.run("--name ${dockerContainerName} -p 8888:8080")
 
-						edastApi = load 'bin/fortify-scancentral-dast.groovy'
-                        edastApi.setApiUri("${env.EDAST_API}")
-                        edastApi.setAuthToken("${env.EDAST_AUTHTOKEN}")
-                        edastApi.setDebug(false)
+                        try {
+                            edastApi = load 'bin/fortify-scancentral-dast.groovy'
+                            edastApi.setApiUri("${env.EDAST_API}")
+                            edastApi.setAuthToken("${env.EDAST_AUTHTOKEN}")
+                            edastApi.setDebug(false)
 
-                        def scanId = edastApi.startScan("Jenkins initiated scan", "${env.EDAST_CICD}")
-                        println "Started scan with id: ${scanId}"
+                            def scanId = edastApi.startScan("Jenkins initiated scan", "${env.EDAST_CICD}")
+                            println "Started scan with id: ${scanId}"
 
-                        def isScanActive = true
-                        def scanInActiveRange1 = 5..7
-                        def scanInActiveRange2 = 15..17
-                        def scanStatus = ""
-                        while (isScanActive) {
-                            def scanStatusId = edastApi.getScanStatus(scanId)
-                            if (scanInActiveRange1.contains(scanStatusId) || scanInActiveRange2.contains(scanStatusId)) {
-                                isScanActive = false
+                            def isScanActive = true
+                            def scanInActiveRange1 = 5..7
+                            def scanInActiveRange2 = 15..17
+                            def scanStatus = ""
+                            while (isScanActive) {
+                                def scanStatusId = edastApi.getScanStatus(scanId)
+                                if (scanInActiveRange1.contains(scanStatusId) || scanInActiveRange2.contains(scanStatusId)) {
+                                    isScanActive = false
+                                } else {
+                                    scanStatus = edastApi.getScanStatusValue(scanStatusId)
+                                    println "Scan status: ${scanStatus} ..."
+                                    sleep(120) // seconds
+                                }
+                            }
+                            println "Scan id: ${scanId} - ${scanStatus}"
+                        } catch (Exception ex) {
+                            // stop docker container
+                            if (isUnix()) {
+                                dockerContainer.stop()
                             } else {
-                                scanStatus = edastApi.getScanStatusValue(scanStatusId)
-                                println "Scan status: ${scanStatus} ..."
-                                sleep(120) // seconds
+                                // hack for windows: stop & rm container with dockerContainerName
+                                bat(script: "docker stop ${dockerContainerName}")
+                                bat(script: "docker rm -f ${dockerContainerName}")
                             }
                         }
-                        println "Scan id: ${scanId} - ${scanStatus}"
 
                         // stop docker container
 						if (isUnix()) {
