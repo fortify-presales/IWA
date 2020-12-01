@@ -118,8 +118,8 @@ class edastApi {
 		def scanInActiveRange2 = 15..17
 		def scanStatus = ""
 		while (isScanActive) {
-			Integer scanStatusId = edastApi.getScanStatusId(scanId)
-			scanStatus = edastApi.getScanStatusValue(scanStatusId)
+			Integer scanStatusId = this.getScanStatusId(scanId)
+			scanStatus = this.getScanStatusValue(scanStatusId)
 			if (debug) println "Scan status ${scanStatusId} - ${scanStatus}"
 			if (scanInActiveRange1.contains(scanStatusId) || scanInActiveRange2.contains(scanStatusId)) {
 				isScanActive = false
