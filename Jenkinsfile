@@ -322,11 +322,10 @@ pipeline {
                         edastApi.setApiUri("${env.EDAST_API}")
                         edastApi.setAuthToken("${env.EDAST_AUTH_TOKEN}")
                         edastApi.setDebug(true)
-                        def scanId = edastApi.startScan("Jenkins initiated scan", "${env.EDAST_CICD}")
+                        def scanId = edastApi.startScanAndWait("Jenkins initiated scan", "${env.EDAST_CICD}", 5)
                         def scanStatusId = edastApi.getScanStatus(scanId)
                         def scanStatus = edastApi.getScanStatusValue(scanStatusId)
-                        println "Started ScanCentral DAST scan id: ${scanId} - status: ${scanStatus}"
-                        println "Not waiting for scan to complete ..."
+                        println "ScanCentral DAST scan id: ${scanId} - status: ${scanStatus}"
 					} else if (params.FOD) {
 						println "DAST via FOD is not yet implemented."						
                     } else {
