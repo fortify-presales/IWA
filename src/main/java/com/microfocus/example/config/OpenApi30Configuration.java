@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
 @OpenAPIDefinition(info = @Info(
         title = "Insecure Web App (IWA) API",
         description = "This is the REST API for Insecure Web App (IWA). You can select a development or production server to test the API. " +
-                "Most operations require authentication by a user specific JWT token. To retrieve a JWT token for a user you can use the " +
+                "Most operations require authentication via a user specific JWT token. To retrieve a JWT token for a user you can use the " +
                 " '/authentication/sign-in' operation below and then copy the value of the 'accessToken' field. This value can then be " +
                 "entered when you click on the 'Authorize' button or lock icons.",
         version = "v3"),
@@ -45,8 +45,8 @@ import org.springframework.context.annotation.Configuration;
                             defaultValue = "https"),
                     @ServerVariable(
                             name = "environment",
-                            allowableValues = {"localhost:9080", "insecurewebapp.herokuapp.com"},
-                            defaultValue = "insecurewebapp.herokuapp.com"
+                            allowableValues = {"localhost:9090", "iwa.mfdemouk.com"},
+                            defaultValue = "iwa.mfdemouk.com"
                     )
                 }
         )
