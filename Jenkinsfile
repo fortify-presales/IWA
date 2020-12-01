@@ -314,6 +314,22 @@ pipeline {
             steps {
                 script {
                     if (params.SCANCENTRAL_DAST) {
+                        // check if container is still running
+                        if (isUnix()) {
+                            existingId = sh(script: "docker ps -aq --filter name=iwa-jenkins", returnStdOut: true)
+                            if (existingId) {
+                                println "Found existing iwa-jenkins container ... deleting..."
+                                sh(script: "docker stop $existingId")
+                                sh(script: "docker rm -f $existingId")
+                            }
+                        } else {
+                            existingId = bat(script: "docker ps -aq --filter name=iwa-jenkins", returnStdOut: true)
+                            if (existingId) {
+                                println "Found existing iwa-jenkins container ... deleting..."
+                                bat(script: "docker stop $existingId")
+                                bat(script: "docker rm -f $existingId")
+                            }
+                        }
                         // start docker container
                         dockerContainer = dockerImage.run("--name ${dockerContainerName} -p 9090:8080")
 
