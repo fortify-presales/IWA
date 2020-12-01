@@ -331,16 +331,19 @@ pipeline {
                                 bat(script: "docker rm -f ${existingId}")
                             }
                         }
+
                         // start docker container
+                        println "Starting docker container ${dockerContainerName}"
                         dockerContainer = dockerImage.run("--name ${dockerContainerName} -p 9090:8080")
 
                         // run ScanCentral DAST scan using groovy script
+                        println "Running ScanCentral DAST scan, please wait ..."
                         edastApi = load 'bin/fortify-scancentral-dast.groovy'
                         edastApi.setApiUri("${env.EDAST_API}")
                         edastApi.setAuthToken("${env.EDAST_AUTH_TOKEN}")
                         edastApi.setDebug(true)
                         Integer scanId = edastApi.startScanAndWait("Jenkins initiated scan", "${env.EDAST_CICD}", 5)
-                        String scanStatus = edastApi.getScanStatusValue(edastApi.getScanStatus(scanId))
+                        String scanStatus = edastApi.getScanStatusValue(edastApi.getScanStatusId(scanId))
                         println "ScanCentral DAST scan id: ${scanId} - status: ${scanStatus}"
 					} else if (params.FOD) {
 						println "DAST via FOD is not yet implemented."						
