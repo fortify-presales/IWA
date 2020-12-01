@@ -89,7 +89,7 @@ class edastApi {
 
 	}
 
-	def getScanStatus(Integer scanId) {
+	def getScanStatusId(Integer scanId) {
 		def scanStatus = 0
 
 		// get status of scan
@@ -110,7 +110,7 @@ class edastApi {
 	}
 
 	def startScanAndWait(String scanName, String cicdToken, Integer sleepTime) {
-		def scanId = this.startScan(scanName, cicdToken)
+		Integer scanId = this.startScan(scanName, cicdToken)
 		if (debug) println "Started scan with id: ${scanId}"
 
 		def isScanActive = true
@@ -118,7 +118,7 @@ class edastApi {
 		def scanInActiveRange2 = 15..17
 		def scanStatus = ""
 		while (isScanActive) {
-			def scanStatusId = edastApi.getScanStatus(scanId)
+			Integer scanStatusId = edastApi.getScanStatusId(scanId)
 			scanStatus = edastApi.getScanStatusValue(scanStatusId)
 			if (debug) println "Scan status ${scanStatusId} - ${scanStatus}"
 			if (scanInActiveRange1.contains(scanStatusId) || scanInActiveRange2.contains(scanStatusId)) {
@@ -137,7 +137,7 @@ class edastApi {
 
 /*
 def edastApi = new edastApi("http://localhost:8500/api", "SSC_CITOKEN")
-edastApi.startScanAndWait("Test Scan", "SCAN_SETTINGS_ID")
+edastApi.startScanAndWait("Test Scan", "SCAN_SETTINGS_ID", 5)
 */
 
 return new edastApi()
