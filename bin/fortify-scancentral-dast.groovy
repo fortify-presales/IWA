@@ -25,7 +25,7 @@ class edastApi {
 		this.debug = debug
 	}
 
-	def startScan(scanName, cicdToken) {
+	def startScan(String scanName,  String cicdToken) {
 		def scanId
 
 		// TODO: ensure edastApiUrl does not end in slash "/"
@@ -63,7 +63,7 @@ class edastApi {
 		return scanId
 	}
 
-	def getScanStatusValue(scanStatusId) {
+	def getScanStatusValue(Integer scanStatusId) {
 		def scanStatusValue = ""
 
 		// get status string value of scan
@@ -90,7 +90,7 @@ class edastApi {
 
 	}
 
-	def getScanStatus(scanId) {
+	def getScanStatus(Integer scanId) {
 		def scanStatus = 0
 
 		// get status of scan
@@ -110,7 +110,7 @@ class edastApi {
 		return scanStatus
 	}
 
-	def startScanAndWait(scanName, cicdToken, sleepTime) {
+	def startScanAndWait(String scanName, String cicdToken, Integer sleepTime) {
 		def scanId = this.startScan(scanName, cicdToken)
 		if (debug) println "Started scan with id: ${scanId}"
 
