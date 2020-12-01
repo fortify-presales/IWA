@@ -26,7 +26,7 @@ class edastApi {
 	}
 
 	def startScan(String scanName,  String cicdToken) {
-		def scanId
+		def scanId = 0
 
 		// TODO: ensure edastApiUrl does not end in slash "/"
 
@@ -57,7 +57,6 @@ class edastApi {
 			if (parsedJson) {
 				println parsedJson.Message
 			}
-			return false
 		}
 
 		return scanId
