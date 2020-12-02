@@ -154,24 +154,6 @@ pipeline {
             }
         }
 
-        stage('Package') {
-            // Run on "master" node
-            agent { label 'master' }
-            steps {
-                script {
-                    // unstash the built files
-                    unstash name: "${env.COMPONENT_NAME}_release"
-                	if (isUnix()) {
-                    	// Create docker image using JAR file
-                    	dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
-                    } else {
-                    	// Create docker image using JAR file
-                    	dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
-                    }	
-                }
-            }
-        }
-
         stage('SAST') {
             when {
             	beforeAgent true
@@ -296,6 +278,24 @@ pipeline {
                         sh "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}"
                     } else {
                         bat(script: "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}")
+                    }
+                }
+            }
+        }
+
+        stage('Package') {
+            // Run on "master" node
+            agent { label 'master' }
+            steps {
+                script {
+                    // unstash the built files
+                    unstash name: "${env.COMPONENT_NAME}_release"
+                    if (isUnix()) {
+                        // Create docker image using JAR file
+                        dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
+                    } else {
+                        // Create docker image using JAR file
+                        dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
                     }
                 }
             }
