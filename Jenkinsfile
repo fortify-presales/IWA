@@ -98,7 +98,7 @@ pipeline {
         //
         // SonaType Nexus IQ settings
         //
-        NEXUS_IQ_URL = "http://fortify.mfdemouk.com:8070"           // Nexus IQ URL
+        NEXUS_IQ_URL = "https://sonatype.mfdemouk.com"              // Nexus IQ URL
         NEXUS_IQ_AUTH = credentials('iwa-nexus-iq-auth-token-id')   // Nexus IQ authentication in user:password encoded format
 	}
 
