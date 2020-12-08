@@ -58,17 +58,17 @@ pipeline {
             description: 'Use Fortify on Demand for Static Application Security Testing')
         booleanParam(name: 'RELEASE_TO_DOCKERHUB', defaultValue: params.parameterName ?: false,
                 description: 'Release build and tested image to Docker Hub')
-        stringParam(name: 'SSC_URL',            defaultValue: params.parameterName ?: "http://ssc.mfdemouk.com",
+        string(name: 'SSC_URL',                 defaultValue: params.parameterName ?: "http://ssc.mfdemouk.com",
                 description: 'URL of SSC')
-        stringParam(name: 'SSC_APP_VERSION_ID', defaultValue: params.parameterName ?: "10005",
+        string(name: 'SSC_APP_VERSION_ID',      defaultValue: params.parameterName ?: "10005",
                 description: 'Id of Application in SSC to upload results to')
-        stringParam(name: 'EDAST_URL',          defaultValue: params.parameterName ?: "http://scancentral.mfdemouk.com/api",
+        string(name: 'EDAST_URL',               defaultValue: params.parameterName ?: "http://scancentral.mfdemouk.com/api",
                 description: 'ScanCentral DAST API URI')
-        stringParam(name: 'EDAST_CICD',         defaultValue: params.parameterName ?: "31279b79-376a-46e7-90b1-2fbe11cfbb2e",
+        string(name: 'EDAST_CICD',              defaultValue: params.parameterName ?: "31279b79-376a-46e7-90b1-2fbe11cfbb2e",
                 description: 'ScanCentral DAST CICD identifier')
-        stringParam(name: 'NEXUS_IQ_URL',       defaultValue: params.parameterName ?: "https://sonatype.mfdemouk.com",
+        string(name: 'NEXUS_IQ_URL',            defaultValue: params.parameterName ?: "https://sonatype.mfdemouk.com",
                 description: 'Nexus IQ URL')
-        stringParam(name: 'DOCKER_ORG',         defaultValue: params.parameterName ?: "mfdemouk",
+        string(name: 'DOCKER_ORG',              defaultValue: params.parameterName ?: "mfdemouk",
                 description: 'Docker organisation (in Docker Hub) to push released images to')
     }
 
