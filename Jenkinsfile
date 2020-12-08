@@ -13,7 +13,7 @@
 // - [Optional] Sonatype Nexus IQ server has been installed for OSS vulnerabilities
 //
 // Node setup:
-// - Apply the label "fortify" to Fortify SCA and WebInspect agent.
+// - Apply the label "fortify" to agent with local Fortify installation .
 // Also ensure the label "master" has been applied to your Jenkins master.
 //
 // Credentials setup:
@@ -39,23 +39,37 @@ pipeline {
 
     //
     // The following parameters can be selected when the pipeline is executed manually to execute
-    // different capabilities in the pipeline.
+    // different capabilities in the pipeline or configure the servers that are used.
 
     // Note: the pipeline needs to be executed at least once for the parameters to be available
     //
     parameters {
-        booleanParam(name: 'SCA_LOCAL',       	defaultValue: false,
+        booleanParam(name: 'SCA_LOCAL',       	defaultValue: params.parameterName ?: false,
             description: 'Use (local) Fortify SCA for Static Application Security Testing')
-        booleanParam(name: 'SCA_SONATYPE',      defaultValue: false,
+        booleanParam(name: 'SCA_SONATYPE',      defaultValue: params.parameterName ?: false,
             description: 'Use Fortify SCA with Sonatype Nexus IQ for Open Source Susceptibility Analysis')
-        booleanParam(name: 'SCANCENTRAL_SAST', 	defaultValue: false,
+        booleanParam(name: 'SCANCENTRAL_SAST', 	defaultValue: params.parameterName ?: false,
             description: 'Run a remote scan using Scan Central (SCA) for Static Application Security Testing')
-        booleanParam(name: 'SCANCENTRAL_DAST', 	defaultValue: false,
+        booleanParam(name: 'SCANCENTRAL_DAST', 	defaultValue: params.parameterName ?: false,
             description: 'Run a remote scan using Scan Central (WebInspect) for Dynamic Application Security Testing')
-        booleanParam(name: 'UPLOAD_TO_SSC',		defaultValue: false,
+        booleanParam(name: 'UPLOAD_TO_SSC',		defaultValue: params.parameterName ?: false,
             description: 'Enable upload of scan results to Fortify Software Security Center')             
-        booleanParam(name: 'FOD',       	    defaultValue: false,
+        booleanParam(name: 'FOD',       	    defaultValue: params.parameterName ?: false,
             description: 'Use Fortify on Demand for Static Application Security Testing')
+        booleanParam(name: 'RELEASE_TO_DOCKERHUB', defaultValue: params.parameterName ?: false,
+                description: 'Release build and tested image to Docker Hub')
+        stringParam(name: 'SSC_URL',            defaultValue: params.parameterName ?: "http://ssc.mfdemouk.com",
+                description: 'URL of SSC')
+        stringParam(name: 'SSC_APP_VERSION_ID', defaultValue: params.parameterName ?: "10005",
+                description: 'Id of Application in SSC to upload results to')
+        stringParam(name: 'EDAST_URL',          defaultValue: params.parameterName ?: "http://scancentral.mfdemouk.com/api",
+                description: 'ScanCentral DAST API URI')
+        stringParam(name: 'EDAST_CICD',         defaultValue: params.parameterName ?: "31279b79-376a-46e7-90b1-2fbe11cfbb2e",
+                description: 'ScanCentral DAST CICD identifier')
+        stringParam(name: 'NEXUS_IQ_URL',       defaultValue: params.parameterName ?: "https://sonatype.mfdemouk.com",
+                description: 'Nexus IQ URL')
+        stringParam(name: 'DOCKER_ORG',         defaultValue: params.parameterName ?: "mfdemouk",
+                description: 'Docker organisation (in Docker Hub) to push released images to')
     }
 
     environment {
@@ -69,7 +83,7 @@ pipeline {
         GIT_CREDS = credentials('iwa-git-creds-id')			// Git Credentials
         JAVA_VERSION = 8                                    // Java version to compile as
         ISSUE_IDS = ""                                      // List of issues found from commit
-        DOCKER_ORG = "mfdemouk"                             // Docker organisation (in Docker Hub) to push released images to
+        //DOCKER_ORG = "mfdemouk"                             // Docker organisation (in Docker Hub) to push released images to
 
         //
         // Fortify On Demand (FOD) settings
@@ -81,24 +95,23 @@ pipeline {
         //
         // Fortify Software Security Center (SSC) settings
         //
-        SSC_URL = "http://fortify.mfdemouk.com"                  // URL of SSC
+        //SSC_URL = "http://ssc.mfdemouk.com"                         // URL of SSC
         SSC_AUTH_TOKEN = credentials('iwa-ssc-auth-token-id')       // Authentication token for SSC
-        SSC_SENSOR_POOL_UUID = "00000000-0000-0000-0000-000000000002" // UUID of Scan Central Sensor Pool to use - leave for Default Pool
-		SSC_NOTIFY_EMAIL = "test@test.com"							// User to notify with SSC/ScanCentral information
-        SSC_APP_VERSION_ID = "10005"
+        //SSC_SENSOR_POOL_UUID = "00000000-0000-0000-0000-000000000002" // UUID of Scan Central Sensor Pool to use - leave for Default Pool
+		//SSC_NOTIFY_EMAIL = "test@test.com"							// User to notify with SSC/ScanCentral information
+        //SSC_APP_VERSION_ID = "10005"                                  // Id of Application in SSC to upload results to
 		
         //
         // Fortify ScanCentral DAST settings
         //
-        EDAST_API = "http://fortify.mfdemouk.com:8500/api"	        // ScanCentral DAST API URI
+        //EDAST_URL = "http://scancentral.mfdemouk.com/api"	        // ScanCentral DAST API URI
         EDAST_AUTH_TOKEN = credentials('iwa-edast-auth-token-id')	// ScanCentral DAST Authentication Token (encrypted CiCd token from SSC)
-        EDAST_CICD = "31279b79-376a-46e7-90b1-2fbe11cfbb2e"         // ScanCentral DAST CICD identifier
-        EDAST_OUTPUT_FILE = "${env.WORKSPACE}\\edast-iwa.fpr"       // Output file (FPR) to create
-        
+        //EDAST_CICD = "31279b79-376a-46e7-90b1-2fbe11cfbb2e"         // ScanCentral DAST CICD identifier
+
         //
         // SonaType Nexus IQ settings
         //
-        NEXUS_IQ_URL = "http://sonatype.mfdemouk.com:8080"              // Nexus IQ URL
+        //NEXUS_IQ_URL = "https://sonatype.mfdemouk.com"              // Nexus IQ URL
         NEXUS_IQ_AUTH = credentials('iwa-nexus-iq-auth-token-id')   // Nexus IQ authentication in user:password encoded format
 	}
 
@@ -224,7 +237,6 @@ pipeline {
                                     sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
                                 ]
                         }
-
                     } else if (params.SCA_LOCAL) {
                         // optional: update scan rules
                         //fortifyUpdate updateServerURL: 'https://update.fortify.com'
@@ -273,7 +285,7 @@ pipeline {
             agent {label "fortify"}
             steps {
                 script {
-                    // run sourceandlibscanner
+                    // run sourceandlibscanner - needs to have been installed and in the path
                     if (isUnix()) {
                         sh "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}"
                     } else {
@@ -339,7 +351,7 @@ pipeline {
                         // run ScanCentral DAST scan using groovy script
                         println "Running ScanCentral DAST scan, please wait ..."
                         edastApi = load 'bin/fortify-scancentral-dast.groovy'
-                        edastApi.setApiUri("${env.EDAST_API}")
+                        edastApi.setApiUri("${env.EDAST_URL}")
                         edastApi.setAuthToken("${env.EDAST_AUTH_TOKEN}")
                         edastApi.setDebug(true)
                         Integer scanId = edastApi.startScanAndWait("Jenkins initiated scan", "${env.EDAST_CICD}", 5)
@@ -371,10 +383,14 @@ pipeline {
             steps {
                 script {
                     // Example publish to Docker Hub
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-                        dockerImage.push("${env.APP_VER}.${BUILD_NUMBER}")
-                        // and tag as "latest"
-                        dockerImage.push("latest")
+                    if (params.RELEASE_TO_DOCKERHUB) {
+                        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                            dockerImage.push("${env.APP_VER}.${BUILD_NUMBER}")
+                            // and tag as "latest"
+                            dockerImage.push("latest")
+                        }
+                    } else {
+                        println "No releaseing to do."
                     }
                 }
             }
