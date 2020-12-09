@@ -18,12 +18,11 @@
 //
 // Credentials setup:
 // Create the following "Secret text" credentials in Jenkins and enter values as follows:
-//		iwa-git-creds-id		 - Git login as Jenkins "Username with Password" credential
-//      iwa-fod-bsi-token-id     - Fortify on Demand BSI token as Jenkins Secret - deprecated use iwa-fod-release-id
-//      iwa-fod-release-id       - Fortify on Demand Release Id as Jenkins Secret credential
-//      iwa-ssc-auth-token-id    - Fortify Software Security Center "AnalysisUploadToken" authentication token as Jenkins Secret credential
-//      iwa-edast-auth-token-id  - Fortify Software Security Center "CIToken" for invoking ScanCentral DAST scans
-//      docker-hub-credentials   - DockerHub login as "Username/Password" credentials
+//		iwa-git-creds-id		    - Git login as Jenkins "Username with Password" credential
+//      iwa-ssc-ci-token-id         - Fortify Software Security Center "CIToken" authentication token as Jenkins Secret credential
+//      iwa-fod-release-id          - Fortify on Demand Release Id as Jenkins Secret credential
+//      iwa-nexus-iq-token-id       - Sonatype Nexus IQ auth token in form of user:pass
+//      iwa-dockerhub-creds-id      - DockerHub login as Jenkins "Username with Password" credential
 // All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
 // For Fortify on Demand (FOD) Global Authentication is used rather than Personal Access Tokens.
 //
@@ -49,15 +48,15 @@ pipeline {
         booleanParam(name: 'SCA_SONATYPE',      defaultValue: params.parameterName ?: false,
             description: 'Use Fortify SCA with Sonatype Nexus IQ for Open Source Susceptibility Analysis')
         booleanParam(name: 'SCANCENTRAL_SAST', 	defaultValue: params.parameterName ?: false,
-            description: 'Run a remote scan using Scan Central (SCA) for Static Application Security Testing')
+            description: 'Run a remote scan using Scan Central SAST (SCA) for Static Application Security Testing')
         booleanParam(name: 'SCANCENTRAL_DAST', 	defaultValue: params.parameterName ?: false,
-            description: 'Run a remote scan using Scan Central (WebInspect) for Dynamic Application Security Testing')
+            description: 'Run a remote scan using Scan Central DAST (WebInspect) for Dynamic Application Security Testing')
         booleanParam(name: 'UPLOAD_TO_SSC',		defaultValue: params.parameterName ?: false,
             description: 'Enable upload of scan results to Fortify Software Security Center')             
         booleanParam(name: 'FOD',       	    defaultValue: params.parameterName ?: false,
             description: 'Use Fortify on Demand for Static Application Security Testing')
         booleanParam(name: 'RELEASE_TO_DOCKERHUB', defaultValue: params.parameterName ?: false,
-                description: 'Release build and tested image to Docker Hub')
+                description: 'Release built and tested image to Docker Hub')
         string(name: 'SSC_URL',                 defaultValue: params.parameterName ?: "http://ssc.mfdemouk.com",
                 description: 'URL of SSC')
         string(name: 'SSC_APP_VERSION_ID',      defaultValue: params.parameterName ?: "10005",
@@ -96,23 +95,19 @@ pipeline {
         // Fortify Software Security Center (SSC) settings
         //
         //SSC_URL = "http://ssc.mfdemouk.com"                         // URL of SSC
-        SSC_AUTH_TOKEN = credentials('iwa-ssc-auth-token-id')       // Authentication token for SSC
+        //SSC_AUTH_TOKEN = credentials('iwa-ssc-upload-token-id')       // Authentication token for SSC
         //SSC_SENSOR_POOL_UUID = "00000000-0000-0000-0000-000000000002" // UUID of Scan Central Sensor Pool to use - leave for Default Pool
 		//SSC_NOTIFY_EMAIL = "test@test.com"							// User to notify with SSC/ScanCentral information
         //SSC_APP_VERSION_ID = "10005"                                  // Id of Application in SSC to upload results to
-		
-        //
-        // Fortify ScanCentral DAST settings
-        //
         //EDAST_URL = "http://scancentral.mfdemouk.com/api"	        // ScanCentral DAST API URI
-        EDAST_AUTH_TOKEN = credentials('iwa-edast-auth-token-id')	// ScanCentral DAST Authentication Token (encrypted CiCd token from SSC)
+        SSC_AUTH_TOKEN = credentials('iwa-ssc-ci-token-id')	// ScanCentral DAST Authentication Token (encrypted CiCd token from SSC)
         //EDAST_CICD = "31279b79-376a-46e7-90b1-2fbe11cfbb2e"         // ScanCentral DAST CICD identifier
 
         //
         // SonaType Nexus IQ settings
         //
         //NEXUS_IQ_URL = "https://sonatype.mfdemouk.com"              // Nexus IQ URL
-        NEXUS_IQ_AUTH = credentials('iwa-nexus-iq-auth-token-id')   // Nexus IQ authentication in user:password encoded format
+        NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-token-id')   // Nexus IQ authentication in user:password encoded format
 	}
 
     tools {
@@ -287,9 +282,9 @@ pipeline {
                 script {
                     // run sourceandlibscanner - needs to have been installed and in the path
                     if (isUnix()) {
-                        sh "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}"
+                        sh "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.EDSAT_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}"
                     } else {
-                        bat(script: "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}")
+                        bat(script: "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.EDSAT_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}")
                     }
                 }
             }
@@ -329,6 +324,7 @@ pipeline {
                         // check if container is still running and if so stop/remove it
                         if (isUnix()) {
                             sh(script: "docker ps -aq --filter name=iwa-jenkins > container.id")
+                            def existingId = readFile('container.id').trim()
                             if (existingId) {
                                 println "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
                                 sh(script: "docker stop $existingId")
@@ -384,7 +380,7 @@ pipeline {
                 script {
                     // Example publish to Docker Hub
                     if (params.RELEASE_TO_DOCKERHUB) {
-                        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                        docker.withRegistry('https://registry.hub.docker.com', 'iwa-dockerhub-creds-id') {
                             dockerImage.push("${env.APP_VER}.${BUILD_NUMBER}")
                             // and tag as "latest"
                             dockerImage.push("latest")
