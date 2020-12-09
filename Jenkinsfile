@@ -139,9 +139,9 @@ pipeline {
 
                     // Run maven to build WAR/JAR application
                     if (isUnix()) {
-                        sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P jar,release clean package'
+                        sh 'mvn -Dmaven.com.failure.ignore=true -Dtest=!*PasswordConstraintValidatorTest -P jar,release clean package'
                     } else {
-                        bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*FailingTests -P jar,release clean package"
+                        bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*PasswordConstraintValidatorTest -P jar,release clean package"
                     }
                 }
             }
