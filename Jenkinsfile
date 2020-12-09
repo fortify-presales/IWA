@@ -6,14 +6,17 @@
 //
 //
 // Pre-requisites:
-// - Fortify SCA/ScanCentral SAST has been installed (for on premise SAST)
-// - Fortify WebInspect/ScanCentral DAST has been installed (for on premise DAST)
+// - Fortify SCA/ScanCentral SAST has been installed (for on-premise SAST)
+// - Fortify WebInspect/ScanCentral DAST has been installed (for on-premise DAST)
 // - A Fortify On Demand account and API access are available (for cloud based SAST)
 // - Docker Pipeline plugin has been installed (Jenkins)
 // - [Optional] Sonatype Nexus IQ server has been installed for OSS vulnerabilities
 //
-// Node setup:
-// - Apply the label "fortify" to agent with local Fortify installation .
+// Typical node setup:
+// - Install Fortify SCA on the agent machine
+// - create a new Jenkins agent for this machine
+// - Apply the label "fortify" to the agent.
+// - Set the environment variable "FORTIFY_HOME" on the agent point to the location of the Fortify SCA installation
 // Also ensure the label "master" has been applied to your Jenkins master.
 //
 // Credentials setup:
@@ -61,6 +64,10 @@ pipeline {
                 description: 'URL of SSC')
         string(name: 'SSC_APP_VERSION_ID',      defaultValue: params.parameterName ?: "10005",
                 description: 'Id of Application in SSC to upload results to')
+        string(name: 'SSC_NOTIFY_EMAIL',        defaultValue: params.parameterName ?: "do-not-reply@microfocus.com",
+                description: 'User to notify with SSC/ScanCentral information')
+        string(name: 'SSC_SENSOR_POOL_UUID',    defaultValue: params.parameterName ?: "00000000-0000-0000-0000-000000000002",
+                description: 'UUID of Scan Central Sensor Pool to use - leave for Default Pool')
         string(name: 'EDAST_URL',               defaultValue: params.parameterName ?: "http://scancentral.mfdemouk.com/api",
                 description: 'ScanCentral DAST API URI')
         string(name: 'EDAST_CICD',              defaultValue: params.parameterName ?: "31279b79-376a-46e7-90b1-2fbe11cfbb2e",
@@ -76,38 +83,16 @@ pipeline {
         // Application settings
         //
 		APP_NAME = "IWA (Java)"                      		// Application name
-        APP_VER = "1.0"                                     // Application release
+        APP_VER = "master"                                  // Application release - GitHub master branch
         COMPONENT_NAME = "iwa"                              // Component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
-        GIT_CREDS = credentials('iwa-git-creds-id')			// Git Credentials
+        GIT_CREDS = credentials('iwa-git-creds-id')
         JAVA_VERSION = 8                                    // Java version to compile as
         ISSUE_IDS = ""                                      // List of issues found from commit
-        //DOCKER_ORG = "mfdemouk"                             // Docker organisation (in Docker Hub) to push released images to
-
-        //
-        // Fortify On Demand (FOD) settings
-        //
-        //FOD_BSI_TOKEN = credentials('iwa-fod-bsi-token-id') // FOD BSI Token - deprecated use FOD_RELEASE_ID
-        FOD_RELEASE_ID = credentials('iwa-fod-release-id')  // FOD Release Id
+        FOD_RELEASE_ID = credentials('iwa-fod-release-id')
         FOD_UPLOAD_DIR = 'fod'                              // Directory where FOD upload Zip is constructed
-       
-        //
-        // Fortify Software Security Center (SSC) settings
-        //
-        //SSC_URL = "http://ssc.mfdemouk.com"                         // URL of SSC
-        //SSC_AUTH_TOKEN = credentials('iwa-ssc-upload-token-id')       // Authentication token for SSC
-        //SSC_SENSOR_POOL_UUID = "00000000-0000-0000-0000-000000000002" // UUID of Scan Central Sensor Pool to use - leave for Default Pool
-		//SSC_NOTIFY_EMAIL = "test@test.com"							// User to notify with SSC/ScanCentral information
-        //SSC_APP_VERSION_ID = "10005"                                  // Id of Application in SSC to upload results to
-        //EDAST_URL = "http://scancentral.mfdemouk.com/api"	        // ScanCentral DAST API URI
-        SSC_AUTH_TOKEN = credentials('iwa-ssc-ci-token-id')	// ScanCentral DAST Authentication Token (encrypted CiCd token from SSC)
-        //EDAST_CICD = "31279b79-376a-46e7-90b1-2fbe11cfbb2e"         // ScanCentral DAST CICD identifier
-
-        //
-        // SonaType Nexus IQ settings
-        //
-        //NEXUS_IQ_URL = "https://sonatype.mfdemouk.com"              // Nexus IQ URL
-        NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-token-id')   // Nexus IQ authentication in user:password encoded format
+        SSC_AUTH_TOKEN = credentials('iwa-ssc-ci-token-id')
+        NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-token-id')
 	}
 
     tools {
