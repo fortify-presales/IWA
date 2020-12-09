@@ -202,8 +202,8 @@ pipeline {
                                 remoteOptionalConfig: [
                                     customRulepacks: '',
                                     filterFile: "etc\\sca-filter.txt",
-                                    notifyEmail: "${env.SSC_NOTIFY_EMAIL}",
-                                    sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
+                                    notifyEmail: "${params.SSC_NOTIFY_EMAIL}",
+                                    sensorPoolUUID: "${params.SSC_SENSOR_POOL_UUID}"
                                 ],
                                 uploadSSC: [appName: "${env.APP_NAME}", appVersion: "${env.APP_VER}"]
 
@@ -213,8 +213,8 @@ pipeline {
                                 remoteOptionalConfig: [
                                     customRulepacks: '',
                                     filterFile: "etc\\sca-filter.txt",
-                                    notifyEmail: "${env.SSC_NOTIFY_EMAIL}",
-                                    sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
+                                    notifyEmail: "${params.SSC_NOTIFY_EMAIL}",
+                                    sensorPoolUUID: "${params.SSC_SENSOR_POOL_UUID}"
                                 ]
                         }
                     } else if (params.SCA_LOCAL) {
@@ -267,9 +267,9 @@ pipeline {
                 script {
                     // run sourceandlibscanner - needs to have been installed and in the path
                     if (isUnix()) {
-                        sh "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.EDSAT_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}"
+                        sh "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${parms.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${params.SSC_URL} -ssctoken ${env.EDSAT_AUTH_TOKEN} -versionid ${params.SSC_APP_VERSION_ID}"
                     } else {
-                        bat(script: "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.EDSAT_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}")
+                        bat(script: "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${parms.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${params.SSC_URL} -ssctoken ${env.EDSAT_AUTH_TOKEN} -versionid ${params.SSC_APP_VERSION_ID}")
                     }
                 }
             }
@@ -284,10 +284,10 @@ pipeline {
                     unstash name: "${env.COMPONENT_NAME}_release"
                     if (isUnix()) {
                         // Create docker image using JAR file
-                        dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
+                        dockerImage = docker.build "${params.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
                     } else {
                         // Create docker image using JAR file
-                        dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
+                        dockerImage = docker.build("${params.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
                     }
                 }
             }
@@ -334,10 +334,10 @@ pipeline {
                         // run ScanCentral DAST scan using groovy script
                         println "Running ScanCentral DAST scan, please wait ..."
                         edastApi = load 'bin/fortify-scancentral-dast.groovy'
-                        edastApi.setApiUri("${env.EDAST_URL}")
+                        edastApi.setApiUri("${params.EDAST_URL}")
                         edastApi.setAuthToken("${env.EDAST_AUTH_TOKEN}")
                         edastApi.setDebug(true)
-                        Integer scanId = edastApi.startScanAndWait("Jenkins initiated scan", "${env.EDAST_CICD}", 5)
+                        Integer scanId = edastApi.startScanAndWait("Jenkins initiated scan", "${params.EDAST_CICD}", 5)
                         String scanStatus = edastApi.getScanStatusValue(edastApi.getScanStatusId(scanId))
                         println "ScanCentral DAST scan id: ${scanId} - status: ${scanStatus}"
 					} else if (params.FOD) {
