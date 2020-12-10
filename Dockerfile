@@ -15,7 +15,7 @@ ARG JAR_FILE=target/iwa.jar
 COPY ${JAR_FILE} app.jar
 
 # JAVA_OPTS to be passed in
-ENV JAVA_OPTS "-Xmx512m -Xss256k"
+ENV JAVA_OPTS="-Xmx512m -Xss256k"
 
 # Run the jar file
-ENTRYPOINT ["java","${JAVA_OPTS}","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar","/app.jar"]
