@@ -2,15 +2,26 @@
 # Example script to perform static application security testing (SAST) using Fortify ScanCentral
 #
 
-# ScanCentral URL 
-$ScanCentralUrl = "http://localhost:9880/scancentral-ctrl"
+# SSC URL from environment variable
+$ssccurl = $Env:SSC_URL 
 
-# ScanCentral Pool UUID to use - Defaullt Pool
+# SSC ScanCentralCtrlToken from environment variable
+# Can be created using: fortifyclient token -gettoken ScanCentralCtrlToken -url $scurl -user [your-username] -password [your-password] 
+$ssctoken = $Env:SSC_SCANCENTRAL_CTRL_TOKEN
+
+# SSC Application version id to upload results to from environment variable
+# Can be retrieved using: fortifyclient listApplicationVersions -url $scurl -user [your-username] -password [your-password] 
+$sscappid = $Env:SSC_APPLICATION_ID
+
+# SSC AnalysisUploadToken token from environment variable
+$sscuptoken = $Env:SSC_ANALYSIS_UPLOAD_TOKEN
+
+# ScanCentral Pool UUID to use - Default Pool
 $ScanCentralPool = "00000000-0000-0000-0000-000000000002"
 
 # example path for ScanCentral client - SCA path
-$env:Path += ";C:\Micro Focus\Fortify SCA and Apps 20.1.2\bin"
-$env:Path
+$env:Path += ";C:\Tools\scancentral\bin"
+
 
 # Check ScanCentral client is on the path
 if ((Get-Command "scancentral.bat" -ErrorAction SilentlyContinue) -eq $null)
@@ -19,13 +30,13 @@ if ((Get-Command "scancentral.bat" -ErrorAction SilentlyContinue) -eq $null)
     Break
 }
 
-$command = { scancentral.bat -url $ScanCentralUrl start -b iwa -bt mvn -bf pom.xml }
-
-# Start the scan using ScanCentral and Maven built tool
+# Start the scan using ScanCentral and Maven build tool
 Write-Host ************************************************************
 Write-Host Invoking ScanCentral...
 Write-Host ************************************************************
-& scancentral -url $ScanCentralUrl start -b iwa -bt mvn -bf pom.xml -pool $ScanCentralPool | Tee-Object -FilePath "scancentral.run"
+# "C:\Program Files\Fortify\Fortify_SCA_and_Apps_20.2.1\bin\scancentral.bat" -sscurl http://ssc.mfdemouk.com -ssctoken b7d50934-69ab-49e0-b15b-33f63de4d6fc
+# start -bt mvn -bf pom.xml -email kevin.lee@microfocus.com -pool 00000000-0000-0000-0000-000000000002 -filter etc\sca-filter.txt
+& scancentral -sscurl $ssccurl -ssctoken $ssctoken start -upload -versionid $sscappid -b iwa -uptoken $sscuptoken -bt mvn -bf pom.xml
 
-# get token and parse
-# scancentral status -token 4cfac65f-1873-44c4-b0e9-8ff6fd4adebc
+Write-Host You can check ongoing status with:
+Write-Host "scancentral -sscurl $ssccurl -ssctoken $ssctoken status -token [returned-token]"
