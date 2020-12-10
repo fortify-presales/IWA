@@ -267,9 +267,9 @@ pipeline {
                 script {
                     // run sourceandlibscanner - needs to have been installed and in the path
                     if (isUnix()) {
-                        sh "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${parms.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${params.SSC_URL} -ssctoken ${env.EDSAT_AUTH_TOKEN} -versionid ${params.SSC_APP_VERSION_ID}"
+                        sh "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${params.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${params.SSC_URL} -ssctoken ${env.EDSAT_AUTH_TOKEN} -versionid ${params.SSC_APP_VERSION_ID}"
                     } else {
-                        bat(script: "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${parms.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${params.SSC_URL} -ssctoken ${env.EDSAT_AUTH_TOKEN} -versionid ${params.SSC_APP_VERSION_ID}")
+                        bat(script: "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${params.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${params.SSC_URL} -ssctoken ${env.EDSAT_AUTH_TOKEN} -versionid ${params.SSC_APP_VERSION_ID}")
                     }
                 }
             }
