@@ -24,7 +24,7 @@
 //		iwa-git-creds-id		    - Git login as Jenkins "Username with Password" credential
 //      iwa-ssc-ci-token-id         - Fortify Software Security Center "CIToken" authentication token as Jenkins Secret credential
 //      iwa-fod-release-id          - Fortify on Demand Release Id as Jenkins Secret credential
-//      iwa-nexus-iq-token-id       - Sonatype Nexus IQ auth token in form of user:pass
+//      iwa-nexus-iq-token-id       - Sonatype Nexus IQ user token in form of "user code:pass code"
 //      iwa-dockerhub-creds-id      - DockerHub login as Jenkins "Username with Password" credential
 // All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
 // For Fortify on Demand (FOD) Global Authentication is used rather than Personal Access Tokens.
