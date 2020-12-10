@@ -301,8 +301,8 @@ pipeline {
             	    expression { params.FOD == true }
         	    }
             }
-            // Run on an Agent with "fortify" label applied
-            agent {label "fortify"}
+            // Run on an Agent with "docker" label applied
+            agent {label "docker"}
             steps {
                 script {
                     if (params.SCANCENTRAL_DAST) {
