@@ -62,7 +62,7 @@ pipeline {
                 description: 'Release built and tested image to Docker Hub')
         string(name: 'SSC_URL',                 defaultValue: params.parameterName ?: "http://ssc.mfdemouk.com",
                 description: 'URL of SSC')
-        string(name: 'SSC_APP_VERSION_ID',      defaultValue: params.parameterName ?: "10005",
+        string(name: 'SSC_APP_VERSION_ID',      defaultValue: params.parameterName ?: "10002",
                 description: 'Id of Application in SSC to upload results to')
         string(name: 'SSC_NOTIFY_EMAIL',        defaultValue: params.parameterName ?: "do-not-reply@microfocus.com",
                 description: 'User to notify with SSC/ScanCentral information')
@@ -70,7 +70,7 @@ pipeline {
                 description: 'UUID of Scan Central Sensor Pool to use - leave for Default Pool')
         string(name: 'EDAST_URL',               defaultValue: params.parameterName ?: "http://scancentral.mfdemouk.com/api",
                 description: 'ScanCentral DAST API URI')
-        string(name: 'EDAST_CICD',              defaultValue: params.parameterName ?: "31279b79-376a-46e7-90b1-2fbe11cfbb2e",
+        string(name: 'EDAST_CICD',              defaultValue: params.parameterName ?: "37512d59-7863-48c2-8d77-1a57c9f1ec6a",
                 description: 'ScanCentral DAST CICD identifier')
         string(name: 'NEXUS_IQ_URL',            defaultValue: params.parameterName ?: "https://sonatype.mfdemouk.com",
                 description: 'Nexus IQ URL')
