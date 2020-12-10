@@ -48,7 +48,7 @@ pipeline {
     parameters {
         booleanParam(name: 'SCA_LOCAL',       	defaultValue: params.parameterName ?: false,
             description: 'Use (local) Fortify SCA for Static Application Security Testing')
-        booleanParam(name: 'SCA_SONATYPE',      defaultValue: params.parameterName ?: false,
+        booleanParam(name: 'SCA_OSS',      defaultValue: params.parameterName ?: false,
             description: 'Use Fortify SCA with Sonatype Nexus IQ for Open Source Susceptibility Analysis')
         booleanParam(name: 'SCANCENTRAL_SAST', 	defaultValue: params.parameterName ?: false,
             description: 'Run a remote scan using Scan Central SAST (SCA) for Static Application Security Testing')
@@ -258,7 +258,7 @@ pipeline {
             when {
                 beforeAgent true
                 anyOf {
-                    expression { params.SCA_SONATYPE == true }
+                    expression { params.SCA_OSS == true }
                 }
             }
             // Run on an Agent with "fortify" label applied
@@ -267,9 +267,9 @@ pipeline {
                 script {
                     // run sourceandlibscanner - needs to have been installed and in the path
                     if (isUnix()) {
-                        sh "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${params.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${params.SSC_URL} -ssctoken ${env.EDSAT_AUTH_TOKEN} -versionid ${params.SSC_APP_VERSION_ID}"
+                        sh "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${params.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${params.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${params.SSC_APP_VERSION_ID}"
                     } else {
-                        bat(script: "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${params.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${params.SSC_URL} -ssctoken ${env.EDSAT_AUTH_TOKEN} -versionid ${params.SSC_APP_VERSION_ID}")
+                        bat(script: "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${params.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${params.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${params.SSC_APP_VERSION_ID}")
                     }
                 }
             }
