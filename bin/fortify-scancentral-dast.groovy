@@ -5,8 +5,11 @@ class edastApi {
 	String authToken
 	boolean debug
 
+	edastApi() {
+		this.debug = false
+	}
+
 	edastApi(String apiUri) {
-		println "in constructor"
 		this.apiUri = apiUri
 		this.debug = false
 	}
