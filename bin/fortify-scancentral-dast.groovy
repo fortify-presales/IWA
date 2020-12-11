@@ -172,7 +172,7 @@ class edastApi {
 /*
 def edastApi = new edastApi("http://scancentral.mfdemouk.com/api")
 edastApi.setDebug(true)
-edastApi.authenticate("klee", "F0rt1fy")
+edastApi.authenticate("user", "password")
 edastApi.startScanAndWait("Test Scan", "37512d59-7863-48c2-8d77-1a57c9f1ec6a", 5)
 */
 
