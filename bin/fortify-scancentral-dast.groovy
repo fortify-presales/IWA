@@ -1,15 +1,13 @@
 class edastApi {
 	String apiUri
+	String username
+	String password
 	String authToken
 	boolean debug
 
-	edastApi() {
-		this.debug = false
-	}
-
-	edastApi(String apiUri, String authToken) {
+	edastApi(String apiUri) {
+		println "in constructor"
 		this.apiUri = apiUri
-		this.authToken = authToken
 		this.debug = false
 	}
 
@@ -17,12 +15,48 @@ class edastApi {
 		this.apiUri = apiUri
 	}
 
-	def setAuthToken(String authToken) {
-		this.authToken = authToken
+	def setUsername(String username) {
+		this.username = username
+	}
+
+	def setPassword(String password) {
+		this.password = password
 	}
 
 	def setDebug(boolean debug) {
 		this.debug = debug
+	}
+
+	def getAuthtoken() { return this.authToken }
+
+	def authenticate(String username, String password) {
+		def postUrl = "${this.apiUri}/auth"
+		if (debug) println "ScanCentral DAST POST request: $postUrl with body:"
+		def post = new URL(postUrl).openConnection()
+		def body = """\
+		{
+			"username": "$username",
+			"password": "$password"
+		}
+		"""
+		if (debug) println body
+		post.setRequestMethod("POST")
+		post.setDoOutput(true)
+		post.setRequestProperty("Accept", "application/json")
+		post.setRequestProperty("Content-Type", "application/json")
+		post.getOutputStream().write(body.getBytes("UTF-8"))
+		def postRC = post.getResponseCode()
+		if (postRC.equals(200) || postRC.equals(201)) {
+			def parsedJson = new groovy.json.JsonSlurper().parseText(post.getInputStream().getText())
+			if (debug) println "Retrieved token: " + parsedJson.token
+			this.authToken = parsedJson.token
+		} else {
+			println "Got error response: $postRC"
+			def parsedJson = new groovy.json.JsonSlurper().parseText(post.getInputStream().getText())
+			if (parsedJson) {
+				println parsedJson.Message
+			}
+		}
 	}
 
 	def startScan(String scanName,  String cicdToken) {
@@ -45,7 +79,7 @@ class edastApi {
 		post.setDoOutput(true)
 		post.setRequestProperty("Accept", "application/json")
 		post.setRequestProperty("Content-Type", "application/json")
-		post.setRequestProperty("Authorization", "FORTIFYTOKEN " + this.authToken)
+		post.setRequestProperty("Authorization", this.authToken)
 		post.getOutputStream().write(body.getBytes("UTF-8"))
 		def postRC = post.getResponseCode()
 		if (postRC.equals(200) || postRC.equals(201)) {
@@ -72,7 +106,7 @@ class edastApi {
 		get.setRequestMethod("GET")
 		get.setDoOutput(true)
 		get.setRequestProperty("Accept", "application/json")
-		get.setRequestProperty("Authorization", "FORTIFYTOKEN " + this.authToken)
+		get.setRequestProperty("Authorization", this.authToken)
 		def getRC = get.getResponseCode()
 		if (getRC.equals(200) || getRC.equals(201)) {
 			def parsedJson = new groovy.json.JsonSlurper().parseText(get.getInputStream().getText())
@@ -99,7 +133,7 @@ class edastApi {
 		get.setRequestMethod("GET")
 		get.setDoOutput(true)
 		get.setRequestProperty("Accept", "application/json")
-		get.setRequestProperty("Authorization", "FORTIFYTOKEN " + this.authToken)
+		get.setRequestProperty("Authorization", this.authToken)
 		def getRC = get.getResponseCode()
 		if (getRC.equals(200) || getRC.equals(201)) {
 			def parsedJson = new groovy.json.JsonSlurper().parseText(get.getInputStream().getText())
@@ -136,8 +170,10 @@ class edastApi {
 // example invocation
 
 /*
-def edastApi = new edastApi("http://localhost:8500/api", "SSC_CITOKEN")
-edastApi.startScanAndWait("Test Scan", "SCAN_SETTINGS_ID", 5)
+def edastApi = new edastApi("http://scancentral.mfdemouk.com/api")
+edastApi.setDebug(true)
+edastApi.authenticate("klee", "F0rt1fy")
+edastApi.startScanAndWait("Test Scan", "37512d59-7863-48c2-8d77-1a57c9f1ec6a", 5)
 */
 
 return new edastApi()
