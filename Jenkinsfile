@@ -23,6 +23,7 @@
 // Create the following "Secret text" credentials in Jenkins and enter values as follows:
 //		iwa-git-creds-id		    - Git login as Jenkins "Username with Password" credential
 //      iwa-ssc-ci-token-id         - Fortify Software Security Center "CIToken" authentication token as Jenkins Secret credential
+//      iwa-edast-auth-token-id     - Fortify Scan Central DAST authentication token as Jenkins Secret credential
 //      iwa-fod-release-id          - Fortify on Demand Release Id as Jenkins Secret credential
 //      iwa-nexus-iq-token-id       - Sonatype Nexus IQ user token in form of "user code:pass code"
 //      iwa-dockerhub-creds-id      - DockerHub login as Jenkins "Username with Password" credential
@@ -92,6 +93,7 @@ pipeline {
         FOD_RELEASE_ID = credentials('iwa-fod-release-id')
         FOD_UPLOAD_DIR = 'fod'                              // Directory where FOD upload Zip is constructed
         SSC_AUTH_TOKEN = credentials('iwa-ssc-ci-token-id')
+        EDAST_AUTH_TOKEN = credentials('iwa-edast-auth-token-id')
         NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-token-id')
 	}
 
