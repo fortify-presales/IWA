@@ -29,7 +29,8 @@
 
 _IWA (Insecure Web App)_ is an example Java/Spring Web Application for use in **DevSecOps** scenarios and demonstrations.
 The source code includes some examples of insecure code - which can be found using static and dynamic application 
-security testing tools such as [Fortify SCA](https://www.microfocus.com/en-us/products/static-code-analysis-sas), [Fortify On Demand](https://www.microfocus.com/en-us/products/application-security-testing)
+security testing tools such as [Fortify SCA](https://www.microfocus.com/en-us/products/static-code-analysis-sas), 
+[Fortify On Demand](https://www.microfocus.com/en-us/products/application-security-testing)
 and [Fortify WebInspect](https://www.microfocus.com/en-us/products/webinspect-dynamic-analysis-dast).
 
 One of the main aims of this project is to illustrate how security can be embedded early and continuously in
@@ -108,7 +109,7 @@ on a Docker Server or Kubernetes cluster.
 
 ### Static Analysis using Fortify SCA command line
 
-There is an example PowerShell script [fortify-sca.ps1](bin/fortify-sca.ps1) that you can use to execute  static code analysis
+There is an example PowerShell script [fortify-sca.ps1](bin/fortify-sca.ps1) that you can use to execute static code analysis
 using [Fortify SCA](https://www.microfocus.com/en-us/products/static-code-analysis-sast/overview). This script runs a
 "sourceanalyzer" translation and scan on the project's source code. It creates a Fortify Project Results file called `target\iwa.fpr` 
 which you can open using `auditworkbench`. It also creates a PDF report called `iwa.pdf` in the root directory and optionally
@@ -130,7 +131,8 @@ This will product an FPR file in the `target\fortify` directory. You can optiona
 PDF report using the `ReportGenerator` tool with the following command:
 
 ```
-ReportGenerator -Dcom.fortify.sca.ProjectRoot=target\fortify -user "Demo User" -format pdf -f target\fortify\iwa.pdf -source target\fortify\iwab-1.0-SNAPSHOT.fpr
+ReportGenerator -Dcom.fortify.sca.ProjectRoot=target\fortify -user "Demo User" -format pdf -f target\fortify\iwa.pdf `
+    -source target\fortify\iwab-1.0-SNAPSHOT.fpr
 ```
 
 ### Static Analysis using Fortify ScanCentral SAST
@@ -143,7 +145,8 @@ line.
 
 The Jenkinsfile includes support for running open source susceptibility analysis using the Fortify integration with
 [Sonatype Nexus IQ](https://www.sonatype.com/nexus/lifecycle) and the [Fortify Source And Lib Scanner](https://marketplace.microfocus.com/fortify/content/fortify-sourceandlibscanner).
-There is also an example PowerShell script file [fortify-sourceandlibscanner.ps1](bin\fortify-sourceandlibscanner.ps1) for running a scan from the command line.
+There is also an example PowerShell script file [fortify-sourceandlibscanner.ps1](bin\fortify-sourceandlibscanner.ps1) 
+for running a scan from the command line.
 
 ### Static Analysis using Fortify on Demand
 
@@ -187,7 +190,8 @@ Once completed you can open the WebInspect "Desktop Client" and navigate to the 
 An FPR called `wi-iwa.fpr` will be available in the `target` directory. You can generate a 
 PDF report from this file using `ReportGenerator` or upload it to Fortify SSC or Fortify on Demand.
 
-There is an example PowerShell script file [fortify-webinspect.ps1](bin\fortify-webinspect.ps1) that you can run to execute all of the above commands.
+There is an example PowerShell script file [fortify-webinspect.ps1](bin\fortify-webinspect.ps1) that you can run to 
+execute all of the above commands.
 
 ### Dynamic Analysis of Swagger based OpenAPI using Fortify WebInspect 
 
@@ -195,16 +199,28 @@ TBD
 
 ### Dynamic Analysis using Fortify ScanCentral DAST
 
-The Jenkinsfile includes support for running a remote scan using Fortify ScanCentral DAST. There is also a Groovy
-script [fortify-scancentral-dast.groovy](bin\fortify-scancentral-dast.groovy) for running a remote scan from the command
-line.
+The Jenkinsfile includes support for running a remote scan using Fortify ScanCentral DAST through a Groovy
+script [fortify-scancentral-dast.groovy](bin\fortify-scancentral-dast.groovy). 
+
+There is also an example PowerShell script file [fortify-scancentral-dast.ps1](bin\fortify-scancentral-dast.ps1).
+It can be invoked via the following from a PowerShell prompt:
+
+```PowerShell
+.\bin\fortify-scancentral-dast.ps1 -ApiUri 'SCANCENTRAL_DAST_API' -Username 'SSC_USERNAME' -Password 'SSC_PASSWORD' `
+    -CiCdToken 'CICD_TOKEN_ID'
+``` 
+
+where `SCANCENTRAL_DAST_API` is the URL of the ScanCentral DAS API configured in Software Security Center and 
+`SSC_USERNAME` and `SSC_PASSWORD` are the login credentials of a Software Security Center user who is permitted to
+run scans. Finally, `CICD_TOKEN_ID` is the CICD identifier of a "Settings" you have previously created.
 
 ## Build and Pipeline Integrations
 
 ### Jenkins
 
 If you are using [Jenkins](https://jenkins.io/), a comprehensive `Jenkinsfile` is provided to automate all of the typical 
-steps of DevSecOps Continuous Delivery (CD) process. For application security testing it can make use of [Fortify SCA](https://www.microfocus.com/en-us/products/static-code-analysis-sast/), 
+steps of DevSecOps Continuous Delivery (CD) process. For application security testing it can make use of 
+[Fortify SCA](https://www.microfocus.com/en-us/products/static-code-analysis-sast/), 
 [Fortify WebInspect](https://www.microfocus.com/en-us/products/webinspect-dynamic-analysis-dast/), 
 [Fortify SSC](https://www.microfocus.com/en-us/products/software-security-assurance-sdlc/) 
 and/or [Fortify on Demand](https://www.microfocus.com/en-us/products/application-security-testing/). 
@@ -231,7 +247,10 @@ automates the build of the application and uploads the source code to
 
 The example workflow runs on every push to the *master* branch and on every "pull request" that is created.
 
-It makes use of the [Fortify GitHub Actions](https://github.com/marketplace/actions/fortify-on-demand-scan)
+It makes use of the [Fortify GitHub Actions](https://github.com/marketplace/actions/fortify-on-demand-scan).
+
+There are also additional user-initiated workflows than can be run ad-hoc for executing individual static or
+dynamic scans.
 
 ### GitLab CI/CD
 
