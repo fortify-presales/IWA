@@ -12,7 +12,7 @@ on:
 
 jobs:
   
-  Generate-GitHub-Issues:
+  generate-github-issues:
     runs-on: ubuntu-latest
     
     steps:
