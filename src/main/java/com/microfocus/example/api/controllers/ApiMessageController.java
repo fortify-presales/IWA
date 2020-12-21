@@ -23,6 +23,7 @@ import com.microfocus.example.entity.ApiStatusResponse;
 import com.microfocus.example.entity.Message;
 import com.microfocus.example.exception.MessageNotFoundException;
 import com.microfocus.example.service.UserService;
+import com.microfocus.example.web.form.MessageForm;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -112,7 +113,7 @@ public class ApiMessageController {
     @PostMapping(value = {""}, produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Message> createMessage(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody Message newMessage) {
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody MessageForm newMessage) {
         newMessage.setId(0); // set to 0 for sequence id generation
         log.debug("API::Creating new message: " + newMessage.toString());
         return new ResponseEntity<>(userService.saveMessage(newMessage), HttpStatus.OK);
@@ -129,7 +130,7 @@ public class ApiMessageController {
     })
     @PutMapping(value = {"/{id}"}, produces = {"application/json"}, consumes = {"application/json"})
     public ResponseEntity<Message> updateMessage(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody Message newMessage,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody MessageForm newMessage,
             @Parameter(description = "Id of the message to be updated. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
         log.debug("API::Updating message id: " + id);
         return new ResponseEntity<>(userService.saveMessage(newMessage), HttpStatus.OK);

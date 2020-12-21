@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+    <head>
+        <title>Home</title>
+        <style th:inline="text">
+        .background {
+            background: url([[@{/img/pexels-background-1.jpg}]]) no-repeat center center fixed;
+        }
+        </style>
+    </head>
+    <body class="background">
+        <div layout:fragment="content" th:remove="tag">
+            <section class="jumbotron text-center">
+                <div class="container">
+                    <div class="row">
+                        <h2 th:text="${message}" sec:authorize="isAnonymous()"></h2>
+                        <h2 th:text="@{'Welcome '+${#authentication.name}}" sec:authorize="isAuthenticated()"></h2>
+                        <p class="lead text-muted">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempor rhoncus mauris a rutrum.
+                            Nullam nec sem porttitor lorem imperdiet suscipit. Praesent rutrum orci a nunc euismod congue.
+                        </p>
+                        <p>
+                            <a th:href="@{/register}" sec:authorize="isAnonymous()" class="btn btn-info"> Register </a>
+                            <a th:href="@{/user}" sec:authorize="hasRole('ROLE_USER')" class="btn btn-info"> Your Profile </a>
+                            <a th:href="@{/admin}" sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-info"> Site Administration </a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <img th:src="@{/img/pexels-photo-1.jpg}" alt="photo-1" width="140" height="140" class="img-thumbnail">
+                        <h2>Suspendisse in</h2>
+                        <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna. Cras mattis consectetur purus sit amet fermentum.</p>
+                        <p>Etiam euismod, lorem ut commodo viverra, justo sem egestas lorem, quis lacinia dui nunc eu lacus. Integer non risus eget purus fringilla maximus. Praesent suscipit dolor at molestie cursus. Nam ac elit maximus, sagittis nunc eget, ultrices turpis.</p>
+                        <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+                    </div><!-- /.col-lg-4 -->
+                    <div class="col-lg-4">
+                        <img th:src="@{/img/pexels-photo-4.jpg}" alt="photo-1" width="140" height="140" class="img-thumbnail">
+                        <h2>Proin enim</h2>
+                        <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis consectetur purus sit amet fermentum. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh.</p>
+                        <p>Aliquam venenatis at diam at bibendum. Nam aliquam urna ac cursus efficitur. Aliquam ultrices euismod neque eget fringilla. Ut pellentesque mollis tortor rhoncus rhoncus. Nam placerat pellentesque leo a porta.</p>
+                        <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+                    </div><!-- /.col-lg-4 -->
+                    <div class="col-lg-4">
+                        <img th:src="@{/img/pexels-photo-3.jpg}" alt="photo-1" width="140" height="140" class="img-thumbnail">
+                        <h2>Aliquam efficitur</h2>
+                        <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+                        Praesent rutrum augue magna, sed convallis ipsum fringilla eget. Mauris sodales arcu eget leo pulvinar, et posuere lectus iaculis. Nunc vehicula tortor ac turpis sagittis condimentum. Maecenas convallis efficitur metus.</p>
+                        <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+                    </div><!-- /.col-lg-4 -->
+                </div><!-- /.row -->
+            </div>
+        </div>
+
+    </body>
+</html>

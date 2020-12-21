@@ -19,6 +19,7 @@
 
 package com.microfocus.example.web.validation;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import org.apache.commons.io.FileUtils;
 import org.passay.CharacterRule;
 import org.passay.DictionaryRule;
 import org.passay.EnglishCharacterData;
@@ -57,7 +59,10 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
         FileReader[] fr = new FileReader[0];
         FileReader frPassList = null;
         try {
-            String invalidPasswordList = this.getClass().getResource("/invalid-password-list.txt").getFile();
+            String filename = System.getProperty("com.microfocus.example.passwordList");
+            File dictionaryFile = new File(filename);
+            String invalidPasswordList = FileUtils.readFileToString(dictionaryFile);
+            invalidPasswordList = this.getClass().getResource("/invalid-password-list.txt").getFile();
             frPassList = new FileReader(invalidPasswordList);
             fr = new FileReader[] { frPassList };
             dictionaryRule = new DictionaryRule(

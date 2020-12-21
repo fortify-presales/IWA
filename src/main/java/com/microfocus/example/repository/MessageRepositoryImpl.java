@@ -20,6 +20,7 @@
 package com.microfocus.example.repository;
 
 import com.microfocus.example.entity.Message;
+import com.microfocus.example.web.form.MessageForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,5 +83,12 @@ public class MessageRepositoryImpl implements MessageRepositoryCustom {
                 "UPDATE Message m SET m.read = true WHERE m.id = ?1");
         query.setParameter(1, messageId);
         query.executeUpdate();
+    }
+
+    public Message save(MessageForm message) {
+        Message m =  new Message();
+        m.setUser(message.getUser());
+        m.setText(message.getText());
+        return messageRepositoryBasic.save(m);
     }
 }

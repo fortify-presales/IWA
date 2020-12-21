@@ -233,6 +233,10 @@ public class UserService {
         return messageRepository.save(message);
     }
 
+    public Message saveMessage(MessageForm message) {
+        return messageRepository.save(message);
+    }
+
     public void deleteMessageById(Integer id) {
         messageRepository.deleteById(id);
     }
