@@ -19,7 +19,7 @@
 
 package com.microfocus.example.api.controllers;
 
-import com.microfocus.example.entity.ApiStatusResponse;
+import com.microfocus.example.payload.response.ApiStatusResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;

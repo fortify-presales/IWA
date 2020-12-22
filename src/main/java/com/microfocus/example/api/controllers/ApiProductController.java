@@ -19,7 +19,7 @@
 
 package com.microfocus.example.api.controllers;
 
-import com.microfocus.example.entity.ApiStatusResponse;
+import com.microfocus.example.payload.response.ApiStatusResponse;
 import com.microfocus.example.entity.Product;
 import com.microfocus.example.exception.ProductNotFoundException;
 import com.microfocus.example.service.ProductService;

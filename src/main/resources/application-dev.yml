@@ -1,8 +1,9 @@
 server:
-  port: 9080
+  port: 8080
   error:
     whitelabel:
       enabled: false
+
 
 spring:
   profiles:
@@ -43,6 +44,9 @@ spring:
     favicon:
       enabled: false
     throw-exception-if-no-handler-found: true
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
 
 logging:
   level:

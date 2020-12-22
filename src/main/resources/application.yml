@@ -45,10 +45,9 @@ spring:
 #    favicon:
 #      enabled: false
     throw-exception-if-no-handler-found: true
-
   jackson:
     serialization:
-      write_dates_as_timestamps: false
+      WRITE_DATES_AS_TIMESTAMPS: false
 
 #  resources:
 #    add-mappings: false

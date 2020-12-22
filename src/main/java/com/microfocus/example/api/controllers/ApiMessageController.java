@@ -19,11 +19,12 @@
 
 package com.microfocus.example.api.controllers;
 
-import com.microfocus.example.entity.ApiStatusResponse;
+import com.microfocus.example.payload.request.MessageRequest;
+import com.microfocus.example.payload.response.ApiStatusResponse;
 import com.microfocus.example.entity.Message;
 import com.microfocus.example.exception.MessageNotFoundException;
 import com.microfocus.example.service.UserService;
-import com.microfocus.example.web.form.MessageForm;
+import com.microfocus.example.payload.response.MessageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -44,6 +45,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * A RESTFul controller for accessing message information.
@@ -62,29 +64,35 @@ public class ApiMessageController {
 
     @Operation(summary = "Finds messages by keyword(s)", description = "Keyword search by %keyword% format", tags = {"message"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Message.class)))),
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(array = @ArraySchema(schema = @Schema(implementation = MessageResponse.class)))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
     @GetMapping(value = {""}, produces = {"application/json"})
-    public ResponseEntity<List<Message>> getMessagesByKeywords(
+    public ResponseEntity<List<MessageResponse>> getMessagesByKeywords(
             @Parameter(description = "Keyword(s) search for messages to be found.") @RequestParam("keywords") Optional<String> keywords,
             @Parameter(description = "Offset of the starting record. 0 indicates the first record.") @RequestParam("offset") Optional<Integer> offset,
             @Parameter(description = "Maximum records to return. The maximum value allowed is 50.") @RequestParam("limit") Optional<Integer> limit) {
         log.debug("API::Retrieving messages by keyword(s)");
         // TODO: implement keywords, offset and limit
         if (keywords.equals(Optional.empty())) {
-            return ResponseEntity.ok().body(userService.getAllMessages());
+            return ResponseEntity.ok().body(
+                userService.getAllMessages().stream()
+                    .map(MessageResponse::new)
+                    .collect(Collectors.toList()));
         } else {
-            return new ResponseEntity<>(userService.getAllMessages(), HttpStatus.OK);
+            return new ResponseEntity<>(
+                userService.getAllMessages().stream()
+                    .map(MessageResponse::new)
+                    .collect(Collectors.toList()), HttpStatus.OK);
         }
     }
 
     @Operation(summary = "Find message by Id", description = "Find a specific message by its database Id", tags = {"message"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Message.class))),
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = MessageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -92,18 +100,18 @@ public class ApiMessageController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
     @GetMapping(value = {"/{id}"}, produces =  {"application/json"})
-    public ResponseEntity<Message> getMessageById(
+    public ResponseEntity<MessageResponse> getMessageById(
             @Parameter(description = "Id of the message to be found. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
         log.debug("API::Retrieving message id: " + id);
         if (!userService.messageExistsById(id))
             throw new MessageNotFoundException("Message with id: " + id.toString() + " does not exist.");
         Optional<Message> message = userService.findMessageById(id);
-        return new ResponseEntity<>(message.orElse(null), HttpStatus.OK);
+        return message.map(value -> new ResponseEntity<>(new MessageResponse(value), HttpStatus.OK)).orElse(null);
     }
 
     @Operation(summary = "Create a new message", description = "Creates a new message for a user", tags = {"messages"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Message.class))),
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = MessageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -112,16 +120,15 @@ public class ApiMessageController {
     })
     @PostMapping(value = {""}, produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Message> createMessage(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody MessageForm newMessage) {
-        newMessage.setId(0); // set to 0 for sequence id generation
+    public ResponseEntity<MessageResponse> createMessage(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody MessageRequest newMessage) {
         log.debug("API::Creating new message: " + newMessage.toString());
-        return new ResponseEntity<>(userService.saveMessage(newMessage), HttpStatus.OK);
+        return new ResponseEntity<>(new MessageResponse(userService.saveMessageFromApi(0, newMessage)), HttpStatus.OK);
     }
 
     @Operation(summary = "Update a message", description = "Update a users existing message", tags = {"messages"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Message.class))),
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = MessageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -129,11 +136,11 @@ public class ApiMessageController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
     @PutMapping(value = {"/{id}"}, produces = {"application/json"}, consumes = {"application/json"})
-    public ResponseEntity<Message> updateMessage(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody MessageForm newMessage,
+    public ResponseEntity<MessageResponse> updateMessage(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody MessageRequest newMessage,
             @Parameter(description = "Id of the message to be updated. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
         log.debug("API::Updating message id: " + id);
-        return new ResponseEntity<>(userService.saveMessage(newMessage), HttpStatus.OK);
+        return new ResponseEntity<>(new MessageResponse(userService.saveMessageFromApi(id, newMessage)), HttpStatus.OK);
     }
 
     @Operation(summary = "Delete a message", description = "Delete a users existing message", tags = {"messages"}, security = @SecurityRequirement(name = "JWT Authentication"))
@@ -147,7 +154,7 @@ public class ApiMessageController {
     @DeleteMapping (value = {"/{id}"})
     public ResponseEntity<ApiStatusResponse> deleteMessage(
             @Parameter(description = "Id of the message to be updated. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
-        log.debug("API@::Deleting message id: " + id);
+        log.debug("API::Deleting message id: " + id);
         userService.deleteMessageById(id);
         ApiStatusResponse apiStatusResponse = new ApiStatusResponse
                 .ApiResponseBuilder()

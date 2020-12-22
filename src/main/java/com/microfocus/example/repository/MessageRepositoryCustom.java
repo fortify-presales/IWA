@@ -21,6 +21,7 @@ package com.microfocus.example.repository;
 
 import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.Product;
+import com.microfocus.example.payload.request.MessageRequest;
 import com.microfocus.example.web.form.MessageForm;
 
 import java.util.List;
@@ -39,6 +40,8 @@ public interface MessageRepositoryCustom {
     public long countUnreadByUserId(Integer userId);
 
     public void markMessageAsReadById(Integer messageId);
+
+    //public Message save(MessageRequest message);
 
     public Message save(MessageForm message);
 

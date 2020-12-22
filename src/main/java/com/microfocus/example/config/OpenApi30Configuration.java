@@ -45,7 +45,7 @@ import org.springframework.context.annotation.Configuration;
                             defaultValue = "https"),
                     @ServerVariable(
                             name = "environment",
-                            allowableValues = {"localhost:9090", "iwa.mfdemouk.com"},
+                            allowableValues = {"localhost:8080", "iwa.mfdemouk.com"},
                             defaultValue = "iwa.mfdemouk.com"
                     )
                 }

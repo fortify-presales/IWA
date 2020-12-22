@@ -23,7 +23,9 @@ import com.microfocus.example.entity.Authority;
 import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.InvalidPasswordException;
+import com.microfocus.example.exception.MessageNotFoundException;
 import com.microfocus.example.exception.UserNotFoundException;
+import com.microfocus.example.payload.request.MessageRequest;
 import com.microfocus.example.repository.MessageRepository;
 import com.microfocus.example.repository.RoleRepository;
 import com.microfocus.example.repository.UserRepository;
@@ -233,8 +235,34 @@ public class UserService {
         return messageRepository.save(message);
     }
 
+    //public Message saveMessage(MessageRequest message) {
+    //    return messageRepository.save(message);
+    //}
+
     public Message saveMessage(MessageForm message) {
         return messageRepository.save(message);
+    }
+
+    public Message saveMessageFromApi(Integer messageId, MessageRequest message) throws MessageNotFoundException, UserNotFoundException {
+        Message mtmp = new Message();
+        Optional<User> optionalUser = userRepository.findById(message.getUserId());
+        if (optionalUser.isPresent()) {
+            mtmp.setUser(optionalUser.get());
+            // are we creating a new message or updating an existing message?
+            if (messageId == null || messageId == 0) {
+                mtmp.setId(0);
+            } else {
+                mtmp.setId(messageId);
+                // check it exists
+                if (!messageExistsById(messageId))
+                    throw new MessageNotFoundException("Message not found with id: " + messageId);
+            }
+            mtmp.setText(message.getText());
+            if (message.getSentDate() != null) mtmp.setSentDate(message.getSentDate());
+            return messageRepository.save(mtmp);
+        } else {
+            throw new UserNotFoundException("User not found with id: " + message.getUserId());
+        }
     }
 
     public void deleteMessageById(Integer id) {

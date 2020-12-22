@@ -20,11 +20,15 @@
 package com.microfocus.example.repository;
 
 import com.microfocus.example.entity.Message;
+import com.microfocus.example.entity.Product;
+import com.microfocus.example.entity.User;
+import com.microfocus.example.payload.request.MessageRequest;
 import com.microfocus.example.web.form.MessageForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
@@ -91,4 +95,5 @@ public class MessageRepositoryImpl implements MessageRepositoryCustom {
         m.setText(message.getText());
         return messageRepositoryBasic.save(m);
     }
+
 }

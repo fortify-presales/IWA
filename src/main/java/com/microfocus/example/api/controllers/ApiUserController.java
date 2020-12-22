@@ -19,7 +19,7 @@
 
 package com.microfocus.example.api.controllers;
 
-import com.microfocus.example.entity.ApiStatusResponse;
+import com.microfocus.example.payload.response.ApiStatusResponse;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.service.UserService;

@@ -17,16 +17,20 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.entity;
+package com.microfocus.example.payload.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+/**
+ * API Status Response
+ *
+ * @author Kevin A. Lee
+ */
 public class ApiStatusResponse {
 
     private Boolean success;

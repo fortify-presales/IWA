@@ -17,11 +17,15 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.payload.response;
+package com.microfocus.example.payload.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.User;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -29,51 +33,69 @@ import java.util.Date;
  *
  * @author Kevin A. Lee
  */
-public class MessageResponse {
+public class MessageRequest {
 
-    private Integer id;
-    private UserResponse user;
+    //private Integer id;
+
+    @Min(1)
+    private Integer userId;
+
+    @NotEmpty(message = "{message.text.notEmpty}")
+    @Size(min = 40, message = "{message.text.invalidLength}")
     private String text;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+
+    @DateTimeFormat(pattern = "MM-dd-yyyy")
     private Date sentDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
-    private Date readDate;
+
     private Boolean read;
 
-    public MessageResponse() {
+    public MessageRequest() {
     }
 
-    public MessageResponse(Message message) {
-        this.id = message.getId();
-        this.user = new UserResponse(message.getUser());
+    public MessageRequest(Message message) {
+        //this.id = message.getId();
+        this.userId = message.getUser().getId();
         this.text = message.getText();
         this.sentDate = message.getSentDate();
-        this.readDate = message.getReadDate();
-        this.read = message.getRead();
+        this.read = false;
     }
 
+/*
     public Integer getId() {
         return id;
     }
 
-    public UserResponse getUser() {
-        return user;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+*/
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getText() {
         return text;
     }
 
+    public void setText(String text) {
+        this.text = text;
+    }
+
     public Date getSentDate() {
         return sentDate;
     }
 
-    public Date getReadDate() {
-        return readDate;
+    public void setSentDate(Date sentDate) {
+        this.sentDate = sentDate;
     }
 
-    public Boolean getRead() {
-        return read;
+    @Override
+    public String toString() {
+        return "MessageRequest(user: " + userId + " message: " + text.substring(0,40) + ")";
     }
 
 }

@@ -19,7 +19,7 @@
 
 package com.microfocus.example.config.handlers;
 
-import com.microfocus.example.entity.ApiStatusResponse;
+import com.microfocus.example.payload.response.ApiStatusResponse;
 import com.microfocus.example.exception.MessageNotFoundException;
 import com.microfocus.example.exception.ProductNotFoundException;
 import com.microfocus.example.exception.RoleNotFoundException;
@@ -28,12 +28,11 @@ import com.microfocus.example.repository.ProductRepositoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -41,7 +40,6 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -50,6 +48,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
@@ -255,6 +254,20 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     // 404
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        ArrayList<String> errors = new ArrayList<>();
+        //final String error = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL();
+        errors.add(ex.getLocalizedMessage());
+        final ApiStatusResponse apiStatusResponse = new ApiStatusResponse
+                .ApiResponseBuilder()
+                .withSuccess(false)
+                .atTime(LocalDateTime.now(ZoneOffset.UTC))
+                .withErrors(errors)
+                .build();
+        return new ResponseEntity<Object>(apiStatusResponse, new HttpHeaders(), HttpStatus.NOT_FOUND);
+    }
 
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(final NoHandlerFoundException ex,
