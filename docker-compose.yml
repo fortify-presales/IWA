@@ -1,8 +1,7 @@
 version: '3'
 services:
   iwa:
-    build: .
-    image: iwa:latest
+    image: mfdemouk/iwa:latest
     restart: always
     ports:
       - "8080:8080"
