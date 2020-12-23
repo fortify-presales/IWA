@@ -196,6 +196,9 @@ execute all of the above commands.
 ### Dynamic Analysis of Swagger based OpenAPI using Fortify WebInspect 
 
 TBD
+```PowerShell
+newman run .\etc\IWA-API.postman_collection.json --environment .\etc\IWA-API-Dev.postman_environment.json
+```
 
 ### Dynamic Analysis using Fortify ScanCentral DAST
 

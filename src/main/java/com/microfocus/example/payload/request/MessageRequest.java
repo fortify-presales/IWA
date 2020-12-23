@@ -19,8 +19,8 @@
 
 package com.microfocus.example.payload.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.microfocus.example.entity.Message;
-import com.microfocus.example.entity.User;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Min;
@@ -35,7 +35,8 @@ import java.util.Date;
  */
 public class MessageRequest {
 
-    //private Integer id;
+    @JsonIgnore
+    private Integer id;
 
     @Min(1)
     private Integer userId;
@@ -47,20 +48,22 @@ public class MessageRequest {
     @DateTimeFormat(pattern = "MM-dd-yyyy")
     private Date sentDate;
 
+    @JsonIgnore
+    @DateTimeFormat(pattern = "MM-dd-yyyy")
+    private Date readDate;
+
     private Boolean read;
 
     public MessageRequest() {
     }
 
     public MessageRequest(Message message) {
-        //this.id = message.getId();
         this.userId = message.getUser().getId();
         this.text = message.getText();
         this.sentDate = message.getSentDate();
         this.read = false;
     }
 
-/*
     public Integer getId() {
         return id;
     }
@@ -68,7 +71,7 @@ public class MessageRequest {
     public void setId(Integer id) {
         this.id = id;
     }
-*/
+
     public Integer getUserId() {
         return userId;
     }
@@ -91,6 +94,14 @@ public class MessageRequest {
 
     public void setSentDate(Date sentDate) {
         this.sentDate = sentDate;
+    }
+
+    public Date getReadDate() {
+        return readDate;
+    }
+
+    public void setReadDate(Date readDate) {
+        this.readDate = readDate;
     }
 
     @Override

@@ -235,10 +235,6 @@ public class UserService {
         return messageRepository.save(message);
     }
 
-    //public Message saveMessage(MessageRequest message) {
-    //    return messageRepository.save(message);
-    //}
-
     public Message saveMessage(MessageForm message) {
         return messageRepository.save(message);
     }

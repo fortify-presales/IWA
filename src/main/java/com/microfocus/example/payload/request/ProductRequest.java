@@ -17,28 +17,25 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.entity;
+package com.microfocus.example.payload.request;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.microfocus.example.entity.Product;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 
 /**
- * Product entity
+ * Product Request DTO
+ *
  * @author Kevin A. Lee
  */
-@Entity
-@Table(name = "product")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Product implements Serializable {
+public class ProductRequest {
 
-    private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Integer id;
 
     @NotEmpty(message = "{product.code.notEmpty}")
@@ -76,22 +73,20 @@ public class Product implements Serializable {
     @NotNull
     private Boolean available;
 
-    public Product() {
+    public ProductRequest() {
     }
 
-    public Product(Integer id, String code, String name, String summary, String description, String image, float tradePrice,
-                   float retailPrice, int deliveryTime, int averageRating, boolean available) {
-        this.id = id;
-        this.code = code;
-        this.name = name;
-        this.summary = summary;
-        this.description = description;
-        this.image = image;
-        this.trade_price = tradePrice;
-        this.retail_price = retailPrice;
-        this.delivery_time = deliveryTime;
-        this.average_rating = averageRating;
-        this.available = available;
+    public ProductRequest(Product product) {
+        this.code = product.getCode();
+        this.name = product.getName();
+        this.summary = product.getSummary();
+        this.description = product.getDescription();
+        this.image = product.getImage();
+        this.trade_price = product.getTradePrice();
+        this.retail_price = product.getRetailPrice();
+        this.delivery_time = product.getDeliveryTime();
+        this.average_rating = product.getAverageRating();
+        this.available = product.getAvailable();
     }
 
     public Integer getId() {
@@ -184,7 +179,7 @@ public class Product implements Serializable {
 
     @Override
     public String toString() {
-        return "Product(" + id + " : " + name + " : SRP : " + retail_price + ")";
+        return "ProductRequest(" + name + " : SRP : " + retail_price + ")";
     }
 
 }

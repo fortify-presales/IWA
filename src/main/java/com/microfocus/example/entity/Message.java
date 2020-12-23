@@ -27,6 +27,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
@@ -50,7 +51,8 @@ public class Message implements Serializable {
     @ManyToOne
     private User user;
 
-    @NotEmpty(message = "Message Text must not be blank")
+    @NotEmpty(message = "{message.text.notEmpty}")
+    @Size(min = 40, message = "{message.text.invalidLength}")
     private String text;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

@@ -21,11 +21,10 @@ package com.microfocus.example.payload.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.microfocus.example.entity.Message;
-import com.microfocus.example.entity.User;
 import java.util.Date;
 
 /**
- * Message Request DTO
+ * Message Response DTO
  *
  * @author Kevin A. Lee
  */

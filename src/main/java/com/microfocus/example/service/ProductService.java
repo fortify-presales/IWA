@@ -20,7 +20,9 @@
 package com.microfocus.example.service;
 
 import com.microfocus.example.entity.Product;
+import com.microfocus.example.exception.MessageNotFoundException;
 import com.microfocus.example.exception.ProductNotFoundException;
+import com.microfocus.example.payload.request.ProductRequest;
 import com.microfocus.example.repository.ProductRepository;
 import com.microfocus.example.web.form.admin.AdminNewProductForm;
 import com.microfocus.example.web.form.admin.AdminProductForm;
@@ -95,6 +97,30 @@ public class ProductService {
 
     public boolean productExistsById(Integer id) {
         return productRepository.existsById(id);
+    }
+
+    public Product saveProductFromApi(Integer productId, ProductRequest product) {
+        Product ptmp = new Product();
+        // are we creating a new product or updating an existing product?
+        if (productId == null || productId == 0) {
+            ptmp.setId(0);
+        } else {
+            ptmp.setId(productId);
+            // check it exists
+            if (!productExistsById(productId))
+                throw new ProductNotFoundException("Product not found with id: " + productId);
+        }
+        ptmp.setCode(product.getCode());
+        ptmp.setName(product.getName());
+        ptmp.setSummary(product.getSummary());
+        ptmp.setDescription(product.getDescription());
+        ptmp.setImage(product.getImage());
+        ptmp.setTradePrice(product.getTradePrice());
+        ptmp.setRetailPrice(product.getRetailPrice());
+        ptmp.setDeliveryTime(product.getDeliveryTime());
+        ptmp.setAverageRating(product.getAverageRating());
+        ptmp.setAvailable(product.getAvailable());
+        return productRepository.save(ptmp);
     }
 
     public Product saveProductFromAdminProductForm(AdminProductForm adminProductForm) throws ProductNotFoundException {

@@ -8,8 +8,8 @@
 
     <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
     <httpEndpoint id="defaultHttpEndpoint"
-                  httpPort="6060"
-                  httpsPort="6443" />
+                  httpPort="8080"
+                  httpsPort="8443" />
                   
     <!-- Automatically expand WAR files and EAR files -->
     <applicationManager autoExpand="true"/>

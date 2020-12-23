@@ -83,7 +83,7 @@ pipeline {
         //
         // Application settings
         //
-		APP_NAME = "IWA (Java)"                      		// Application name
+		APP_NAME = "IWA-Java"                      		// Application name
         APP_VER = "master"                                  // Application release - GitHub master branch
         COMPONENT_NAME = "iwa"                              // Component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo

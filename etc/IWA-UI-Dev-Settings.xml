@@ -106,7 +106,7 @@
     <StartSessionState>Crawl</StartSessionState>
     <StartUrlXmlDocument />
     <StartUrlXmlDocumentFilePath />
-    <StartUrl>http://fortify.mfdemouk.com:9090</StartUrl>
+    <StartUrl>http://localhost:8080</StartUrl>
     <SimplifiedRestrictToFolderOptions>None</SimplifiedRestrictToFolderOptions>
     <MacroName />
     <WorkflowMacros />
