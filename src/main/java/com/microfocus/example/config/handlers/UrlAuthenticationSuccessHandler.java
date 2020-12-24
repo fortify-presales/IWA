@@ -53,8 +53,8 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
         HttpSession session = request.getSession();
 
-        CustomUserDetails ssaUser = (CustomUserDetails) authentication.getPrincipal();
-        User user = ssaUser.getUserDetails();
+        CustomUserDetails iwaUser = (CustomUserDetails) authentication.getPrincipal();
+        User user = iwaUser.getUserDetails();
         session.setAttribute("username", user.getUsername());
         session.setAttribute("authorities", authentication.getAuthorities());
 
@@ -66,21 +66,10 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
                           HttpServletResponse response, Authentication authentication)
             throws IOException {
 
-        String targetUrl = determineTargetUrl(authentication);
-
-        if (response.isCommitted()) {
-            log.debug(
-                    "Response has already been committed. Unable to redirect to "
-                            + targetUrl);
-            return;
-        }
-
-        redirectStrategy.sendRedirect(request, response, targetUrl);
-    }
-
-    protected String determineTargetUrl(Authentication authentication) {
         boolean isUser = false;
         boolean isAdmin = false;
+        String targetUrl = request.getParameter("referer");
+
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for (GrantedAuthority grantedAuthority : authorities) {
             if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
@@ -91,12 +80,20 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
             }
         }
         if (isAdmin) {
-        	return "/admin";
+            targetUrl = "/admin";
         } else if (isUser) {
-            return "/user";
+            // use referring URL
         } else {
             throw new IllegalStateException();
         }
+
+        if (response.isCommitted()) {
+            log.debug("Response has already been committed. Unable to redirect to "+ targetUrl);
+            return;
+        }
+
+        log.debug("Redirecting to: " + targetUrl);
+        redirectStrategy.sendRedirect(request, response, targetUrl);
     }
 
     protected void clearAuthenticationAttributes(HttpServletRequest request) {

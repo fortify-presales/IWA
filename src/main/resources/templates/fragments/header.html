@@ -32,7 +32,11 @@
                             </li>
                             -->
                             <li sec:authorize="isAuthenticated()" class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" th:text="@{${#authentication.name}}"><i class="fas fa-user-circle fa-fw"></i>  User <span class="caret"></span></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-user-circle fa-fw"></i>
+                                    <span th:text="@{${#authentication.name}}"></span>
+                                    <span class="caret"></span>
+                                </a>
                                 <ul class="dropdown-menu">
                                     <li><a th:href="@{/user}"><i class="fas fa-address-card fa-fw"></i> User Profile </a></li>
                                     <li><a th:href="@{/admin}" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fas fa-tools fa-fw"></i> Site Administration </a></li>
