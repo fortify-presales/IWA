@@ -17,6 +17,8 @@ import static org.assertj.core.api.Assertions.fail;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ProductRepositoryTest extends BaseIntegrationTest {
 
+    public static final String PRODUCT_SEARCH_KEYWORDS = "alphadex";
+
     @Autowired
     ProductRepository productRepository;
 
@@ -66,6 +68,18 @@ public class ProductRepositoryTest extends BaseIntegrationTest {
                 assertThat(p2.get().getAverageRating()).isEqualTo(1);
             }
         }
+    }
+
+    @Test
+    public void e_productRepository_findProductsByKeywords() {
+        List<Product> products = productRepository.findProductsByKeywords(PRODUCT_SEARCH_KEYWORDS, 1,1);
+        assertThat(products.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void f_productRepository_findAvailableProductsByKeywords() {
+        List<Product> products = productRepository.findProductsByKeywords(PRODUCT_SEARCH_KEYWORDS, 1,1);
+        assertThat(products.size()).isEqualTo(1);
     }
 
 }
