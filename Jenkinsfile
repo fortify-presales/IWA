@@ -71,7 +71,7 @@ pipeline {
                 description: 'UUID of Scan Central Sensor Pool to use - leave for Default Pool')
         string(name: 'EDAST_URL',               defaultValue: params.parameterName ?: "http://scancentral.mfdemouk.com/api",
                 description: 'ScanCentral DAST API URI')
-        string(name: 'EDAST_CICD',              defaultValue: params.parameterName ?: "37512d59-7863-48c2-8d77-1a57c9f1ec6a",
+        string(name: 'EDAST_CICD',              defaultValue: params.parameterName ?: "849638fd-6b27-42ff-af5c-08bdb82aaa69",
                 description: 'ScanCentral DAST CICD identifier')
         string(name: 'NEXUS_IQ_URL',            defaultValue: params.parameterName ?: "https://sonatype.mfdemouk.com",
                 description: 'Nexus IQ URL')
