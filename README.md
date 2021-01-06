@@ -51,7 +51,7 @@ start process by clicking on the "Fork" button at the top right.
 To build (and unit test) the application execute the following from the command line:
 
 ```
-mvn clean package
+mvn clean package -D
 ```
 
 This will create a JAR file (called `iwa.jar`) in the `target` directory.
@@ -78,7 +78,7 @@ To run (and test) locally in development mode, execute the following from the co
 mvn spring-boot:run
 ```
 
-Then navigate to the URL: [http://localhost:9080/iwa](http://localhost:9080/iwa). 
+Then navigate to the URL: [http://localhost:8080](http://localhost:8080). 
 
 The website allows you to login with the following default users:
 
@@ -95,10 +95,17 @@ mvn -Pjar package
 docker build -t iwa .
 ```
 
+or for windows:
+
+```
+mvn -Pjar package
+docker build -f Dockerfile.win -t iwa .
+```
+
 This image can then be executed using the following commands:
 
 ```
-docker run -d -p 80:8080 iwa
+docker run -d -p 8080:8080 iwa
 ```
 
 The `Dockerfile` provided is for creating a Linux image (recommended). There is also a `Dockerfile.win` for creating 
@@ -180,24 +187,28 @@ To carry out a WebInspect scan you should first deploy the application to a Java
 or start it using the Docker approach described above. Then you can start a scan using the following:
 
 ```
-"WEBINSPECT_INSTALL_DIR\WI.exe" -s ".\etc\IWA-UI-Dev-Settings.xml" -macro ".\etc\IWA-UI-Dev-Login.webmacro" -u "http://localhost:9090" -ep ".\target\wi-iwa.fpr" -ps 1008
+"C:\Program Files\Fortify\Fortify WebInspect\WI.exe\WI.exe" -s ".\etc\IWA-UI-Dev-Settings.xml" -macro ".\etc\IWA-UI-Dev-Login.webmacro" -u "http://localhost:8080" -ep ".\target\wi-iwa.fpr" -ps 1008
 ```
 
 This will start a scan using the Default Settings and Login Macro files provided in the `etc` directory. It assumes
-the application is running on "localhost:9090". It will run a "Critical and High Priority" scan using the policy with id 1008. 
+the application is running on "localhost:8080". It will run a "Critical and High Priority" scan using the policy with id 1008. 
 Once completed you can open the WebInspect "Desktop Client" and navigate to the scan created for this execution.
 
 An FPR called `wi-iwa.fpr` will be available in the `target` directory. You can generate a 
 PDF report from this file using `ReportGenerator` or upload it to Fortify SSC or Fortify on Demand.
 
 There is an example PowerShell script file [fortify-webinspect.ps1](bin\fortify-webinspect.ps1) that you can run to 
-execute all of the above commands.
+execute the above commands.
 
 ### Dynamic Analysis of Swagger based OpenAPI using Fortify WebInspect 
 
 TBD
 ```PowerShell
 newman run .\etc\IWA-API.postman_collection.json --environment .\etc\IWA-API-Dev.postman_environment.json
+```
+
+```PowerShell
+"C:\Program Files\Fortify\Fortify WebInspect\WI.exe\WI.exe" -pwc ".\etc\IWA-API-Dev.postman_collection.json"
 ```
 
 ### Dynamic Analysis using Fortify ScanCentral DAST
