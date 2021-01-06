@@ -52,7 +52,7 @@ start the process by clicking on the "Fork" button at the top right.
 To build (and unit test) the application, execute the following from the command line:
 
 ```
-mvn clean package -D
+mvn clean package
 ```
 
 This will create a JAR file (called `iwa.jar`) in the `target` directory.
@@ -79,31 +79,27 @@ To run (and test) locally in development mode, execute the following from the co
 mvn spring-boot:run
 ```
 
-<<<<<<< .mine
 Then navigate to the URL: [http://localhost:8080](http://localhost:8080). 
-=======
-Then navigate to the URL: [http://localhost:8080](http://localhost:8080).
->>>>>>> .theirs
 
 The website allows you to login with the following default users:
 
 - Standard user: **user/password**
 - Administration user: **admin/password**
 
-### Production (Docker Image)
+### Release (Docker Image)
 
 The JAR file can be built into a [Docker](https://www.docker.com/) image using the provided `Dockerfile` and the
 following commands:
 
 ```
-mvn -Pjar package
+mvn -Pjar clean package
 docker build -t iwa .
 ```
 
 or on Windows:
 
 ```
-mvn -Pjar package
+mvn -Pjar clean package
 docker build -f Dockerfile.win -t iwa .
 ```
 
@@ -113,7 +109,7 @@ This image can then be executed using the following commands:
 docker run -d -p 8080:8080 iwa
 ```
 
-There is also an example `docker-compose.yml` file that illustrates how to run the application using SSL using
+There is also an example `docker-compose.yml` file that illustrates how to run the application with HTTPS/SSL using
 [nginx](https://www.nginx.com/) and [certbot](https://certbot.eff.org/) - please note this is for reference only as it uses a specific domain name.
 
 ## Application Security Testing Integrations
@@ -121,9 +117,9 @@ There is also an example `docker-compose.yml` file that illustrates how to run t
 ### SAST using Fortify SCA command line
 
 There is an example PowerShell script [fortify-sca.ps1](bin/fortify-sca.ps1) that you can use to execute static application security testing
-using [Fortify SCA](https://www.microfocus.com/en-us/products/static-code-analysis-sast/overview). This script runs a
+via [Fortify SCA](https://www.microfocus.com/en-us/products/static-code-analysis-sast/overview). This script runs a
 "sourceanalyzer" translation and scan on the project's source code. It creates a Fortify Project Results file called `target\iwa.fpr`
-which you can open using `auditworkbench`. It also creates a PDF report called `iwa.pdf` in the root directory and optionally
+which you can open using the Fortify `auditworkbench` tool. It also creates a PDF report called `iwa.pdf` and optionally
 uploads the results to [Fortify Software Security Center](https://www.microfocus.com/en-us/products/software-security-assurance-sdlc/overview).
 
 ### SAST using Fortify SCA Maven plugin
@@ -143,7 +139,7 @@ PDF report using the `ReportGenerator` tool with the following command:
 
 ```
 ReportGenerator -Dcom.fortify.sca.ProjectRoot=target\fortify -user "Demo User" -format pdf -f target\fortify\iwa.pdf `
-    -source target\fortify\iwa-1.0-SNAPSHOT.fpr
+    -source target\fortify\iwa.fpr
 ```
 
 ### SAST using Fortify ScanCentral SAST
@@ -161,17 +157,17 @@ for running a scan from the command line.
 
 ### SAST using Fortify on Demand
 
-To execute a [Fortify on Demand](https://www.microfocus.com/en-us/products/application-security-testing/overview) scan
+To execute a [Fortify on Demand](https://www.microfocus.com/en-us/products/application-security-testing/overview) SAST scan
 you need to package and upload the source code to Fortify on Demand. To prepare the source code to be uploaded you can
 execute the following command:
 
 ```
-mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify package
+mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -Pfortify clean verify package
 ```
 
 This will create a directory called `fod` which you can *Zip* up and upload to Fortify on Demand.
 
-There is an example PowerShell script file [fortify-fod.ps1](bin/fortify-fod.ps1) that you can run to start a Fortify on Demand static scan.
+There is also an example PowerShell script file [fortify-fod.ps1](bin/fortify-fod.ps1) that you can run to start a Fortify on Demand static scan.
 It can be invoked via the following from a PowerShell prompt:
 
 ```PowerShell
@@ -207,15 +203,6 @@ execute the above commands.
 ### DAST using Fortify ScanCentral DAST
 
 The provided [Jenkinsfile](Jenkinsfile) includes support for running a remote scan using Fortify ScanCentral DAST through a Groovy
-script [fortify-scancentral-dast.groovy](bin\fortify-scancentral-dast.groovy).
-
-```PowerShell
-"C:\Program Files\Fortify\Fortify WebInspect\WI.exe\WI.exe" -pwc ".\etc\IWA-API-Dev.postman_collection.json"
-```
-
-### Dynamic Analysis using Fortify ScanCentral DAST
-
-The Jenkinsfile includes support for running a remote scan using Fortify ScanCentral DAST through a Groovy
 script [fortify-scancentral-dast.groovy](bin\fortify-scancentral-dast.groovy). 
 
 There is also an example PowerShell script file [fortify-scancentral-dast.ps1](bin\fortify-scancentral-dast.ps1).
@@ -228,7 +215,7 @@ It can be invoked via the following from a PowerShell prompt:
 
 where `SCANCENTRAL_DAST_API` is the URL of the ScanCentral DAS API configured in Software Security Center and
 `SSC_USERNAME` and `SSC_PASSWORD` are the login credentials of a Software Security Center user who is permitted to
-run scans. Finally, `CICD_TOKEN_ID` is the CICD identifier of a "Settings" you have previously created.
+run scans. Finally, `CICD_TOKEN_ID` is the CICD identifier of a "Scan Settings" you have previously created.
 
 ### API Security Testing using Fortify WebInspect and Postman
 
@@ -243,7 +230,7 @@ from the command line as follows:
 newman run .\etc\IWA-API.postman_collection.json --environment .\etc\IWA-API-Dev.postman_environment.json
 ```
 
-You can then use this collection with WebInspect as follows: 
+You can also use this collection with WebInspect as follows: 
 
 ```PowerShell
 "C:\Program Files\Fortify\Fortify WebInspect\WI.exe\WI.exe" -pwc ".\etc\IWA-API-Dev.postman_collection.json" -ps 1008
