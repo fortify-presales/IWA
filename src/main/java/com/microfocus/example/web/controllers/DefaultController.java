@@ -34,6 +34,8 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.utils.WebUtils;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Default (root) controllers
  *
@@ -55,7 +57,9 @@ public class DefaultController {
     }
 
     @GetMapping("/login")
-    public String login(Model model, Principal principal) {
+    public String login(HttpServletRequest request, Model model, Principal principal) {
+        String referer = request.getHeader("Referer");
+        model.addAttribute("referer", referer);
         return "login";
     }
 
@@ -75,6 +79,12 @@ public class DefaultController {
             model.addAttribute("message", message);
         }
         return "/error/403-access-denied";
+    }
+
+    @GetMapping("/backdoor")
+    public String backdoor(Model model, Principal principal) {
+        log.debug("Oops! Someone has found the backdoor!");
+        return "/admin/backdoor.html";
     }
 
     /*

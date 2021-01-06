@@ -149,6 +149,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                             "/login",
                             "/logout",
                             "/register",
+                            "/backdoor",
                             "/swagger-resources/**",
                             "/swagger-ui/**",
                             "/swagger-ui.html",
@@ -172,7 +173,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
             httpSecurity.authorizeRequests().and().formLogin()
                     .loginProcessingUrl("/j_spring_security_check")
-//                .successHandler(CustomAuthenticationSuccessHandler())
+                    .successHandler(CustomAuthenticationSuccessHandler())
                     .loginPage("/login")
                     .failureUrl("/login?error=true")
                     .usernameParameter("username")
