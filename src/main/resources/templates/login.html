@@ -4,12 +4,17 @@
       layout:decorate="~{fragments/layout}">
     <head>
         <title>Login</title>
+        <style>
+            .background {
+                background: transparent !important;
+            }
+        </style>
     </head>
-    <body class="text-center">
+    <body class="sky-background text-center">
         <div layout:fragment="content" th:remove="tag">
             <div class="row">
                 <div class="col-md-6 col-md-offset-3">
-                    <img th:src="@{/img/mf_logomark_blue_med.png}" class="rounded mx-auto d-block" alt="Micro Focus">
+                    <img th:src="@{/img/login_logo.png}" class="rounded mx-auto d-block" alt="Micro Focus">
                     <form th:action="@{/j_spring_security_check}" method="post" class="form-login">
                         <div class="invisible">Site message</div>
                         <h1 class="h3 mb-3 font-weight-normal">Enter your details</h1>

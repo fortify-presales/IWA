@@ -7,9 +7,23 @@
     </head>
     <body>
         <div layout:fragment="content" th:remove="tag">
-            <h1>Not Implemented</h1>
-            <p>We are sorry, the page you have requested has not yet been implemented.</p>
-            <p><a href="/" th:href="@{/}">Back to home page</a></p>
+            <div class="background">
+                <div class="row no-margin">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item active">Not Implemented</li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <div class="row no-margin">
+                    <div class="col-md-12">
+                        <p>We're sorry - the page you requested has not yet been implemented</p>
+                        <p><a href="/" class="btn btn-info" th:href="@{/}">Back to home page</a></p>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </body>
 </html>

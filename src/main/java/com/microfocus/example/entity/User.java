@@ -101,6 +101,17 @@ public class User implements Serializable {
     public User() {
     }
 
+    public User(Integer id, String username, String password, String name, String email, String mobile,
+                boolean enabled) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.email = email;
+        this.mobile = mobile;
+        this.enabled = enabled;
+    }
+
     public Integer getId() {
         return id;
     }

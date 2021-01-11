@@ -1,80 +1,87 @@
 <!DOCTYPE html>
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns="http://www.w3.org/1999/html"
       layout:decorate="~{fragments/layout}">
 <head>
     <title>Products</title>
 </head>
 <body>
-<div layout:fragment="content" th:remove="tag">
+    <div layout:fragment="content" th:remove="tag">
 
-    <div class="row">
+        <div class="background">
+            <div class="row no-margin">
 
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item active" aria-current="page"><a th:href="@{/products/}">Products</a></li>
-            </ol>
-        </nav>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item active" aria-current="page"><a th:href="@{/products/}">Products</a></li>
+                    </ol>
+                </nav>
 
-    </div>
+            </div>
 
-    <div class="row">
-        <div class="col-md-12">
-            <form th:action="@{/products}" method="GET">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search" name="keywords" id="keywords" th:value="${keywords}" />
-                    <div class="input-group-btn">
-                        <button class="btn btn-primary" type="submit">
-                            <span class="glyphicon glyphicon-search"></span>
-                        </button>
+            <div class="row no-margin">
+                <div class="col-md-8 col-md-offset-2">
+                    <form th:action="@{/products}" method="GET">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search" name="keywords" id="keywords" th:value="${keywords}" />
+                            <div class="input-group-btn">
+                                <button class="btn btn-primary" type="submit">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row no-margin">
+                <div class="col-md-12">
+                    <div th:if="${keywords != null}" class="row">
+                        <h5>Searching products for: &quot;<th:block th:utext="${keywords}"/>&quot;</h5>
                     </div>
                 </div>
-            </form>
-        </div>
-    </div>
+            </div>
 
-    <div class="row">
-        <div class="col-md-12">
-            <p></p>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12">
-            <ul class="list-unstyled">
-                <li class="media" th:each="p : ${products}">
-                    <div class="media-left media-middle col-md-2" style="padding-top: 25px">
-                        <span th:if="${p.image} != null and ${p.image} != ''">
-                            <img th:src="@{'/img/products/' + ${p.image}}" alt="Image" width="100" height="100" class="img-thumbnail">
-                        </span>
-                        <span th:if="${p.image} == null or ${p.image == ''}">
-                            <img th:src="@{/img/awaiting-image.png}" alt="Awaiting Image" width="100" height="100" class="img-thumbnail">
-                        </span>
-                    </div>
-                    <div class="col-md-10">
-                        <div class="media-body">
-                            <h4 class="mt-0 mb-2 font-weight-bold"><a th:href="@{/products/{id}(id=${p.id})}"><span th:text="${p.name}"> </span></a></h4>
-                            <span th:each="i : ${#numbers.sequence( 1, p.averageRating, 1)}">
-                                <i class="fas fa-star" style="color: cornflowerblue"> </i>
-                            </span>
-                            <span th:if="${p.averageRating != 5}">
-                                <span th:each="i : ${#numbers.sequence(p.averageRating, 4, 1)}">
-                                    <i class="fas fa-star" style="color: gray"> </i>
+            <div class="row no-margin">
+                <div class="col-md-12">
+                    <ul class="list-unstyled">
+                        <li class="media" th:each="p : ${products}">
+                            <div class="media-left media-middle col-md-2" style="padding-top: 25px">
+                                <span th:if="${p.image} != null and ${p.image} != ''">
+                                    <img th:src="@{'/img/products/' + ${p.image}}" alt="Image" width="100" height="100" class="img-thumbnail">
                                 </span>
-                            </span>
-                            <h5><span th:text="${currencySymbol}"> Currency </span> <span th:text="${#strings.replace(#numbers.formatCurrency(p.retailPrice), '.00', '')}"> Retail Price </span></h5>
-                            <p><span th:text="${p.summary}"> Summary </span></p>
-                        </div>
-                    </div>
-                </li>
-            </ul>
+                                <span th:if="${p.image} == null or ${p.image == ''}">
+                                    <img th:src="@{/img/awaiting-image.png}" alt="Awaiting Image" width="100" height="100" class="img-thumbnail">
+                                </span>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="media-body">
+                                    <h4 class="mt-0 mb-2 font-weight-bold"><a th:href="@{/products/{id}(id=${p.id})}"><span th:text="${p.name}"> </span></a></h4>
+                                    <span th:each="i : ${#numbers.sequence( 1, p.averageRating, 1)}">
+                                        <i class="fas fa-star" style="color: cornflowerblue"> </i>
+                                    </span>
+                                    <span th:if="${p.averageRating != 5}">
+                                        <span th:each="i : ${#numbers.sequence(p.averageRating, 4, 1)}">
+                                            <i class="fas fa-star" style="color: gray"> </i>
+                                        </span>
+                                    </span>
+                                    <h5><span th:text="${currencySymbol}"> Currency </span> <span th:text="${#strings.replace(#numbers.formatCurrency(p.retailPrice), '.00', '')}"> Retail Price </span></h5>
+                                    <p><span th:text="${p.summary}"> Summary </span></p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row no-margin">
+                <div class="col-md-12">
+                    <h5>Showing <span th:text="${productCount}"></span> of <span th:text="${productTotal}"></span> products</h5>
+                </div>
+            </div>
+
         </div>
     </div>
-
-    <div class="row">
-        <h5>Showing <span th:text="${productCount}"></span> of <span th:text="${productTotal}"></span> products</h5>
-    </div>
-</div>
 </body>
 </html>

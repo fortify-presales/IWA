@@ -1,6 +1,6 @@
 ![Continuous Inspection](https://github.com/mfdemo/IWA/workflows/Continuous%20Inspection/badge.svg)
 
-# IWA (Insecure Web App)
+# IWA (Insecure Web App) Pharmacy Direct
 
 #### Table of Contents
 
@@ -28,7 +28,7 @@
 
 ## Overview
 
-_IWA (Insecure Web App)_ is an example Java/Spring Web Application for use in **DevSecOps** scenarios and demonstrations.
+_IWA (Insecure Web App) Pharmacy Direct_ is an example Java/Spring Web Application for use in **DevSecOps** scenarios and demonstrations.
 The source code includes some examples of insecure code - which can be found using static and dynamic application
 security testing tools such as [Fortify SCA](https://www.microfocus.com/en-us/products/static-code-analysis-sas),
 [Fortify On Demand](https://www.microfocus.com/en-us/products/application-security-testing)
@@ -36,6 +36,9 @@ and [Fortify WebInspect](https://www.microfocus.com/en-us/products/webinspect-dy
 
 One of the main aims of this project is to illustrate how security can be embedded early and continuously in
 the development lifecycle - so a number of "integrations" to common build and pipeline tools are provided.
+
+The application is intended to provide the functionality of a typical "online pharmacy", including purchasing Products (medication)
+and requesting Services (prescriptions, health checks etc) - however it is mostly a work in progress!
 
 *Please note: the application should not be used in a production environment!*
 

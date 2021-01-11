@@ -49,6 +49,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Transactional
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        log.debug("CustomUserDetailsService::loadUserByUsername");
         Optional<User> user = Optional.ofNullable(null);
         try {
             user = userRepository.findUserByUsername(username);

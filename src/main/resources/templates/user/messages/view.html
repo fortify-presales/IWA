@@ -8,45 +8,46 @@
 </head>
 <body>
     <div layout:fragment="content" th:remove="tag">
+        <div class="background">
+            <div class="row no-margin">
 
-        <div class="row">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/user/}">User</a></li>
+                        <li class="breadcrumb-item" aria-current="page"><a th:href="@{/user/messages/}">Messages</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">View</li>
+                    </ol>
+                </nav>
 
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a th:href="@{/user/}">User</a></li>
-                    <li class="breadcrumb-item" aria-current="page"><a th:href="@{/user/messages/}">Messages</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">View</li>
-                </ol>
-            </nav>
-
-            <div th:replace="fragments/user-menu.html
-                        :: userMenu('/user/messages', ${messageCount})">
-            </div>
-
-            <div class="col-md-10">
-                <div class="col-md-10">
-                    <form class="form-horizontal">
-                        <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
-                            <span th:text="${message}">message</span>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-sm-12">
-                                <p class="text-muted">Message sent on <span th:text="${#dates.format(messageForm.sentDate, 'dd-MM-yyyy HH:mm')}"></span></p>
-                                <p th:text="${messageForm.text}"></p>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-sm-12">
-                                <a class="btn btn-primary" th:href="@{/user/messages}"> Back </a>
-                            </div>
-                        </div>
-                    </form>
+                <div th:replace="fragments/user-menu.html
+                            :: userMenu('/user/messages', ${messageCount})">
                 </div>
-            </div>
 
+                <div class="col-md-10">
+                    <div class="col-md-10">
+                        <form class="form-horizontal">
+                            <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                                <span th:text="${message}">message</span>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-12">
+                                    <p class="text-muted">Message sent on <span th:text="${#dates.format(messageForm.sentDate, 'dd-MM-yyyy HH:mm')}"></span></p>
+                                    <p th:text="${messageForm.text}"></p>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-12">
+                                    <a class="btn btn-primary" th:href="@{/user/messages}"> Back </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
     </div>

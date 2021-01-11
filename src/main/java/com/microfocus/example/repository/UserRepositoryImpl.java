@@ -19,20 +19,28 @@
 
 package com.microfocus.example.repository;
 
+import com.microfocus.example.entity.Authority;
+import com.microfocus.example.entity.AuthorityType;
 import com.microfocus.example.entity.Product;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.UserLockedOutException;
 import javax.persistence.Query;
+
+import org.hibernate.Session;
+import org.hibernate.jdbc.ReturningWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.*;
 
 /**
  * Implementation of Custom User Repository
@@ -55,15 +63,66 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<User> findUserByUsername(String username) throws UserLockedOutException {
-        List<User> result = new ArrayList<>();
-        Query q = entityManager.createQuery(
-		        "SELECT u FROM User u WHERE u.username = ?1", User.class);
-        q.setParameter(1, username);
-        result = (List<User>) q.getResultList();
+    public Optional<User> findUserByUsername(String username) throws UserLockedOutException, UsernameNotFoundException {
+        log.debug("UserRepositoryImpl::findUserByUsername");
+        List<User> users = new ArrayList<>();
+
+// INSECURE EXAMPLE: SQL Injection
+
+        Session session = entityManager.unwrap(Session.class);
+        Integer authorityCount = session.doReturningWork(new ReturningWork<Integer>() {
+
+            @Override
+            public Integer execute(Connection con) throws SQLException {
+                Integer authorityCount = 0;
+                try {
+                    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                    ResultSet results = stmt.executeQuery(
+                            "SELECT u.id, u.username, u.password, u.name, u.email, u.mobile, u.enabled, a.name as authority " +
+                                    "FROM User u, Authority a INNER JOIN User_Authority ua on a.id = ua.authority_id " +
+                                    "WHERE u.id = ua.user_id AND u.username LIKE '%" + username + "%'");
+                    if (results.next()) {
+                        log.debug("Found matching user in database for: " + username);
+                        results.beforeFirst();
+                        User utmp = null;
+                        Set<Authority> authorities = new HashSet<>();
+                        while (results.next()) {
+                            if (authorityCount == 0) {
+                                utmp = new User(results.getInt("id"),
+                                        results.getString("username"),
+                                        results.getString("password"),
+                                        results.getString("name"),
+                                        results.getString("email"),
+                                        results.getString("mobile"),
+                                        results.getBoolean("enabled")
+                                );
+                                log.debug("Adding authority " + results.getString("authority") + " for user");
+                                authorities.add(new Authority(AuthorityType.valueOf(results.getString("authority"))));
+                                authorityCount++;
+                            } else {
+                                log.debug("Adding authority " + results.getString("authority") + " for user");
+                                authorities.add(new Authority(AuthorityType.valueOf(results.getString("authority"))));
+                            }
+                        }
+                        if (!authorities.isEmpty()) {
+                            utmp.setAuthorities(authorities);
+                        }
+                        users.add(utmp);
+                    } else {
+                        log.debug("No matching users found");
+                    }
+                } catch (SQLException ex) {
+                    log.error(ex.getLocalizedMessage());
+                }
+                return authorityCount;
+            }
+        });
+
         Optional<User> optionalUser = Optional.empty();
-        if (!result.isEmpty()) {
-            optionalUser = Optional.of(result.get(0));
+        if (!users.isEmpty()) {
+            optionalUser = Optional.of(users.get(0));
+        } else {
+            log.debug("Unable to find username: " + username);
         }
         return optionalUser;
     }

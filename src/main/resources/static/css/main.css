@@ -1,8 +1,19 @@
 body {
     background-color: #f8f9fa;
     padding-bottom: 50px;
+    font-size: 16px;
 }
 
+.navbar {
+    min-height: 80px;
+}
+.navbar-brand {
+    height: 80px;
+    padding-top: 10px !important;
+}
+.navbar-nav {
+    padding-top: 20px;
+}
 footer {
     position: fixed;
     height: 40px;
@@ -25,8 +36,21 @@ footer a:hover{
     text-decoration: none;
 }
 
+.background {
+    background-color: #f8f9fa;
+}
+.sky-background {
+    background: url(/img/pexels-background-1.jpg) no-repeat center center fixed;
+}
+.no-background {
+    background-color: transparent;
+}
+.no-margin {
+    margin-left: 0;
+    margin-right: 0;
+}
+
 .jumbotron {
-/*    background-color: #fff;*/
     background: rgb(160, 190, 190); /* This is for ie8 and below */
     background: rgba(160, 190, 190, 0.5);
     background-size: 100% 100%;
@@ -45,6 +69,23 @@ footer a:hover{
 
 .jumbotron .container {
     max-width: 40rem;
+}
+
+.carousel {
+    width: 640px;
+    height: 400px;
+}
+
+.carousel-caption {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.item {
+    background-size: cover;
+    background-position: 50% 50%;
+    width: 100%;
+    height: 100%;
 }
 
 .form-login {
@@ -84,7 +125,7 @@ footer a:hover{
 }
 
 .panel-default > .panel-heading {
-    padding: 0;
+    padding: 15px;
     border-radius: 0;
     color: #212121;
     background-color: #FAFAFA;
@@ -92,7 +133,8 @@ footer a:hover{
 }
 
 .panel-title {
-    font-size: 14px;
+    font-size: 22px;
+    text-align: center;
 }
 
 .panel-title > a {
@@ -117,4 +159,13 @@ footer a:hover{
 
 .btn-space {
     margin-right: 5px;
+}
+
+.equal, .equal > div[class*='col-'] {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    flex:1 1 auto;
 }

@@ -87,12 +87,11 @@ public class DefaultController {
         return "/admin/backdoor.html";
     }
 
-    /*
+
     @GetMapping("/site-message")
     @ResponseBody
     public String siteMessage() {
         return "This site is currently healthy.";
     }
-    */
 
 }

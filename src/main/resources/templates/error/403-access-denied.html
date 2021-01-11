@@ -7,12 +7,23 @@
     </head>
     <body>
         <div layout:fragment="content" th:remove="tag">
-            <h1>Access Denied</h1>
-            <div class="alert alert-danger">
-                <span th:if="${message != null}" th:utext="${message}" style="color: red;"></span>
-            </div>
+            <div class="background">
+                <div class="row no-margin">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item active">Access Denied</li>
+                        </ol>
+                    </nav>
+                </div>
 
-            <p><a href="/" th:href="@{/}">Back to home page</a></p>
+                <div class="row no-margin">
+                    <div class="col-md-12">
+                        <p th:if="${message != null}" th:utext="${message}" style="color: red;"></p>
+                        <p><a href="/" class="btn btn-info" th:href="@{/}">Back to home page</a></p>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </body>
 </html>

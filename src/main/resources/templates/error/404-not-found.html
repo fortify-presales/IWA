@@ -7,9 +7,24 @@
     </head>
     <body>
         <div layout:fragment="content" th:remove="tag">
-            <h1>Page Not Found</h1>
-            <h2 th:if="${message != null}" th:utext="${message}" style="color: red;"></h2>
-            <p><a href="/" th:href="@{/}">Back to home page</a></p>
+            <div class="background">
+                <div class="row no-margin">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item active">Page Not Found</li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <div class="row no-margin">
+                    <div class="col-md-12">
+                        <p>We're sorry the page your requested cannot be found!</p>
+                        <p th:if="${message != null}" th:utext="${message}" style="color: red;"></p>
+                        <p><a href="/" class="btn btn-info" th:href="@{/}">Back to home page</a></p>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </body>
 </html>

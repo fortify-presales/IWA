@@ -11,13 +11,15 @@
         <link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.12.0/css/all.css} "/>
         <link rel="shortcut icon" type="image/ico" th:href="@{/img/favicons/favicon.ico}"/>
 
-        <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">Insecure Web App (IWA)</title>
+        <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">IWA Pharmacy Direct</title>
 
     </head>
-    <body>
+    <body class="sky-background">
         <th:block th:replace="fragments/header :: header"/>
         <div class="container">
-            <th:block layout:fragment="content"/>
+            <div class="background">
+                <th:block layout:fragment="content"/>
+            </div>
         </div>
         <th:block th:replace="fragments/footer :: footer"/>
     </body>

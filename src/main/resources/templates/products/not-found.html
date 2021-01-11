@@ -3,13 +3,15 @@
       xmlns:th="http://www.thymeleaf.org"
       layout:decorate="~{fragments/layout}">
     <head>
-        <title>Product Not Found</title>
+        <title>Product :: Not Found</title>
     </head>
     <body>
         <div layout:fragment="content" th:remove="tag">
-            <h1>Product Not Found</h1>
-            <h2 th:if="${message != null}" th:utext="${message}" style="color: red;"></h2>
-            <p><a href="/" th:href="@{/}">Back to home page</a></p>
+            <div class="background">
+                <h1>Product Not Found</h1>
+                <h2 th:if="${message != null}" th:utext="${message}" style="color: red;"></h2>
+                <p><a href="/" th:href="@{/}">Back to home page</a></p>
+            </div>
         </div>
     </body>
 </html>
