@@ -87,6 +87,11 @@ public class DefaultController {
         return "/admin/backdoor.html";
     }
 
+    @GetMapping("/vulnerabilities")
+    public String vulnerabilities(Model model, Principal principal) {
+        log.debug("Oops! Someone has found the backdoor!");
+        return "/vulnerabilities.html";
+    }
 
     @GetMapping("/site-message")
     @ResponseBody

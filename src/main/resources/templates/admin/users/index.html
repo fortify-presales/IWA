@@ -27,7 +27,6 @@
                         <caption>Site users</caption>
                         <thead>
                         <tr>
-                            <th scope="col">#</th>
                             <th scope="col">Username</th>
                             <th scope="col">Name</th>
                             <th scope="col">Email</th>
@@ -37,12 +36,11 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:if="${users.empty}">
+                        <tr th:if="${users.isEmpty()}">
                             <td colspan="2"> No Users Available </td>
                         </tr>
                         <tr th:each="u : ${users}">
-                            <td><a th:href="@{/admin/users/{id}(id=${u.id})}"><span th:text="${u.id}"> # </span></a></td>
-                            <td><span th:text="${u.username}"> Username </span></td>
+                            <td><a th:href="@{/admin/users/{id}(id=${u.id})}"><span th:text="${u.username}"> Username </span></a></td>
                             <td><span th:text="${u.name}"> Name </span></td>
                             <td><span th:text="${u.email}"> Email </span></td>
                             <td><span th:text="${u.mobile}"> Mobile </span></td>

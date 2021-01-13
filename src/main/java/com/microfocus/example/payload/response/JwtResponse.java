@@ -20,16 +20,17 @@
 package com.microfocus.example.payload.response;
 
 import java.util.List;
+import java.util.UUID;
 
 public class JwtResponse {
     private String token;
     private String type = "Bearer";
-    private Integer id;
+    private UUID id;
     private String username;
     private String email;
     private List<String> roles;
 
-    public JwtResponse(String accessToken, Integer id, String username, String email, List<String> roles) {
+    public JwtResponse(String accessToken, UUID id, String username, String email, List<String> roles) {
         this.token = accessToken;
         this.id = id;
         this.username = username;
@@ -53,11 +54,11 @@ public class JwtResponse {
         this.type = tokenType;
     }
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

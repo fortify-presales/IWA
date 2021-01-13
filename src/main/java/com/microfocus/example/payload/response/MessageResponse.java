@@ -22,6 +22,7 @@ package com.microfocus.example.payload.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.microfocus.example.entity.Message;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Message Response DTO
@@ -30,7 +31,7 @@ import java.util.Date;
  */
 public class MessageResponse {
 
-    private Integer id;
+    private UUID id;
     private UserResponse user;
     private String text;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
@@ -51,7 +52,7 @@ public class MessageResponse {
         this.read = message.getRead();
     }
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 

@@ -19,13 +19,9 @@
 
 package com.microfocus.example.payload.response;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.microfocus.example.entity.Product;
 
-import javax.persistence.*;
-import javax.validation.constraints.*;
-import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * Product Response DTO
@@ -34,16 +30,16 @@ import java.io.Serializable;
  */
 public class ProductResponse {
 
-    private Integer id;
+    private UUID id;
     private String code;
     private String name;
     private String summary;
     private String description;
     private String image;
-    private float trade_price;
-    private float retail_price;
-    private int delivery_time;
-    private int average_rating;
+    private float price;
+    private Boolean inStock;
+    private int timeToStock;
+    private int rating;
     private Boolean available;
 
     public ProductResponse() {
@@ -56,14 +52,14 @@ public class ProductResponse {
         this.summary = product.getSummary();
         this.description = product.getDescription();
         this.image = product.getImage();
-        this.trade_price = product.getTradePrice();
-        this.retail_price = product.getRetailPrice();
-        this.delivery_time = product.getDeliveryTime();
-        this.average_rating = product.getAverageRating();
+        this.price = product.getPrice();
+        this.inStock = product.getInStock();
+        this.timeToStock = product.getTimeToStock();
+        this.rating = product.getRating();
         this.available = product.getAvailable();
     }
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -87,20 +83,20 @@ public class ProductResponse {
         return image;
     }
 
-    public float getTradePrice() {
-        return trade_price;
+    public float getPrice() {
+        return price;
     }
 
-    public float getRetailPrice() {
-        return retail_price;
+    public Boolean getInStock() {
+        return inStock;
     }
 
-    public int getDeliveryTime() {
-        return delivery_time;
+    public int getTimeToStock() {
+        return timeToStock;
     }
 
-    public int getAverageRating() {
-        return average_rating;
+    public int getRating() {
+        return rating;
     }
 
     public Boolean getAvailable() {
@@ -109,7 +105,7 @@ public class ProductResponse {
 
     @Override
     public String toString() {
-        return "ProductResponse(" + name + " : SRP : " + retail_price + ")";
+        return "ProductResponse(" + name + " : SRP : " + price + ")";
     }
 
 }

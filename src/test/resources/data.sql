@@ -1,14 +1,18 @@
-INSERT INTO user (id, username, password, name, email, mobile, enabled, date_created)
-VALUES (99999, 'test1', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32', 'Test User 1',
+INSERT INTO users (id, username, password, name, email, mobile, enabled, date_created)
+VALUES ('bd5b9e2f-ac55-4e34-a76d-599b7e5b3308', 'test1', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32',
+        'Test User 1',
         'test1@localhost',
         '0123456789', 1, CURDATE());
-INSERT INTO user_authority (authority_id, user_id)
-VALUES (2, 99999);
-INSERT INTO product (id, code, name, average_rating, summary, description, image, trade_price, retail_price,
-                     delivery_time, available)
-VALUES (99999, 'TEST-A000-00001', 'Test Product 1', 5,
+INSERT INTO user_authorities (authority_id, user_id)
+VALUES ('6bdd6188-d659-4390-8d37-8f090d2ed69a', 'bd5b9e2f-ac55-4e34-a76d-599b7e5b3308');
+INSERT INTO products (id, code, name, rating, summary, description, image, price, in_stock,
+                      time_to_stock, available)
+VALUES ('38400000-8cf0-11bd-b23e-10b96e4ef00d', 'TEST-A000-00001', 'Test Product 1', 5,
         'Product Summary.', 'This is a brief description of the product for testing.', 'generic-product-1.jpg',
-        10.0, 20.0, 5, 5);
-INSERT INTO message (id, user_id, text, read)
-values (99999, 99999, 'This is an example message', 0);
+        10.0, 1, 5, 5);
+INSERT INTO messages (id, user_id, text, read)
+VALUES ('d67dbf99-e775-4d1b-87f7-0b86c739a5ba', 'bd5b9e2f-ac55-4e34-a76d-599b7e5b3308', 'This is an example message',
+        0);
+INSERT INTO orders (id, user_id, order_num, amount, shipped)
+VALUES ('c97f4c8b-4c14-4d0c-9354-69fd7ee324da', 'bd5b9e2f-ac55-4e34-a76d-599b7e5b3308', 'TEST-O000-0001', 100.0, 0)
 

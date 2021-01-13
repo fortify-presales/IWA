@@ -19,6 +19,8 @@ import com.microfocus.example.BaseIntegrationTest;
 import com.microfocus.example.DataSeeder;
 import com.microfocus.example.entity.User;
 
+import javax.xml.crypto.Data;
+
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserRepositoryTest extends BaseIntegrationTest {
 
@@ -30,7 +32,7 @@ public class UserRepositoryTest extends BaseIntegrationTest {
 
     @Test
     public void a_userRepository_existsById() {
-        if (!userRepository.existsById(99999)) fail("Test User 1 does not exist");
+        if (!userRepository.existsById(DataSeeder.TEST_USER1_ID)) fail("Test User 1 does not exist");
     }
 
     @Test
@@ -94,7 +96,7 @@ public class UserRepositoryTest extends BaseIntegrationTest {
             u.setName("Test User 2 updated");
             u.setEmail("test2@updated.com");
             u.setMobile("0987654321");
-            userRepository.save(u);
+            userRepository.saveAndFlush(u);
             users = userRepository.findUsersByUsername(DataSeeder.TEST_USER2_USERNAME);
             if (users.size() > 0) {
                 u = users.get(0);

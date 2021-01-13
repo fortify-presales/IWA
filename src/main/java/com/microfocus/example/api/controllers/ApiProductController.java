@@ -44,6 +44,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -89,7 +90,7 @@ public class ApiProductController {
         }
     }
 
-    @Operation(summary = "Find product by Id", description = "Find a specific product by its database Id", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @Operation(summary = "Find product by Id", description = "Find a product by UUID", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = ProductResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -100,10 +101,10 @@ public class ApiProductController {
     })
     @GetMapping(value = {"/{id}"}, produces =  {"application/json"})
     public ResponseEntity<ProductResponse> findProductById(
-            @Parameter(description = "Id of the product to be found. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
-        log.debug("API::Retrieving product id: " + id);
+            @Parameter(description = "UUID of the product to be found. Cannot be empty.", example = "eec467c8-5de9-4c7c-8541-7b31614d31a0", required = true) @PathVariable("id") UUID id) {
+        log.debug("API::Retrieving product with UUID: " + id);
         if (!productService.productExistsById(id))
-            throw new ProductNotFoundException("Product with id: " + id.toString() + " does not exist.");
+            throw new ProductNotFoundException("Product with UUID: " + id.toString() + " does not exist.");
         Optional<Product> product = productService.findProductById(id);
         return product.map(value -> new ResponseEntity<>(new ProductResponse(value), HttpStatus.OK)).orElse(null);
     }
@@ -122,7 +123,7 @@ public class ApiProductController {
     public ResponseEntity<ProductResponse> createProduct(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody ProductRequest newProduct) {
         log.debug("API::Creating new product: " + newProduct.toString());
-        return new ResponseEntity<>(new ProductResponse(productService.saveProductFromApi(0, newProduct)), HttpStatus.OK);
+        return new ResponseEntity<>(new ProductResponse(productService.saveProductFromApi(null, newProduct)), HttpStatus.OK);
     }
 
     @Operation(summary = "Update a product", description = "Update an existing product", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
@@ -137,12 +138,12 @@ public class ApiProductController {
     @PutMapping(value = {"/{id}"}, produces = {"application/json"}, consumes = {"application/json"})
     public ResponseEntity<ProductResponse> updateProduct(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody ProductRequest newProduct,
-            @Parameter(description = "Id of the product to be updated. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
-        log.debug("API::Updating product id: " + id);
+            @Parameter(description = "UUID of the product to be updated. Cannot be empty.", example = "eec467c8-5de9-4c7c-8541-7b31614d31a0", required = true) @PathVariable("id") UUID id) {
+        log.debug("API::Updating product with UUID: " + id);
         return new ResponseEntity<>(new ProductResponse(productService.saveProductFromApi(id, newProduct)), HttpStatus.OK);
     }
 
-    @Operation(summary = "Delete a product", description = "Delete an existing product", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @Operation(summary = "Delete a product", description = "Delete a product", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -152,8 +153,8 @@ public class ApiProductController {
     })
     @DeleteMapping (value = {"/{id}"})
     public ResponseEntity<ApiStatusResponse> deleteProduct(
-            @Parameter(description = "Id of the product to be updated. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
-        log.debug("API@::Deleting product id: " + id);
+            @Parameter(description = "UUID of the product to be updated. Cannot be empty.", example = "eec467c8-5de9-4c7c-8541-7b31614d31a0", required = true) @PathVariable("id") UUID id) {
+        log.debug("API@::Deleting product with UUID: " + id);
         productService.deleteProductById(id);
         ApiStatusResponse apiStatusResponse = new ApiStatusResponse
                 .ApiResponseBuilder()

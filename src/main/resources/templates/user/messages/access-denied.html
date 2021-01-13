@@ -3,14 +3,25 @@
       xmlns:th="http://www.thymeleaf.org"
       layout:decorate="~{fragments/layout}">
     <head>
-        <title>Message Access Denied</title>
+        <title>Message :: Access Denied</title>
     </head>
     <body>
         <div layout:fragment="content" th:remove="tag">
             <div class="background">
-                <h1>Message Access Denied</h1>
-                <h2 th:if="${message != null}" th:utext="${message}" style="color: red;"></h2>
-                <p><a href="/" th:href="@{/}">Back to home page</a></p>
+                <div class="row no-margin">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item active">Access Denied to Message</li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <div class="row no-margin">
+                    <div class="col-md-12">
+                        <p th:if="${message != null}" th:utext="${message}" style="color: red;"></p>
+                        <p><a href="/" class="btn btn-info" th:href="@{/}">Back to home page</a></p>
+                    </div>
+                </div>
             </div>
         </div>
     </body>

@@ -2,11 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <div th:fragment="userMenu (activeItem, messageCount)">
-        <div class="col-md-2">
+        <div class="col-md-2 side-menu">
             <div class="list-group list-group-flush">
                 <a class="list-group-item list-group-item-action"
                    th:classappend="${#strings.contains(activeItem,'profile')} ? active : ''"
                    th:href="@{/user}"><i class="fas fa-user fa-fw"></i> Profile</a>
+                <a class="list-group-item list-group-item-action"
+                   th:classappend="${#strings.contains(activeItem,'orders')} ? active : ''"
+                   th:href="@{/user/orders}"><i class="fas fa-shopping-cart fa-fw"></i> Orders </a>
                 <a class="list-group-item list-group-item-action"
                    th:classappend="${#strings.contains(activeItem,'messages')} ? active : ''"
                    th:href="@{/user/messages}"><i class="fas fa-envelope fa-fw"></i> Messages <span id="user-message-count" class="badge badge-light" th:text="${messageCount}">0</span>

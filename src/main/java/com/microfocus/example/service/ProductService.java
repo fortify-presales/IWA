@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Product Service to hide business logs / database persistence
@@ -53,7 +54,7 @@ public class ProductService {
     @Value("${app.data.page-size:25}")
     private Integer pageSize;
 
-    public Optional<Product> findProductById(Integer id) {
+    public Optional<Product> findProductById(UUID id) {
         return productRepository.findById(id);
     }
 
@@ -87,23 +88,23 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public Product getProductById(Integer id) {
+    public Product getProductById(UUID id) {
         return productRepository.findById(id).get();
     }
 
-    public void deleteProductById(Integer id) {
+    public void deleteProductById(UUID id) {
         productRepository.deleteById(id);
     }
 
-    public boolean productExistsById(Integer id) {
+    public boolean productExistsById(UUID id) {
         return productRepository.existsById(id);
     }
 
-    public Product saveProductFromApi(Integer productId, ProductRequest product) {
+    public Product saveProductFromApi(UUID productId, ProductRequest product) {
         Product ptmp = new Product();
         // are we creating a new product or updating an existing product?
-        if (productId == null || productId == 0) {
-            ptmp.setId(0);
+        if (productId == null) {
+            ptmp.setId(null);
         } else {
             ptmp.setId(productId);
             // check it exists
@@ -115,10 +116,10 @@ public class ProductService {
         ptmp.setSummary(product.getSummary());
         ptmp.setDescription(product.getDescription());
         ptmp.setImage(product.getImage());
-        ptmp.setTradePrice(product.getTradePrice());
-        ptmp.setRetailPrice(product.getRetailPrice());
-        ptmp.setDeliveryTime(product.getDeliveryTime());
-        ptmp.setAverageRating(product.getAverageRating());
+        ptmp.setPrice(product.getPrice());
+        ptmp.setInStock(product.getInStock());
+        ptmp.setTimeToStock(product.getTimeToStock());
+        ptmp.setRating(product.getRating());
         ptmp.setAvailable(product.getAvailable());
         return productRepository.save(ptmp);
     }
@@ -131,10 +132,10 @@ public class ProductService {
             ptmp.setSummary(adminProductForm.getSummary());
             ptmp.setDescription(adminProductForm.getDescription());
             ptmp.setImage(adminProductForm.getImage());
-            ptmp.setTradePrice(adminProductForm.getTradePrice());
-            ptmp.setRetailPrice(adminProductForm.getRetailPrice());
-            ptmp.setDeliveryTime(adminProductForm.getDeliveryTime());
-            ptmp.setAverageRating(adminProductForm.getAverageRating());
+            ptmp.setPrice(adminProductForm.getPrice());
+            ptmp.setInStock(adminProductForm.getInStock());
+            ptmp.setTimeToStock(adminProductForm.getTimeToStock());
+            ptmp.setRating(adminProductForm.getRating());
             ptmp.setAvailable(adminProductForm.getAvailable());
             return ptmp;
         } else {
@@ -148,9 +149,9 @@ public class ProductService {
         ptmp.setName(adminNewProductForm.getName());
         ptmp.setSummary(adminNewProductForm.getSummary());
         ptmp.setDescription(adminNewProductForm.getDescription());
-        ptmp.setTradePrice(adminNewProductForm.getTradePrice());
-        ptmp.setRetailPrice(adminNewProductForm.getRetailPrice());
-        ptmp.setDeliveryTime(adminNewProductForm.getDeliveryTime());
+        ptmp.setPrice(adminNewProductForm.getPrice());
+        ptmp.setInStock(adminNewProductForm.getInStock());
+        ptmp.setTimeToStock(adminNewProductForm.getTimeToStock());
         ptmp.setImage(adminNewProductForm.getImage());
         ptmp.setAvailable(adminNewProductForm.getAvailable());
         Product newProduct = productRepository.saveAndFlush(ptmp);

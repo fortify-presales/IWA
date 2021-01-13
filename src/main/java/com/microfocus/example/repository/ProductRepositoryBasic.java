@@ -22,10 +22,12 @@ package com.microfocus.example.repository;
 import com.microfocus.example.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.UUID;
+
 /**
  * Interface for Product Repository
  * @author Kevin A. Lee
  */
-public interface ProductRepositoryBasic extends JpaRepository<Product, Integer> {
+public interface ProductRepositoryBasic extends JpaRepository<Product, UUID> {
 
 }

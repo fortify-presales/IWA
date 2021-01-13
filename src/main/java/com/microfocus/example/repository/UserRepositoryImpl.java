@@ -79,7 +79,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                     Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                     ResultSet results = stmt.executeQuery(
                             "SELECT u.id, u.username, u.password, u.name, u.email, u.mobile, u.enabled, a.name as authority " +
-                                    "FROM User u, Authority a INNER JOIN User_Authority ua on a.id = ua.authority_id " +
+                                    "FROM users u, authorities a INNER JOIN user_authorities ua on a.id = ua.authority_id " +
                                     "WHERE u.id = ua.user_id AND u.username LIKE '%" + username + "%'");
                     if (results.next()) {
                         log.debug("Found matching user in database for: " + username);
@@ -88,7 +88,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                         Set<Authority> authorities = new HashSet<>();
                         while (results.next()) {
                             if (authorityCount == 0) {
-                                utmp = new User(results.getInt("id"),
+                                utmp = new User(results.getObject("id", UUID.class),
                                         results.getString("username"),
                                         results.getString("password"),
                                         results.getString("name"),

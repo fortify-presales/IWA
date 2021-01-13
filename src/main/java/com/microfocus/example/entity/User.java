@@ -20,10 +20,7 @@
 package com.microfocus.example.entity;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -33,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.microfocus.example.web.validation.ValidPassword;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,7 +41,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  * @author Kevin A. Lee
  */
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User implements Serializable {
 
@@ -55,8 +53,15 @@ public class User implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
+    //private Integer id;
 
     @NotEmpty(message = "{user.username.notEmpty}")
     @Size(min = 2, max = 10, message = "{user.username.invalidLength}")
@@ -79,7 +84,7 @@ public class User implements Serializable {
     @Column(unique = true)
     private String email;
 
-    @NotEmpty(message = "{user.mobile.notEmpty")
+    @NotEmpty(message = "{user.mobile.notEmpty}")
     @Pattern(regexp = "(^$|[0-9]{10})", message = "{user.mobile.invalidFormat}")
     @Column(unique = true)
     private String mobile;
@@ -92,8 +97,8 @@ public class User implements Serializable {
     private boolean enabled;
 
     //@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name = "user_authority",
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    @JoinTable(name = "user_authorities",
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "authority_id") })
     private Set<Authority> authorities = new HashSet<>();
@@ -101,7 +106,7 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(Integer id, String username, String password, String name, String email, String mobile,
+    public User(UUID id, String username, String password, String name, String email, String mobile,
                 boolean enabled) {
         this.id = id;
         this.username = username;
@@ -112,11 +117,11 @@ public class User implements Serializable {
         this.enabled = enabled;
     }
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

@@ -27,6 +27,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Message Request DTO
@@ -38,8 +39,7 @@ public class MessageRequest {
     @JsonIgnore
     private Integer id;
 
-    @Min(1)
-    private Integer userId;
+    private UUID userId;
 
     @NotEmpty(message = "{message.text.notEmpty}")
     @Size(min = 40, message = "{message.text.invalidLength}")
@@ -72,11 +72,11 @@ public class MessageRequest {
         this.id = id;
     }
 
-    public Integer getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 

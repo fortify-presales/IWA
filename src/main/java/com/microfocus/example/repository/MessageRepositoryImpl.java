@@ -35,6 +35,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Implementation of Custom Message Repository
@@ -55,7 +56,7 @@ public class MessageRepositoryImpl implements MessageRepositoryCustom {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Message> findByUserId(Integer userId) {
+    public List<Message> findByUserId(UUID userId) {
         Query query = entityManager.createQuery(
                 "SELECT m FROM Message m WHERE m.user.id = ?1",
                 Message.class);
@@ -64,7 +65,7 @@ public class MessageRepositoryImpl implements MessageRepositoryCustom {
     }
 
     @SuppressWarnings("unchecked")
-    public long countByUserId(Integer userId) {
+    public long countByUserId(UUID userId) {
         Query query = entityManager.createQuery(
                 "SELECT count(m) FROM Message m WHERE m.user.id = ?1",
                 Long.class);
@@ -73,7 +74,7 @@ public class MessageRepositoryImpl implements MessageRepositoryCustom {
     }
 
     @SuppressWarnings("unchecked")
-    public long countUnreadByUserId(Integer userId) {
+    public long countUnreadByUserId(UUID userId) {
         Query query = entityManager.createQuery(
                 "SELECT count(m) FROM Message m WHERE m.user.id = ?1 AND m.read = false",
                 Long.class);
@@ -82,7 +83,7 @@ public class MessageRepositoryImpl implements MessageRepositoryCustom {
     }
 
     @SuppressWarnings("unchecked")
-    public void markMessageAsReadById(Integer messageId) {
+    public void markMessageAsReadById(UUID messageId) {
         Query query = entityManager.createQuery(
                 "UPDATE Message m SET m.read = true WHERE m.id = ?1");
         query.setParameter(1, messageId);

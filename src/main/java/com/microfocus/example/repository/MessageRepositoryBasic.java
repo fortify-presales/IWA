@@ -22,11 +22,13 @@ package com.microfocus.example.repository;
 import com.microfocus.example.entity.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.UUID;
+
 /**
  * Interface for Message Repository
  *
  * @author Kevin A. Lee
  */
-public interface MessageRepositoryBasic extends JpaRepository<Message, Integer> {
+public interface MessageRepositoryBasic extends JpaRepository<Message, UUID> {
 
 }

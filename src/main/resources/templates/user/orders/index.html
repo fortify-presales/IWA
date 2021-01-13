@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>User Orders</title>
+</head>
+    <body>
+        <div layout:fragment="content" th:remove="tag">
+            <div class="background">
+                <div class="row no-margin">
+
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a th:href="@{/user/}">User</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Orders</li>
+                        </ol>
+                    </nav>
+
+                    <div th:replace="fragments/user-menu.html
+                        :: userMenu('/user/orders', ${unreadMessageCount})">
+                    </div>
+
+                    <div class="col-md-10">
+                        <table class="table">
+                            <caption>Your Orders</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Shipped</th>
+                                    <th scope="col">Number</th>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">Shipped Date</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="5">
+                                        <p class="text-muted">You have <span th:text="${unshippedOrderCount}"></span> orders awaiting shipping.</p>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                            <tbody>
+                            <tr th:if="${orders.isEmpty()}">
+                                <td colspan="5"> You have no orders </td>
+                            </tr>
+                            <tr th:each="o : ${orders}" th:classappend="${o.shipped} ? text-muted : text-info">
+                                <td>
+                                    <span th:if="${o.shipped}"> <i class="fas fa-check"></i> </span>
+                                    <span th:unless="${o.shipped}"> <i class="fas fa-times"></i> </span>
+                                </td>
+                                <td><a th:href="@{/user/orders/{id}(id=${o.id})}"><span th:text="${#strings.abbreviate(o.orderNum,40)}"> Order Number </span></a></td>
+                                <td><span th:text="${#strings.replace(#numbers.formatCurrency(o.amount), '.00', '')}"> Amount </span></td>
+                                <td>
+                                    <span th:if="${o.shippedDate}" th:text="${#dates.format(o.shippedDate, 'dd-MM-yyyy HH:mm')}"> Shiped Date </span>
+                                </td>
+                                <td>
+                                    <a type="button" class="btn btn-primary btn-xs" role="button" th:href="@{/user/orders/{id}(id=${o.id})}">
+                                        <i class="fa fa-eye" aria-hidden="true"></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a type="button" class="btn btn-xs btn-danger" role="button" data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${o.id }">
+                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                    </a>
+                                </td>
+
+                                <!-- delete modal -->
+                                <div class="modal modal-warning fade in" th:id="modal-warning+${o.id }" >
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">×</span></button>
+                                                <h5 class="modal-title">Delete Order</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                <h3>Are you sure want to delete this order?</h3>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <form action="#" th:action="@{/user/orders/delete/{id}(id=${o.id})}" method="post">
+                                                    <button type="submit" class="btn btn-danger" role="button"><i class="fa fa-check"></i>&nbsp;Yes</button>
+                                                    <button type="button" class="btn btn-default" role="button" data-dismiss="modal">No</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </tr>
+                            </tbody>
+                        </table>
+                        <!--a class="btn btn-primary" th:href="@{/user/messages/new}">New Message</a-->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -22,6 +22,7 @@ package com.microfocus.example.entity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -31,6 +32,7 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * A user message.
@@ -38,21 +40,28 @@ import java.util.Date;
  * @author Kevin A. Lee
  */
 @Entity
-@Table(name = "message")
+@Table(name = "messages")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Message implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
+    //private Integer id;
 
     @ManyToOne
     private User user;
 
     @NotEmpty(message = "{message.text.notEmpty}")
-    @Size(min = 40, message = "{message.text.invalidLength}")
+    @Size(min = 20, message = "{message.text.invalidLength}")
     private String text;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -73,11 +82,11 @@ public class Message implements Serializable {
         this.sentDate = calendar.getTime();
     }
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -127,7 +136,7 @@ public class Message implements Serializable {
 
     @Override
     public String toString() {
-        return "Message(" + id + " to: " + user.getUsername() + " on: " + sentDate.toString() + ")";
+        return "Message(" + id + " to: " + user.getUsername() + " on: " + sentDate.toString() + ":" + text + "!)";
     }
 
 }

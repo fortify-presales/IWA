@@ -20,7 +20,7 @@
 
             </div>
 
-            <div class="row no-margin">
+            <div class="row no-margin" style="padding-bottom: 10px;">
                 <div class="col-md-8 col-md-offset-2">
                     <form th:action="@{/products}" method="GET">
                         <div class="input-group">
@@ -36,9 +36,11 @@
             </div>
 
             <div class="row no-margin">
-                <div class="col-md-12">
+                <div class="col-md-8 col-md-offset-2">
                     <div th:if="${keywords != null}" class="row">
-                        <h5>Searching products for: &quot;<th:block th:utext="${keywords}"/>&quot;</h5>
+                        <h4>Searching:
+                            <span class="label label-default"><th:block th:utext="${keywords}"/></span>
+                        </h4>
                     </div>
                 </div>
             </div>
@@ -58,16 +60,20 @@
                             <div class="col-md-10">
                                 <div class="media-body">
                                     <h4 class="mt-0 mb-2 font-weight-bold"><a th:href="@{/products/{id}(id=${p.id})}"><span th:text="${p.name}"> </span></a></h4>
-                                    <span th:each="i : ${#numbers.sequence( 1, p.averageRating, 1)}">
+                                    <span th:each="i : ${#numbers.sequence( 1, p.rating, 1)}">
                                         <i class="fas fa-star" style="color: cornflowerblue"> </i>
                                     </span>
-                                    <span th:if="${p.averageRating != 5}">
-                                        <span th:each="i : ${#numbers.sequence(p.averageRating, 4, 1)}">
+                                    <span th:if="${p.rating != 5}">
+                                        <span th:each="i : ${#numbers.sequence(p.rating, 4, 1)}">
                                             <i class="fas fa-star" style="color: gray"> </i>
                                         </span>
                                     </span>
-                                    <h5><span th:text="${currencySymbol}"> Currency </span> <span th:text="${#strings.replace(#numbers.formatCurrency(p.retailPrice), '.00', '')}"> Retail Price </span></h5>
+                                    <h5><span th:text="${#strings.replace(#numbers.formatCurrency(p.price), '.00', '')}"> Price </span></h5>
                                     <p><span th:text="${p.summary}"> Summary </span></p>
+                                    <h4>
+                                        <span th:if="${p.inStock}" class="label label-success">In Stock</span>
+                                        <span th:unless="${p.inStock}" class="label label-danger">Out of Stock</span>
+                                    </h4>
                                 </div>
                             </div>
                         </li>

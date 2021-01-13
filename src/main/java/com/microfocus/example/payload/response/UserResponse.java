@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.validation.constraints.*;
+import java.util.UUID;
 
 /**
  * User Response DTO
@@ -32,7 +33,7 @@ import javax.validation.constraints.*;
  */
 public class UserResponse {
 
-    private Integer id;
+    private UUID id;
     private String username;
     private String name;
     private String email;
@@ -51,7 +52,7 @@ public class UserResponse {
         this.enabled = user.getEnabled();
     }
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 

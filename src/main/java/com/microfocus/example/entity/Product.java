@@ -21,25 +21,34 @@ package com.microfocus.example.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * Product entity
  * @author Kevin A. Lee
  */
 @Entity
-@Table(name = "product")
+@Table(name = "products")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Product implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
+    //private Integer id;
 
     @NotEmpty(message = "{product.code.notEmpty}")
     @Size(min = 6, max = 40, message = "{product.code.invalidLength}")
@@ -59,19 +68,21 @@ public class Product implements Serializable {
 
     private String image;
 
-    @Min(value = 0, message = "{product.trade_price.invalidValue}")
-    private float trade_price;
+    @Min(value = 0, message = "{product.price.invalidValue}")
+    private float price;
 
-    @Min(value = 0, message = "{product.retail_price.invalidValue}")
-    private float retail_price;
+    @NotNull
+    @Column(name = "in_stock")
+    private Boolean inStock;
 
-    @Min(value = 1, message = "{product.delivery_time.invalidValue}")
-    @Max(value = 365, message = "{product.delivery_time.invalidValue}")
-    private int delivery_time;
+    @Min(value = 1, message = "{product.time_to_stock.invalidValue}")
+    @Max(value = 365, message = "{product.time_to_stock.invalidValue}")
+    @Column(name = "time_to_stock")
+    private int timeToStock;
 
-    @Min(value = 1, message = "{product.average_rating.invalidValue}")
-    @Max(value = 5, message = "{product.average_rating.invalidValue}")
-    private int average_rating;
+    @Min(value = 1, message = "{product.rating.invalidValue}")
+    @Max(value = 5, message = "{product.rating.invalidValue}")
+    private int rating;
 
     @NotNull
     private Boolean available;
@@ -79,26 +90,26 @@ public class Product implements Serializable {
     public Product() {
     }
 
-    public Product(Integer id, String code, String name, String summary, String description, String image, float tradePrice,
-                   float retailPrice, int deliveryTime, int averageRating, boolean available) {
+    public Product(UUID id, String code, String name, String summary, String description, String image,
+                   float price, boolean inStock, int timeToStock, int rating, boolean available) {
         this.id = id;
         this.code = code;
         this.name = name;
         this.summary = summary;
         this.description = description;
         this.image = image;
-        this.trade_price = tradePrice;
-        this.retail_price = retailPrice;
-        this.delivery_time = deliveryTime;
-        this.average_rating = averageRating;
+        this.price = price;
+        this.inStock = inStock;
+        this.timeToStock = timeToStock;
+        this.rating = rating;
         this.available = available;
     }
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -142,36 +153,36 @@ public class Product implements Serializable {
         this.image = image;
     }
 
-    public float getTradePrice() {
-        return trade_price;
+    public float getPrice() {
+        return price;
     }
 
-    public void setTradePrice(float trade_price) {
-        this.trade_price = trade_price;
+    public void setPrice(float price) {
+        this.price = price;
     }
 
-    public float getRetailPrice() {
-        return retail_price;
+    public Boolean getInStock() {
+        return inStock;
     }
 
-    public void setRetailPrice(float retail_price) {
-        this.retail_price = retail_price;
+    public void setInStock(Boolean inStock) {
+        this.inStock = inStock;
     }
 
-    public int getDeliveryTime() {
-        return delivery_time;
+    public int getTimeToStock() {
+        return timeToStock;
     }
 
-    public void setDeliveryTime(int delivery_time) {
-        this.delivery_time = delivery_time;
+    public void setTimeToStock(int timeToStock) {
+        this.timeToStock = timeToStock;
     }
 
-    public int getAverageRating() {
-        return average_rating;
+    public int getRating() {
+        return rating;
     }
 
-    public void setAverageRating(int average_rating) {
-        this.average_rating = average_rating;
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 
     public Boolean getAvailable() {
@@ -184,7 +195,7 @@ public class Product implements Serializable {
 
     @Override
     public String toString() {
-        return "Product(" + id + " : " + name + " : SRP : " + retail_price + ")";
+        return "Product(" + id + " : " + name + " : SRP : " + price + ")";
     }
 
 }

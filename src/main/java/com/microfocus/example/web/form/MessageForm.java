@@ -31,6 +31,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Form backing entity/DTO for updating message
@@ -39,8 +40,7 @@ import java.util.Date;
  */
 public class MessageForm {
 
-    @Min(1)
-    private Integer id;
+    private UUID id;
 
     private User user;
 
@@ -68,11 +68,11 @@ public class MessageForm {
         this.read = message.getRead();
     }
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

@@ -2,14 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <div th:fragment="adminMenu (activeItem, messageCount)">
-        <div class="col-md-2">
+        <div class="col-md-2 side-menu">
             <div class="list-group list-group-flush">
                 <a class="list-group-item list-group-item-action"
                    th:classappend="${#strings.contains(activeItem,'dashboard')} ? active : ''"
                    th:href="@{/admin/}"><i class="fas fa-tachometer-alt fa-fw"></i> Dashboard </a>
                 <a class="list-group-item list-group-item-action"
                    th:classappend="${#strings.contains(activeItem,'products')} ? active : ''"
-                   th:href="@{/admin/products}"><i class="fas fa-shopping-bag fa-fw"></i> Products </a>
+                   th:href="@{/admin/products}"><i class="fas fa-box fa-fw"></i> Products </a>
+                <a class="list-group-item list-group-item-action"
+                   th:classappend="${#strings.contains(activeItem,'orders')} ? active : ''"
+                   th:href="@{/admin/orders}"><i class="fas fa-shopping-cart fa-fw"></i> Orders </a>
                 <a class="list-group-item list-group-item-action"
                    th:classappend="${#strings.contains(activeItem,'users')} ? active : ''"
                    th:href="@{/admin/users}"><i class="fas fa-users fa-fw"></i> Users </a>

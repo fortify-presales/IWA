@@ -23,11 +23,13 @@ import com.microfocus.example.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 /**
  * Interface for User Repository
  * @author Kevin A. Lee
  */
 @Repository
-public interface UserRepositoryBasic extends JpaRepository<User, Integer> {
+public interface UserRepositoryBasic extends JpaRepository<User, UUID> {
 
 }

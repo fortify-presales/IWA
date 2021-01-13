@@ -26,6 +26,7 @@ import com.microfocus.example.web.form.MessageForm;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Interface for Message Repository
@@ -33,13 +34,13 @@ import java.util.Optional;
  */
 public interface MessageRepositoryCustom {
 
-    public List<Message> findByUserId(Integer userId);
+    public List<Message> findByUserId(UUID userId);
 
-    public long countByUserId(Integer userId);
+    public long countByUserId(UUID userId);
 
-    public long countUnreadByUserId(Integer userId);
+    public long countUnreadByUserId(UUID userId);
 
-    public void markMessageAsReadById(Integer messageId);
+    public void markMessageAsReadById(UUID messageId);
 
     //public Message save(MessageRequest message);
 

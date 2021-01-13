@@ -10,11 +10,11 @@
             }
         </style>
     </head>
-    <body class="sky-background text-center">
+    <body class="sky-background">
         <div layout:fragment="content" th:remove="tag">
-            <div class="row">
+            <div class="row text-center">
                 <div class="col-md-6 col-md-offset-3">
-                    <img th:src="@{/img/login_logo.png}" class="rounded mx-auto d-block" alt="Micro Focus">
+                    <img th:src="@{/img/login_logo.png}" class="rounded mx-auto d-block" style="padding-top:20px;" alt="Micro Focus">
                     <form th:action="@{/j_spring_security_check}" method="post" class="form-login">
                         <div class="invisible">Site message</div>
                         <h1 class="h3 mb-3 font-weight-normal">Enter your details</h1>

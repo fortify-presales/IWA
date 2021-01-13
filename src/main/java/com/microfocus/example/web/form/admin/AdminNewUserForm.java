@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.validation.constraints.*;
+import java.util.UUID;
 
 /**
  * Form backing entity/DTO for adding a new user
@@ -38,8 +39,7 @@ public class AdminNewUserForm {
         return new BCryptPasswordEncoder();
     }
 
-    @Min(1)
-    private Integer id;
+    private UUID id;
 
     @NotEmpty(message = "{user.username.notEmpty}")
     @Size(min = 2, max = 10, message = "{user.username.invalidLength}")
@@ -59,7 +59,7 @@ public class AdminNewUserForm {
     @Email(message = "{user.email.invalidFormat")
     private String email;
 
-    @NotEmpty(message = "{user.mobile.notEmpty")
+    @NotEmpty(message = "{user.mobile.notEmpty}")
     @Pattern(regexp = "(^$|[0-9]{10})", message = "{user.mobile.invalidFormat}")
     private String mobile;
 
@@ -79,11 +79,11 @@ public class AdminNewUserForm {
         this.enabled = user.getEnabled();
     }
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

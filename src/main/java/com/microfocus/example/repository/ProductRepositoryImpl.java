@@ -36,6 +36,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Implementation of Custom Product Repository
@@ -141,22 +142,22 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 Integer productCount = 0;
                 try {
                     Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                    ResultSet results = stmt.executeQuery("SELECT id, code, name, summary, description, image, trade_price, " +
-                            "retail_price, delivery_time, average_rating, available FROM product WHERE lower(name) LIKE '%" +
+                    ResultSet results = stmt.executeQuery("SELECT id, code, name, summary, description, image, price, " +
+                            "in_stock, time_to_stock, rating, available FROM products WHERE lower(name) LIKE '%" +
                             keywords.toLowerCase() + "%' LIMIT " + limit + " OFFSET " + offset);
                     if (results.getStatement() != null) {
                         while (results.next()) {
                             productCount++;
-                            products.add(new Product(results.getInt("id"),
+                            products.add(new Product(results.getObject("id", UUID.class),
                                     results.getString("code"),
                                     results.getString("name"),
                                     results.getString("summary"),
                                     results.getString("description"),
                                     results.getString("image"),
-                                    results.getFloat("trade_price"),
-                                    results.getFloat("retail_price"),
-                                    results.getInt("delivery_time"),
-                                    results.getInt("average_rating"),
+                                    results.getFloat("price"),
+                                    results.getBoolean("in_stock"),
+                                    results.getInt("time_to_stock"),
+                                    results.getInt("rating"),
                                     results.getBoolean("available")
                             ));
                         }

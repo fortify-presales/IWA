@@ -63,31 +63,31 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="trade_price" class="col-sm-2 col-form-label">Trade Price:</label>
+                        <label for="price" class="col-sm-2 col-form-label">Price:</label>
                         <div class="col-xs-2">
-                            <input type="text" readonly class="form-control" id="trade_price" th:value="${#strings.replace(#numbers.formatCurrency(adminProductForm.tradePrice), '.00', '')}">
+                            <input type="text" readonly class="form-control" id="price" th:value="${#strings.replace(#numbers.formatCurrency(adminProductForm.price), '.00', '')}">
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="retail_price" class="col-sm-2 col-form-label">Retail Price:</label>
-                        <div class="col-xs-2">
-                            <input type="text" readonly class="form-control" id="retail_price" th:value="${#strings.replace(#numbers.formatCurrency(adminProductForm.retailPrice), '.00', '')}">
+                        <label for="inStock" class="col-sm-2 col-form-label">In Stock:</label>
+                        <div class="col-sm-10">
+                            <input class="form-check-input" type="checkbox" th:value="${adminProductForm.inStock}" id="inStock" disabled>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="delivery_time" class="col-sm-2 col-form-label">Delivery Time:</label>
+                        <label for="timeToStock" class="col-sm-2 col-form-label">Time to Stock:</label>
                         <div class="col-xs-2">
-                            <input type="text" readonly class="form-control" id="delivery_time" th:value="${adminProductForm.deliveryTime}">
+                            <input type="text" readonly class="form-control" id="timeToStock" th:value="${adminProductForm.timeToStock}">
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="average-rating" class="col-sm-2 col-form-label">Average Rating:</label>
+                        <label for="rating" class="col-sm-2 col-form-label">Average Rating:</label>
                         <div class="col-xs-2">
-                            <span th:each="i : ${#numbers.sequence( 1, adminProductForm.averageRating, 1)}">
+                            <span th:each="i : ${#numbers.sequence( 1, adminProductForm.rating, 1)}">
                                 <i class="fas fa-star" style="color: cornflowerblue"> </i>
                             </span>
-                            <span th:if="${adminProductForm.averageRating != 5}">
-                                <span th:each="i : ${#numbers.sequence(adminProductForm.averageRating, 4, 1)}">
+                            <span th:if="${adminProductForm.rating != 5}">
+                                <span th:each="i : ${#numbers.sequence(adminProductForm.rating, 4, 1)}">
                                     <i class="fas fa-star" style="color: gray"> </i>
                                 </span>
                             </span>

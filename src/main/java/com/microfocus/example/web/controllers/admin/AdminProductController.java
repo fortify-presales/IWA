@@ -39,6 +39,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Controller for administrative pages
@@ -63,7 +64,7 @@ public class AdminProductController {
     }
 
     @GetMapping("/{id}")
-    public String viewProducts(@PathVariable("id") Integer productId,
+    public String viewProducts(@PathVariable("id") UUID productId,
                                Model model, Principal principal) {
         Optional<Product> optionalProduct = productService.findProductById(productId);
         if (optionalProduct.isPresent()) {
@@ -79,7 +80,7 @@ public class AdminProductController {
     }
 
     @GetMapping("/{id}/edit")
-    public String productEdit(@PathVariable("id") Integer productId,
+    public String productEdit(@PathVariable("id") UUID productId,
                               Model model, Principal principal) {
         Optional<Product> optionalProduct = productService.findProductById(productId);
         if (optionalProduct.isPresent()) {
@@ -115,7 +116,7 @@ public class AdminProductController {
     }
 
     @GetMapping("/{id}/delete")
-    public String productDelete(@PathVariable("id") Integer productId,
+    public String productDelete(@PathVariable("id") UUID productId,
                              Model model, Principal principal) {
         Optional<Product> optionalProduct = productService.findProductById(productId);
         if (optionalProduct.isPresent()) {
@@ -131,7 +132,7 @@ public class AdminProductController {
     }
 
     @PostMapping("/{id}/delete")
-    public String productDelete(@PathVariable("id") Integer productId,
+    public String productDelete(@PathVariable("id") UUID productId,
                              @RequestParam(value = "action", required = true) String action,
                              Model model, RedirectAttributes redirectAttributes,
                              Principal principal) {

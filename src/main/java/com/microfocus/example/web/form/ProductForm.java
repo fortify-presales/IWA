@@ -22,6 +22,7 @@ package com.microfocus.example.web.form;
 import com.microfocus.example.entity.Product;
 
 import javax.validation.constraints.*;
+import java.util.UUID;
 
 /**
  * Form backing entity/DTO for updating product
@@ -30,8 +31,7 @@ import javax.validation.constraints.*;
  */
 public class ProductForm {
 
-    @Min(1)
-    private Integer id;
+    private UUID id;
 
     @NotEmpty(message = "{product.code.notEmpty}")
     @Size(min = 6, max = 40, message = "{product.code.invalidLength}")
@@ -51,19 +51,18 @@ public class ProductForm {
 
     private String image;
 
-    @Min(value = 0, message = "{product.trade_price.invalidValue}")
-    private float trade_price;
+    @Min(value = 0, message = "{product.price.invalidValue}")
+    private float price;
 
-    @Min(value = 0, message = "{product.retail_price.invalidValue}")
-    private float retail_price;
+    private Boolean inStock;
 
-    @Min(value = 1, message = "{product.delivery_time.invalidValue}")
-    @Max(value = 365, message = "{product.delivery_time.invalidValue}")
-    private int delivery_time;
+    @Min(value = 0, message = "{product.timeToStock.invalidValue}")
+    @Max(value = 365, message = "{product.timeToStock.invalidValue}")
+    private int timeToStock;
 
-    @Min(value = 1, message = "{product.average_rating.invalidValue}")
-    @Max(value = 5, message = "{product.average_rating.invalidValue}")
-    private int average_rating;
+    @Min(value = 1, message = "{product.rating.invalidValue}")
+    @Max(value = 5, message = "{product.rating.invalidValue}")
+    private int rating;
 
     private Boolean available;
 
@@ -77,18 +76,18 @@ public class ProductForm {
         this.summary = product.getSummary();
         this.description = product.getDescription();
         this.image = product.getImage();
-        this.trade_price = product.getTradePrice();
-        this.retail_price = product.getRetailPrice();
-        this.delivery_time = product.getDeliveryTime();
-        this.average_rating = product.getAverageRating();
+        this.price = product.getPrice();
+        this.inStock = product.getInStock();
+        this.timeToStock = product.getTimeToStock();
+        this.rating = product.getRating();
         this.available = product.getAvailable();
     }
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -132,36 +131,36 @@ public class ProductForm {
         this.image = image;
     }
 
-    public float getTradePrice() {
-        return trade_price;
+    public float getPrice() {
+        return price;
     }
 
-    public void setTradePrice(float trade_price) {
-        this.trade_price = trade_price;
+    public void setPrice(float price) {
+        this.price = price;
     }
 
-    public float getRetailPrice() {
-        return retail_price;
+    public Boolean getInStock() {
+        return inStock;
     }
 
-    public void setRetailPrice(float retail_price) {
-        this.retail_price = retail_price;
+    public void setInStock(Boolean inStock) {
+        this.inStock = inStock;
     }
 
-    public int getDeliveryTime() {
-        return delivery_time;
+    public int getTimeToStock() {
+        return timeToStock;
     }
 
-    public void setDeliveryTime(int delivery_time) {
-        this.delivery_time = delivery_time;
+    public void setTimeToStock(int timeToStock) {
+        this.timeToStock = timeToStock;
     }
 
-    public int getAverageRating() {
-        return average_rating;
+    public int getRating() {
+        return rating;
     }
 
-    public void setAverageRating(int average_rating) {
-        this.average_rating = average_rating;
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 
     public Boolean getAvailable() {
@@ -174,7 +173,7 @@ public class ProductForm {
 
     @Override
     public String toString() {
-        return "ProductForm(" + id + " : " + name + " : SRP : " + retail_price + ")";
+        return "ProductForm(" + id + " : " + name + " : SRP : " + price + ")";
     }
 
 }

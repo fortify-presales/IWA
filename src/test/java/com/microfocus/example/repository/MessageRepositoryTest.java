@@ -22,11 +22,14 @@ import static org.assertj.core.api.Assertions.fail;
 public class MessageRepositoryTest extends BaseIntegrationTest {
 
     @Autowired
+    UserRepository userRepository;
+
+    @Autowired
     MessageRepository messageRepository;
 
     @Test
     public void a_messageRepository_existsById() {
-        if (!messageRepository.existsById(99999)) fail("Message 1 does not exist");
+        if (!messageRepository.existsById(DataSeeder.TEST_MESSAGE1_ID)) fail("Message 1 does not exist");
     }
 
     @Test
@@ -42,6 +45,43 @@ public class MessageRepositoryTest extends BaseIntegrationTest {
     public void c_messageRepository_findMessageByUserId() {
         List<Message> messages = messageRepository.findByUserId(DataSeeder.TEST_MESSAGE1_USERID);
         assertThat(messages.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void d_messageRepository_persist() {
+        Message m = DataSeeder.generateMessage();
+        Optional<User> u = userRepository.findById(DataSeeder.TEST_MESSAGE2_USERID);
+        if (u.isPresent()) {
+            m.setUser(u.get());
+        } else {
+            fail("Unable to retrieve user using id: " + DataSeeder.TEST_MESSAGE2_USERID);
+        }
+        m = messageRepository.saveAndFlush(m);
+        Optional<Message> message = messageRepository.findById(m.getId());
+        if (message.isPresent()) {
+            assertThat(message.get().getText().equals(DataSeeder.TEST_MESSAGE2_TEXT));
+        } else {
+            fail("Test Message 2 not found");
+        }
+    }
+
+    @Test
+    public void e_messageRepository_update() {
+        List<Message> messages = messageRepository.findByUserId(DataSeeder.TEST_MESSAGE2_USERID);
+        if (messages.size() > 0) {
+            Message m = messages.get(0);
+            m.setText(DataSeeder.TEST_MESSAGE2_TEXT + " updated");
+            m.setRead(true);
+            messageRepository.saveAndFlush(m);
+            Optional<Message> optionalMessage = messageRepository.findById(m.getId());
+            if (optionalMessage.isPresent()) {
+                Message m2 = optionalMessage.get();
+                assertThat(m2.getText()).isEqualTo(DataSeeder.TEST_MESSAGE2_TEXT + " updated");
+                assertThat(m2.getRead()).isEqualTo(true);
+            } else
+                fail("Test Message 2 not found");
+        } else
+            fail("Test Message 2 not found");
     }
 
 }

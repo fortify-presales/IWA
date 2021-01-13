@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>User Order</title>
+</head>
+<body>
+    <div layout:fragment="content" th:remove="tag">
+        <div class="background">
+            <div class="row no-margin">
+
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/user/}">User</a></li>
+                        <li class="breadcrumb-item" aria-current="page"><a th:href="@{/user/orders/}">Orders</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">View</li>
+                    </ol>
+                </nav>
+
+                <div th:replace="fragments/user-menu.html
+                            :: userMenu('/user/orders', ${messageCount})">
+                </div>
+
+                <div class="col-md-10">
+                    <div class="col-md-10">
+                        <form class="form-horizontal">
+                            <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                                <span th:text="${message}">message</span>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-12">
+                                    <table class="table">
+                                        <caption>Order: <span th:text="${orderForm.orderNum}"></span></caption>
+                                        <tfoot>
+                                        <tr>
+                                            <td colspan="2">
+                                                <span class="text-muted" th:if="${orderForm.shippedDate}" th:text="${'Order was shipped on ' + #dates.format(orderForm.shippedDate, 'dd-MM-yyyy')}"> Ship Date </span>
+                                                <span class="text-muted" th:unless="${orderForm.shippedDate}">Order has not yet shipped"></span>
+                                            </td>
+                                        </tr>
+                                        </tfoot>
+                                        <tbody>
+                                        <tr>
+                                            <td>Order Date:</td>
+                                            <td><span th:text="${#dates.format(orderForm.orderDate, 'dd-MM-yyyy')}"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Amount:</td>
+                                            <td><span th:text="${#strings.replace(#numbers.formatCurrency(orderForm.amount), '.00', '')}"> Amount </span></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-12">
+                                    <a class="btn btn-primary" th:href="@{/user/orders}"> Back </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

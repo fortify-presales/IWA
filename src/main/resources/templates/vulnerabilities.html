@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+    <head>
+        <title>Services</title>
+    </head>
+    <body>
+        <div layout:fragment="content" th:remove="tag">
+
+            <div class="background">
+                <div class="row no-margin">
+
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item active" aria-current="page">Example Vulnerabilities</li>
+                        </ol>
+                    </nav>
+
+                </div>
+
+                <div class="row no-margin">
+
+                    <div class="col-sm-12">
+
+                        <h2>Product Page</h2>
+                        <p>From product page enter the following in the search field:</p>
+                        <code>
+                            &lt;iframe width="560" height="315" src="https://www.youtube.com/embed/ub82Xb1C8os?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen&gt;&lt;/iframe&gt;
+                        </code>
+
+                        <p>From product page enter the following in the search field:</p>
+                        <code>
+                            %'; DELETE FROM PRODUCTS; --
+                        </code>
+
+                        <h2>Login Page</h2>
+                        <p>From login page enter the following for username:</p>
+                        <code>
+                            %'; --
+                        </code>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </body>
+</html>

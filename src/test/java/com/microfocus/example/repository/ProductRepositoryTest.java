@@ -57,15 +57,15 @@ public class ProductRepositoryTest extends BaseIntegrationTest {
             Product p1 = optionalProduct.get();
             p1.setCode("TEST-B000-00001");
             p1.setName("Test Product 2 Updated");
-            p1.setRetailPrice(new Float(100.0));
-            p1.setAverageRating(1);
+            p1.setPrice(new Float(100.0));
+            p1.setRating(1);
             productRepository.save(p1);
             Optional<Product> p2 = productRepository.findByCode("TEST-B000-00001");
             if (p2.isPresent()) {
                 assertThat(p2.get().getCode()).isEqualTo("TEST-B000-00001");
                 assertThat(p2.get().getName()).isEqualTo("Test Product 2 Updated");
-                assertThat(p2.get().getRetailPrice()).isEqualTo(new Float(100.0));
-                assertThat(p2.get().getAverageRating()).isEqualTo(1);
+                assertThat(p2.get().getPrice()).isEqualTo(new Float(100.0));
+                assertThat(p2.get().getRating()).isEqualTo(1);
             }
         }
     }

@@ -42,6 +42,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Controller for administration of users
@@ -66,7 +67,7 @@ public class AdminUserController {
     }
 
     @GetMapping("/{id}")
-    public String viewUser(@PathVariable("id") Integer userId,
+    public String viewUser(@PathVariable("id") UUID userId,
                            Model model, Principal principal) {
         Optional<User> optionalUser = userService.findUserById(userId);
         if (optionalUser.isPresent()) {
@@ -82,7 +83,7 @@ public class AdminUserController {
     }
 
     @GetMapping("/{id}/edit")
-    public String userEditProfile(@PathVariable("id") Integer userId,
+    public String userEditProfile(@PathVariable("id") UUID userId,
                                   Model model, Principal principal) {
         Optional<User> optionalUser = userService.findUserById(userId);
         if (optionalUser.isPresent()) {
@@ -104,6 +105,7 @@ public class AdminUserController {
                                   Principal principal) {
         if (!bindingResult.hasErrors()) {
             try {
+                log.debug("Updating user: " + adminUserForm.getId());
                 userService.saveUserFromAdminUserForm(adminUserForm);
                 redirectAttributes.addFlashAttribute("message", "User updated successfully.");
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
@@ -118,7 +120,7 @@ public class AdminUserController {
     }
 
     @GetMapping("/{id}/changePassword")
-    public String userChangePassword(@PathVariable("id") Integer userId,
+    public String userChangePassword(@PathVariable("id") UUID userId,
                                      Model model, Principal principal) {
         Optional<User> optionalUser = userService.findUserById(userId);
         if (optionalUser.isPresent()) {
@@ -134,7 +136,7 @@ public class AdminUserController {
     }
 
     @PostMapping("/{id}/savePassword")
-    public String userSavePassword(@PathVariable("id") Integer userId,
+    public String userSavePassword(@PathVariable("id") UUID userId,
                                    @Valid @ModelAttribute("adminPasswordForm") AdminPasswordForm adminPasswordForm,
                                    BindingResult bindingResult, Model model,
                                    RedirectAttributes redirectAttributes,
@@ -159,7 +161,7 @@ public class AdminUserController {
     }
 
     @GetMapping("/{id}/delete")
-    public String userDelete(@PathVariable("id") Integer userId,
+    public String userDelete(@PathVariable("id") UUID userId,
                              Model model, Principal principal) {
         Optional<User> optionalUser = userService.findUserById(userId);
         if (optionalUser.isPresent()) {
@@ -175,7 +177,7 @@ public class AdminUserController {
     }
 
     @PostMapping("/{id}/delete")
-    public String userDelete(@PathVariable("id") Integer userId,
+    public String userDelete(@PathVariable("id") UUID userId,
                              @RequestParam(value = "action", required = true) String action,
                              Model model, RedirectAttributes redirectAttributes,
                              Principal principal) {

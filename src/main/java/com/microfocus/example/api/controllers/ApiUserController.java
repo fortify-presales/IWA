@@ -43,6 +43,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * A RESTFul controller for accessing user information.
@@ -81,7 +82,7 @@ public class ApiUserController {
         }
     }
 
-    @Operation(summary = "Find user by Id", description = "Find a specific user by its database Id", tags = {"users"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @Operation(summary = "Find user by UUID", description = "Find a specific user by their UUID", tags = {"users"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = User.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -92,10 +93,10 @@ public class ApiUserController {
     })
     @GetMapping(value = {"/{id}"}, produces =  {"application/json"})
     public ResponseEntity<User> findUserById(
-            @Parameter(description = "Id of the user to be found. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
-        log.debug("API::Retrieving user id: " + id);
+            @Parameter(description = "UUID of the user to be found. Cannot be empty.", example = "db4cfab1-ff1d-4bca-a662-394771841383", required = true) @PathVariable("id") UUID id) {
+        log.debug("API::Retrieving user with UUID: " + id);
         if (!userService.userExistsById(id))
-            throw new UserNotFoundException("User with id: " + id.toString() + " does not exist.");
+            throw new UserNotFoundException("User with UUID: " + id.toString() + " does not exist.");
         Optional<User> user = userService.findUserById(id);
         return new ResponseEntity<>(user.orElse(null), HttpStatus.OK);
     }
@@ -113,7 +114,7 @@ public class ApiUserController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<User> createUser(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody User newUser) {
-        newUser.setId(0); // set to 0 for sequence id generation
+        //newUser.setId(new UUID()); // set to 0 for sequence id generation
         log.debug("API::Creating new user: " + newUser.toString());
         return new ResponseEntity<>(userService.saveUser(newUser), HttpStatus.OK);
     }
@@ -130,8 +131,8 @@ public class ApiUserController {
     @PutMapping(value = {"/{id}"}, produces = {"application/json"}, consumes = {"application/json"})
     public ResponseEntity<User> updateUser(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody User newUser,
-            @Parameter(description = "Id of the user to be updated. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
-        log.debug("API::Updating user id: " + id);
+            @Parameter(description = "UUID of the user to be updated. Cannot be empty.", example = "db4cfab1-ff1d-4bca-a662-394771841383", required = true) @PathVariable("id") UUID id) {
+        log.debug("API::Updating user with UUID: " + id);
         return new ResponseEntity<>(userService.saveUser(newUser), HttpStatus.OK);
     }
 
@@ -145,8 +146,8 @@ public class ApiUserController {
     })
     @DeleteMapping (value = {"/{id}"})
     public ResponseEntity<ApiStatusResponse> deleteUser(
-            @Parameter(description = "Id of the user to be updated. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
-        log.debug("API@::Deleting user id: " + id);
+            @Parameter(description = "UUID of the user to be updated. Cannot be empty.", example = "db4cfab1-ff1d-4bca-a662-394771841383", required = true) @PathVariable("id") UUID id) {
+        log.debug("API@::Deleting user with UUID: " + id);
         userService.deleteUserById(id);
         ApiStatusResponse apiStatusResponse = new ApiStatusResponse
                 .ApiResponseBuilder()

@@ -33,10 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.security.Principal;
-import java.util.Currency;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Controller for product pages
@@ -64,7 +61,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public String viewProduct(@PathVariable("id") Integer productId,
+    public String viewProduct(@PathVariable("id") UUID productId,
                               Model model, Principal principal) {
         Optional<Product> optionalProduct = productService.findProductById(productId);
         if (optionalProduct.isPresent()) {

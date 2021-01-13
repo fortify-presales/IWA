@@ -26,6 +26,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import java.util.UUID;
 
 /**
  * Form backing entity/DTO for changing password
@@ -38,8 +39,7 @@ public class AdminPasswordForm {
         return new BCryptPasswordEncoder();
     }
 
-    @Min(1)
-    private Integer id;
+    private UUID id;
 
     @NotEmpty
     private String username;
@@ -60,11 +60,11 @@ public class AdminPasswordForm {
         this.confirmPassword = user.getConfirmPassword();
     }
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

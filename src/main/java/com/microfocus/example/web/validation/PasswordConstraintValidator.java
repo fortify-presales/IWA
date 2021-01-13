@@ -43,6 +43,7 @@ import org.passay.dictionary.WordLists;
 import org.passay.dictionary.sort.ArraysSort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Custom Password Validator (using org.passay)
@@ -54,16 +55,20 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 
     private DictionaryRule dictionaryRule;
 
+    @Value("${app.invalidPasswordList}")
+    private String invalidPasswordList = "/invalid-password-list.txt";
+
     @Override
     public void initialize(ValidPassword constraintAnnotation) {
         FileReader[] fr = new FileReader[0];
         FileReader frPassList = null;
         try {
-            String filename = System.getProperty("com.microfocus.example.passwordList");
-            File dictionaryFile = new File(filename);
-            String invalidPasswordList = FileUtils.readFileToString(dictionaryFile);
-            invalidPasswordList = this.getClass().getResource("/invalid-password-list.txt").getFile();
-            frPassList = new FileReader(invalidPasswordList);
+            //String filename = System.getProperty("com.microfocus.example.passwordList");
+            log.debug("Using file: " + invalidPasswordList + " for Password Constraint Validator");
+            //File dictionaryFile = new File(filename);
+            //String invalidPasswordList = FileUtils.readFileToString(dictionaryFile);
+            File invalidPasswordFile = new File(this.getClass().getResource(invalidPasswordList).getFile());
+            frPassList = new FileReader(invalidPasswordFile);
             fr = new FileReader[] { frPassList };
             dictionaryRule = new DictionaryRule(
                     new WordListDictionary(WordLists.createFromReader(

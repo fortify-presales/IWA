@@ -45,6 +45,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -90,7 +91,7 @@ public class ApiMessageController {
         }
     }
 
-    @Operation(summary = "Find message by Id", description = "Find a specific message by its database Id", tags = {"message"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @Operation(summary = "Find message by Id", description = "Find a message by UUID", tags = {"message"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = MessageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -101,8 +102,8 @@ public class ApiMessageController {
     })
     @GetMapping(value = {"/{id}"}, produces =  {"application/json"})
     public ResponseEntity<MessageResponse> getMessageById(
-            @Parameter(description = "Id of the message to be found. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
-        log.debug("API::Retrieving message id: " + id);
+            @Parameter(description = "UUID of the message to be found. Cannot be empty.", example = "6914e47d-2f0a-4deb-a712-12e7801e13e8", required = true) @PathVariable("id") UUID id) {
+        log.debug("API::Retrieving message with UUID: " + id);
         if (!userService.messageExistsById(id))
             throw new MessageNotFoundException("Message with id: " + id.toString() + " does not exist.");
         Optional<Message> message = userService.findMessageById(id);
@@ -123,10 +124,10 @@ public class ApiMessageController {
     public ResponseEntity<MessageResponse> createMessage(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody MessageRequest newMessage) {
         log.debug("API::Creating new message: " + newMessage.toString());
-        return new ResponseEntity<>(new MessageResponse(userService.saveMessageFromApi(0, newMessage)), HttpStatus.OK);
+        return new ResponseEntity<>(new MessageResponse(userService.saveMessageFromApi(null, newMessage)), HttpStatus.OK);
     }
 
-    @Operation(summary = "Update a message", description = "Update a users existing message", tags = {"messages"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @Operation(summary = "Update a message", description = "Update a users message", tags = {"messages"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = MessageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -138,8 +139,8 @@ public class ApiMessageController {
     @PutMapping(value = {"/{id}"}, produces = {"application/json"}, consumes = {"application/json"})
     public ResponseEntity<MessageResponse> updateMessage(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody MessageRequest newMessage,
-            @Parameter(description = "Id of the message to be updated. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
-        log.debug("API::Updating message id: " + id);
+            @Parameter(description = "UUID of the message to be updated. Cannot be empty.", example = "6914e47d-2f0a-4deb-a712-12e7801e13e8", required = true) @PathVariable("id") UUID id) {
+        log.debug("API::Updating message with UUID: " + id);
         return new ResponseEntity<>(new MessageResponse(userService.saveMessageFromApi(id, newMessage)), HttpStatus.OK);
     }
 
@@ -153,8 +154,8 @@ public class ApiMessageController {
     })
     @DeleteMapping (value = {"/{id}"})
     public ResponseEntity<ApiStatusResponse> deleteMessage(
-            @Parameter(description = "Id of the message to be updated. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
-        log.debug("API::Deleting message id: " + id);
+            @Parameter(description = "UUID of the message to be updated. Cannot be empty.", example = "6914e47d-2f0a-4deb-a712-12e7801e13e8", required = true) @PathVariable("id") UUID id) {
+        log.debug("API::Deleting message with UUID: " + id);
         userService.deleteMessageById(id);
         ApiStatusResponse apiStatusResponse = new ApiStatusResponse
                 .ApiResponseBuilder()

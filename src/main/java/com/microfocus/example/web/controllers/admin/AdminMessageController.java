@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Controller for administration of messages
@@ -56,7 +57,7 @@ public class AdminMessageController {
     }
 
     @GetMapping("/{id}")
-    public String viewMessage(@PathVariable("id") Integer messageId,
+    public String viewMessage(@PathVariable("id") UUID messageId,
                               Model model, Principal principal) {
         Optional<Message> optionalMessage = userService.findMessageById(messageId);
         if (optionalMessage.isPresent()) {
@@ -71,7 +72,7 @@ public class AdminMessageController {
     }
 
     @PostMapping("/delete/{id}")
-    public String userDeleteMessage(@PathVariable("id") Integer messageId,
+    public String userDeleteMessage(@PathVariable("id") UUID messageId,
                                     Model model, Principal principal) {
         userService.deleteMessageById(messageId);
         model.addAttribute("message", "Successfully deleted message!");

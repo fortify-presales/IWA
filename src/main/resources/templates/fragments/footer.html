@@ -3,7 +3,59 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <body>
         <th:block th:fragment="footer">
-            <footer>
+
+            <!----------- Footer ------------>
+            <footer class="iwa-footer">
+                <div class="row">
+                    <div class="col-md-3 footer-brand animated fadeInLeft">
+                        <h3>IWA Pharmacy Direct</h3>
+                        <p>Suspendisse hendrerit tellus laoreet luctus pharetra. Aliquam porttitor vitae orci nec ultricies. Curabitur vehicula, libero eget faucibus faucibus, purus erat eleifend enim, porta pellentesque ex mi ut sem.</p>
+                        <p>© Micro Focus 2021 All Rights Reserved</p>
+                    </div>
+                    <div class="col-md-4 footer-nav animated fadeInUp">
+                        <h4>Menu —</h4>
+                        <div class="col-md-6">
+                            <ul class="pages">
+                                <li><a href="#">Shop</a></li>
+                                <li><a href="#">Prescriptions</a></li>
+                                <li><a href="#">Services</a></li>
+                                <li><a href="#">Health & Advice</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list">
+                                <li><a href="#">About Us</a></li>
+                                <li><a href="#">Contacts</a></li>
+                                <li><a href="#">Terms & Condition</a></li>
+                                <li><a href="#">Privacy Policy</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-2 footer-social animated fadeInDown">
+                        <h4>Follow Us</h4>
+                        <ul>
+                            <li><a href="#">Facebook</a></li>
+                            <li><a href="#">Twitter</a></li>
+                            <li><a href="#">Instagram</a></li>
+                            <li><a href="#">RSS</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3 footer-ns animated fadeInRight">
+                        <h4>Newsletter</h4>
+                        <p>Sign-up for our newsletter by entering your email address below</p>
+                        <p>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Your email address...">
+                            <span class="input-group-btn">
+                        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-envelope"></span></button>
+                      </span>
+                        </div><!-- /input-group -->
+                        </p>
+                    </div>
+                </div>
+            </footer>
+
+            <!--footer>
                 <div class="container">
                     <p class="pull-right">
                         <a href="#"> Privacy Policy </a> |
@@ -12,12 +64,10 @@
                         © Micro Focus 2020 All Rights Reserved
                     </p>
                 </div>
-            </footer>
+            </footer-->
 
             <script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
             <script type="text/javascript" th:src="@{/webjars/bootstrap/3.4.1/js/bootstrap.min.js}"></script>
-
-
 
         </th:block>
     </body>

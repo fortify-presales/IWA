@@ -21,12 +21,14 @@ package com.microfocus.example.web.controllers;
 
 import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.Message;
+import com.microfocus.example.entity.Order;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.InvalidPasswordException;
 import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.service.UserService;
 import com.microfocus.example.utils.WebUtils;
 import com.microfocus.example.web.form.MessageForm;
+import com.microfocus.example.web.form.OrderForm;
 import com.microfocus.example.web.form.PasswordForm;
 import com.microfocus.example.web.form.UserForm;
 import org.slf4j.Logger;
@@ -46,6 +48,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Controller for user pages
@@ -125,6 +128,10 @@ public class UserController {
         return "user/change-password";
     }
 
+    //
+    // Messages
+    //
+
     @GetMapping("/messages")
     public String userMessages(Model model, Principal principal) {
         CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
@@ -150,9 +157,9 @@ public class UserController {
     }
 
     @GetMapping("/messages/{id}")
-    public String viewMessage(@PathVariable("id") Integer messageId,
+    public String viewMessage(@PathVariable("id") UUID messageId,
                            Model model, Principal principal) {
-        int loggedInUserId = 0;
+        UUID loggedInUserId;
         if (principal != null) {
             CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
             loggedInUserId = loggedInUser.getId();
@@ -162,8 +169,11 @@ public class UserController {
         Optional<Message> optionalMessage = userService.findMessageById(messageId);
         if (optionalMessage.isPresent()) {
             // does user have permission to read this message?
-            if (optionalMessage.get().getUser().getId() != loggedInUserId)
+            UUID messageUserId = optionalMessage.get().getUser().getId();
+            if (!messageUserId.equals(loggedInUserId)) {
+                log.debug("User id: " + loggedInUserId + " trying access message for: " + messageUserId);
                 return "/user/messages/access-denied";
+            }
             MessageForm messageForm = new MessageForm(optionalMessage.get());
             model.addAttribute("messageForm", messageForm);
             // mark messages as read
@@ -175,6 +185,66 @@ public class UserController {
         }
         return "/user/messages/view";
     }
+
+    //
+    // Orders
+    //
+
+    @GetMapping("/orders")
+    public String userOrders(Model model, Principal principal) {
+        CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        List<Order> orders = userService.getUserOrders(user.getId());
+        model.addAttribute("orders", orders);
+        model.addAttribute("unshippedOrderCount", userService.getUserUnshippedOrderCount(user.getId()));
+        model.addAttribute("totalOrderCount", orders.size());
+        model.addAttribute("controllerName", "User");
+        model.addAttribute("actionName", "orders");
+        return "user/orders/index";
+    }
+
+    @GetMapping("/unshipped-order-count")
+    @ResponseBody
+    public String getUnshippedOrderCount(Model model, Principal principal) {
+        if (principal != null) {
+            CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+            long unshippedOrderCount = userService.getUserUnshippedOrderCount(loggedInUser.getId());
+            return Long.toString(unshippedOrderCount);
+        } else {
+            return "0";
+        }
+    }
+
+    @GetMapping("/orders/{id}")
+    public String viewOrder(@PathVariable("id") UUID orderId,
+                              Model model, Principal principal) {
+        UUID loggedInUserId;
+        if (principal != null) {
+            CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+            loggedInUserId = loggedInUser.getId();
+        } else {
+            return "/user/error";
+        }
+        Optional<Order> optionalOrder = userService.findOrderById(orderId);
+        if (optionalOrder.isPresent()) {
+            // does user have permission to view this order?
+            UUID orderUserId = optionalOrder.get().getUser().getId();
+            if (!orderUserId.equals(loggedInUserId)) {
+                log.debug("User id: " + loggedInUserId + " trying access order for: " + orderUserId);
+                return "/user/order/access-denied";
+            }
+            OrderForm orderForm = new OrderForm(optionalOrder.get());
+            model.addAttribute("orderForm", orderForm);
+        } else {
+            model.addAttribute("message", "Internal error accessing order!");
+            model.addAttribute("alertClass", "alert-danger");
+            return "/user/orders/not-found";
+        }
+        return "/user/orders/view";
+    }
+
+    //
+    //
+    //
 
     @PostMapping("/saveProfile")
     public String userSaveProfile(@Valid @ModelAttribute("userForm") UserForm userForm,
@@ -233,7 +303,7 @@ public class UserController {
     }
 
     @PostMapping("/messages/delete/{id}")
-    public String userDeleteMessage(@PathVariable("id") Integer messageId,
+    public String userDeleteMessage(@PathVariable("id") UUID messageId,
                               Model model, Principal principal) {
         userService.deleteMessageById(messageId);
         model.addAttribute("message", "Successfully deleted message!");

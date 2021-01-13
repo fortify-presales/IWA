@@ -27,7 +27,6 @@
                 <caption>User messages</caption>
                 <thead>
                 <tr>
-                    <th scope="col">#</th>
                     <th scope="col">To</th>
                     <th scope="col">Summary</th>
                     <th scope="col">Sent</th>
@@ -37,11 +36,10 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:if="${messages.empty}">
+                <tr th:if="${messages.isEmpty()}">
                     <td colspan="2"> No Messages Available </td>
                 </tr>
                 <tr th:each="m : ${messages}">
-                    <td><a th:href="@{/admin/messages/{id}(id=${m.id})}"><span th:text="${m.id}"> # </span></a></td>
                     <td><span th:text="${m.user.username}"> To </span></td>
                     <td><span th:text="${#strings.abbreviate(m.text,40)}"> Text </span></td>
                     <td><span th:text="${#dates.format(m.sentDate, 'dd-MM-yyyy HH:mm')}"> Sent </span></td>

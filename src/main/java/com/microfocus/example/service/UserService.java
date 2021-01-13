@@ -21,12 +21,14 @@ package com.microfocus.example.service;
 
 import com.microfocus.example.entity.Authority;
 import com.microfocus.example.entity.Message;
+import com.microfocus.example.entity.Order;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.InvalidPasswordException;
 import com.microfocus.example.exception.MessageNotFoundException;
 import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.payload.request.MessageRequest;
 import com.microfocus.example.repository.MessageRepository;
+import com.microfocus.example.repository.OrderRepository;
 import com.microfocus.example.repository.RoleRepository;
 import com.microfocus.example.repository.UserRepository;
 import com.microfocus.example.utils.EncryptedPasswordUtils;
@@ -61,8 +63,10 @@ public class UserService {
     @Autowired
     private MessageRepository messageRepository;
 
+    @Autowired
+    private OrderRepository orderRepository;
 
-    public Optional<User> findUserById(Integer id) {
+    public Optional<User> findUserById(UUID id) {
         return userRepository.findById(id);
     }
 
@@ -74,11 +78,11 @@ public class UserService {
         return (List<User>) userRepository.findAll();
     }
 
-    public User getUserById(Integer id) {
+    public User getUserById(UUID id) {
         return userRepository.findById(id).get();
     }
 
-    public void deleteUserById(Integer id) {
+    public void deleteUserById(UUID id) {
         userRepository.deleteById(id);
     }
 
@@ -90,7 +94,7 @@ public class UserService {
         return userRepository.findUsersByEnabledAndUsername(enabled, username);
     }
 
-    public boolean userExistsById(Integer id) {
+    public boolean userExistsById(UUID id) {
         return userRepository.existsById(id);
     }
 
@@ -118,18 +122,22 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findUserByUsername(adminUserForm.getUsername());
         if (optionalUser.isPresent()) {
             User utmp = optionalUser.get();
+            log.debug(utmp.toString());
+            utmp.setId(adminUserForm.getId());
             utmp.setUsername(adminUserForm.getUsername());
             utmp.setName(adminUserForm.getName());
             utmp.setEmail(adminUserForm.getEmail());
             utmp.setMobile(adminUserForm.getMobile());
             utmp.setEnabled(adminUserForm.getEnabled());
+            log.debug("Saving utmp: " + adminUserForm.getUsername());
+            userRepository.save(utmp);
             return utmp;
         } else {
             throw new UserNotFoundException("Username not found: " + adminUserForm.getUsername());
         }
     }
 
-    public User updateUserPasswordFromPasswordForm(Integer id, PasswordForm passwordForm) {
+    public User updateUserPasswordFromPasswordForm(UUID id, PasswordForm passwordForm) {
         if (passwordForm.getPassword().equals(passwordForm.getConfirmPassword())) {
             Optional<User> optionalUser = userRepository.findById(id);
             if (optionalUser.isPresent()) {
@@ -144,7 +152,7 @@ public class UserService {
         }
     }
 
-    public User updateUserPasswordFromAdminPasswordForm(Integer id, AdminPasswordForm adminPasswordForm) {
+    public User updateUserPasswordFromAdminPasswordForm(UUID id, AdminPasswordForm adminPasswordForm) {
         if (adminPasswordForm.getPassword().equals(adminPasswordForm.getConfirmPassword())) {
             Optional<User> optionalUser = userRepository.findById(id);
             if (optionalUser.isPresent()) {
@@ -211,23 +219,23 @@ public class UserService {
         return messageRepository.findAll();
     }
 
-    public long getUserMessageCount(Integer userId) {
+    public long getUserMessageCount(UUID userId) {
         return messageRepository.countByUserId(userId);
     }
 
-    public long getUserUnreadMessageCount(Integer userId) {
+    public long getUserUnreadMessageCount(UUID userId) {
         return messageRepository.countUnreadByUserId(userId);
     }
 
-    public List<Message> getUserMessages(Integer userId) {
+    public List<Message> getUserMessages(UUID userId) {
         return messageRepository.findByUserId(userId);
     }
 
-    public boolean messageExistsById(Integer id) {
+    public boolean messageExistsById(UUID id) {
         return messageRepository.existsById(id);
     }
 
-    public Optional<Message> findMessageById(Integer id) {
+    public Optional<Message> findMessageById(UUID id) {
         return messageRepository.findById(id);
     }
 
@@ -239,14 +247,14 @@ public class UserService {
         return messageRepository.save(message);
     }
 
-    public Message saveMessageFromApi(Integer messageId, MessageRequest message) throws MessageNotFoundException, UserNotFoundException {
+    public Message saveMessageFromApi(UUID messageId, MessageRequest message) throws MessageNotFoundException, UserNotFoundException {
         Message mtmp = new Message();
         Optional<User> optionalUser = userRepository.findById(message.getUserId());
         if (optionalUser.isPresent()) {
             mtmp.setUser(optionalUser.get());
             // are we creating a new message or updating an existing message?
-            if (messageId == null || messageId == 0) {
-                mtmp.setId(0);
+            if (messageId == null) {
+                mtmp.setId(null);
             } else {
                 mtmp.setId(messageId);
                 // check it exists
@@ -261,10 +269,77 @@ public class UserService {
         }
     }
 
-    public void deleteMessageById(Integer id) {
+    public void deleteMessageById(UUID id) {
         messageRepository.deleteById(id);
     }
 
-    public void markMessageAsReadById(Integer id) { messageRepository.markMessageAsReadById(id); }
+    public void markMessageAsReadById(UUID id) { messageRepository.markMessageAsReadById(id); }
 
+    //
+    // User Orders
+    //
+
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
+    public long getUserOrderCount(UUID userId) {
+        return orderRepository.countByUserId(userId);
+    }
+
+    public long getUserUnshippedOrderCount(UUID userId) {
+        return orderRepository.countNotShippedByUserId(userId);
+    }
+
+    public List<Order> getUserOrders(UUID userId) {
+        return orderRepository.findByUserId(userId);
+    }
+
+    public boolean orderExistsById(UUID id) {
+        return orderRepository.existsById(id);
+    }
+
+    public Optional<Order> findOrderById(UUID id) {
+        return orderRepository.findById(id);
+    }
+
+    public Order saveOrder(Order order) {
+        return orderRepository.save(order);
+    }
+
+    /*
+    public Message saveOrder(MessageForm message) {
+        return messageRepository.save(message);
+    }
+
+
+    public Message saveMessageFromApi(UUID messageId, MessageRequest message) throws MessageNotFoundException, UserNotFoundException {
+        Message mtmp = new Message();
+        Optional<User> optionalUser = userRepository.findById(message.getUserId());
+        if (optionalUser.isPresent()) {
+            mtmp.setUser(optionalUser.get());
+            // are we creating a new message or updating an existing message?
+            if (messageId == null) {
+                mtmp.setId(null);
+            } else {
+                mtmp.setId(messageId);
+                // check it exists
+                if (!messageExistsById(messageId))
+                    throw new MessageNotFoundException("Message not found with id: " + messageId);
+            }
+            mtmp.setText(message.getText());
+            if (message.getSentDate() != null) mtmp.setSentDate(message.getSentDate());
+            return messageRepository.save(mtmp);
+        } else {
+            throw new UserNotFoundException("User not found with id: " + message.getUserId());
+        }
+    }
+
+    public void deleteMessageById(UUID id) {
+        messageRepository.deleteById(id);
+    }
+
+    public void markMessageAsReadById(UUID id) { messageRepository.markMessageAsReadById(id); }
+
+    */
 }

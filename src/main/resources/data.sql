@@ -1,72 +1,109 @@
-INSERT INTO authority (name, id) VALUES ('ROLE_ADMIN', 1);
-INSERT INTO authority (name, id) VALUES ('ROLE_USER', 2);
-INSERT INTO authority (name, id) values ('ROLE_API', 3);
-INSERT INTO user (id, username, password, name, email, mobile, date_created, enabled) VALUES (1,'admin','$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32','Admin User','admin@localhost','0123456789',CURDATE(), 1);
-INSERT INTO user (id, username, password, name, email, mobile, date_created, enabled) VALUES (2,'user1','$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32','User 1','user1@localhost','0123456789',CURDATE(), 1);
-INSERT INTO user (id, username, password, name, email, mobile, date_created, enabled) VALUES (3,'user2','$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32','User 2','user2@localhost','0123456789',CURDATE(), 1);
-INSERT INTO user (id, username, password, name, email, mobile, date_created, enabled) VALUES (4,'api','$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32','Api User 1','api@localhost','0123456789',CURDATE(), 1);
-INSERT INTO user_authority (authority_id, user_id) VALUES (1, 1);
-INSERT INTO user_authority (authority_id, user_id) VALUES (2, 1);
-INSERT INTO user_authority (authority_id, user_id) VALUES (3, 1);
-INSERT INTO user_authority (authority_id, user_id) VALUES (2, 2);
-INSERT INTO user_authority (authority_id, user_id) VALUES (3, 3);
-INSERT INTO product (id, code, name, average_rating, summary, description, image, trade_price, retail_price, delivery_time, available)
-    VALUES (1,'SWA234-A568-00010','Solodox 750',4,
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pharetra enim erat, sed tempor mauris viverra in. Donec ante diam, rhoncus dapibus efficitur ut, sagittis a elit. Integer non ante felis. Curabitur nec lectus ut velit bibendum euismod. Nulla mattis convallis neque ac euismod. Ut vel mattis lorem, nec tempus nibh. Vivamus tincidunt enim a risus placerat viverra. Curabitur diam sapien, posuere dignissim accumsan sed, tempus sit amet diam. Aliquam tincidunt vitae quam non rutrum. Nunc id sollicitudin neque, at posuere metus. Sed interdum ex erat, et ornare purus bibendum id. Suspendisse sagittis est dui. Donec vestibulum elit at arcu feugiat porttitor.',
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pharetra enim erat, sed tempor mauris viverra in. Donec ante diam, rhoncus dapibus efficitur ut, sagittis a elit. Integer non ante felis. Curabitur nec lectus ut velit bibendum euismod. Nulla mattis convallis neque ac euismod. Ut vel mattis lorem, nec tempus nibh. Vivamus tincidunt enim a risus placerat viverra. Curabitur diam sapien, posuere dignissim accumsan sed, tempus sit amet diam. Aliquam tincidunt vitae quam non rutrum. Nunc id sollicitudin neque, at posuere metus. Sed interdum ex erat, et ornare purus bibendum id. Suspendisse sagittis est dui. Donec vestibulum elit at arcu feugiat porttitor.',
-    'generic-product-1.jpg',
-    32.0,100.0,30,1);
-INSERT INTO product (id, code, name, average_rating, summary, description, trade_price, retail_price, delivery_time, available)
-    VALUES (2,'SWA534-F528-00115','Alphadex Plus',5,
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sit amet quam eget neque vestibulum tincidunt vitae vitae augue. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer rhoncus varius sem non luctus. Etiam tincidunt et leo non tempus. Etiam imperdiet elit arcu, a fermentum arcu commodo vel. Fusce vel consequat erat. Curabitur non lacus velit. Donec dignissim velit et sollicitudin pulvinar.',
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sit amet quam eget neque vestibulum tincidunt vitae vitae augue. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer rhoncus varius sem non luctus. Etiam tincidunt et leo non tempus. Etiam imperdiet elit arcu, a fermentum arcu commodo vel. Fusce vel consequat erat. Curabitur non lacus velit. Donec dignissim velit et sollicitudin pulvinar.',
-    45.0,120.0,30,1);
-INSERT INTO product (id, code, name, average_rating, summary, description, image, trade_price, retail_price, delivery_time, available)
-    VALUES (3,'SWA179-G243-00101','Dontax',3,
-    'Aenean sit amet pulvinar mauris. Suspendisse eu ligula malesuada, condimentum tortor rutrum, rutrum dui. Sed vehicula augue sit amet placerat bibendum. Maecenas ac odio libero. Donec mi neque, convallis ut nulla quis, malesuada convallis velit. Aenean a augue blandit, viverra massa nec, laoreet quam. In lacinia eros quis lacus dictum pharetra.',
-    'Aenean sit amet pulvinar mauris. Suspendisse eu ligula malesuada, condimentum tortor rutrum, rutrum dui. Sed vehicula augue sit amet placerat bibendum. Maecenas ac odio libero. Donec mi neque, convallis ut nulla quis, malesuada convallis velit. Aenean a augue blandit, viverra massa nec, laoreet quam. In lacinia eros quis lacus dictum pharetra.',
-    'generic-product-2.jpg',
-    25.0,45.0,30,1);
-INSERT INTO product (id, code, name, average_rating, summary, description, image, trade_price, retail_price, delivery_time, available)
-    VALUES (4,'SWA201-D342-00132','Tranix Life',5,
-    'Curabitur imperdiet lacus nec lacus feugiat varius. Integer hendrerit erat orci, eget varius urna varius ac. Nulla fringilla, felis eget cursus imperdiet, odio eros tincidunt est, non blandit enim ante nec magna. Suspendisse in justo maximus nisi molestie bibendum. Fusce consequat accumsan nulla, vel pharetra nulla consequat sit amet.',
-    'Curabitur imperdiet lacus nec lacus feugiat varius. Integer hendrerit erat orci, eget varius urna varius ac. Nulla fringilla, felis eget cursus imperdiet, odio eros tincidunt est, non blandit enim ante nec magna. Suspendisse in justo maximus nisi molestie bibendum. Fusce consequat accumsan nulla, vel pharetra nulla consequat sit amet.',
-    'generic-product-3.jpg',
-    12.0,35.0,14,1);
-INSERT INTO product (id, code, name, average_rating, summary, description, trade_price, retail_price, delivery_time, available)
-    VALUES (5,'SWA312-F432-00134','Salex Two',5,
-    'In porta viverra condimentum. Morbi nibh magna, suscipit sit amet urna sed, euismod consectetur eros. Donec egestas, elit ut commodo fringilla, sem quam suscipit lectus, id tempus enim sem quis risus. Curabitur eleifend bibendum magna, vel iaculis elit varius et. Sed mollis dolor quis metus lacinia posuere. Phasellus odio mi, tempus quis dui et, consectetur iaculis odio. Quisque fringilla viverra eleifend. Cras dignissim euismod tortor, eget congue turpis fringilla sit amet. Aenean sed semper dolor, sed ultrices felis.',
-    'In porta viverra condimentum. Morbi nibh magna, suscipit sit amet urna sed, euismod consectetur eros. Donec egestas, elit ut commodo fringilla, sem quam suscipit lectus, id tempus enim sem quis risus. Curabitur eleifend bibendum magna, vel iaculis elit varius et. Sed mollis dolor quis metus lacinia posuere. Phasellus odio mi, tempus quis dui et, consectetur iaculis odio. Quisque fringilla viverra eleifend. Cras dignissim euismod tortor, eget congue turpis fringilla sit amet. Aenean sed semper dolor, sed ultrices felis.',
-    42.0,80.0,14,1);
-INSERT INTO product (id, code, name, average_rating, summary, description, image, trade_price, retail_price, delivery_time, available)
-    VALUES (6,'SWA654-F106-00412','Betala Lite',5,
-    'Sed bibendum metus vitae suscipit mattis. Mauris turpis purus, sodales a egestas vel, tincidunt ac ipsum. Donec in sapien et quam varius dignissim. Phasellus eros sem, facilisis quis vehicula sed, ornare eget odio. Nam tincidunt urna mauris, id tincidunt risus posuere ac. Integer vel est vel enim convallis blandit sed sed urna. Nam dapibus erat nunc, id euismod diam pulvinar id. Fusce a felis justo.',
-    'Sed bibendum metus vitae suscipit mattis. Mauris turpis purus, sodales a egestas vel, tincidunt ac ipsum. Donec in sapien et quam varius dignissim. Phasellus eros sem, facilisis quis vehicula sed, ornare eget odio. Nam tincidunt urna mauris, id tincidunt risus posuere ac. Integer vel est vel enim convallis blandit sed sed urna. Nam dapibus erat nunc, id euismod diam pulvinar id. Fusce a felis justo.',
-    'generic-product-4.jpg',
-    30.0,100.0,30,1);
-INSERT INTO product (id, code, name, average_rating, summary, description, trade_price, retail_price, delivery_time, available)
-    VALUES (7,'SWA254-A971-00213','Stimlab Mitre',5,
-    'Phasellus malesuada pulvinar justo, ac eleifend magna lacinia eget. Proin vulputate nec odio at volutpat. Duis non suscipit arcu. Nam et arcu vehicula, sollicitudin eros non, scelerisque diam. Phasellus sagittis pretium tristique. Vestibulum sit amet lectus nisl. Aliquam aliquet dolor sit amet neque placerat, vel varius metus molestie. Fusce sed ipsum blandit, efficitur est vitae, scelerisque enim. Integer porttitor est et dictum blandit. Quisque gravida tempus orci nec finibus.',
-    'Phasellus malesuada pulvinar justo, ac eleifend magna lacinia eget. Proin vulputate nec odio at volutpat. Duis non suscipit arcu. Nam et arcu vehicula, sollicitudin eros non, scelerisque diam. Phasellus sagittis pretium tristique. Vestibulum sit amet lectus nisl. Aliquam aliquet dolor sit amet neque placerat, vel varius metus molestie. Fusce sed ipsum blandit, efficitur est vitae, scelerisque enim. Integer porttitor est et dictum blandit. Quisque gravida tempus orci nec finibus.',
-    20.0,55.0,7,1);
-INSERT INTO product (id, code, name, average_rating, summary, description, trade_price, retail_price, delivery_time, available)
-    VALUES (8,'SWA754-B418-00315','Alphadex Lite',2,
-    'Nam bibendum porta metus. Aliquam viverra pulvinar velit et condimentum. Pellentesque quis purus libero. Fusce hendrerit tortor sed nulla lobortis commodo. Donec ultrices mi et sollicitudin aliquam. Phasellus rhoncus commodo odio quis faucibus. Nullam interdum mi non egestas pellentesque. Duis nec porta leo, eu placerat tellus.',
-    'Nam bibendum porta metus. Aliquam viverra pulvinar velit et condimentum. Pellentesque quis purus libero. Fusce hendrerit tortor sed nulla lobortis commodo. Donec ultrices mi et sollicitudin aliquam. Phasellus rhoncus commodo odio quis faucibus. Nullam interdum mi non egestas pellentesque. Duis nec porta leo, eu placerat tellus.',
-    10.0,35.0,30,1);
-INSERT INTO product (id, code, name, average_rating, summary, description, trade_price, retail_price, delivery_time, available)
-    VALUES (9,'SWA432-E901-00126','Villacore 2000',1,
-    'Aliquam erat volutpat. Ut gravida scelerisque purus a sagittis. Nullam pellentesque arcu sed risus dignissim scelerisque. Maecenas vel elit pretium, ultrices augue ac, interdum libero. Suspendisse potenti. In felis metus, mattis quis lorem congue, condimentum volutpat felis. Nullam mauris mi, bibendum in ultrices sed, blandit congue ipsum.',
-    'Aliquam erat volutpat. Ut gravida scelerisque purus a sagittis. Nullam pellentesque arcu sed risus dignissim scelerisque. Maecenas vel elit pretium, ultrices augue ac, interdum libero. Suspendisse potenti. In felis metus, mattis quis lorem congue, condimentum volutpat felis. Nullam mauris mi, bibendum in ultrices sed, blandit congue ipsum.',
-    25.0,105.0,30,1);
-INSERT INTO product (id, code, name, average_rating, summary, description, trade_price, retail_price, delivery_time, available)
-    VALUES (10,'SWA723-A375-00412','Kanlab Blue',5,
-    'Proin eget nisl non sapien gravida pellentesque. Cras tincidunt tortor posuere, laoreet sapien nec, tincidunt nunc. Integer vehicula, erat ut pretium porta, velit leo dignissim odio, eu ultricies urna nulla a dui. Proin et dapibus turpis, et tincidunt augue. In mattis luctus elit, in vehicula erat pretium sed. Suspendisse ullamcorper mollis dolor eu tristique.',
-    'Proin eget nisl non sapien gravida pellentesque. Cras tincidunt tortor posuere, laoreet sapien nec, tincidunt nunc. Integer vehicula, erat ut pretium porta, velit leo dignissim odio, eu ultricies urna nulla a dui. Proin et dapibus turpis, et tincidunt augue. In mattis luctus elit, in vehicula erat pretium sed. Suspendisse ullamcorper mollis dolor eu tristique.',
-    10.0,45.0,7,1);
-INSERT INTO message (id, user_id, text, read) values (1, 1, 'This is an example message', 0);
-INSERT INTO message (id, user_id, text, read) values (2, 1, 'Test message - please ignore!', 0);
-INSERT INTO message (id, user_id, text, read) values (3, 2, 'Welcome to JWA. This is an example message that you can read', 0);
-INSERT INTO message (id, user_id, text, read) values (4, 2, 'Test message - please ignore!', 0);
-INSERT INTO message (id, user_id, text, read) values (5, 3, 'Welcome to JWA. This is an example message that you can read', 0);
-INSERT INTO message (id, user_id, text, read) values (6, 3, 'Test message - please ignore!', 0);
+INSERT INTO authorities (name, id)
+VALUES ('ROLE_ADMIN', '05970e74-c82b-4e21-b100-f8184d6e3454');
+INSERT INTO authorities (name, id)
+VALUES ('ROLE_USER', '6bdd6188-d659-4390-8d37-8f090d2ed69a');
+INSERT INTO authorities (name, id)
+values ('ROLE_API', 'dfc1d81b-4a7e-4248-80f7-8445ee5cb68e');
+INSERT INTO users (id, username, password, name, email, mobile, date_created, enabled)
+VALUES ('e18c8bcc-935d-444d-a194-3a32a3b35a49', 'admin', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32',
+        'Admin User', 'admin@localhost', '0123456789', CURDATE(), 1);
+INSERT INTO users (id, username, password, name, email, mobile, date_created, enabled)
+VALUES ('32e7db01-86bc-4687-9ecb-d79b265ac14f', 'user1', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32',
+        'User 1', 'user1@localhost', '0123456789', CURDATE(), 1);
+INSERT INTO users (id, username, password, name, email, mobile, date_created, enabled)
+VALUES ('db4cfab1-ff1d-4bca-a662-394771841383', 'user2', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32',
+        'User 2', 'user2@localhost', '0123456789', CURDATE(), 1);
+INSERT INTO users (id, username, password, name, email, mobile, date_created, enabled)
+VALUES ('92a82f45-7a03-42f3-80f8-ce4e9892409d', 'api', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32',
+        'Api User 1', 'api@localhost', '0123456789', CURDATE(), 1);
+INSERT INTO user_authorities (authority_id, user_id)
+VALUES ('05970e74-c82b-4e21-b100-f8184d6e3454', 'e18c8bcc-935d-444d-a194-3a32a3b35a49');
+INSERT INTO user_authorities (authority_id, user_id)
+VALUES ('6bdd6188-d659-4390-8d37-8f090d2ed69a', 'e18c8bcc-935d-444d-a194-3a32a3b35a49');
+INSERT INTO user_authorities (authority_id, user_id)
+VALUES ('dfc1d81b-4a7e-4248-80f7-8445ee5cb68e', 'e18c8bcc-935d-444d-a194-3a32a3b35a49');
+INSERT INTO user_authorities (authority_id, user_id)
+VALUES ('6bdd6188-d659-4390-8d37-8f090d2ed69a', '32e7db01-86bc-4687-9ecb-d79b265ac14f');
+INSERT INTO user_authorities (authority_id, user_id)
+VALUES ('dfc1d81b-4a7e-4248-80f7-8445ee5cb68e', '92a82f45-7a03-42f3-80f8-ce4e9892409d');
+INSERT INTO products (id, code, name, rating, summary, description, image, price, in_stock, time_to_stock, available)
+VALUES ('eec467c8-5de9-4c7c-8541-7b31614d31a0', 'SWA234-A568-00010', 'Solodox 750', 4,
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pharetra enim erat, sed tempor mauris viverra in. Donec ante diam, rhoncus dapibus efficitur ut, sagittis a elit. Integer non ante felis. Curabitur nec lectus ut velit bibendum euismod. Nulla mattis convallis neque ac euismod. Ut vel mattis lorem, nec tempus nibh. Vivamus tincidunt enim a risus placerat viverra. Curabitur diam sapien, posuere dignissim accumsan sed, tempus sit amet diam. Aliquam tincidunt vitae quam non rutrum. Nunc id sollicitudin neque, at posuere metus. Sed interdum ex erat, et ornare purus bibendum id. Suspendisse sagittis est dui. Donec vestibulum elit at arcu feugiat porttitor.',
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pharetra enim erat, sed tempor mauris viverra in. Donec ante diam, rhoncus dapibus efficitur ut, sagittis a elit. Integer non ante felis. Curabitur nec lectus ut velit bibendum euismod. Nulla mattis convallis neque ac euismod. Ut vel mattis lorem, nec tempus nibh. Vivamus tincidunt enim a risus placerat viverra. Curabitur diam sapien, posuere dignissim accumsan sed, tempus sit amet diam. Aliquam tincidunt vitae quam non rutrum. Nunc id sollicitudin neque, at posuere metus. Sed interdum ex erat, et ornare purus bibendum id. Suspendisse sagittis est dui. Donec vestibulum elit at arcu feugiat porttitor.',
+        'generic-product-1.jpg',
+        32.0, 1, 30, 1);
+INSERT INTO products (id, code, name, rating, summary, description, price, in_stock, time_to_stock, available)
+VALUES ('74b87e87-0d77-422c-baaa-622498a84328', 'SWA534-F528-00115', 'Alphadex Plus', 5,
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sit amet quam eget neque vestibulum tincidunt vitae vitae augue. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer rhoncus varius sem non luctus. Etiam tincidunt et leo non tempus. Etiam imperdiet elit arcu, a fermentum arcu commodo vel. Fusce vel consequat erat. Curabitur non lacus velit. Donec dignissim velit et sollicitudin pulvinar.',
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sit amet quam eget neque vestibulum tincidunt vitae vitae augue. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer rhoncus varius sem non luctus. Etiam tincidunt et leo non tempus. Etiam imperdiet elit arcu, a fermentum arcu commodo vel. Fusce vel consequat erat. Curabitur non lacus velit. Donec dignissim velit et sollicitudin pulvinar.',
+        45.0, 1, 30, 1);
+INSERT INTO products (id, code, name, rating, summary, description, image, price, in_stock, time_to_stock, available)
+VALUES ('6bbbeb10-6709-4163-a790-f691b09d6aca', 'SWA179-G243-00101', 'Dontax', 3,
+        'Aenean sit amet pulvinar mauris. Suspendisse eu ligula malesuada, condimentum tortor rutrum, rutrum dui. Sed vehicula augue sit amet placerat bibendum. Maecenas ac odio libero. Donec mi neque, convallis ut nulla quis, malesuada convallis velit. Aenean a augue blandit, viverra massa nec, laoreet quam. In lacinia eros quis lacus dictum pharetra.',
+        'Aenean sit amet pulvinar mauris. Suspendisse eu ligula malesuada, condimentum tortor rutrum, rutrum dui. Sed vehicula augue sit amet placerat bibendum. Maecenas ac odio libero. Donec mi neque, convallis ut nulla quis, malesuada convallis velit. Aenean a augue blandit, viverra massa nec, laoreet quam. In lacinia eros quis lacus dictum pharetra.',
+        'generic-product-2.jpg',
+        25.0, 1, 30, 1);
+INSERT INTO products (id, code, name, rating, summary, description, image, price, in_stock, time_to_stock, available)
+VALUES ('b6a2c319-1d14-424b-9a60-ec3ba97d21e7', 'SWA201-D342-00132', 'Tranix Life', 5,
+        'Curabitur imperdiet lacus nec lacus feugiat varius. Integer hendrerit erat orci, eget varius urna varius ac. Nulla fringilla, felis eget cursus imperdiet, odio eros tincidunt est, non blandit enim ante nec magna. Suspendisse in justo maximus nisi molestie bibendum. Fusce consequat accumsan nulla, vel pharetra nulla consequat sit amet.',
+        'Curabitur imperdiet lacus nec lacus feugiat varius. Integer hendrerit erat orci, eget varius urna varius ac. Nulla fringilla, felis eget cursus imperdiet, odio eros tincidunt est, non blandit enim ante nec magna. Suspendisse in justo maximus nisi molestie bibendum. Fusce consequat accumsan nulla, vel pharetra nulla consequat sit amet.',
+        'generic-product-3.jpg',
+        12.0, 1, 14, 1);
+INSERT INTO products (id, code, name, rating, summary, description, price, in_stock, time_to_stock, available)
+VALUES ('96018e5d-f34b-4e92-955c-d077809344ab', 'SWA312-F432-00134', 'Salex Two', 5,
+        'In porta viverra condimentum. Morbi nibh magna, suscipit sit amet urna sed, euismod consectetur eros. Donec egestas, elit ut commodo fringilla, sem quam suscipit lectus, id tempus enim sem quis risus. Curabitur eleifend bibendum magna, vel iaculis elit varius et. Sed mollis dolor quis metus lacinia posuere. Phasellus odio mi, tempus quis dui et, consectetur iaculis odio. Quisque fringilla viverra eleifend. Cras dignissim euismod tortor, eget congue turpis fringilla sit amet. Aenean sed semper dolor, sed ultrices felis.',
+        'In porta viverra condimentum. Morbi nibh magna, suscipit sit amet urna sed, euismod consectetur eros. Donec egestas, elit ut commodo fringilla, sem quam suscipit lectus, id tempus enim sem quis risus. Curabitur eleifend bibendum magna, vel iaculis elit varius et. Sed mollis dolor quis metus lacinia posuere. Phasellus odio mi, tempus quis dui et, consectetur iaculis odio. Quisque fringilla viverra eleifend. Cras dignissim euismod tortor, eget congue turpis fringilla sit amet. Aenean sed semper dolor, sed ultrices felis.',
+        42.0, 0, 14, 1);
+INSERT INTO products (id, code, name, rating, summary, description, image, price, in_stock, time_to_stock, available)
+VALUES ('b85c1e4b-3ab8-4d15-b884-24db5e246058', 'SWA654-F106-00412', 'Betala Lite', 5,
+        'Sed bibendum metus vitae suscipit mattis. Mauris turpis purus, sodales a egestas vel, tincidunt ac ipsum. Donec in sapien et quam varius dignissim. Phasellus eros sem, facilisis quis vehicula sed, ornare eget odio. Nam tincidunt urna mauris, id tincidunt risus posuere ac. Integer vel est vel enim convallis blandit sed sed urna. Nam dapibus erat nunc, id euismod diam pulvinar id. Fusce a felis justo.',
+        'Sed bibendum metus vitae suscipit mattis. Mauris turpis purus, sodales a egestas vel, tincidunt ac ipsum. Donec in sapien et quam varius dignissim. Phasellus eros sem, facilisis quis vehicula sed, ornare eget odio. Nam tincidunt urna mauris, id tincidunt risus posuere ac. Integer vel est vel enim convallis blandit sed sed urna. Nam dapibus erat nunc, id euismod diam pulvinar id. Fusce a felis justo.',
+        'generic-product-4.jpg',
+        30.0, 1, 30, 1);
+INSERT INTO products (id, code, name, rating, summary, description, price, in_stock, time_to_stock, available)
+VALUES ('6709d692-4b37-459b-ba40-3bcc3186ca09', 'SWA254-A971-00213', 'Stimlab Mitre', 5,
+        'Phasellus malesuada pulvinar justo, ac eleifend magna lacinia eget. Proin vulputate nec odio at volutpat. Duis non suscipit arcu. Nam et arcu vehicula, sollicitudin eros non, scelerisque diam. Phasellus sagittis pretium tristique. Vestibulum sit amet lectus nisl. Aliquam aliquet dolor sit amet neque placerat, vel varius metus molestie. Fusce sed ipsum blandit, efficitur est vitae, scelerisque enim. Integer porttitor est et dictum blandit. Quisque gravida tempus orci nec finibus.',
+        'Phasellus malesuada pulvinar justo, ac eleifend magna lacinia eget. Proin vulputate nec odio at volutpat. Duis non suscipit arcu. Nam et arcu vehicula, sollicitudin eros non, scelerisque diam. Phasellus sagittis pretium tristique. Vestibulum sit amet lectus nisl. Aliquam aliquet dolor sit amet neque placerat, vel varius metus molestie. Fusce sed ipsum blandit, efficitur est vitae, scelerisque enim. Integer porttitor est et dictum blandit. Quisque gravida tempus orci nec finibus.',
+        20.0, 0, 7, 1);
+INSERT INTO products (id, code, name, rating, summary, description, price, in_stock, time_to_stock, available)
+VALUES ('ba802760-b33e-4352-acfa-0a10859b519a', 'SWA754-B418-00315', 'Alphadex Lite', 2,
+        'Nam bibendum porta metus. Aliquam viverra pulvinar velit et condimentum. Pellentesque quis purus libero. Fusce hendrerit tortor sed nulla lobortis commodo. Donec ultrices mi et sollicitudin aliquam. Phasellus rhoncus commodo odio quis faucibus. Nullam interdum mi non egestas pellentesque. Duis nec porta leo, eu placerat tellus.',
+        'Nam bibendum porta metus. Aliquam viverra pulvinar velit et condimentum. Pellentesque quis purus libero. Fusce hendrerit tortor sed nulla lobortis commodo. Donec ultrices mi et sollicitudin aliquam. Phasellus rhoncus commodo odio quis faucibus. Nullam interdum mi non egestas pellentesque. Duis nec porta leo, eu placerat tellus.',
+        10.0, 1, 30, 1);
+INSERT INTO products (id, code, name, rating, summary, description, price, in_stock, time_to_stock, available)
+VALUES ('339311c3-8325-464a-8ca6-4b78716f00d0', 'SWA432-E901-00126', 'Villacore 2000', 1,
+        'Aliquam erat volutpat. Ut gravida scelerisque purus a sagittis. Nullam pellentesque arcu sed risus dignissim scelerisque. Maecenas vel elit pretium, ultrices augue ac, interdum libero. Suspendisse potenti. In felis metus, mattis quis lorem congue, condimentum volutpat felis. Nullam mauris mi, bibendum in ultrices sed, blandit congue ipsum.',
+        'Aliquam erat volutpat. Ut gravida scelerisque purus a sagittis. Nullam pellentesque arcu sed risus dignissim scelerisque. Maecenas vel elit pretium, ultrices augue ac, interdum libero. Suspendisse potenti. In felis metus, mattis quis lorem congue, condimentum volutpat felis. Nullam mauris mi, bibendum in ultrices sed, blandit congue ipsum.',
+        25.0, 1, 30, 1);
+INSERT INTO products (id, code, name, rating, summary, description, price, in_stock, time_to_stock, available)
+VALUES ('0bf8ccfc-89e8-4662-b940-ca7d267dcb99', 'SWA723-A375-00412', 'Kanlab Blue', 5,
+        'Proin eget nisl non sapien gravida pellentesque. Cras tincidunt tortor posuere, laoreet sapien nec, tincidunt nunc. Integer vehicula, erat ut pretium porta, velit leo dignissim odio, eu ultricies urna nulla a dui. Proin et dapibus turpis, et tincidunt augue. In mattis luctus elit, in vehicula erat pretium sed. Suspendisse ullamcorper mollis dolor eu tristique.',
+        'Proin eget nisl non sapien gravida pellentesque. Cras tincidunt tortor posuere, laoreet sapien nec, tincidunt nunc. Integer vehicula, erat ut pretium porta, velit leo dignissim odio, eu ultricies urna nulla a dui. Proin et dapibus turpis, et tincidunt augue. In mattis luctus elit, in vehicula erat pretium sed. Suspendisse ullamcorper mollis dolor eu tristique.',
+        10.0, 0, 7, 1);
+INSERT INTO messages (id, user_id, text, read)
+values ('0fddab02-5ea0-4fb0-ae7d-c0b83679b9d4', 'e18c8bcc-935d-444d-a194-3a32a3b35a49', 'This is an example message',
+        0);
+INSERT INTO messages (id, user_id, text, read)
+values ('2b87dbbe-4337-4f2a-b378-00277a49b82d', 'e18c8bcc-935d-444d-a194-3a32a3b35a49', 'Test message - please ignore!',
+        0);
+INSERT INTO messages (id, user_id, text, read)
+values ('6914e47d-2f0a-4deb-a712-12e7801e13e8', '32e7db01-86bc-4687-9ecb-d79b265ac14f',
+        'Welcome to JWA. This is an example message that you can read', 0);
+INSERT INTO messages (id, user_id, text, read)
+values ('755c10aa-fe8c-490b-82fa-8f418e39f596', '32e7db01-86bc-4687-9ecb-d79b265ac14f', 'Test message - please ignore!',
+        0);
+INSERT INTO messages (id, user_id, text, read)
+values ('ec52da53-7809-4333-bfe5-84233f93be82', '92a82f45-7a03-42f3-80f8-ce4e9892409d',
+        'Welcome to JWA. This is an example message that you can read', 0);
+INSERT INTO messages (id, user_id, text, read)
+values ('6aa03b01-4288-4e6e-bff6-dfe0f462cf68', '92a82f45-7a03-42f3-80f8-ce4e9892409d', 'Test message - please ignore!',
+        0);
+
+INSERT INTO orders (id, user_id, order_date, order_num, amount, shipped)
+VALUES ('c9b31f33-17a4-4fcd-927e-c14cdee32201', '32e7db01-86bc-4687-9ecb-d79b265ac14f', CURDATE()-5, 'OID-P400-0001', 100.0, 0);
+INSERT INTO orders (id, user_id, order_date, order_num, amount, shipped)
+VALUES ('c94cbf6d-9baa-4a02-8eea-b13ceb43474d', '32e7db01-86bc-4687-9ecb-d79b265ac14f', CURDATE()-10, 'OID-P400-0001', 43.0, 0);
+INSERT INTO orders (id, user_id, order_date, order_num, amount, shipped, shipped_date)
+VALUES ('81550b4f-c660-41ec-a6f3-076b611add9b', '32e7db01-86bc-4687-9ecb-d79b265ac14f', CURDATE()-20, 'OID-P401-0009', 40.0, 1, CURDATE());
+INSERT INTO orders (id, user_id, order_date, order_num, amount, shipped)
+VALUES ('db4cfab1-ff1d-4bca-a662-394771841383', 'db4cfab1-ff1d-4bca-a662-394771841383', CURDATE()-10, 'OID-G320-0051', 20.0, 0);

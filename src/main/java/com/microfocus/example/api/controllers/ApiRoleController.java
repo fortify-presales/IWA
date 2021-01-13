@@ -81,7 +81,7 @@ public class ApiRoleController {
         }
     }
 
-    @Operation(summary = "Find role by Id", description = "Find a specific role by its database Id", tags = {"roles"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @Operation(summary = "Find role Id", description = "Find a specific role by its UUID", tags = {"roles"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = Authority.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -92,10 +92,10 @@ public class ApiRoleController {
     })
     @GetMapping(value = {"/{id}"}, produces =  {"application/json"})
     public ResponseEntity<Authority> findRoleById(
-            @Parameter(description = "Id of the role to be found. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
-        log.debug("API::Retrieving role id: " + id);
+            @Parameter(description = "UUID of the role to be found. Cannot be empty.", example = "6bdd6188-d659-4390-8d37-8f090d2ed69a", required = true) @PathVariable("id") Integer id) {
+        log.debug("API::Retrieving role with UUID: " + id);
         if (!roleService.roleExistsById(id))
-            throw new RoleNotFoundException("Role with id: " + id.toString() + " does not exist.");
+            throw new RoleNotFoundException("Role with UUID: " + id.toString() + " does not exist.");
         Optional<Authority> role = roleService.findRoleById(id);
         return new ResponseEntity<>(role.orElse(null), HttpStatus.OK);
     }
@@ -113,7 +113,7 @@ public class ApiRoleController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Authority> createRole(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody Authority newRole) {
-        newRole.setId(0); // set to 0 for sequence id generation
+        //newRole.setId(0); // set to 0 for sequence id generation
         log.debug("API::Creating new role: " + newRole.toString());
         return new ResponseEntity<>(roleService.saveRole(newRole), HttpStatus.OK);
     }
@@ -130,12 +130,12 @@ public class ApiRoleController {
     @PutMapping(value = {"/{id}"}, produces = {"application/json"}, consumes = {"application/json"})
     public ResponseEntity<Authority> updateRole(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody Authority newRole,
-            @Parameter(description = "Id of the role to be updated. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
-        log.debug("API::Updating role id: " + id);
+            @Parameter(description = "UUID of the role to be updated. Cannot be empty.", example = "6bdd6188-d659-4390-8d37-8f090d2ed69a", required = true) @PathVariable("id") Integer id) {
+        log.debug("API::Updating role with UUID: " + id);
         return new ResponseEntity<>(roleService.saveRole(newRole), HttpStatus.OK);
     }
 
-    @Operation(summary = "Delete a role", description = "Delete an existing role", tags = {"roles"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @Operation(summary = "Delete a role", description = "Delete a role", tags = {"roles"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -145,8 +145,8 @@ public class ApiRoleController {
     })
     @DeleteMapping (value = {"/{id}"})
     public ResponseEntity<ApiStatusResponse> deleteRole(
-            @Parameter(description = "Id of the role to be updated. Cannot be empty.", example = "1", required = true) @PathVariable("id") Integer id) {
-        log.debug("API@::Deleting role id: " + id);
+            @Parameter(description = "UUID of the role to be updated. Cannot be empty.", example = "6bdd6188-d659-4390-8d37-8f090d2ed69a", required = true) @PathVariable("id") Integer id) {
+        log.debug("API@::Deleting role with UUID: " + id);
         roleService.deleteRoleById(id);
         ApiStatusResponse apiStatusResponse = new ApiStatusResponse
                 .ApiResponseBuilder()
