@@ -18,9 +18,7 @@
                     </ol>
                 </nav>
 
-                <div th:replace="fragments/admin-menu.html
-                        :: adminMenu('/admin/backup', ${messageCount})">
-                </div>
+                <div th:replace="fragments/admin-menu.html :: adminMenu('/admin/backup')"></div>
 
                 <div class="col-md-10">
                     <form action="#" th:action="@{/admin/runDbBackup}" th:object="${backupForm}" method="post">

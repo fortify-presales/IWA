@@ -21,8 +21,10 @@ package com.microfocus.example.config.handlers;
 
 import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.User;
+import com.microfocus.example.utils.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -42,6 +44,9 @@ import java.util.Collection;
  */
 public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
+    @Autowired
+    private JwtUtils jwtUtils;
+
     private static final Logger log = LoggerFactory.getLogger(UrlAuthenticationSuccessHandler.class);
 
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
@@ -51,12 +56,17 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
                                         HttpServletResponse response, Authentication authentication)
             throws IOException {
 
-        HttpSession session = request.getSession();
+        log.debug("UrlAuthenticationSuccessHandler:onAuthenticationSuccess");
+        HttpSession session = request.getSession(false);
 
         CustomUserDetails iwaUser = (CustomUserDetails) authentication.getPrincipal();
         User user = iwaUser.getUserDetails();
+        String jwtToken = jwtUtils.generateJwtToken(authentication);
+        log.debug("Generated jwtToken: " + jwtToken);
+        session.setAttribute("userId", user.getId());
         session.setAttribute("username", user.getUsername());
         session.setAttribute("authorities", authentication.getAuthorities());
+        session.setAttribute("jwtToken", jwtToken);
 
         handle(request, response, authentication);
         clearAuthenticationAttributes(request);

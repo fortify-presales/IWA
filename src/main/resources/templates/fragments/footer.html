@@ -68,6 +68,18 @@
 
             <script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
             <script type="text/javascript" th:src="@{/webjars/bootstrap/3.4.1/js/bootstrap.min.js}"></script>
+            <script type="text/javascript" th:src="@{/webjars/vue/2.6.12/vue.min.js}"></script>
+            <script type="text/javascript" th:src="@{/webjars/axios/0.21.1/dist/axios.min.js}"></script>
+            <script type="text/javascript" th:src="@{/js/lib/httpVueLoader.js}"></script>
+
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                var userId = /*[[${session.userId}]]*/ 'User Id';
+                var jwtToken = /*[[${session.jwtToken}]]*/ 'JWT Token';
+                /*]]>*/
+            </script>
+
+            <script type="text/javascript" th:src="@{/js/app.js}"></script>
 
         </th:block>
     </body>

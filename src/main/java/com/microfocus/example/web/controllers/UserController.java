@@ -144,17 +144,20 @@ public class UserController {
         return "user/messages/index";
     }
 
+    /*
     @GetMapping("/unread-message-count")
     @ResponseBody
     public String getUserMessageCount(Model model, Principal principal) {
+        UUID loggedInUserId;
         if (principal != null) {
             CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-            long userMessageCount = userService.getUserUnreadMessageCount(loggedInUser.getId());
+            loggedInUserId = loggedInUser.getId();
+            long userMessageCount = userService.getUserUnreadMessageCount(loggedInUserId);
             return Long.toString(userMessageCount);
         } else {
             return "0";
         }
-    }
+    }*/
 
     @GetMapping("/messages/{id}")
     public String viewMessage(@PathVariable("id") UUID messageId,

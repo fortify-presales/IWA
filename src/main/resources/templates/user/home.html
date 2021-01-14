@@ -18,12 +18,11 @@
                     </ol>
                 </nav>
 
-                <div th:replace="fragments/user-menu.html
-                        :: userMenu('/user/profile', ${unreadMessageCount})">
-                </div>
+                <div th:replace="fragments/user-menu.html :: userMenu('/user/profile')"></div>
 
                 <div class="col-md-10">
                     <div class="col-md-10">
+
                         <form class="form-horizontal">
                             <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
                                 <span th:text="${message}">message</span>

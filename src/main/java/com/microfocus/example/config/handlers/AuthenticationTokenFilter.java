@@ -46,7 +46,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationTokenFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(AuthenticationTokenFilter.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -74,6 +74,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
         String headerAuth = request.getHeader("Authorization");
 
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            log.debug("Found jwtToken in header: " + headerAuth.substring(7, headerAuth.length()));
             return headerAuth.substring(7, headerAuth.length());
         }
 

@@ -107,6 +107,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .authorizeRequests()
                         .antMatchers(HttpMethod.POST, "/api/v3/authentication/**").permitAll()
                         .antMatchers(HttpMethod.GET,"/api/v3/site/status").permitAll()
+                        .antMatchers(HttpMethod.GET, "/api/v3/users/unread-message-count").permitAll()
                         .antMatchers(HttpMethod.GET,"/api/v3/products").permitAll()
                         .antMatchers(HttpMethod.GET,"/api/v3/products/**").permitAll()
                         .antMatchers(HttpMethod.GET, "/api/**").authenticated()
@@ -158,9 +159,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                             "/swagger-ui.html",
                             "/v3/api-docs/**",
                             "/console/*",
-                            "/site-message",
-                            "/user/message-count",
-                            "/user/unread-message-count",
                             "/favicon.ico",
                             "/js/**/*",
                             "/css/**/*",

@@ -19,9 +19,7 @@
             </ol>
         </nav>
 
-        <div th:replace="fragments/admin-menu.html
-                :: adminMenu('/admin/users', ${messageCount})">
-        </div>
+        <div th:replace="fragments/admin-menu.html :: adminMenu('/admin/users')"></div>
 
         <div class="col-md-10">
             <div class="col-md-10">

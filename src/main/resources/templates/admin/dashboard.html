@@ -18,9 +18,7 @@
                         </ol>
                     </nav>
 
-                    <div th:replace="fragments/admin-menu.html
-                        :: adminMenu('/admin/dashboard', ${messageCount})">
-                    </div>
+                    <div th:replace="fragments/admin-menu.html :: adminMenu('/admin/dashboard')"></div>
 
                     <div class="col-md-10">
                         <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">

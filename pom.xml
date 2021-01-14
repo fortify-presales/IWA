@@ -36,6 +36,8 @@
         <jquery.version>3.4.1</jquery.version>
         <font-awesome.version>5.12.0</font-awesome.version>
         <chartjs.version>2.9.3</chartjs.version>
+        <vue.version>2.6.12</vue.version>
+        <axios.version>0.21.1</axios.version>
         <springdoc-openapi.version>1.4.3</springdoc-openapi.version>
         <jwt.version>0.9.1</jwt.version>
         <wlp.dir>C:/Tools/wlp</wlp.dir>
@@ -123,6 +125,16 @@
             <groupId>org.webjars</groupId>
             <artifactId>chartjs</artifactId>
             <version>${chartjs.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>vue</artifactId>
+            <version>${vue.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>axios</artifactId>
+            <version>${axios.version}</version>
         </dependency>
 
         <dependency>

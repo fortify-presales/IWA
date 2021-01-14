@@ -18,9 +18,7 @@
                         </ol>
                     </nav>
 
-                    <div th:replace="fragments/user-menu.html
-                        :: userMenu('/user/orders', ${unreadMessageCount})">
-                    </div>
+                    <div th:replace="fragments/user-menu.html :: userMenu('/user/orders')"></div>
 
                     <div class="col-md-10">
                         <table class="table">

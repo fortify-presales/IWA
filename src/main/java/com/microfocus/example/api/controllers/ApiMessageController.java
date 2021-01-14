@@ -165,6 +165,25 @@ public class ApiMessageController {
         return new ResponseEntity<>(apiStatusResponse, HttpStatus.OK);
     }
 
+    @Operation(summary = "Get users unread message count", description = "Get a users unread message count by their UUID", tags = {"message"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "404", description = "User Not Found", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+    })
+    @GetMapping(value = {"/unread-count/{id}"}, produces =  {"application/json"})
+    public ResponseEntity<Long> getUnreadMessageCountById(
+            @Parameter(description = "UUID of the user to find messages for. Cannot be empty.", example = "32e7db01-86bc-4687-9ecb-d79b265ac14f", required = true) @PathVariable("id") UUID id) {
+        log.debug("API::Retrieving unread message count for user with UUID: " + id);
+        if (!userService.userExistsById(id))
+            throw new MessageNotFoundException("User with id: " + id.toString() + " does not exist.");
+        return new ResponseEntity<Long>(userService.getUserUnreadMessageCount(id), HttpStatus.OK);
+
+    }
+
 }
 
 

@@ -12,15 +12,16 @@
         <link rel="shortcut icon" type="image/ico" th:href="@{/img/favicons/favicon.ico}"/>
 
         <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">IWA Pharmacy Direct</title>
-
     </head>
     <body class="sky-background">
-        <th:block th:replace="fragments/header :: header"/>
-        <div class="container">
-            <div class="background">
-                <th:block layout:fragment="content"/>
+        <div id="app">
+            <th:block th:replace="fragments/header :: header"/>
+            <div class="container">
+                <div class="background">
+                    <th:block layout:fragment="content"/>
+                </div>
             </div>
+            <th:block th:replace="fragments/footer :: footer"/>
         </div>
-        <th:block th:replace="fragments/footer :: footer"/>
     </body>
 </html>
