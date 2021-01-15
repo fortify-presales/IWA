@@ -9,60 +9,69 @@
 <body>
     <div layout:fragment="content" th:remove="tag">
 
-        <div class="background">
-            <div class="row no-margin">
-
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item" aria-current="page"><a th:href="@{/products/}">Products</a></li>
-                        <li class="breadcrumb-item" aria-current="page"><span th:text="${product.name}"> </span></li>
-                    </ol>
-                </nav>
-
-            </div>
-
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="media">
-                        <div class="media-left media-middle col-md-2" style="padding-top: 25px">
-                            <span th:if="${product.image} != null and ${product.image} != ''">
-                                <img th:src="@{'/img/products/' + ${product.image}}" alt="Image" width="100" height="100" class="img-thumbnail">
-                            </span>
-                            <span th:if="${product.image} == null or ${product.image == ''}">
-                                <img th:src="@{/img/awaiting-image.png}" alt="Awaiting Image" width="100" height="100" class="img-thumbnail">
-                            </span>
-                        </div>
-                        <div class="col-md-10">
-                            <div class="media-body">
-                                <h4 class="mt-0 mb-2 font-weight-bold"><span th:text="${product.name}"> </span></h4>
-                                <span th:each="i : ${#numbers.sequence( 1, product.rating, 1)}">
-                                        <i class="fas fa-star" style="color: cornflowerblue"> </i>
-                                </span>
-                                <span th:if="${product.rating != 5}">
-                                        <span th:each="i : ${#numbers.sequence(product.rating, 4, 1)}">
-                                            <i class="fas fa-star" style="color: gray"> </i>
-                                        </span>
-                                </span>
-                                <h5><span th:text="${product.code}"> Code </span></h5>
-                                <h5>
-                                    <span th:text="${#strings.replace(#numbers.formatCurrency(product.price), '.00', '')}"> Price </span>
-                                </h5>
-                                <p><span th:text="${product.summary}"> Summary </span></p>
-                                <p><span th:text="${product.description}"> Description </span></p>
-                                <h4>
-                                    <span th:if="${product.inStock}" class="label label-success">In Stock</span>
-                                    <span th:unless="${product.inStock}" class="label label-danger">Out of Stock</span>
-                                    <span th:unless="${product.inStock}" th:text="|In stock in ${product.timeToStock} days|" class="label label-default"> </span>
-                                </h4>
-                            </div>
-                        </div>
-                    </div>
+        <div class="bg-light py-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 mb-0"><a th:href="@{/products/}">Shop</a> <span class="mx-2 mb-0">/</span> <strong th:text="${product.name}" class="text-black"> Product Name </strong></div>
                 </div>
             </div>
-
-            <div class="row">
-            </div>
         </div>
+
+        <div class="site-section">
+
+            <div class="container">
+
+                <div class="row">
+
+                    <div class="col-md-12">
+
+                        <div class="media">
+                            <div class="media-left media-middle col-md-2" style="padding-top: 25px">
+                                <span th:if="${product.image} != null and ${product.image} != ''">
+                                    <img th:src="@{'/img/products/' + ${product.image}}" alt="Image" width="100" height="100" class="img-thumbnail">
+                                </span>
+                                <span th:if="${product.image} == null or ${product.image == ''}">
+                                    <img th:src="@{/img/awaiting-image.png}" alt="Awaiting Image" width="100" height="100" class="img-thumbnail">
+                                </span>
+                            </div>
+
+                            <div class="col-md-10">
+                                <div class="media-body">
+                                    <h4 class="mt-0 mb-2 font-weight-bold"><span th:text="${product.name}"> </span></h4>
+                                    <span th:each="i : ${#numbers.sequence( 1, product.rating, 1)}">
+                                            <i class="fas fa-star" style="color: cornflowerblue"> </i>
+                                    </span>
+                                    <span th:if="${product.rating != 5}">
+                                            <span th:each="i : ${#numbers.sequence(product.rating, 4, 1)}">
+                                                <i class="fas fa-star" style="color: gray"> </i>
+                                            </span>
+                                    </span>
+                                    <h5><span th:text="${product.code}"> Code </span></h5>
+                                    <h5>
+                                        <span th:text="${#strings.replace(#numbers.formatCurrency(product.price), '.00', '')}"> Price </span>
+                                    </h5>
+                                    <p><span th:text="${product.summary}"> Summary </span></p>
+                                    <p><span th:text="${product.description}"> Description </span></p>
+                                    <h4>
+                                        <span th:if="${product.inStock}" class="label label-success">In Stock</span>
+                                        <span th:unless="${product.inStock}" class="label label-danger">Out of Stock</span>
+                                        <span th:unless="${product.inStock}" th:text="|In stock in ${product.timeToStock} days|" class="label label-default"> </span>
+                                    </h4>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div th:replace="fragments/secondary-bg.html :: secondaryBackground ('/index.html')"></div>
+
     </div>
 </body>
 </html>

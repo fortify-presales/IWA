@@ -3,6 +3,81 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <body>
         <th:block th:fragment="header">
+            <div class="site-navbar py-2">
+
+                <div class="search-wrap">
+                    <div class="container">
+                        <a href="#" class="search-close js-search-close"><span class="icon-close2"></span></a>
+                        <form action="#" method="post">
+                            <input type="text" class="form-control" placeholder="Search keyword and hit enter...">
+                        </form>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="logo">
+                            <div class="site-logo">
+                                <a class="navbar-brand" th:href="@{/}">
+                                    <img th:src="@{/img/logo.png}" alt="IWA Pharmacy Direct"/>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="main-nav d-none d-lg-block">
+                            <nav class="site-navigation text-right text-md-center" role="navigation">
+                                <ul class="site-menu js-clone-nav d-none d-lg-block">
+                                    <li>
+                                        <a th:href="@{/}">Home</a>
+                                    </li>
+                                    <li class="has-children">
+                                        <a th:href="@{/products}">Shop</a>
+                                        <ul class="dropdown">
+                                            <li><a href="#">Supplements</a></li>
+                                            <li class="has-children">
+                                                <a href="#">Vitamins</a>
+                                                <ul class="dropdown">
+                                                    <li><a href="#">Supplements</a></li>
+                                                    <li><a href="#">Vitamins</a></li>
+                                                    <li><a href="#">Diet &amp; Nutrition</a></li>
+                                                    <li><a href="#">Tea &amp; Coffee</a></li>
+                                                </ul>
+                                            </li>
+                                            <li><a href="#">Diet &amp; Nutrition</a></li>
+                                            <li><a href="#">Tea &amp; Coffee</a></li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a th:href="@{/prescriptions}">Prescriptions</a>
+                                    </li>
+                                    <li>
+                                        <a th:href="@{/services}">Services</a>
+                                    </li>
+                                    <li>
+                                        <a th:href="@{/advice}">Health & Advice</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                        <div class="icons">
+                            <a href="#" class="icons-btn btn-white d-inline-block js-search-open">
+                                <span class="icon-search"></span>
+                            </a>
+                            <a th:href="@{/user/}" class="icons-btn btn-white d-inline-block bag">
+                                <span class="icon-user"></span>
+                            </a>
+                            <a th:href="@{/user/cart}" class="icons-btn btn-white d-inline-block bag">
+                                <span class="icon-shopping-bag"></span>
+                                <span class="number">0</span>
+                            </a>
+
+                            <a href="#" class="site-menu-toggle js-menu-toggle ml-3 d-inline-block d-lg-none"><span
+                                class="icon-menu"></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--
             <nav class="iwa-navbar navbar-inverse navbar-static-top">
                 <div class="container">
                     <div class="navbar-header">
@@ -29,11 +104,11 @@
                             <li sec:authorize="isAnonymous()">
                                 <a class="nav-link" th:href="@{/login}"><i class="fas fa-sign-in-alt fa-fw"></i> Login </a>
                             </li>
-                            <!--
+                            --
                             <li class="nav-item text-nowrap" sec:authorize="isAnonymous()">
                                 <a class="nav-link" th:href="@{/register}"><i class="fas fa-door-open"></i> Register</a>
                             </li>
-                            -->
+                            --
                             <li sec:authorize="isAuthenticated()" class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                     <i class="fas fa-user-circle fa-fw"></i>
@@ -55,6 +130,7 @@
                     </div>
                 </div>
             </nav>
+            -->
         </th:block>
     </body>
 </html>

@@ -4,24 +4,30 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{fragments/layout}">
 <head>
-    <title>User Page</title>
+    <title>User Profile</title>
 </head>
 <body>
     <div layout:fragment="content" th:remove="tag">
-        <div class="background">
-            <div class="row no-margin">
 
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a th:href="@{/user/}">User</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Profile</li>
-                    </ol>
-                </nav>
+        <div class="bg-light py-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 mb-0"><a th:href="@{/user/}">User</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Profile</strong></div>
+                </div>
+            </div>
+        </div>
 
-                <div th:replace="fragments/user-menu.html :: userMenu('/user/profile')"></div>
+        <div class="site-section">
 
-                <div class="col-md-10">
-                    <div class="col-md-10">
+            <div class="container">
+
+                <div class="row">
+
+                    <div class="col-md-3 mr-auto">
+                        <div th:replace="fragments/user-menu.html :: userMenu('/user/profile')"></div>
+                    </div>
+
+                    <div class="col-md-9">
 
                         <form class="form-horizontal">
                             <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
@@ -62,7 +68,9 @@
                                 </div>
                             </div>
                         </form>
+
                     </div>
+
                 </div>
 
             </div>

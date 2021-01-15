@@ -4,23 +4,26 @@
     <head>
         <meta charset="utf-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.4.1/css/bootstrap.min.css}"/>
-        <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}"/>
-        <link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.12.0/css/all.css} "/>
+        <link href="https://fonts.googleapis.com/css?family=Rubik:400,700|Crimson+Text:400,400i" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" th:href="@{/fonts/icomoon/style.css}"/>
+
+        <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.5.3/css/bootstrap.min.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.15.2/css/all.css} "/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/owl.carousel.min.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css//owl.theme.default.min.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/aos.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
+
         <link rel="shortcut icon" type="image/ico" th:href="@{/img/favicons/favicon.ico}"/>
 
         <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">IWA Pharmacy Direct</title>
     </head>
-    <body class="sky-background">
-        <div id="app">
+    <body>
+        <div id="app" class="site-wrap">
             <th:block th:replace="fragments/header :: header"/>
-            <div class="container">
-                <div class="background">
-                    <th:block layout:fragment="content"/>
-                </div>
-            </div>
+            <th:block layout:fragment="content"/>
             <th:block th:replace="fragments/footer :: footer"/>
         </div>
     </body>

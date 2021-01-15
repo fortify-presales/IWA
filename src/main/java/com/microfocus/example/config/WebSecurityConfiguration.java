@@ -162,6 +162,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                             "/favicon.ico",
                             "/js/**/*",
                             "/css/**/*",
+                            "/fonts/**/*",
                             "/img/**/*",
                             "/webjars/**/*").permitAll()
                     // Only admin can access /admin portal

@@ -7,22 +7,25 @@
     </head>
     <body>
         <div layout:fragment="content" th:remove="tag">
-            <div class="background">
-                <div class="row no-margin">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item active">Product Not Found</li>
-                        </ol>
-                    </nav>
-                </div>
+            <div class="site-section-sm">
+                <div class="container">
 
-                <div class="row no-margin">
-                    <div class="col-md-12">
-                        <p th:if="${message != null}" th:utext="${message}" style="color: red;"></p>
-                        <p><a href="/" class="btn btn-info" th:href="@{/}">Back to home page</a></p>
+                    <div class="row no-margin">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item active">Product Not Found</li>
+                            </ol>
+                        </nav>
                     </div>
-                </div>
 
+                    <div class="row no-margin">
+                        <div class="col-md-12">
+                            <p th:if="${message != null}" th:utext="${message}" style="color: red;"></p>
+                            <p><a href="/" class="btn btn-info" th:href="@{/}">Back to home page</a></p>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
     </body>

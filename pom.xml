@@ -32,9 +32,9 @@
 		<fod.dir>fod</fod.dir>
         <h2.version>1.4.197</h2.version>
         <passay.version>1.5.0</passay.version>
-        <bootstrap.version>3.4.1</bootstrap.version>
-        <jquery.version>3.4.1</jquery.version>
-        <font-awesome.version>5.12.0</font-awesome.version>
+        <bootstrap.version>4.5.3</bootstrap.version>
+        <jquery.version>3.5.1</jquery.version>
+        <font-awesome.version>5.15.2</font-awesome.version>
         <chartjs.version>2.9.3</chartjs.version>
         <vue.version>2.6.12</vue.version>
         <axios.version>0.21.1</axios.version>
