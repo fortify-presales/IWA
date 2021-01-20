@@ -7,21 +7,21 @@
     </head>
     <body>
         <div layout:fragment="content" th:remove="tag">
-            <div class="background">
-                <div class="row no-margin">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item active">Internal Error</li>
-                        </ol>
-                    </nav>
-                </div>
 
-                <div class="row no-margin">
-                    <div class="col-md-12">
-                        <p th:if="${message != null}" th:utext="${message}" style="color: red;"></p>
-                        <p><a href="/" class="btn btn-info" th:href="@{/}">Back to home page</a></p>
+            <div class="site-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <span class="display-3 text-danger">
+                                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                            </span>
+                            <h2 class="display-3 text-black">Internal Error</h2>
+                            <p class="lead mb-5">We're sorry there has been an internal error!</p>
+                            <p><a th:href="@{/products}" class="btn btn-md height-auto px-4 py-3 btn-primary">Back to Shop</a></p>
+                        </div>
                     </div>
                 </div>
+            </div>
 
             </div>
         </div>

@@ -117,6 +117,8 @@ public class ProductService {
         ptmp.setDescription(product.getDescription());
         ptmp.setImage(product.getImage());
         ptmp.setPrice(product.getPrice());
+        ptmp.setOnSale(product.getOnSale());
+        ptmp.setSalePrice(product.getSalePrice());
         ptmp.setInStock(product.getInStock());
         ptmp.setTimeToStock(product.getTimeToStock());
         ptmp.setRating(product.getRating());
@@ -133,6 +135,8 @@ public class ProductService {
             ptmp.setDescription(adminProductForm.getDescription());
             ptmp.setImage(adminProductForm.getImage());
             ptmp.setPrice(adminProductForm.getPrice());
+            ptmp.setOnSale(adminProductForm.getOnSale());
+            ptmp.setSalePrice(adminProductForm.getSalePrice());
             ptmp.setInStock(adminProductForm.getInStock());
             ptmp.setTimeToStock(adminProductForm.getTimeToStock());
             ptmp.setRating(adminProductForm.getRating());
@@ -150,6 +154,8 @@ public class ProductService {
         ptmp.setSummary(adminNewProductForm.getSummary());
         ptmp.setDescription(adminNewProductForm.getDescription());
         ptmp.setPrice(adminNewProductForm.getPrice());
+        ptmp.setOnSale(adminNewProductForm.getOnSale());
+        ptmp.setSalePrice(adminNewProductForm.getSalePrice());
         ptmp.setInStock(adminNewProductForm.getInStock());
         ptmp.setTimeToStock(adminNewProductForm.getTimeToStock());
         ptmp.setImage(adminNewProductForm.getImage());

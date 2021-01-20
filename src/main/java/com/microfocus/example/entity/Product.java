@@ -40,7 +40,6 @@ public class Product implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
             name = "UUID",
@@ -48,7 +47,6 @@ public class Product implements Serializable {
     )
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
-    //private Integer id;
 
     @NotEmpty(message = "{product.code.notEmpty}")
     @Size(min = 6, max = 40, message = "{product.code.invalidLength}")
@@ -72,6 +70,14 @@ public class Product implements Serializable {
     private float price;
 
     @NotNull
+    @Column(name = "on_sale")
+    private Boolean onSale;
+
+    @Min(value = 0, message = "{product.price.invalidValue}")
+    @Column(name = "sale_price")
+    private float salePrice;
+
+    @NotNull
     @Column(name = "in_stock")
     private Boolean inStock;
 
@@ -91,7 +97,8 @@ public class Product implements Serializable {
     }
 
     public Product(UUID id, String code, String name, String summary, String description, String image,
-                   float price, boolean inStock, int timeToStock, int rating, boolean available) {
+                   float price, boolean onSale, float salePrice, boolean inStock, int timeToStock, int rating,
+                   boolean available) {
         this.id = id;
         this.code = code;
         this.name = name;
@@ -99,6 +106,8 @@ public class Product implements Serializable {
         this.description = description;
         this.image = image;
         this.price = price;
+        this.onSale = onSale;
+        this.salePrice = salePrice;
         this.inStock = inStock;
         this.timeToStock = timeToStock;
         this.rating = rating;
@@ -159,6 +168,22 @@ public class Product implements Serializable {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public Boolean getOnSale() {
+        return onSale;
+    }
+
+    public void setOnSale(Boolean onSale) {
+        this.onSale = onSale;
+    }
+
+    public float getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(float salePrice) {
+        this.salePrice = salePrice;
     }
 
     public Boolean getInStock() {

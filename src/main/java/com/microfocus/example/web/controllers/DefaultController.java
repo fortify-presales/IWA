@@ -89,7 +89,6 @@ public class DefaultController {
 
     @GetMapping("/vulnerabilities")
     public String vulnerabilities(Model model, Principal principal) {
-        log.debug("Oops! Someone has found the backdoor!");
         return "/vulnerabilities.html";
     }
 

@@ -9,19 +9,29 @@
 <body>
     <div layout:fragment="content" th:remove="tag">
 
-        <div class="row no-margin">
+        <div class="bg-light py-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 mb-0">
+                        <a th:href="@{/admin/}">Site Admin</a> <span class="mx-2 mb-0">/</span>
+                        <a th:href="@{/admin/products}">Products</a> <span class="mx-2 mb-0">/</span>
+                        <strong class="text-black">Edit</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a th:href="@{/admin/}">Site Admin</a></li>
-                    <li class="breadcrumb-item" aria-current="page"><a th:href="@{/admin/products/}">Products</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
-                </ol>
-            </nav>
+        <div class="site-section">
 
-            <div th:replace="fragments/admin-menu.html :: adminMenu('/admin/products')"></div>
+            <div class="container">
 
-            <div class="col-md-10">
+                <div class="row">
+
+                    <div class="col-md-3 mr-auto">
+                        <div th:replace="fragments/admin-menu.html :: adminMenu('/admin/products')"></div>
+                    </div>
+
+                    <div class="col-md-9">
                 <form action="#" th:action="@{/admin/products/{id}/save(id=${adminProductForm.id})}" th:object="${adminProductForm}" method="post">
                     <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
                         <span th:text="${message}">message</span>
@@ -37,7 +47,7 @@
                         <div class="col-sm-10">
                             <input type="text" class="form-control" id="username" th:field="*{code}" th:value="${adminProductForm.code}">
                             <div th:if="${#fields.hasErrors('code')}">
-                                <p class="label label-danger" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></p>
+                                <p class="badge bg-danger" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></p>
                             </div>
                         </div>
                     </div>
@@ -46,7 +56,7 @@
                         <div class="col-sm-10">
                             <input type="text" class="form-control" id="name" th:field="*{name}" th:value="${adminProductForm.name}">
                             <div th:if="${#fields.hasErrors('name')}">
-                                <p class="label label-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+                                <p class="badge bg-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
                             </div>
                         </div>
                     </div>
@@ -55,7 +65,7 @@
                         <div class="col-sm-10">
                             <textarea class="form-control" rows="5" id="summary" th:field="*{summary}" th:value="${adminProductForm.summary}"></textarea>
                             <div th:if="${#fields.hasErrors('summary')}">
-                                <p class="label label-danger" th:if="${#fields.hasErrors('summary')}" th:errors="*{summary}"></p>
+                                <p class="badge bg-danger" th:if="${#fields.hasErrors('summary')}" th:errors="*{summary}"></p>
                             </div>
                         </div>
                     </div>
@@ -64,7 +74,7 @@
                         <div class="col-sm-10">
                             <textarea class="form-control" rows="5" id="description" th:field="*{description}" th:value="${adminProductForm.description}"></textarea>
                             <div th:if="${#fields.hasErrors('description')}">
-                                <p class="label label-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+                                <p class="badge bg-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
                             </div>
                         </div>
                     </div>
@@ -74,7 +84,7 @@
                             <input type="text" class="form-control" id="image" th:field="*{image}" autocomplete="off"
                                    th:value="${adminProductForm.image}">
                             <div th:if="${#fields.hasErrors('image')}">
-                                <p class="label label-danger" th:if="${#fields.hasErrors('image')}" th:errors="*{image}"></p>
+                                <p class="badge bg-danger" th:if="${#fields.hasErrors('image')}" th:errors="*{image}"></p>
                             </div>
                         </div>
                     </div>
@@ -84,7 +94,7 @@
                             <input type="text" class="form-control" id="price" th:field="*{price}" autocomplete="off"
                             th:value="${adminProductForm.price}">
                             <div th:if="${#fields.hasErrors('price')}">
-                                <p class="label label-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></p>
+                                <p class="badge bg-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></p>
                             </div>
                         </div>
                     </div>
@@ -94,7 +104,7 @@
                             <input type="checkbox" class="" id="inStock" th:field="*{inStock}"
                                    th:value="${adminProductForm.inStock}">
                             <div th:if="${#fields.hasErrors('inStock')}">
-                                <p class="label label-danger" th:if="${#fields.hasErrors('inStock')}" th:errors="*{inStock}"></p>
+                                <p class="badge bg-danger" th:if="${#fields.hasErrors('inStock')}" th:errors="*{inStock}"></p>
                             </div>
                         </div>
                     </div>
@@ -104,7 +114,7 @@
                             <input type="text" class="form-control" id="timeToStock" th:field="*{timeToStock}" autocomplete="off"
                                    th:value="${adminProductForm.timeToStock}">
                             <div th:if="${#fields.hasErrors('timeToStock')}">
-                                <p class="label label-danger" th:if="${#fields.hasErrors('timeToStock')}" th:errors="*{timeToStock}"></p>
+                                <p class="badge bg-danger" th:if="${#fields.hasErrors('timeToStock')}" th:errors="*{timeToStock}"></p>
                             </div>
                         </div>
                     </div>
@@ -116,7 +126,7 @@
                                         th:selected="${i==adminProductForm.rating}"></option>
                             </select>
                             <div th:if="${#fields.hasErrors('rating')}">
-                                <p class="label label-danger" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></p>
+                                <p class="badge bg-danger" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></p>
                             </div>
                         </div>
                     </div>
@@ -126,7 +136,7 @@
                             <input type="checkbox" class="" id="available" th:field="*{available}"
                                    th:value="${adminProductForm.available}">
                             <div th:if="${#fields.hasErrors('available')}">
-                                <p class="label label-danger" th:if="${#fields.hasErrors('available')}" th:errors="*{available}"></p>
+                                <p class="badge bg-danger" th:if="${#fields.hasErrors('available')}" th:errors="*{available}"></p>
                             </div>
                         </div>
                     </div>
@@ -138,7 +148,14 @@
                     </div>
                 </form>
             </div>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
+
 </body>
 </html>

@@ -12,12 +12,23 @@
             <div class="site-blocks-cover" style="background-image: url('/img/pexels-photo-hero.jpg');">
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-7 mx-auto order-lg-2 align-self-center">
+                        <div class="col-lg-7 mx-auto order-lg-2 py-5">
                             <div class="site-block-cover-content text-center">
                                 <h2 class="sub-title">Effective Medicine, New Medicine Everyday</h2>
-                                <h1>Welcome To IWA Pharmacy Direct</h1>
+                                <h1 class="main-title">Welcome To IWA Pharmacy Direct</h1>
+                            </div>
+                            <div class="jumbotron text-center" style="opacity: 0.9">
+                                <h2 th:text="${message}" sec:authorize="isAnonymous()"></h2>
+                                <h2 th:text="@{'Welcome '+${#authentication.name}}" sec:authorize="isAuthenticated()"></h2>
+                                <p class="lead text-muted">
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempor rhoncus mauris a rutrum.
+                                    Nullam nec sem porttitor lorem imperdiet suscipit. Praesent rutrum orci a nunc euismod congue.
+                                </p>
                                 <p>
-                                    <a href="#" class="btn btn-primary px-5 py-3">Shop Now</a>
+                                    <a th:href="@{/register}" sec:authorize="isAnonymous()" class="btn btn-info"> Register </a>
+                                    <a th:href="@{/user}" sec:authorize="hasRole('ROLE_USER')" class="btn btn-info"> Your Profile </a>
+                                    <a th:href="@{/admin}" sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-info"> Site Administration </a>
+                                    <a th:href="@{/products}" class="btn btn-primary">Shop Now</a>
                                 </p>
                             </div>
                         </div>

@@ -9,20 +9,26 @@
     <body>
         <div layout:fragment="content" th:remove="tag">
 
-            <div class="row no-margin">
+            <div class="bg-light py-3">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 mb-0"><a th:href="@{/admin/}">Site Admin</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Users</strong></div>
+                    </div>
+                </div>
+            </div>
 
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a th:href="@{/admin/}">Site Admin</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Users</li>
-                    </ol>
-                </nav>
+            <div class="site-section">
 
-                <div th:replace="fragments/admin-menu.html :: adminMenu('/admin/users')"></div>
+                <div class="container">
 
-                <div class="col-md-10">
+                    <div class="row">
+
+                        <div class="col-md-3 mr-auto">
+                            <div th:replace="fragments/admin-menu.html :: adminMenu('/admin/users')"></div>
+                        </div>
+
+                        <div class="col-md-9">
                     <table class="table">
-                        <caption>Site users</caption>
                         <thead>
                         <tr>
                             <th scope="col">Username</th>
@@ -53,6 +59,10 @@
                         </tbody>
                     </table>
                     <a class="btn btn-primary" th:href="@{/admin/users/add}"> New User </a>
+                </div>
+
+                    </div>
+
                 </div>
 
             </div>

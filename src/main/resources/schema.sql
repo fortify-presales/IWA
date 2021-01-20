@@ -40,10 +40,12 @@ create table products
     description    clob         not null,
     image          varchar(255),
     price          float        not null,
-    in_stock       bit(1)       not null,
-    time_to_stock  integer      not null,
-    rating         integer      not null,
-    available      bit(1)       not null,
+    on_sale        bit(1)       default 0 not null,
+    sale_price     float        default 0.0 not null,
+    in_stock       bit(1)       default 1 not null,
+    time_to_stock  integer      default 0 not null,
+    rating         integer      default 1 not null,
+    available      bit(1)       default 1 not null,
     primary key (id)
 );
 create table messages

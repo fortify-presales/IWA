@@ -12,7 +12,10 @@
         <div class="bg-light py-3">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-12 mb-0"><a th:href="@{/user/}">User</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Messages</strong></div>
+                    <div class="col-md-12 mb-0">
+                        <a th:href="@{/user/}">User</a> <span class="mx-2 mb-0">/</span>
+                        <strong class="text-black">Messages</strong>
+                    </div>
                 </div>
             </div>
         </div>
@@ -38,7 +41,7 @@
                             </div>
                             <div class="form-group row">
                                 <div class="col-sm-12">
-                                    <p class="text-muted">Message sent on <span th:text="${#dates.format(messageForm.sentDate, 'dd-MM-yyyy HH:mm')}"></span></p>
+                                    <h5 class="text-muted">Message sent on <span th:text="${#dates.format(messageForm.sentDate, 'dd-MM-yyyy HH:mm')}"></span></h5>
                                     <p th:text="${messageForm.text}"></p>
                                 </div>
                             </div>

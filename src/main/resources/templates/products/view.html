@@ -17,12 +17,141 @@
             </div>
         </div>
 
-        <div class="site-section">
+        <div class="site-section-sm">
 
             <div class="container">
 
                 <div class="row">
 
+                    <div class="col-md-5 mr-auto">
+                        <div class="border text-center">
+                            <span th:if="${product.image} != null and ${product.image} != ''">
+                                <img th:src="@{'/img/products/' + ${product.image}}" alt="Image" class="img-fluid p-5">
+                            </span>
+                            <span th:if="${product.image} == null or ${product.image == ''}">
+                                    <img th:src="@{/img/awaiting-image.png}" alt="Awaiting Image" class="img-fluid p-5">
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 item-entry">
+                        <h2 class="text-black"><span th:text="${product.name}"> </span></h2>
+                        <h5><span th:text="${product.code}"> Code </span></h5>
+                        <span class="product-rating mb-4">
+                            <span th:each="i : ${#numbers.sequence( 1, product.rating, 1)}">
+                                <i class="fas fa-star" style="color: cornflowerblue"> </i>
+                            </span>
+                            <span th:if="${product.rating != 5}">
+                                <span th:each="i : ${#numbers.sequence(product.rating, 4, 1)}">
+                                    <i class="fas fa-star" style="color: gray"> </i>
+                                </span>
+                            </span>
+                            <span class="product-reviews pl-2"><a href="#">Customer Reviews</a></span>
+                        </span>
+
+                        <h6>Summary</h6>
+                        <p><span th:text="${product.summary}"> Summary </span></p>
+                        <h6>Description</h6>
+                        <p><span th:text="${product.description}"> Description </span></p>
+                        <h4 class="price pt-2 pb-4 item-price">
+                            <del th:if="${product.onSale == true}">
+                                <span th:text="${#strings.replace(#numbers.formatCurrency(product.price), '.00', '')}"> Price </span>
+                            </del>
+                            <span th:if="${product.onSale == false}" th:text="${#strings.replace(#numbers.formatCurrency(product.price), '.00', '')}"> Price </span>
+                            <span th:if="${product.onSale == true}"> &mdash; </span>
+                            <span th:if="${product.onSale == true}" th:text="${#strings.replace(#numbers.formatCurrency(product.salePrice), '.00', '')}"> Sale Price </span>
+                            <span th:if="${product.inStock}" class="badge bg-success">In Stock</span>
+                            <span th:unless="${product.inStock}" class="badge bg-danger">Out of Stock</span>
+                            <span th:unless="${product.inStock}" th:text="|In stock in ${product.timeToStock} days|" class="badge bg-light text-dark"> </span>
+                        </h4>
+
+                        <shopping-cart-add th:attr="pid=${product.id}"></shopping-cart-add>
+                        <!--div class="mb-5">
+                            <div class="input-group mb-3" style="max-width: 220px;">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-outline-primary js-btn-minus" type="button">&minus;</button>
+                                </div>
+                                <input type="text" class="form-control text-center" value="1" placeholder=""
+                                       aria-label="Example text with button addon" aria-describedby="button-addon1">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;</button>
+                                </div>
+                            </div>
+
+                        </div>
+                        <p><a href="#" class="buy-now btn btn-sm height-auto px-4 py-3 btn-primary">Add To Cart</a></p-->
+
+                    <!--
+                        <div class="mt-5">
+                            <ul class="nav nav-pills mb-3 custom-pill" id="pills-tab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab"
+                                       aria-controls="pills-home" aria-selected="true">Ordering Information</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab"
+                                       aria-controls="pills-profile" aria-selected="false">Specifications</a>
+                                </li>
+
+                            </ul>
+                            <div class="tab-content" id="pills-tabContent">
+                                <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                                    <table class="table custom-table">
+                                        <thead>
+                                        <th>Material</th>
+                                        <th>Description</th>
+                                        <th>Packaging</th>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <th scope="row">OTC022401</th>
+                                            <td>Pain Management: Acetaminophen PM Extra-Strength Caplets, 500 mg, 100/Bottle</td>
+                                            <td>1 BT</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">OTC022401</th>
+                                            <td>Pain Management: Acetaminophen PM Extra-Strength Caplets, 500 mg, 100/Bottle</td>
+                                            <td>144/CS</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">OTC022401</th>
+                                            <td>Pain Management: Acetaminophen PM Extra-Strength Caplets, 500 mg, 100/Bottle</td>
+                                            <td>1 EA</td>
+                                        </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+
+                                    <table class="table custom-table">
+
+                                        <tbody>
+                                        <tr>
+                                            <td>HPIS CODE</td>
+                                            <td class="bg-light">999_200_40_0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>HEALTHCARE PROVIDERS ONLY</td>
+                                            <td class="bg-light">No</td>
+                                        </tr>
+                                        <tr>
+                                            <td>LATEX FREE</td>
+                                            <td class="bg-light">Yes, No</td>
+                                        </tr>
+                                        <tr>
+                                            <td>MEDICATION ROUTE</td>
+                                            <td class="bg-light">Topical</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div-->
+                    <!--
                     <div class="col-md-12">
 
                         <div class="media">
@@ -62,7 +191,7 @@
 
                         </div>
 
-                    </div>
+                    </-->
 
                 </div>
 

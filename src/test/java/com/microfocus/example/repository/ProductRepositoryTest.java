@@ -58,6 +58,7 @@ public class ProductRepositoryTest extends BaseIntegrationTest {
             p1.setCode("TEST-B000-00001");
             p1.setName("Test Product 2 Updated");
             p1.setPrice(new Float(100.0));
+            p1.setOnSale(false);
             p1.setRating(1);
             productRepository.save(p1);
             Optional<Product> p2 = productRepository.findByCode("TEST-B000-00001");

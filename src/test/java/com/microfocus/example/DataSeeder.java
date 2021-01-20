@@ -35,6 +35,7 @@ public class DataSeeder {
     public static final String TEST_PRODUCT1_SUMMARY = "Product Summary.";
     public static final String TEST_PRODUCT1_DESCRIPTION = "This is a brief description of the product for testing.";
     public static final float TEST_PRODUCT1_PRICE = new Float(10.0);
+    public static final Boolean TEST_PRODUCT1_ON_SALE = false;
     public static final int TEST_PRODUCT1_TIME_TO_STOCK = 5;
     public static final int TEST_PRODUCT1_RATING = 5;
     // Product 2 - created in tests
@@ -43,6 +44,8 @@ public class DataSeeder {
     public static final String TEST_PRODUCT2_SUMMARY = "Product Summary";
     public static final String TEST_PRODUCT2_DESCRIPTION = "This is a brief description of the product for testing.";
     public static final float TEST_PRODUCT2_PRICE = new Float(10.0);
+    public static final Boolean TEST_PRODUCT2_ON_SALE = true;
+    public static final float TEST_PRODUCT2_SALE_PRICE = new Float(5.0);
     public static final int TEST_PRODUCT2_TIME_TO_STOCK = 5;
     public static final int TEST_PRODUCT2_RATING = 5;
 
@@ -86,6 +89,8 @@ public class DataSeeder {
         product.setSummary(TEST_PRODUCT2_SUMMARY);
         product.setDescription(TEST_PRODUCT2_DESCRIPTION);
         product.setPrice(TEST_PRODUCT2_PRICE);
+        product.setOnSale(TEST_PRODUCT2_ON_SALE);
+        product.setSalePrice(TEST_PRODUCT2_SALE_PRICE);
         product.setInStock(true);
         product.setTimeToStock(TEST_PRODUCT2_TIME_TO_STOCK);
         product.setRating(TEST_PRODUCT2_RATING);

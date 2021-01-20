@@ -1,5 +1,5 @@
 <template>
-  <span id="user-message-count" class="badge badge-light">{{ count }}</span>
+  <span id="user-message-count" class="badge badge-pill badge-info">{{ count }}</span>
 </template>
 
 <script>

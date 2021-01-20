@@ -8,8 +8,8 @@
                 <div class="search-wrap">
                     <div class="container">
                         <a href="#" class="search-close js-search-close"><span class="icon-close2"></span></a>
-                        <form action="#" method="post">
-                            <input type="text" class="form-control" placeholder="Search keyword and hit enter...">
+                        <form th:action="@{/products}" method="GET">
+                            <input type="text" class="form-control" name="keywords" id="keywords" placeholder="Search keyword and hit enter...">
                         </form>
                     </div>
                 </div>
@@ -19,19 +19,20 @@
                         <div class="logo">
                             <div class="site-logo">
                                 <a class="navbar-brand" th:href="@{/}">
-                                    <img th:src="@{/img/logo.png}" alt="IWA Pharmacy Direct"/>
+                                    <img th:src="@{/img/logo.png}" alt="IWA Pharmacy Direct">
                                 </a>
                             </div>
                         </div>
                         <div class="main-nav d-none d-lg-block">
                             <nav class="site-navigation text-right text-md-center" role="navigation">
-                                <ul class="site-menu js-clone-nav d-none d-lg-block">
+                                <ul class="site-menu d-none d-lg-block">
                                     <li>
                                         <a th:href="@{/}">Home</a>
                                     </li>
-                                    <li class="has-children">
+                                    <!--li class="has-children"-->
+                                    <li>
                                         <a th:href="@{/products}">Shop</a>
-                                        <ul class="dropdown">
+                                        <!--ul class="dropdown">
                                             <li><a href="#">Supplements</a></li>
                                             <li class="has-children">
                                                 <a href="#">Vitamins</a>
@@ -44,13 +45,13 @@
                                             </li>
                                             <li><a href="#">Diet &amp; Nutrition</a></li>
                                             <li><a href="#">Tea &amp; Coffee</a></li>
-                                        </ul>
+                                        </ul-->
                                     </li>
                                     <li>
                                         <a th:href="@{/prescriptions}">Prescriptions</a>
                                     </li>
                                     <li>
-                                        <a th:href="@{/services}">Services</a>
+                                        <a th:href="@{/services}">Pharmacy Services</a>
                                     </li>
                                     <li>
                                         <a th:href="@{/advice}">Health & Advice</a>
@@ -58,20 +59,41 @@
                                 </ul>
                             </nav>
                         </div>
-                        <div class="icons">
-                            <a href="#" class="icons-btn btn-white d-inline-block js-search-open">
-                                <span class="icon-search"></span>
-                            </a>
-                            <a th:href="@{/user/}" class="icons-btn btn-white d-inline-block bag">
-                                <span class="icon-user"></span>
-                            </a>
-                            <a th:href="@{/user/cart}" class="icons-btn btn-white d-inline-block bag">
-                                <span class="icon-shopping-bag"></span>
-                                <span class="number">0</span>
-                            </a>
-
-                            <a href="#" class="site-menu-toggle js-menu-toggle ml-3 d-inline-block d-lg-none"><span
-                                class="icon-menu"></span></a>
+                        <div class="secondary-nav navbar-right">
+                            <nav class="site-navigation" role="navigation">
+                                <ul class="site-menu d-none d-lg-block">
+                                    <li>
+                                        <a class="nav-link js-search-open" th:href="@{/products}"> <!--class="icons-btn d-inline-block js-search-open"-->
+                                            <i class="fas fa-search fa-fw"></i>
+                                        </a>
+                                    </li>
+                                    <li sec:authorize="isAnonymous()">
+                                        <a class="nav-link" th:href="@{/login}"><i class="fas fa-sign-in-alt fa-fw"></i> Sign in </a>
+                                    </li>
+                                    <li sec:authorize="isAuthenticated()" class="has-children">
+                                        <a href="#" class="has-children" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-user-circle fa-fw"></i>
+                                            <span th:text="@{${#authentication.name}}"></span>
+                                        </a>
+                                        <ul class="dropdown">
+                                            <li><a th:href="@{/user}"><i class="fas fa-address-card fa-fw"></i> User Profile </a></li>
+                                            <li><a th:href="@{/admin}" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fas fa-tools fa-fw"></i> Site Administration </a></li>
+                                            <li><a th:href="@{/console}" target="_blank" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fas fa-database fa-fw"></i> Database Console</a></li>
+                                            <li role="separator" class="divider"></li>
+                                            <li sec:authorize="isAuthenticated()">
+                                                <a class="nav-link" target="_blank" th:href="@{/swagger-ui.html(url='@{/v3/api-docs}')}"><i class="fas fa-code fa-fw"></i> API Explorer </a>
+                                                <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt fa-fw"></i> Logout </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a th:href="@{/cart}" class="icons-btn btn-white d-inline-block bag">
+                                            <i class="fas fa-shopping-cart fa-fw"></i>
+                                            <shopping-cart-count></shopping-cart-count>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
                         </div>
                     </div>
                 </div>

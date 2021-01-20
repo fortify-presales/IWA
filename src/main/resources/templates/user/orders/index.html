@@ -30,19 +30,20 @@
                         <div class="col-md-9">
 
                             <table class="table">
-                                <caption>Your Orders</caption>
                                 <thead>
                                     <tr>
                                         <th scope="col">Shipped</th>
                                         <th scope="col">Number</th>
                                         <th scope="col">Amount</th>
                                         <th scope="col">Shipped Date</th>
+                                        <th scope="col">View</th>
+                                        <th scope="col">Delete</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
                                     <tr>
                                         <td colspan="5">
-                                            <p class="text-muted">You have <span th:text="${unshippedOrderCount}"></span> orders awaiting shipping.</p>
+                                            <h5 class="text-muted">You have <span th:text="${unshippedOrderCount}"></span> orders awaiting shipping.</h5>
                                         </td>
                                     </tr>
                                 </tfoot>
@@ -58,15 +59,15 @@
                                     <td><a th:href="@{/user/orders/{id}(id=${o.id})}"><span th:text="${#strings.abbreviate(o.orderNum,40)}"> Order Number </span></a></td>
                                     <td><span th:text="${#strings.replace(#numbers.formatCurrency(o.amount), '.00', '')}"> Amount </span></td>
                                     <td>
-                                        <span th:if="${o.shippedDate}" th:text="${#dates.format(o.shippedDate, 'dd-MM-yyyy HH:mm')}"> Shiped Date </span>
+                                        <span th:if="${o.shippedDate}" th:text="${#dates.format(o.shippedDate, 'dd-MM-yyyy HH:mm')}"> Shipped Date </span>
                                     </td>
                                     <td>
-                                        <a type="button" class="btn btn-primary btn-xs" role="button" th:href="@{/user/orders/{id}(id=${o.id})}">
+                                        <a type="button" class="btn btn-primary btn-sm" role="button" th:href="@{/user/orders/{id}(id=${o.id})}">
                                             <i class="fa fa-eye" aria-hidden="true"></i>
                                         </a>
                                     </td>
                                     <td>
-                                        <a type="button" class="btn btn-xs btn-danger" role="button" data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${o.id }">
+                                        <a type="button" class="btn btn-sm btn-danger" role="button" data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${o.id }">
                                             <i class="fa fa-trash" aria-hidden="true"></i>
                                         </a>
                                     </td>
@@ -96,7 +97,6 @@
                                 </tr>
                                 </tbody>
                             </table>
-                            <!--a class="btn btn-primary" th:href="@{/user/messages/new}">New Message</a-->
 
                         </div>
 

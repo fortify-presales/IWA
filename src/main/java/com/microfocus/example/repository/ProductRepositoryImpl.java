@@ -143,7 +143,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 try {
                     Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                     ResultSet results = stmt.executeQuery("SELECT id, code, name, summary, description, image, price, " +
-                            "in_stock, time_to_stock, rating, available FROM products WHERE lower(name) LIKE '%" +
+                            "on_sale, sale_price, in_stock, time_to_stock, rating, available FROM products WHERE lower(name) LIKE '%" +
                             keywords.toLowerCase() + "%' LIMIT " + limit + " OFFSET " + offset);
                     if (results.getStatement() != null) {
                         while (results.next()) {
@@ -155,6 +155,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                                     results.getString("description"),
                                     results.getString("image"),
                                     results.getFloat("price"),
+                                    results.getBoolean("on_sale"),
+                                    results.getFloat("sale_price"),
                                     results.getBoolean("in_stock"),
                                     results.getInt("time_to_stock"),
                                     results.getInt("rating"),

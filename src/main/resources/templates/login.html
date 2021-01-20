@@ -10,7 +10,7 @@
             }
         </style>
     </head>
-    <body class="sky-background">
+    <body>
         <div layout:fragment="content" th:remove="tag">
 
             <div class="site-section">
@@ -32,7 +32,7 @@
                                 </div>
                                 <div th:if="${param.logout}">
                                     <div class="alert alert-info">
-                                        You have been logged out. Please re-login.
+                                        You have been successfully logged out.
                                     </div>
                                 </div>
                                 <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
@@ -64,6 +64,7 @@
                 </div>
 
             </div>
+
         </div>
     </body>
 </html>

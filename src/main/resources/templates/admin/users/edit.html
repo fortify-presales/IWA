@@ -9,19 +9,29 @@
 <body>
     <div layout:fragment="content" th:remove="tag">
 
-        <div class="row no-margin">
+        <div class="bg-light py-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 mb-0">
+                        <a th:href="@{/admin/}">Site Admin</a> <span class="mx-2 mb-0">/</span>
+                        <a th:href="@{/admin/users}">Users</a> <span class="mx-2 mb-0">/</span>
+                        <strong class="text-black">Edit</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a th:href="@{/admin/}">Site Admin</a></li>
-                    <li class="breadcrumb-item" aria-current="page"><a th:href="@{/admin/users/}">Users</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
-                </ol>
-            </nav>
+        <div class="site-section">
 
-            <div th:replace="fragments/admin-menu.html :: adminMenu('/admin/users')"></div>
+            <div class="container">
 
-            <div class="col-md-10">
+                <div class="row">
+
+                    <div class="col-md-3 mr-auto">
+                        <div th:replace="fragments/admin-menu.html :: adminMenu('/admin/users')"></div>
+                    </div>
+
+                    <div class="col-md-9">
                 <form action="#" th:action="@{/admin/users/{id}/save(id=${adminUserForm.id})}" th:object="${adminUserForm}" method="post">
                     <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
                         <span th:text="${message}">message</span>
@@ -37,7 +47,7 @@
                         <div class="col-sm-10">
                             <input type="text" class="form-control" id="username" th:field="*{username}" th:value="${adminUserForm.username}">
                             <div th:if="${#fields.hasErrors('username')}">
-                                <p class="label label-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+                                <p class="badge bg-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
                             </div>
                         </div>
                     </div>
@@ -46,7 +56,7 @@
                         <div class="col-sm-10">
                             <input type="text" class="form-control" id="name" th:field="*{name}" th:value="${adminUserForm.name}">
                             <div th:if="${#fields.hasErrors('name')}">
-                                <p class="label label-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+                                <p class="badge bg-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
                             </div>
                         </div>
                     </div>
@@ -55,7 +65,7 @@
                         <div class="col-sm-10">
                             <input type="text" class="form-control" id="email" th:field="*{email}" th:value="${adminUserForm.email}">
                             <div th:if="${#fields.hasErrors('email')}">
-                                <p class="label label-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+                                <p class="badge bg-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
                             </div>
                         </div>
                     </div>
@@ -64,7 +74,7 @@
                         <div class="col-sm-10">
                             <input type="text" class="form-control" id="mobile" th:field="*{mobile}" th:value="${adminUserForm.mobile}">
                             <div th:if="${#fields.hasErrors('mobile')}">
-                                <p class="label label-danger" th:if="${#fields.hasErrors('mobile')}" th:errors="*{mobile}"></p>
+                                <p class="badge bg-danger" th:if="${#fields.hasErrors('mobile')}" th:errors="*{mobile}"></p>
                             </div>
                         </div>
                     </div>
@@ -74,7 +84,7 @@
                             <input type="checkbox" class="" id="enabled" th:field="*{enabled}"
                                    th:value="${adminUserForm.enabled}">
                             <div th:if="${#fields.hasErrors('enabled')}">
-                                <p class="label label-danger" th:if="${#fields.hasErrors('enabled')}" th:errors="*{enabled}"></p>
+                                <p class="badge bg-danger" th:if="${#fields.hasErrors('enabled')}" th:errors="*{enabled}"></p>
                             </div>
                         </div>
                     </div>
@@ -86,7 +96,13 @@
                     </div>
                 </form>
             </div>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
 </body>
 </html>

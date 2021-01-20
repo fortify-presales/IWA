@@ -30,7 +30,6 @@
                         <div class="col-md-9">
 
                             <table class="table">
-                                <caption>Your messages</caption>
                                 <thead>
                                     <tr>
                                         <th scope="col">Read</th>
@@ -43,7 +42,7 @@
                                 <tfoot>
                                     <tr>
                                         <td colspan="5">
-                                            <p class="text-muted">You have <span th:text="${unreadMessageCount}"></span> unread messages</p>
+                                            <h5 class="text-muted">You have <span th:text="${unreadMessageCount}"></span> unread messages</h5>
                                         </td>
                                     </tr>
                                 </tfoot>
@@ -59,12 +58,12 @@
                                     <td><a th:href="@{/user/messages/{id}(id=${m.id})}"><span th:text="${#strings.abbreviate(m.text,40)}"> Text </span></a></td>
                                     <td><span th:text="${#dates.format(m.sentDate, 'dd-MM-yyyy HH:mm')}"> Sent </span></td>
                                     <td>
-                                        <a type="button" class="btn btn-primary btn-xs" role="button" th:href="@{/user/messages/{id}(id=${m.id})}">
+                                        <a type="button" class="btn btn-primary btn-sm" role="button" th:href="@{/user/messages/{id}(id=${m.id})}">
                                             <i class="fa fa-eye" aria-hidden="true"></i>
                                         </a>
                                     </td>
                                     <td>
-                                        <a type="button" class="btn btn-xs btn-danger" role="button" data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${m.id }">
+                                        <a type="button" class="btn btn-sm btn-danger" role="button" data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${m.id }">
                                             <i class="fa fa-trash" aria-hidden="true"></i>
                                         </a>
                                     </td>

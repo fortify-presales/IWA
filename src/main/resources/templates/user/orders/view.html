@@ -12,7 +12,11 @@
         <div class="bg-light py-3">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-12 mb-0"><a th:href="@{/user/}">User</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Orders</strong></div>
+                    <div class="col-md-12 mb-0">
+                        <a th:href="@{/user/}">User</a> <span class="mx-2 mb-0">/</span>
+                        <a th:href="@{/user/orders}">Orders</a> <span class="mx-2 mb-0">/</span>
+                        <strong th:text="${orderForm.orderNum}" class="text-black">Order</strong>
+                    </div>
                 </div>
             </div>
         </div>
@@ -39,12 +43,16 @@
                             <div class="form-group row">
                                 <div class="col-sm-12">
                                     <table class="table">
-                                        <caption>Order: <span th:text="${orderForm.orderNum}"></span></caption>
+                                        <thead>
+                                            <tr>
+                                                <th colspan="2">Order Id: <span class="text-muted" th:text="${orderForm.orderNum}" class="text-black">Order</span></th>
+                                            </tr>
+                                        </thead>
                                         <tfoot>
                                         <tr>
                                             <td colspan="2">
-                                                <span class="text-muted" th:if="${orderForm.shippedDate}" th:text="${'Order was shipped on ' + #dates.format(orderForm.shippedDate, 'dd-MM-yyyy')}"> Ship Date </span>
-                                                <span class="text-muted" th:unless="${orderForm.shippedDate}">Order has not yet shipped"></span>
+                                                <h5 class="text-muted" th:if="${orderForm.shippedDate}" th:text="${'Order was shipped on ' + #dates.format(orderForm.shippedDate, 'dd-MM-yyyy')}"> Ship Date </h5>
+                                                <h5 class="text-muted" th:unless="${orderForm.shippedDate}">Order has not yet shipped</h5>
                                             </td>
                                         </tr>
                                         </tfoot>

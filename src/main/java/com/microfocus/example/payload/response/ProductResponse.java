@@ -37,6 +37,8 @@ public class ProductResponse {
     private String description;
     private String image;
     private float price;
+    private Boolean onSale;
+    private float salePrice;
     private Boolean inStock;
     private int timeToStock;
     private int rating;
@@ -53,6 +55,8 @@ public class ProductResponse {
         this.description = product.getDescription();
         this.image = product.getImage();
         this.price = product.getPrice();
+        this.onSale = product.getOnSale();
+        this.salePrice = product.getSalePrice();
         this.inStock = product.getInStock();
         this.timeToStock = product.getTimeToStock();
         this.rating = product.getRating();
@@ -85,6 +89,14 @@ public class ProductResponse {
 
     public float getPrice() {
         return price;
+    }
+
+    public Boolean getOnSale() {
+        return onSale;
+    }
+
+    public float getSalePrice() {
+        return salePrice;
     }
 
     public Boolean getInStock() {

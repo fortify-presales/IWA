@@ -1,35 +1,36 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<script src="../../static/js/lib/owl.carousel.min.js"></script>
 <body>
         <th:block th:fragment="footer">
 
-            <footer class="site-footer">
+            <footer class="site-footer mt-auto">
                 <div class="row">
                     <div class="col-md-3 footer-brand animated fadeInLeft">
-                        <h3>IWA Pharmacy Direct</h3>
-                        <p>Suspendisse hendrerit tellus laoreet luctus pharetra. Aliquam porttitor vitae orci nec ultricies. Curabitur vehicula, libero eget faucibus faucibus, purus erat eleifend enim, porta pellentesque ex mi ut sem.</p>
-                        <p>© Micro Focus <script>document.write(new Date().getFullYear());</script> | Template by
+                        <h4>IWA Pharmacy Direct</h4>
+                        <p>IWA (Insecure Web App) Pharmacy Direct an insecure web application for use in Micro Focus demonstrations.</p>
+                        <p>© Micro Focus <script>document.write(new Date().getFullYear());</script> All Rights Reserved | Based on a template by
                             <a href="https://colorlib.com" target="_blank" class="text-info">Colorlib</a></p>
                     </div>
                     <div class="col-md-4 footer-nav animated fadeInUp">
-                        <h4>Menu —</h4>
-                        <div class="col-md-6">
-                            <ul class="pages">
-                                <li><a href="#">Shop</a></li>
-                                <li><a href="#">Prescriptions</a></li>
-                                <li><a href="#">Services</a></li>
-                                <li><a href="#">Health & Advice</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-md-6">
-                            <ul class="list">
-                                <li><a href="#">About Us</a></li>
-                                <li><a href="#">Contacts</a></li>
-                                <li><a href="#">Terms & Condition</a></li>
-                                <li><a href="#">Privacy Policy</a></li>
-                            </ul>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>Menu —</h4>
+                                <ul class="pages">
+                                    <li><a href="#">Shop</a></li>
+                                    <li><a href="#">Prescriptions</a></li>
+                                    <li><a href="#">Services</a></li>
+                                    <li><a href="#">Health & Advice</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list">
+                                    <li><a href="#">About Us</a></li>
+                                    <li><a href="#">Contacts</a></li>
+                                    <li><a href="#">Terms & Condition</a></li>
+                                    <li><a href="#">Privacy Policy</a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-2 footer-social animated fadeInDown">
@@ -43,15 +44,19 @@
                     </div>
                     <div class="col-md-3 footer-ns animated fadeInRight">
                         <h4>Newsletter</h4>
-                        <p>Sign-up for our newsletter by entering your email address below</p>
+                        <p>Sign-up for our newsletter by entering your email address below:</p>
                         <p>
                             <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Your email address...">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-white icons-btn d-inline-block" type="button">
-                                        <span class="icon-envelope"></span>
-                                    </button>
-                                </span>
+                                <form th:action="@{/subscribe}" method="POST">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="Your email address" name="newsletter-email" id="newsletter-email">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-secondary" type="submit">
+                                                <i class="fa fa-envelope"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </p>
                     </div>
@@ -63,7 +68,6 @@
             <script type="text/javascript" th:src="@{/webjars/bootstrap/4.5.3/js/bootstrap.min.js}"></script>
             <script type="text/javascript" th:src="@{/webjars/vue/2.6.12/vue.min.js}"></script>
             <script type="text/javascript" th:src="@{/webjars/axios/0.21.1/dist/axios.min.js}"></script>
-            <script type="text/javascript" th:src="@{/js/lib/owl.carousel.min.js}"></script>
 
             <script type="text/javascript" th:src="@{/js/lib/httpVueLoader.js}"></script>
 

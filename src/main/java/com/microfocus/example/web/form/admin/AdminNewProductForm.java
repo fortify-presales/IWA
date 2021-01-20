@@ -57,6 +57,11 @@ public class AdminNewProductForm {
     @Min(value = 0, message = "{product.price.invalidValue}")
     private float price;
 
+    private Boolean onSale;
+
+    @Min(value = 0, message = "{product.price.invalidValue}")
+    private float salePrice;
+
     private Boolean inStock;
 
     @Min(value = 1, message = "{product.time_to_stock.invalidValue}")
@@ -80,6 +85,8 @@ public class AdminNewProductForm {
         this.description = product.getDescription();
         this.image = product.getImage();
         this.price = product.getPrice();
+        this.onSale = product.getOnSale();
+        this.salePrice = product.getSalePrice();
         this.inStock = product.getInStock();
         this.timeToStock = product.getTimeToStock();
         this.rating = product.getRating();
@@ -140,6 +147,22 @@ public class AdminNewProductForm {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public Boolean getOnSale() {
+        return onSale;
+    }
+
+    public void setOnSale(Boolean onSale) {
+        this.onSale = onSale;
+    }
+
+    public float getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(float salePrice) {
+        this.salePrice = salePrice;
     }
 
     public Boolean getInStock() {

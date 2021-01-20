@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+    <head>
+        <title>Shopping Cart</title>
+    </head>
+    <body>
+        <div layout:fragment="content" th:remove="tag">
+
+            <div class="bg-light py-3">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 mb-0"><a th:href="@{/products/}">Shop</a> <span class="mx-2 mb-0">/</span> <strong class="text-black"> Cart </strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="site-section">
+
+                <div class="container">
+
+                    <shopping-cart></shopping-cart>
+
+                </div>
+
+            </div>
+
+            <div th:replace="fragments/secondary-bg.html :: secondaryBackground ('/index.html')"></div>
+
+        </div>
+    </body>
+</html>
