@@ -76,11 +76,11 @@
                         <h3 class="text-dark"><a th:href="@{/products/{id}(id=${p.id})}"><span th:text="${p.name}"> </span></a></h3>
                         <p class="price">
                             <del th:if="${p.onSale == true}">
-                                <span th:text="${#strings.replace(#numbers.formatCurrency(p.price), '.00', '')}"> Price </span>
+                                <span th:text="${currencySymbol + #strings.replace(#numbers.formatDecimal(p.price, 0, 2), '.00', '')}"> Price </span>
                             </del>
-                            <span th:if="${p.onSale == false}" th:text="${#strings.replace(#numbers.formatCurrency(p.price), '.00', '')}"> Price </span>
+                            <span th:if="${p.onSale == false}" th:text="${currencySymbol + #strings.replace(#numbers.formatDecimal(p.price, 0, 2), '.00', '')}"> Price </span>
                             <span th:if="${p.onSale == true}"> &mdash; </span>
-                            <span th:if="${p.onSale == true}" th:text="${#strings.replace(#numbers.formatCurrency(p.salePrice), '.00', '')}"> Sale Price </span>
+                            <span th:if="${p.onSale == true}" th:text="${currencySymbol + #strings.replace(#numbers.formatDecimal(p.salePrice, 0, 2), '.00', '')}"> Sale Price </span>
                         </p>
                     </div>
                 </div>

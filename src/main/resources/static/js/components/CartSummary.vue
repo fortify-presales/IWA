@@ -22,12 +22,12 @@
             <td>{{ currencySymbol }}{{ item.price }}</td>
           </tr>
         <tr>
-            <td class="text-black font-weight-bold"><strong>Cart Subtotal</strong></td>
-            <td class="text-black">{{ currencySymbol }}{{ subTotal }}</td>
+          <td class="text-black"><strong>Cart Subtotal</strong></td>
+          <td class="text-black"><strong>{{ currencySymbol }}{{ subTotal }}</strong></td>
         </tr>
         <tr>
-            <td class="text-black font-weight-bold"><strong>Order Total</strong></td>
-            <td class="text-black font-weight-bold"><strong>{{ currencySymbol }}{{ total }}</strong></td>
+            <td class="text-black"><strong>Order Total</strong></td>
+            <td class="text-black"><strong>{{ currencySymbol }}{{ total }}</strong></td>
         </tr>
         </tbody>
       </table>
@@ -38,6 +38,9 @@
 <script>
   module.exports = {
     name: 'shopping-cart-summary',
+    props: {
+      'currency': String
+    },
     data: function() {
       return {
         currencySymbol: '$',
@@ -53,24 +56,29 @@
         try {
           this.cart = JSON.parse(localStorage.getItem('cart'));
         } catch(e) {
-          console.log("cart-summary::error retrieving cart from localStorage");
+          console.log("Error retrieving cart from localStorage");
           localStorage.removeItem('cart');
         }
       }
       const size = Object.keys(this.cart).length;
-      if (size > 0) { this.cartIsEmpty = false; }
+      if (size > 0) {
+        this.cartIsEmpty = false;
+        this.subTotal = this.cart.reduce((sum, item) => sum + Number(item.price*item.quantity), 0);
+        // TODO: calculate any discounts
+        this.total = this.subTotal;
+        document.getElementById("jsonCart").value = localStorage.getItem('cart');
+        document.getElementById("orderAmount").value = this.total;
+
+      }
     },
     methods: {
-      continueShopping() {
-        window.location.href="/products";
-      },
       updateCart() {
         // just reload for now
         location.reload();
         //this.$forceUpdate();
       },
-      placeOrder() {
-        window.location.href="/cart/confirm";
+      continueShopping() {
+
       }
     },
     computed: {
@@ -84,7 +92,7 @@
       }
     },
     mounted() {
-
+      if (this.$props.currency) this.currencySymbol = this.$props.currency;
     }
   };
 </script>

@@ -149,7 +149,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                             "/services/**",
                             "/prescriptions/**",
                             "/advice/**",
-                            "/cart/**",
+                            "/cart",
                             "/login",
                             "/logout",
                             "/register",

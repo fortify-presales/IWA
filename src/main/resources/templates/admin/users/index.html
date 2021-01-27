@@ -45,9 +45,9 @@
                         </tr>
                         <tr th:each="u : ${users}">
                             <td><a th:href="@{/admin/users/{id}(id=${u.id})}"><span th:text="${u.username}"> Username </span></a></td>
-                            <td><span th:text="${u.name}"> Name </span></td>
+                            <td><span th:text="${u.firstName}"> Name </span></td>
                             <td><span th:text="${u.email}"> Email </span></td>
-                            <td><span th:text="${u.mobile}"> Mobile </span></td>
+                            <td><span th:text="${u.phone}"> Mobile </span></td>
                             <td>
                                 <span th:if="${u.enabled}"> <i class="fas fa-check"></i> </span>
                                 <span th:unless="${u.enabled}"> <i class="fas fa-times"></i> </span>

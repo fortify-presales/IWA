@@ -54,17 +54,17 @@
                         <p><span th:text="${product.description}"> Description </span></p>
                         <h4 class="price pt-2 pb-4 item-price">
                             <del th:if="${product.onSale == true}">
-                                <span th:text="${#strings.replace(#numbers.formatCurrency(product.price), '.00', '')}"> Price </span>
+                                <span th:text="${currencySymbol + #strings.replace(#numbers.formatDecimal(product.price, 0, 2), '.00', '')}"> Price </span>
                             </del>
-                            <span th:if="${product.onSale == false}" th:text="${#strings.replace(#numbers.formatCurrency(product.price), '.00', '')}"> Price </span>
+                            <span th:if="${product.onSale == false}" th:text="${currencySymbol + #strings.replace(#numbers.formatDecimal(product.price, 0, 2), '.00', '')}"> Price </span>
                             <span th:if="${product.onSale == true}"> &mdash; </span>
-                            <span th:if="${product.onSale == true}" th:text="${#strings.replace(#numbers.formatCurrency(product.salePrice), '.00', '')}"> Sale Price </span>
+                            <span th:if="${product.onSale == true}" th:text="${currencySymbol + #strings.replace(#numbers.formatDecimal(product.salePrice, 0, 2), '.00', '')}"> Sale Price </span>
                             <span th:if="${product.inStock}" class="badge bg-success">In Stock</span>
                             <span th:unless="${product.inStock}" class="badge bg-danger">Out of Stock</span>
                             <span th:unless="${product.inStock}" th:text="|In stock in ${product.timeToStock} days|" class="badge bg-light text-dark"> </span>
                         </h4>
 
-                        <shopping-cart-add th:attr="pid=${product.id}"></shopping-cart-add>
+                        <shopping-cart-add th:attr="pid=${product.id},instock=${product.inStock}"></shopping-cart-add>
                         <!--div class="mb-5">
                             <div class="input-group mb-3" style="max-width: 220px;">
                                 <div class="input-group-prepend">

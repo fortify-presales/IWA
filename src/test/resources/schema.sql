@@ -19,9 +19,15 @@ create table users
     username     varchar(255) not null,
     password     varchar(255),
     date_created timestamp,
-    name         varchar(255) not null,
+    first_name   varchar(255) not null,
+    last_name    varchar(255) not null,
     email        varchar(255) not null,
-    mobile       varchar(255) not null,
+    phone        varchar(255) not null,
+    address      varchar(255) default null,
+    city         varchar(255) default null,
+    state        varchar(255) default null,
+    zip          varchar(255) default null,
+    country      varchar(255) default null,
     enabled      bit(1)       not null,
     primary key (id)
 );
@@ -65,6 +71,7 @@ create table orders
     order_num       varchar(255)    not null,
     order_date      datetime        default NOW(),
     amount          float           not null,
+    cart            clob            default null,
     shipped         bit(1)          not null,
     shipped_date    datetime        default null,
     primary key (id)

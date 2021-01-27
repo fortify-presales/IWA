@@ -11,7 +11,7 @@
         </div>
       </div>
     </div>
-    <p><a v-on:click="addToCart()" href="#" class="buy-now btn btn-sm height-auto px-4 py-3 btn-primary">Add To Cart</a></p>
+    <p><a v-on:click="addToCart()" :disabled="!instock" href="#" class="buy-now btn btn-sm height-auto px-4 py-3 btn-primary">Add To Cart</a></p>
   </div>
 </template>
 
@@ -19,27 +19,26 @@
   module.exports = {
     name: 'shopping-cart-add',
     props: {
-      'pid': String
+      'pid': String,
+      'instock': Boolean
     },
     data: function() {
       return {
           cart: [],
           id: this.pid,
+          instock: this.instock,
           quantity: this.quantity
       };
     },
     methods: {
       incrementQuantity: function() {
-        console.log("clicked incrementQuantity on: " + this);
         this.quantity++;
       },
       decrementQuantity: function() {
-        console.log("clicked decrementQuantity on: " + this);
         if (this.quantity > 0) this.quantity--;
       },
       quantityTextEntered(e) {
         const inputVal = e.target.value;
-        console.log("quantityTextEntered: " + inputVal);
         if (isNaN(inputVal)) alert("Please enter a valid number");
         else {
           this.quantity = parseInt(inputVal);
@@ -47,18 +46,15 @@
         }
       },
       addToCart() {
-        console.log("clicked addToCart on: " + this);
         const newItem = { id: this.id, quantity: this.quantity };
         const index = this.cart.findIndex(x => x.id === this.id);
         if (index >= 0) {
-          console.log("removing existing item for " + this.id + " from cart")
           this.cart.splice(index, 1);
         }
         this.cart.push(newItem);
         this.saveCart();
       },
       saveCart() {
-        console.log("saving cart to local storage")
         const parsed = JSON.stringify(this.cart);
         localStorage.setItem('cart', parsed);
         this.updateCartCount()
@@ -68,13 +64,10 @@
             (sum, obj) => sum + parseInt(obj['quantity'])
             ,0
         );
-        console.log("emitting 'updateCartCount' event for " + cartCount + " items")
         this.$root.$emit('updateCartCount', cartCount);
       }
     },
     mounted() {
-      console.log("add-to-cart::mounted");
-      console.log("retrieving cart from local storage");
       if (localStorage.getItem('cart')) {
         try {
           this.cart = JSON.parse(localStorage.getItem('cart'));
@@ -84,6 +77,7 @@
         }
       }
       this.quantity = 1;
+      if (this.$props.instock) this.instock = this.$props.instock;
     }
   };
 </script>

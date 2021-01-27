@@ -22,39 +22,28 @@
 
             <div class="site-section">
                 <div class="container">
-                    <div class="row mb-5">
+                    <!--div class="row mb-5">
                         <div class="col-md-12">
                             <div class="bg-light rounded p-3">
                                 <p class="mb-0">Returning customer? <a href="#" class="d-inline-block">Click here</a> to login</p>
                             </div>
                         </div>
-                    </div>
+                    </div-->
                     <div class="row">
                         <div class="col-md-6 mb-5 mb-md-0">
                             <h2 class="h3 mb-3 text-black">Billing Details</h2>
                             <div class="p-3 p-lg-5 border">
                                 <div class="form-group">
-                                    <label for="c_country" class="text-black">Country <span class="text-danger">*</span></label>
-                                    <select id="c_country" class="form-control">
-                                        <option value="1">Select a country</option>
-                                        <option value="2">bangladesh</option>
-                                        <option value="3">Algeria</option>
-                                        <option value="4">Afghanistan</option>
-                                        <option value="5">Ghana</option>
-                                        <option value="6">Albania</option>
-                                        <option value="7">Bahrain</option>
-                                        <option value="8">Colombia</option>
-                                        <option value="9">Dominican Republic</option>
-                                    </select>
+                                    <div th:replace="fragments/country-selector.html :: countrySelector('')"></div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-md-6">
                                         <label for="c_fname" class="text-black">First Name <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="c_fname" name="c_fname">
+                                        <input th:value="${firstname}" type="text" class="form-control" id="c_fname" name="c_fname">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="c_lname" class="text-black">Last Name <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="c_lname" name="c_lname">
+                                        <input th:value="${lastname}" type="text" class="form-control" id="c_lname" name="c_lname">
                                     </div>
                                 </div>
 
@@ -78,11 +67,11 @@
 
                                 <div class="form-group row">
                                     <div class="col-md-6">
-                                        <label for="c_state_country" class="text-black">State / Country <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="c_state_country" name="c_state_country">
+                                        <label for="c_state_region" class="text-black">State / Region <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="c_state_region" name="c_state_region">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="c_postal_zip" class="text-black">Posta / Zip <span class="text-danger">*</span></label>
+                                        <label for="c_postal_zip" class="text-black">Postal / Zip <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="c_postal_zip" name="c_postal_zip">
                                     </div>
                                 </div>
@@ -90,31 +79,13 @@
                                 <div class="form-group row mb-5">
                                     <div class="col-md-6">
                                         <label for="c_email_address" class="text-black">Email Address <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="c_email_address" name="c_email_address">
+                                        <input th:value="${orderForm.getUser().email}" type="text" class="form-control" id="c_email_address" name="c_email_address">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="c_phone" class="text-black">Phone <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="c_phone" name="c_phone" placeholder="Phone Number">
+                                        <input th:value="${orderForm.getUser().phone}" type="text" class="form-control" id="c_phone" name="c_phone" placeholder="Phone Number">
                                     </div>
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="c_create_account" class="text-black" data-toggle="collapse" href="#create_an_account"
-                                           role="button" aria-expanded="false" aria-controls="create_an_account"><input type="checkbox" value="1"
-                                                                                                                        id="c_create_account"> Create an account?</label>
-                                    <div class="collapse" id="create_an_account">
-                                        <div class="py-2">
-                                            <p class="mb-3">Create an account by entering the information below. If you are a returning customer
-                                                please login at the top of the page.</p>
-                                            <div class="form-group">
-                                                <label for="c_account_password" class="text-black">Account Password</label>
-                                                <input type="email" class="form-control" id="c_account_password" name="c_account_password"
-                                                       placeholder="">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
 
                                 <div class="form-group">
                                     <label for="c_ship_different_address" class="text-black" data-toggle="collapse"
@@ -125,21 +96,9 @@
                                         <div class="py-2">
 
                                             <div class="form-group">
-                                                <label for="c_diff_country" class="text-black">Country <span class="text-danger">*</span></label>
-                                                <select id="c_diff_country" class="form-control">
-                                                    <option value="1">Select a country</option>
-                                                    <option value="2">bangladesh</option>
-                                                    <option value="3">Algeria</option>
-                                                    <option value="4">Afghanistan</option>
-                                                    <option value="5">Ghana</option>
-                                                    <option value="6">Albania</option>
-                                                    <option value="7">Bahrain</option>
-                                                    <option value="8">Colombia</option>
-                                                    <option value="9">Dominican Republic</option>
-                                                </select>
+                                                <div th:replace="fragments/country-selector.html :: countrySelector('')"></div>
                                             </div>
-
-
+                                            
                                             <div class="form-group row">
                                                 <div class="col-md-6">
                                                     <label for="c_diff_fname" class="text-black">First Name <span class="text-danger">*</span></label>
@@ -172,9 +131,9 @@
 
                                             <div class="form-group row">
                                                 <div class="col-md-6">
-                                                    <label for="c_diff_state_country" class="text-black">State / Country <span
+                                                    <label for="c_diff_state_region" class="text-black">State / Region <span
                                                             class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="c_diff_state_country" name="c_diff_state_country">
+                                                    <input type="text" class="form-control" id="c_diff_state_region" name="c_diff_state_region">
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label for="c_diff_postal_zip" class="text-black">Posta / Zip <span
@@ -233,7 +192,7 @@
                                 <div class="col-md-12">
                                     <h2 class="h3 mb-3 text-black">Your Order</h2>
                                     <div class="p-3 p-lg-5 border">
-                                        <shopping-cart-summary></shopping-cart-summary>
+                                        <shopping-cart-summary th:attr="currency=${currencySymbol}"></shopping-cart-summary>
                                         <div class="border mb-3">
                                             <h3 class="h6 mb-0"><a class="d-block" data-toggle="collapse" href="#collapsebank" role="button"
                                                                    aria-expanded="false" aria-controls="collapsebank">Direct Bank Transfer</a></h3>
@@ -271,8 +230,12 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <button class="btn btn-primary btn-lg btn-block" onclick="window.location='/cart/confirm'">Place
-                                                Order</button>
+                                            <form action="#" th:action="@{/cart/order}" method="post">
+                                                <input hidden type="text" id="userId" th:field="*{orderForm.user}" th:value="${orderForm.user}">
+                                                <input hidden type="text" id="jsonCart" th:field="*{orderForm.cart}" th:value="${orderForm.cart}">
+                                                <input hidden type="text" id="orderAmount" th:field="*{orderForm.amount}" th:value="${orderForm.amount}">
+                                                <button type="submit" class="btn btn-primary btn-lg btn-block">Place Order</button>
+                                            </form>
                                         </div>
 
                                     </div>

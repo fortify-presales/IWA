@@ -20,10 +20,7 @@
 package com.microfocus.example.payload.response;
 
 import com.microfocus.example.entity.User;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.validation.constraints.*;
 import java.util.UUID;
 
 /**
@@ -35,9 +32,15 @@ public class UserResponse {
 
     private UUID id;
     private String username;
-    private String name;
+    private String firstName;
+    private String lastName;
     private String email;
-    private String mobile;
+    private String phone;
+    private String address;
+    private String city;
+    private String state;
+    private String zip;
+    private String country;
     private Boolean enabled;
 
     public UserResponse() {
@@ -46,9 +49,15 @@ public class UserResponse {
     public UserResponse(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
-        this.name = user.getName();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
         this.email = user.getEmail();
-        this.mobile = user.getMobile();
+        this.phone = user.getPhone();
+        this.address = user.getAddress();
+        this.city = user.getCity();
+        this.state = user.getState();
+        this.zip= user.getZip();
+        this.country = user.getCountry();
         this.enabled = user.getEnabled();
     }
 
@@ -60,16 +69,40 @@ public class UserResponse {
         return username;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public String getMobile() {
-        return mobile;
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public String getZip() {
+        return zip;
+    }
+
+    public String getCountry() {
+        return country;
     }
 
     public Boolean getEnabled() {

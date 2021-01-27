@@ -4,6 +4,11 @@
       layout:decorate="~{fragments/layout}">
     <head>
         <title>Shopping Cart</title>
+        <script>
+            if (localStorage.getItem('cart')) {
+                localStorage.removeItem('cart');
+            }
+        </script>
     </head>
     <body>
         <div layout:fragment="content" th:remove="tag">
@@ -26,7 +31,7 @@
                         <div class="col-md-12 text-center">
                             <span class="icon-check_circle display-3 text-success"></span>
                             <h2 class="display-3 text-black">Thank you!</h2>
-                            <p class="lead mb-5">You order was successfully completed.</p>
+                            <p class="lead mb-5">You order number is <a th:href="@{'/user/orders/' +  ${orderId}}"><span th:text="${orderNum}"> Order Num </span></a>.</p>
                             <p><a href="shop.html" class="btn btn-md height-auto px-4 py-3 btn-primary">Back to store</a></p>
                         </div>
                     </div>

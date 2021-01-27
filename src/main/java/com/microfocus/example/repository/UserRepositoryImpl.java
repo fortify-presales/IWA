@@ -78,7 +78,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 try {
                     Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                     ResultSet results = stmt.executeQuery(
-                            "SELECT u.id, u.username, u.password, u.name, u.email, u.mobile, u.enabled, a.name as authority " +
+                            "SELECT u.*, a.name as authority " +
                                     "FROM users u, authorities a INNER JOIN user_authorities ua on a.id = ua.authority_id " +
                                     "WHERE u.id = ua.user_id AND u.username LIKE '%" + username + "%'");
                     if (results.next()) {
@@ -91,11 +91,21 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                                 utmp = new User(results.getObject("id", UUID.class),
                                         results.getString("username"),
                                         results.getString("password"),
-                                        results.getString("name"),
+                                        results.getString("first_name"),
+                                        results.getString("last_name"),
                                         results.getString("email"),
-                                        results.getString("mobile"),
+                                        results.getString("phone"),
+                                        results.getString("address"),
+                                        results.getString("city"),
+                                        results.getString("state"),
+                                        results.getString("zip"),
+                                        results.getString("country"),
                                         results.getBoolean("enabled")
                                 );
+                                utmp.setCountry(results.getString("country"));
+                                utmp.setAddress(results.getString("address"));
+                                utmp.setState(results.getString("state"));
+                                utmp.setZip(results.getString("zip"));
                                 log.debug("Adding authority " + results.getString("authority") + " for user");
                                 authorities.add(new Authority(AuthorityType.valueOf(results.getString("authority"))));
                                 authorityCount++;

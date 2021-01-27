@@ -44,7 +44,6 @@ public class Order implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
             name = "UUID",
@@ -52,7 +51,6 @@ public class Order implements Serializable {
     )
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
-    //private Integer id;
 
     @ManyToOne
     private User user;
@@ -68,6 +66,8 @@ public class Order implements Serializable {
 
     private float amount;
 
+    private String cart;
+
     @NotNull
     private Boolean shipped;
 
@@ -82,12 +82,13 @@ public class Order implements Serializable {
         this.orderDate = calendar.getTime();
     }
 
-    public Order(UUID id, User user, Date orderDate, String orderNum, float amount, boolean shipped) {
+    public Order(UUID id, User user, Date orderDate, String orderNum, float amount, String cart, boolean shipped) {
         this.id = id;
         this.user = user;
         this.orderDate = orderDate;
         this.orderNum = orderNum;
         this.amount = amount;
+        this.cart = cart;
         this.shipped = shipped;
     }
 
@@ -119,7 +120,7 @@ public class Order implements Serializable {
         return orderNum;
     }
 
-    public void setOrderNum(String name) {
+    public void setOrderNum(String orderNum) {
         this.orderNum = orderNum;
     }
 
@@ -129,6 +130,14 @@ public class Order implements Serializable {
 
     public void setAmount(float amount) {
         this.amount = amount;
+    }
+
+    public String getCart() {
+        return this.cart;
+    }
+
+    public void setCart(String cart) {
+        this.cart = cart;
     }
 
     public Boolean getShipped() {

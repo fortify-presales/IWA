@@ -47,35 +47,37 @@ pipeline {
     // Note: the pipeline needs to be executed at least once for the parameters to be available
     //
     parameters {
-        booleanParam(name: 'SCA_LOCAL',       	defaultValue: params.parameterName ?: false,
+        booleanParam(name: 'SCA_LOCAL',       	defaultValue: params.SCA_LOCAL_DEFAULT ?: false,
             description: 'Use (local) Fortify SCA for Static Application Security Testing')
-        booleanParam(name: 'SCA_OSS',      defaultValue: params.parameterName ?: false,
+        booleanParam(name: 'SCA_OSS',           defaultValue: params.SCA_OSS_DEFAULT ?: false,
             description: 'Use Fortify SCA with Sonatype Nexus IQ for Open Source Susceptibility Analysis')
-        booleanParam(name: 'SCANCENTRAL_SAST', 	defaultValue: params.parameterName ?: false,
+        booleanParam(name: 'SCANCENTRAL_SAST', 	defaultValue: params.SCANCENTRAL_SAST_DEFAULT ?: false,
             description: 'Run a remote scan using Scan Central SAST (SCA) for Static Application Security Testing')
-        booleanParam(name: 'SCANCENTRAL_DAST', 	defaultValue: params.parameterName ?: false,
+        booleanParam(name: 'SCANCENTRAL_DAST', 	defaultValue: params.SCANCENTRAL_DAST_DEFAULT ?: false,
             description: 'Run a remote scan using Scan Central DAST (WebInspect) for Dynamic Application Security Testing')
-        booleanParam(name: 'UPLOAD_TO_SSC',		defaultValue: params.parameterName ?: false,
+        booleanParam(name: 'UPLOAD_TO_SSC',		defaultValue: params.UPLOAD_TO_SSC_DEFAULT ?: false,
             description: 'Enable upload of scan results to Fortify Software Security Center')             
-        booleanParam(name: 'FOD',       	    defaultValue: params.parameterName ?: false,
+        booleanParam(name: 'FOD',       	    defaultValue: params.FOD_DEFAULT ?: false,
             description: 'Use Fortify on Demand for Static Application Security Testing')
-        booleanParam(name: 'RELEASE_TO_DOCKERHUB', defaultValue: params.parameterName ?: false,
+        booleanParam(name: 'RELEASE_TO_DOCKERHUB', defaultValue: params.RELEASE_TO_DOCKERHUB_DEFAULT ?: false,
                 description: 'Release built and tested image to Docker Hub')
-        string(name: 'SSC_URL',                 defaultValue: params.parameterName ?: "http://ssc.mfdemouk.com",
-                description: 'URL of SSC')
-        string(name: 'SSC_APP_VERSION_ID',      defaultValue: params.parameterName ?: "10002",
+        string(name: 'SSC_URL',                 defaultValue: params.SSC_URL_DEFAULT ?: "http://ssc.mfdemouk.com",
+                description: 'URL of Fortify Software Security Center')
+        string(name: 'SSC_APP_VERSION_ID',      defaultValue: params.SSC_APP_VERSION_ID_DEFAULT ?: "10002",
                 description: 'Id of Application in SSC to upload results to')
-        string(name: 'SSC_NOTIFY_EMAIL',        defaultValue: params.parameterName ?: "do-not-reply@microfocus.com",
+        string(name: 'SSC_NOTIFY_EMAIL',        defaultValue: params.SSC_NOTIFY_EMAIL_DEFAULT ?: "do-not-reply@microfocus.com",
                 description: 'User to notify with SSC/ScanCentral information')
-        string(name: 'SSC_SENSOR_POOL_UUID',    defaultValue: params.parameterName ?: "00000000-0000-0000-0000-000000000002",
+        string(name: 'SSC_SENSOR_POOL_UUID',    defaultValue: params.SSC_SENSOR_POOL_UUID_DEFAULT ?: "00000000-0000-0000-0000-000000000002",
                 description: 'UUID of Scan Central Sensor Pool to use - leave for Default Pool')
-        string(name: 'EDAST_URL',               defaultValue: params.parameterName ?: "http://scancentral.mfdemouk.com/api",
+        string(name: 'EDAST_URL',               defaultValue: params.EDAST_URL_DEFAULT ?: "http://scancentral.mfdemouk.com/api",
                 description: 'ScanCentral DAST API URI')
-        string(name: 'EDAST_CICD',              defaultValue: params.parameterName ?: "849638fd-6b27-42ff-af5c-08bdb82aaa69",
+        string(name: 'EDAST_CICD',              defaultValue: params.EDAST_CICD_DEFAULT ?: "849638fd-6b27-42ff-af5c-08bdb82aaa69",
                 description: 'ScanCentral DAST CICD identifier')
-        string(name: 'NEXUS_IQ_URL',            defaultValue: params.parameterName ?: "https://sonatype.mfdemouk.com",
+        string(name: 'FOD_RELEASE_ID',          defaultValue: params.FOD_RELEASE_ID_DEFAULT ?: "1000",
+                description: 'Fortify on Demand Release Id')
+        string(name: 'NEXUS_IQ_URL',            defaultValue: params.NEXUS_IQ_URL_DEFAULT ?: "https://sonatype.mfdemouk.com",
                 description: 'Nexus IQ URL')
-        string(name: 'DOCKER_ORG',              defaultValue: params.parameterName ?: "mfdemouk",
+        string(name: 'DOCKER_ORG',              defaultValue: params.DOCKER_ORG_DEFAULT ?: "mfdemouk",
                 description: 'Docker organisation (in Docker Hub) to push released images to')
     }
 
@@ -83,14 +85,14 @@ pipeline {
         //
         // Application settings
         //
-		APP_NAME = "IWA-Java"                      		// Application name
+		APP_NAME = "IWA-Java"                      		    // Application name
         APP_VER = "master"                                  // Application release - GitHub master branch
         COMPONENT_NAME = "iwa"                              // Component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         GIT_CREDS = credentials('iwa-git-creds-id')
         JAVA_VERSION = 8                                    // Java version to compile as
         ISSUE_IDS = ""                                      // List of issues found from commit
-        FOD_RELEASE_ID = credentials('iwa-fod-release-id')
+        //FOD_RELEASE_ID = credentials('iwa-fod-release-id')
         FOD_UPLOAD_DIR = 'fod'                              // Directory where FOD upload Zip is constructed
         SSC_AUTH_TOKEN = credentials('iwa-ssc-ci-token-id')
         EDAST_AUTH = credentials('iwa-edast-auth-id')

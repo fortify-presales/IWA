@@ -19,7 +19,9 @@
 
 package com.microfocus.example.repository;
 
+import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.Order;
+import com.microfocus.example.payload.request.OrderRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,11 +94,16 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         query.executeUpdate();
     }
 
-    /*public Order save(OrderForm Order) {
-        Order m =  new Order();
-        m.setUser(Order.getUser());
-        m.setText(Order.getText());
-        return OrderRepositoryBasic.save(m);
+    /*public Order save(OrderRequest order) {
+        Order o =  new Order();
+        o.setOrderNum(order.getOrderNum());
+        o.setUser(order.getUserId());
+        o.setOrderDate(order.getOrderDate());
+        o.setAmount(order.getAmount());
+        o.setCart(order.getCart());
+        o.setShipped(order.getShipped());
+        o.setShippedDate(order.getShippedDate());
+        return orderRepositoryBasic.save(o);
     }*/
 
 }

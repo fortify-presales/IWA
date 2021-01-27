@@ -75,11 +75,10 @@ public class ProductController {
         return "products/view";
     }
 
-
     private Model setModelDefaults(Model model, Principal principal, String controllerName, String actionName) {
         Locale currentLocale = Locale.getDefault();
         Currency currency = Currency.getInstance(currentLocale);
-        model.addAttribute("currencySymbol", currency.getCurrencyCode());
+        model.addAttribute("currencySymbol", currency.getSymbol());
         model.addAttribute("user", WebUtils.getLoggedInUser(principal));
         model.addAttribute("messageCount", "0");
         model.addAttribute("controllerName", controllerName);

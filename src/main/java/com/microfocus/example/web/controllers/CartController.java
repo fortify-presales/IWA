@@ -19,19 +19,25 @@
 
 package com.microfocus.example.web.controllers;
 
-import com.microfocus.example.entity.Product;
+import com.microfocus.example.entity.CustomUserDetails;
+import com.microfocus.example.entity.Order;
+import com.microfocus.example.entity.User;
+import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.service.ProductService;
+import com.microfocus.example.service.UserService;
 import com.microfocus.example.utils.WebUtils;
+import com.microfocus.example.web.form.OrderForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.*;
 
@@ -49,25 +55,70 @@ public class CartController {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping(value = {"", "/"})
     public String index(Model model, Principal principal) {
+        setModelDefaults(model, principal, "CartController", "index");
         return "cart/index";
     }
 
     @GetMapping("/checkout")
     public String checkout(Model model, Principal principal) {
+        CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        Optional<User> optionalUser = userService.findUserById(user.getId());
+        if (optionalUser.isPresent()) {
+            User utmp = optionalUser.get();
+            String[] names = utmp.getFirstName().split(" ");
+            OrderForm orderForm = new OrderForm();
+            orderForm.setUser(utmp);
+            model.addAttribute("firstname", names[0]);
+            model.addAttribute("lastname", names[names.length-1]);
+            model.addAttribute("orderForm", orderForm);
+            model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
+        } else {
+            model.addAttribute("message", "Internal error accessing user!");
+            model.addAttribute("alertClass", "alert-danger");
+            return "user/not-found";
+        }
+        this.setModelDefaults(model, principal, "Cart", "checkout");
         return "cart/checkout";
     }
 
-    @GetMapping("/confirmation")
+    @PostMapping("/order")
+    public String cartOrder(@Valid @ModelAttribute("orderForm") OrderForm orderForm,
+                                  BindingResult bindingResult, Model model,
+                                  RedirectAttributes redirectAttributes,
+                                  Principal principal) {
+        if (bindingResult.hasErrors()) {
+            return "cart/confirm";
+        } else {
+            try {
+                //userService.saveUserFromUserForm(userForm);
+                Order otmp = productService.newOrderFromOrderForm(orderForm);
+                redirectAttributes.addFlashAttribute("orderNum", otmp.getOrderNum());
+                redirectAttributes.addFlashAttribute("orderId", otmp.getId());
+                return "redirect:/cart/confirm";
+            } catch (UserNotFoundException ex) {
+                log.error("UserNotFoundException saving profile: " + principal.toString());
+                //FieldError usernameError = new FieldError("userForm", "username", ex.getMessage());
+                //bindingResult.addError(usernameError);
+            }
+        }
+        return "cart/confirm";
+    }
+
+    @GetMapping("/confirm")
     public String order(Model model, Principal principal) {
-        return "cart/confirmation";
+        setModelDefaults(model, principal, "CartController", "confirm");
+        return "cart/confirm";
     }
 
     private Model setModelDefaults(Model model, Principal principal, String controllerName, String actionName) {
         Locale currentLocale = Locale.getDefault();
         Currency currency = Currency.getInstance(currentLocale);
-        model.addAttribute("currencySymbol", currency.getCurrencyCode());
+        model.addAttribute("currencySymbol", currency.getSymbol());
         model.addAttribute("user", WebUtils.getLoggedInUser(principal));
         model.addAttribute("messageCount", "0");
         model.addAttribute("controllerName", controllerName);

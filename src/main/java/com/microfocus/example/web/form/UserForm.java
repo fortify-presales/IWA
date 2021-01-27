@@ -20,10 +20,10 @@
 package com.microfocus.example.web.form;
 
 import com.microfocus.example.entity.User;
-import com.microfocus.example.web.validation.ValidPassword;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import javax.persistence.Column;
 import javax.validation.constraints.*;
 import java.util.UUID;
 
@@ -50,17 +50,29 @@ public class UserForm {
 
     private String confirmPassword;
 
-    @NotEmpty(message = "{user.name.notEmpty}")
-    @Size(min = 6, max = 40, message = "{user.name.invalidLength}")
-    private String name;
+    @NotEmpty(message = "{user.firstName.notEmpty}")
+    @Size(min = 2, max = 40, message = "{user.firstName.invalidLength}")
+    private String firstName;
+
+    @NotEmpty(message = "{user.lastName.notEmpty}")
+    @Size(min = 2, max = 40, message = "{user.lastName.invalidLength}")
+    private String lastName;
 
     @NotEmpty(message = "{user.email.notEmpty}")
     @Email(message = "{user.email.invalidFormat")
+    @Column(unique = true)
     private String email;
 
-    @NotEmpty(message = "{user.mobile.notEmpty}")
-    @Pattern(regexp = "(^$|[0-9]{10})", message = "{user.mobile.invalidFormat}")
-    private String mobile;
+    @NotEmpty(message = "{user.phone.notEmpty}")
+    @Pattern(regexp = "(^$|[0-9]{10})", message = "{user.phone.invalidFormat}")
+    @Column(unique = true)
+    private String phone;
+
+    private String address;
+    private String city;
+    private String state;
+    private String zip;
+    private String country;
 
     private Boolean enabled;
 
@@ -70,9 +82,16 @@ public class UserForm {
     public UserForm(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
-        this.name = user.getName();
+        this.password = user.getPassword();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
         this.email = user.getEmail();
-        this.mobile = user.getMobile();
+        this.phone = user.getPhone();
+        this.address = user.getAddress();
+        this.city = user.getCity();
+        this.state = user.getState();
+        this.zip = user.getZip();
+        this.country = user.getCountry();
         this.enabled = user.getEnabled();
     }
 
@@ -108,12 +127,20 @@ public class UserForm {
         this.confirmPassword = confirmPassword;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {
@@ -124,12 +151,52 @@ public class UserForm {
         this.email = email;
     }
 
-    public String getMobile() {
-        return mobile;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getZip() {
+        return zip;
+    }
+
+    public void setZip(String zip) {
+        this.zip = zip;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public Boolean getEnabled() {

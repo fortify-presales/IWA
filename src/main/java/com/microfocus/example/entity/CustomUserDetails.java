@@ -75,7 +75,7 @@ public class CustomUserDetails implements UserDetails {
     }
 
     public String getName() {
-        return user.getName();
+        return user.getFirstName();
     }
 
     public String getEmail() {
@@ -83,7 +83,7 @@ public class CustomUserDetails implements UserDetails {
     }
 
     public String getMobile() {
-        return user.getMobile();
+        return user.getPhone();
     }
 
     public boolean isEnabled() { return user.getEnabled(); }

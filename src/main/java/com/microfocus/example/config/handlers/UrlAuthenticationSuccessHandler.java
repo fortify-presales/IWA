@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
 
 /**
@@ -79,6 +80,8 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
         boolean isUser = false;
         boolean isAdmin = false;
         String targetUrl = request.getParameter("referer");
+        //if (targetUrl.endsWith("/")) targetUrl = targetUrl.substring(0, targetUrl.length());
+        String targetPath = new URL(targetUrl).getPath();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for (GrantedAuthority grantedAuthority : authorities) {
@@ -92,7 +95,16 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
         if (isAdmin) {
             targetUrl = "/admin";
         } else if (isUser) {
-            // use referring URL
+            log.debug("targetPath=" + targetPath);
+            log.debug("targetUrl=" + targetUrl);
+            if (targetUrl.endsWith("/cart")) {
+                targetUrl = targetUrl.replace("/cart", "/cart/checkout");
+            } else if (targetUrl.endsWith("/login")) {
+                targetUrl = targetUrl.replace("/login", "/user");
+            } else if (targetPath.equals("/")) {
+                targetUrl = targetUrl + "user";
+            }
+            // else use referring URL
         } else {
             throw new IllegalStateException();
         }

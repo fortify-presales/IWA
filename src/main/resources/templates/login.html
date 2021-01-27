@@ -23,7 +23,7 @@
                                 <div class="invisible">Site message</div>
                                 <h1 class="h3 mb-3 font-weight-normal">Enter your details</h1>
                                 <div th:if="${param.error}">
-                                    <div class="alert alert-danger">
+                                    <div th:if="${#session!= null and #session.getAttribute('SPRING_SECURITY_LAST_EXCEPTION') != null }" class="alert alert-danger">
                                         <span th:if="${#session!= null and #session.getAttribute('SPRING_SECURITY_LAST_EXCEPTION') != null}"
                                               th:utext="${#session.getAttribute('SPRING_SECURITY_LAST_EXCEPTION').message}">
                                             Static summary
@@ -32,7 +32,7 @@
                                 </div>
                                 <div th:if="${param.logout}">
                                     <div class="alert alert-info">
-                                        You have been successfully logged out.
+                                        You have been logged out. Please re-login.
                                     </div>
                                 </div>
                                 <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">

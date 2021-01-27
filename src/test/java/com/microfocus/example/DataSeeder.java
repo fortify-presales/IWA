@@ -16,16 +16,18 @@ public class DataSeeder {
     // User 1 - stored in database on startup
     public static final UUID TEST_USER1_ID = UUID.fromString("bd5b9e2f-ac55-4e34-a76d-599b7e5b3308");
     public static final String TEST_USER1_USERNAME = "test1";
-    public static final String TEST_USER1_NAME = "Test User 1";
+    public static final String TEST_USER1_FIRST_NAME = "Test";
+    public static final String TEST_USER1_LAST_NAME = "User 1";
     public static final String TEST_USER1_PASSWORD = "0n3L0ngPa55w0rd";
     public static final String TEST_USER1_EMAIL = "test1@localhost";
-    public static final String TEST_USER1_MOBILE = "0123456789";
+    public static final String TEST_USER1_PHONE = "0123456789";
     // User 2 - created in tests
     public static final String TEST_USER2_USERNAME = "test2";
-    public static final String TEST_USER2_NAME = "Test User 2";
+    public static final String TEST_USER2_FIRST_NAME = "Test";
+    public static final String TEST_USER2_LAST_NAME = "User 2";
     public static final String TEST_USER2_PASSWORD = "0n3L0ngPa55w0rd";
     public static final String TEST_USER2_EMAIL = "test2@localhost";
-    public static final String TEST_USER2_MOBILE = "0123456789";
+    public static final String TEST_USER2_PHONE = "0123456789";
 
     // Test Products:
     // Product 1 - stored in database on startup
@@ -68,9 +70,10 @@ public class DataSeeder {
         User user = new User();
         user.setUsername(TEST_USER2_USERNAME);
         user.setPassword(EncryptedPasswordUtils.encryptPassword(TEST_USER2_PASSWORD));
-        user.setName(TEST_USER2_NAME);
+        user.setFirstName(TEST_USER2_FIRST_NAME);
+        user.setLastName(TEST_USER2_LAST_NAME);
         user.setEmail(TEST_USER2_EMAIL);
-        user.setMobile(TEST_USER2_MOBILE);
+        user.setPhone(TEST_USER2_PHONE);
         // no roles
         return user;
     }

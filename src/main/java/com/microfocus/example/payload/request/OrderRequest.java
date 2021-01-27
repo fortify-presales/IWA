@@ -17,28 +17,30 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.web.form;
+package com.microfocus.example.payload.request;
 
-import com.microfocus.example.entity.Message;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.microfocus.example.entity.Order;
+import com.microfocus.example.entity.Product;
 import com.microfocus.example.entity.User;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import javax.persistence.Column;
+import javax.validation.constraints.*;
 import java.util.Date;
 import java.util.UUID;
 
 /**
- * Form backing entity/DTO for updating order
+ * Order Request DTO
  *
  * @author Kevin A. Lee
  */
-public class OrderForm {
+public class OrderRequest {
 
+    @JsonIgnore
     private UUID id;
 
-    private User user;
+    private UUID userId;
 
     private String orderNum;
 
@@ -54,12 +56,11 @@ public class OrderForm {
     @DateTimeFormat(pattern = "MM-dd-yyyy")
     private Date shippedDate;
 
-    public OrderForm() {
+    public OrderRequest() {
     }
 
-    public OrderForm(Order order) {
-        this.id = order.getId();
-        this.user = order.getUser();
+    public OrderRequest(Order order) {
+        this.userId = order.getUser().getId();
         this.orderNum = order.getOrderNum();
         this.orderDate = order.getOrderDate();
         this.amount = order.getAmount();
@@ -76,20 +77,12 @@ public class OrderForm {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public UUID getUserId() {
+        return this.userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getOrderNum() {
-        return orderNum;
-    }
-
-    public void setOrderNum(String orderNum) {
-        this.orderNum = orderNum;
+    public void setUserId(UUID userId) {
+        this.userId = userId;
     }
 
     public Date getOrderDate() {
@@ -98,6 +91,14 @@ public class OrderForm {
 
     public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public String getOrderNum() {
+        return orderNum;
+    }
+
+    public void setOrderNum(String name) {
+        this.orderNum = orderNum;
     }
 
     public float getAmount() {
@@ -134,7 +135,6 @@ public class OrderForm {
 
     @Override
     public String toString() {
-        return "OrderForm(" + id + " : " + orderNum + " for: " + user.getUsername() + " amount : " + amount + ")";
+        return "OrderRequest(" + id + " : " + orderNum + " for: " + userId + " amount : " + amount + ")";
     }
-
 }

@@ -798,11 +798,11 @@ a:hover {
 }
 
 .site-blocks-cover .main-title {
-    color: #fff;
+    color: #000;
     text-shadow: 2px 2px #cccccc;
 }
 .site-blocks-cover .sub-title {
-    color: #fff;
+    color: #000;
     text-shadow: 2px 2px #cccccc;
 }
 
@@ -1105,6 +1105,7 @@ a:hover {
 }
 
 .site-block-order-table td, .site-block-order-table th {
+    font-weight: normal;
     color: #000;
 }
 

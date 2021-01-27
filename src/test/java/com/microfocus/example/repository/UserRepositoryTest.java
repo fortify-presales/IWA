@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.microfocus.example.entity.Authority;
-import com.microfocus.example.entity.AuthorityType;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -18,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.microfocus.example.BaseIntegrationTest;
 import com.microfocus.example.DataSeeder;
 import com.microfocus.example.entity.User;
-
-import javax.xml.crypto.Data;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserRepositoryTest extends BaseIntegrationTest {
@@ -93,16 +90,16 @@ public class UserRepositoryTest extends BaseIntegrationTest {
         if (users.size() > 0) {
             User u = users.get(0);
             assertThat(u.getUsername()).isEqualTo(DataSeeder.TEST_USER2_USERNAME);
-            u.setName("Test User 2 updated");
+            u.setFirstName("Test Updated");
             u.setEmail("test2@updated.com");
-            u.setMobile("0987654321");
+            u.setPhone("0987654321");
             userRepository.saveAndFlush(u);
             users = userRepository.findUsersByUsername(DataSeeder.TEST_USER2_USERNAME);
             if (users.size() > 0) {
                 u = users.get(0);
-                assertThat(u.getName()).isEqualTo("Test User 2 updated");
+                assertThat(u.getFirstName()).isEqualTo("Test Updated");
                 assertThat(u.getEmail()).isEqualTo("test2@updated.com");
-                assertThat(u.getMobile()).isEqualTo("0987654321");
+                assertThat(u.getPhone()).isEqualTo("0987654321");
             }
         } else
             fail("Test User 2 not found");

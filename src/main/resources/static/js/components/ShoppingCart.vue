@@ -125,6 +125,9 @@
 <script>
   module.exports = {
     name: 'shopping-cart',
+    props: {
+      'currency': String
+    },
     data: function() {
       return {
         currencySymbol: '$',
@@ -141,7 +144,7 @@
         try {
           lsCart = JSON.parse(localStorage.getItem('cart'));
         } catch(e) {
-          console.log("shopping-cart::error retrieving cart from localStorage");
+          console.log("Error retrieving cart from localStorage");
           localStorage.removeItem('cart');
         }
       }
@@ -210,13 +213,11 @@
       removeItem(itemId) {
         const index = this.cart.findIndex(x => x.id === itemId);
         if (index >= 0) {
-          console.log("shopping-cart::removing existing item '" + itemId + "' from cart")
           this.cart.splice(index, 1);
         }
         this.saveCart();
       },
       saveCart() {
-        console.log("shopping-cart::saving cart to local storage");
         let sCart = [];
         let cartCount = 0;
         this.cart.forEach(obj => {
@@ -234,12 +235,10 @@
         const parsed = JSON.stringify(sCart);
         localStorage.setItem('cart', parsed);
         // send update cart count event
-        console.log("shopping-cart::emitting 'updateCartCount' event for " + cartCount + " items")
         this.$root.$emit('updateCartCount', cartCount);
       },
       updateCartCount() {
         const cartCount = this.cart.reduce((sum, obj) => sum + parseInt(obj['quantity']),0);
-        console.log("shopping-cart::emitting 'updateCartCount' event for " + cartCount + " items")
         this.$root.$emit('updateCartCount', cartCount);
       },
       continueShopping() {
@@ -268,7 +267,7 @@
       }
     },
     mounted() {
-
+      if (this.$props.currency) this.currencySymbol = this.$props.currency;
     }
   };
 </script>

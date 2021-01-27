@@ -31,7 +31,8 @@ if (app != null) {
             'shopping-cart-add': httpVueLoader('/js/components/CartAdd.vue'),
             'shopping-cart-count': httpVueLoader('/js/components/CartCount.vue'),
             'shopping-cart-summary': httpVueLoader('/js/components/CartSummary.vue'),
-            'shopping-cart': httpVueLoader('/js/components/ShoppingCart.vue')
+            'shopping-cart': httpVueLoader('/js/components/ShoppingCart.vue'),
+            'order-summary': httpVueLoader('/js/components/OrderSummary.vue')
         }
     })
 }

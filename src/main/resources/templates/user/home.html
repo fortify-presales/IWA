@@ -12,7 +12,7 @@
         <div class="bg-light py-3">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-12 mb-0"><a th:href="@{/user/}">User</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Profile</strong></div>
+                    <div class="col-md-12 mb-0"><a th:href="@{/user/}">User</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Home</strong></div>
                 </div>
             </div>
         </div>
@@ -24,7 +24,7 @@
                 <div class="row">
 
                     <div class="col-md-3 mr-auto">
-                        <div th:replace="fragments/user-menu.html :: userMenu('/user/profile')"></div>
+                        <div th:replace="fragments/user-menu.html :: userMenu('/user/home')"></div>
                     </div>
 
                     <div class="col-md-9">
@@ -36,37 +36,38 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="form-group row">
-                                <label for="username" class="col-sm-2 col-form-label">Username</label>
-                                <div class="col-sm-10">
-                                    <input type="text" readonly class="form-control" id="username" th:value="${userForm.username}">
+
+                            <div class="jumbotron">
+                                <h1 class="display-4">Hello, <span th:text="${fullname}"></span></h1>
+                                <p class="lead">
+                                    Welcome back to IWA Pharmacy Direct. This is your home page where you can check the status of your orders,
+                                    view any messages and update your profile.</p>
+                                <hr class="my-4">
+
+                                <div class="col-md-12">
+                                    <div th:if="${unreadMessageCount > 0}" class="alert alert-primary" role="alert">
+                                        You have <a th:href="@{/user/messages}" class="alert-link"><span th:text="${unreadMessageCount}"></span> new message(s)</a>.
+                                    </div>
+                                    <div th:if="${unreadMessageCount == 0}" class="alert alert-light" role="alert">
+                                        You have no new messages.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div th:if="${unshippedOrderCount > 0}" class="alert alert-info" role="alert">
+                                        You have <a th:href="@{/user/orders}" class="alert-link"><span th:text="${unshippedOrderCount}"></span> unshipped order(s)</a>.
+                                    </div>
+                                    <div th:if="${unshippedOrderCount == 0}" class="alert alert-light" role="alert">
+                                        You have no unshipped orders.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 mt-4">
+                                    <a class="btn btn-primary" th:href="@{/products}">Shop Now</a>
+                                    <a class="btn btn-primary" th:href="@{/user/profile}">View Profile</a>
                                 </div>
                             </div>
-                            <div class="form-group row">
-                                <label for="name" class="col-sm-2 col-form-label">Name</label>
-                                <div class="col-sm-10">
-                                    <input type="text" readonly class="form-control" id="name" th:value="${userForm.name}">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="email" class="col-sm-2 col-form-label">Email</label>
-                                <div class="col-sm-10">
-                                    <input type="text" readonly class="form-control" id="email" th:value="${userForm.email}">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="email" class="col-sm-2 col-form-label">Mobile</label>
-                                <div class="col-sm-10">
-                                    <input type="text" readonly class="form-control" id="mobile" th:value="${userForm.mobile}">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-sm-2"></div>
-                                <div class="col-sm-10">
-                                    <a class="btn btn-primary" th:href="@{/user/editProfile}">Edit Profile</a>
-                                    <a class="btn btn-info" th:href="@{/user/changePassword}">Change Password</a>
-                                </div>
-                            </div>
+
                         </form>
 
                     </div>

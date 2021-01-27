@@ -71,12 +71,12 @@
                                         <a class="nav-link" th:href="@{/login}"><i class="fas fa-sign-in-alt fa-fw"></i> Sign in </a>
                                     </li>
                                     <li sec:authorize="isAuthenticated()" class="has-children">
-                                        <a href="#" class="has-children" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                        <a href="#" class="has-children" role="button">
                                             <i class="fas fa-user-circle fa-fw"></i>
                                             <span th:text="@{${#authentication.name}}"></span>
                                         </a>
                                         <ul class="dropdown">
-                                            <li><a th:href="@{/user}"><i class="fas fa-address-card fa-fw"></i> User Profile </a></li>
+                                            <li><a th:href="@{/user}"><i class="fas fa-home fa-fw"></i> Home </a></li>
                                             <li><a th:href="@{/admin}" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fas fa-tools fa-fw"></i> Site Administration </a></li>
                                             <li><a th:href="@{/console}" target="_blank" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fas fa-database fa-fw"></i> Database Console</a></li>
                                             <li role="separator" class="divider"></li>

@@ -29,7 +29,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.microfocus.example.web.validation.ValidPassword;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
@@ -53,7 +52,6 @@ public class User implements Serializable {
     }
 
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
             name = "UUID",
@@ -61,7 +59,6 @@ public class User implements Serializable {
     )
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
-    //private Integer id;
 
     @NotEmpty(message = "{user.username.notEmpty}")
     @Size(min = 2, max = 10, message = "{user.username.invalidLength}")
@@ -75,19 +72,31 @@ public class User implements Serializable {
     @Transient
     private String confirmPassword;
 
-    @NotEmpty(message = "{user.name.notEmpty}")
-    @Size(min = 6, max = 40, message = "{user.name.invalidLength}")
-    private String name;
+    @NotEmpty(message = "{user.firstname.notEmpty}")
+    @Size(min = 2, max = 40, message = "{user.firstname.invalidLength}")
+    @Column(name = "first_name")
+    private String firstName;
+
+    @NotEmpty(message = "{user.firstname.notEmpty}")
+    @Size(min = 2, max = 40, message = "{user.firstname.invalidLength}")
+    @Column(name = "last_name")
+    private String lastName;
 
     @NotEmpty(message = "{user.email.notEmpty}")
     @Email(message = "{user.email.invalidFormat")
     @Column(unique = true)
     private String email;
 
-    @NotEmpty(message = "{user.mobile.notEmpty}")
-    @Pattern(regexp = "(^$|[0-9]{10})", message = "{user.mobile.invalidFormat}")
+    @NotEmpty(message = "{user.phone.notEmpty}")
+    @Pattern(regexp = "(^$|[0-9]{10})", message = "{user.phone.invalidFormat}")
     @Column(unique = true)
-    private String mobile;
+    private String phone;
+
+    private String address;
+    private String city;
+    private String state;
+    private String zip;
+    private String country;
 
     @JsonProperty(access =  JsonProperty.Access.WRITE_ONLY)
     @Column(name = "date_created")
@@ -106,14 +115,20 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(UUID id, String username, String password, String name, String email, String mobile,
-                boolean enabled) {
+    public User(UUID id, String username, String password, String firstName, String lastName, String email, String phone,
+                String address, String city, String state, String zip, String country, boolean enabled) {
         this.id = id;
         this.username = username;
         this.password = password;
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
-        this.mobile = mobile;
+        this.phone = phone;
+        this.address = address;
+        this.city = city;
+        this.state = state;
+        this.zip = zip;
+        this.country = country;
         this.enabled = enabled;
     }
 
@@ -151,12 +166,20 @@ public class User implements Serializable {
         this.confirmPassword = confirmPassword;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {
@@ -167,12 +190,52 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public String getMobile() {
-        return mobile;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getZip() {
+        return zip;
+    }
+
+    public void setZip(String zip) {
+        this.zip = zip;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public Date getDateCreated() {

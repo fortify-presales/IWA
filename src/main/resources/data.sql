@@ -4,18 +4,18 @@ INSERT INTO authorities (name, id)
 VALUES ('ROLE_USER', '6bdd6188-d659-4390-8d37-8f090d2ed69a');
 INSERT INTO authorities (name, id)
 values ('ROLE_API', 'dfc1d81b-4a7e-4248-80f7-8445ee5cb68e');
-INSERT INTO users (id, username, password, name, email, mobile, date_created, enabled)
+INSERT INTO users (id, username, password, first_name, last_name, email, phone, address, city, state, zip, country, date_created, enabled)
 VALUES ('e18c8bcc-935d-444d-a194-3a32a3b35a49', 'admin', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32',
-        'Admin User', 'admin@localhost', '0123456789', CURDATE(), 1);
-INSERT INTO users (id, username, password, name, email, mobile, date_created, enabled)
+        'Admin', 'User', 'admin@localhost', '0123456789', '', '', '', '', 'United Kingdom', CURDATE(), 1);
+INSERT INTO users (id, username, password, first_name, last_name, email, phone, address, city, state, zip, country, date_created, enabled)
 VALUES ('32e7db01-86bc-4687-9ecb-d79b265ac14f', 'user1', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32',
-        'User 1', 'user1@localhost', '0123456789', CURDATE(), 1);
-INSERT INTO users (id, username, password, name, email, mobile, date_created, enabled)
+        'First', 'User', 'user1@localhost', '0123456789', '1 Somewhere Street', 'London', 'Greater London', 'SW1', 'United Kingdom', CURDATE(), 1);
+INSERT INTO users (id, username, password, first_name, last_name, email, phone, address, city, state, zip, country, date_created, enabled)
 VALUES ('db4cfab1-ff1d-4bca-a662-394771841383', 'user2', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32',
-        'User 2', 'user2@localhost', '0123456789', CURDATE(), 1);
-INSERT INTO users (id, username, password, name, email, mobile, date_created, enabled)
+        'Second', 'User', 'user2@localhost', '0123456789', '1 Somewhere Street', 'London', 'Greater London', 'SW1', 'United Kingdom', CURDATE(), 1);
+INSERT INTO users (id, username, password, first_name, last_name, email, phone, address, city, state, zip, country, date_created, enabled)
 VALUES ('92a82f45-7a03-42f3-80f8-ce4e9892409d', 'api', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32',
-        'Api User 1', 'api@localhost', '0123456789', CURDATE(), 1);
+        'Api', 'User', 'api@localhost', '0123456789', '1 Somewhere Street', 'London', 'Greater London', 'SW1', 'United Kingdom', CURDATE(), 1);
 INSERT INTO user_authorities (authority_id, user_id)
 VALUES ('05970e74-c82b-4e21-b100-f8184d6e3454', 'e18c8bcc-935d-444d-a194-3a32a3b35a49');
 INSERT INTO user_authorities (authority_id, user_id)
@@ -99,11 +99,15 @@ INSERT INTO messages (id, user_id, text, read)
 values ('6aa03b01-4288-4e6e-bff6-dfe0f462cf68', '92a82f45-7a03-42f3-80f8-ce4e9892409d', 'Test message - please ignore!',
         0);
 
-INSERT INTO orders (id, user_id, order_date, order_num, amount, shipped)
-VALUES ('c9b31f33-17a4-4fcd-927e-c14cdee32201', '32e7db01-86bc-4687-9ecb-d79b265ac14f', CURDATE()-5, 'OID-P400-0001', 100.0, 0);
-INSERT INTO orders (id, user_id, order_date, order_num, amount, shipped)
-VALUES ('c94cbf6d-9baa-4a02-8eea-b13ceb43474d', '32e7db01-86bc-4687-9ecb-d79b265ac14f', CURDATE()-10, 'OID-P400-0001', 43.0, 0);
-INSERT INTO orders (id, user_id, order_date, order_num, amount, shipped, shipped_date)
-VALUES ('81550b4f-c660-41ec-a6f3-076b611add9b', '32e7db01-86bc-4687-9ecb-d79b265ac14f', CURDATE()-20, 'OID-P401-0009', 40.0, 1, CURDATE());
-INSERT INTO orders (id, user_id, order_date, order_num, amount, shipped)
-VALUES ('db4cfab1-ff1d-4bca-a662-394771841383', 'db4cfab1-ff1d-4bca-a662-394771841383', CURDATE()-10, 'OID-G320-0051', 20.0, 0);
+INSERT INTO orders (id, user_id, order_date, order_num, amount, shipped, cart)
+VALUES ('c9b31f33-17a4-4fcd-927e-c14cdee32201', '32e7db01-86bc-4687-9ecb-d79b265ac14f', CURDATE()-5, 'OID-P400-0001', 100.0, 0,
+        '[{"id":"6bbbeb10-6709-4163-a790-f691b09d6aca","name":"Dontax","price":25,"quantity":4}]');
+INSERT INTO orders (id, user_id, order_date, order_num, amount, shipped, cart)
+VALUES ('c94cbf6d-9baa-4a02-8eea-b13ceb43474d', '32e7db01-86bc-4687-9ecb-d79b265ac14f', CURDATE()-10, 'OID-P400-0001', 25.0, 0,
+        '[{"id":"6bbbeb10-6709-4163-a790-f691b09d6aca","name":"Dontax","price":25,"quantity":1}]');
+INSERT INTO orders (id, user_id, order_date, order_num, amount, shipped, shipped_date, cart)
+VALUES ('81550b4f-c660-41ec-a6f3-076b611add9b', '32e7db01-86bc-4687-9ecb-d79b265ac14f', CURDATE()-20, 'OID-P401-0009', 50.0, 1, CURDATE(),
+        '[{"id":"6bbbeb10-6709-4163-a790-f691b09d6aca","name":"Dontax","price":25,"quantity":2}]');
+INSERT INTO orders (id, user_id, order_date, order_num, amount, shipped, cart)
+VALUES ('db4cfab1-ff1d-4bca-a662-394771841383', 'db4cfab1-ff1d-4bca-a662-394771841383', CURDATE()-10, 'OID-G320-0051', 25.0, 0,
+        '[{"id":"6bbbeb10-6709-4163-a790-f691b09d6aca","name":"Dontax","price":25,"quantity":1}]');

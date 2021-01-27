@@ -103,16 +103,23 @@ public class UserService {
     }
 
     public User saveUserFromUserForm(UserForm userForm) throws InvalidPasswordException, UserNotFoundException {
+        log.debug("UserService:saveUserFromUserForm");
         Optional<User> optionalUser = userRepository.findUserByUsername(userForm.getUsername());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             if (!EncryptedPasswordUtils.matches(userForm.getPassword(), user.getPassword())) {
                 throw new InvalidPasswordException("Password is incorrect");
             }
-            user.setName(userForm.getName());
+            user.setFirstName(userForm.getFirstName());
+            user.setLastName(userForm.getLastName());
             user.setEmail(userForm.getEmail());
-            user.setMobile(userForm.getMobile());
-            return user;
+            user.setPhone(userForm.getPhone());
+            user.setAddress(user.getAddress());
+            user.setCity(user.getCity());
+            user.setState(user.getState());
+            user.setZip(user.getZip());
+            user.setCountry(user.getCountry());
+            return userRepository.saveAndFlush(user);
         } else {
             throw new UserNotFoundException("Username not found: " + userForm.getUsername());
         }
@@ -121,17 +128,20 @@ public class UserService {
     public User saveUserFromAdminUserForm(AdminUserForm adminUserForm) throws UserNotFoundException {
         Optional<User> optionalUser = userRepository.findUserByUsername(adminUserForm.getUsername());
         if (optionalUser.isPresent()) {
-            User utmp = optionalUser.get();
-            log.debug(utmp.toString());
-            utmp.setId(adminUserForm.getId());
-            utmp.setUsername(adminUserForm.getUsername());
-            utmp.setName(adminUserForm.getName());
-            utmp.setEmail(adminUserForm.getEmail());
-            utmp.setMobile(adminUserForm.getMobile());
-            utmp.setEnabled(adminUserForm.getEnabled());
-            log.debug("Saving utmp: " + adminUserForm.getUsername());
-            userRepository.save(utmp);
-            return utmp;
+            User user = optionalUser.get();
+            user.setId(adminUserForm.getId());
+            user.setUsername(adminUserForm.getUsername());
+            user.setFirstName(adminUserForm.getFirstName());
+            user.setLastName(adminUserForm.getLastName());
+            user.setEmail(adminUserForm.getEmail());
+            user.setPhone(adminUserForm.getPhone());
+            user.setAddress(adminUserForm.getAddress());
+            user.setCity(adminUserForm.getCity());
+            user.setState(adminUserForm.getState());
+            user.setZip(adminUserForm.getZip());
+            user.setCountry(adminUserForm.getCountry());
+            user.setEnabled(adminUserForm.getEnabled());
+            return userRepository.saveAndFlush(user);
         } else {
             throw new UserNotFoundException("Username not found: " + adminUserForm.getUsername());
         }
@@ -172,15 +182,21 @@ public class UserService {
         authorities.add(roleRepository.findByName("ROLE_USER").get());
         User utmp = new User();
         utmp.setUsername(adminNewUserForm.getUsername());
-        utmp.setName(adminNewUserForm.getName());
+        utmp.setFirstName(adminNewUserForm.getFirstName());
+        utmp.setLastName(adminNewUserForm.getLastName());
         utmp.setPassword(EncryptedPasswordUtils.encryptPassword(adminNewUserForm.getPassword()));
         utmp.setEmail(adminNewUserForm.getEmail());
-        utmp.setMobile(adminNewUserForm.getMobile());
+        utmp.setPhone(adminNewUserForm.getPhone());
+        utmp.setAddress(adminNewUserForm.getAddress());
+        utmp.setCity(adminNewUserForm.getCity());
+        utmp.setState(adminNewUserForm.getState());
+        utmp.setZip(adminNewUserForm.getZip());
+        utmp.setCountry(adminNewUserForm.getCountry());
+        utmp.setEnabled(adminNewUserForm.getEnabled());
         utmp.setEnabled(adminNewUserForm.getEnabled());
         utmp.setDateCreated(new Date());
         utmp.setAuthorities(authorities);
-        User newUser = userRepository.saveAndFlush(utmp);
-        return newUser;
+        return userRepository.saveAndFlush(utmp);
     }
 
     //

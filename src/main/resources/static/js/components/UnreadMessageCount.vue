@@ -11,7 +11,7 @@
       };
     },
     mounted() {
-      console.log("unread-message-count::mounted")
+      console.log("Using JWT Bearer token: " + jwtToken);
       axios
         .get("/api/v3/messages/unread-count/" + userId, {'headers': {'Authorization': 'Bearer ' + jwtToken}})
         .then(response => (this.count = response.data))

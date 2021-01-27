@@ -46,9 +46,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Controller for user pages
@@ -77,6 +75,27 @@ public class UserController {
         Optional<User> optionalUser = userService.findUserById(user.getId());
         if (optionalUser.isPresent()) {
             UserForm userForm = new UserForm(optionalUser.get());
+            model.addAttribute("username", userForm.getUsername());
+            model.addAttribute("fullname", userForm.getFirstName() + " " + userForm.getLastName());
+            model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
+            model.addAttribute("unreadMessageCount", userService.getUserUnreadMessageCount(user.getId()));
+            model.addAttribute("unshippedOrderCount", userService.getUserUnshippedOrderCount(user.getId()));
+        } else {
+            model.addAttribute("message", "Internal error accessing user!");
+            model.addAttribute("alertClass", "alert-danger");
+            return "user/not-found";
+        }
+        model.addAttribute("controllerName", "User");
+        model.addAttribute("actionName", "home");
+        return "user/home";
+    }
+
+    @GetMapping(value = {"/profile"})
+    public String userProfile(Model model, Principal principal) {
+        CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        Optional<User> optionalUser = userService.findUserById(user.getId());
+        if (optionalUser.isPresent()) {
+            UserForm userForm = new UserForm(optionalUser.get());
             model.addAttribute("userForm", userForm);
             model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
             model.addAttribute("unreadMessageCount", userService.getUserUnreadMessageCount(user.getId()));
@@ -86,8 +105,8 @@ public class UserController {
             return "user/not-found";
         }
         model.addAttribute("controllerName", "User");
-        model.addAttribute("actionName", "index");
-        return "user/home";
+        model.addAttribute("actionName", "profile");
+        return "user/profile";
     }
 
     @GetMapping("/editProfile")
@@ -237,6 +256,11 @@ public class UserController {
             }
             OrderForm orderForm = new OrderForm(optionalOrder.get());
             model.addAttribute("orderForm", orderForm);
+            Locale currentLocale = Locale.getDefault();
+            Currency currency = Currency.getInstance(currentLocale);
+            model.addAttribute("locale", currentLocale);
+            log.debug(currentLocale.toString());
+            model.addAttribute("currencySymbol", currency.getSymbol());
         } else {
             model.addAttribute("message", "Internal error accessing order!");
             model.addAttribute("alertClass", "alert-danger");
@@ -254,14 +278,16 @@ public class UserController {
                                   BindingResult bindingResult, Model model,
                                   RedirectAttributes redirectAttributes,
                                   Principal principal) {
+        log.debug("UserController::userSaveProfile");
         if (bindingResult.hasErrors()) {
             return "user/edit-profile";
         } else {
             try {
+                log.debug("Saving:" + userForm.toString());
                 userService.saveUserFromUserForm(userForm);
                 redirectAttributes.addFlashAttribute("message", "Profile updated successfully.");
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
-                return "redirect:/user";
+                return "redirect:/user/profile";
             } catch (InvalidPasswordException ex) {
                 log.error("InvalidPasswordException saving user profile: " + principal.toString());
                 FieldError passwordError = new FieldError("userForm", "password", ex.getMessage());
@@ -272,7 +298,7 @@ public class UserController {
                 bindingResult.addError(usernameError);
             }
         }
-        return "user/edit-profile";
+        return "user/profile";
     }
 
     @PostMapping("/savePassword")
@@ -302,7 +328,7 @@ public class UserController {
                 bindingResult.addError(usernameError);
             }
         }
-        return "user/index";
+        return "user/home";
     }
 
     @PostMapping("/messages/delete/{id}")

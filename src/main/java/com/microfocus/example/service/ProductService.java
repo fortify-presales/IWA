@@ -19,11 +19,14 @@
 
 package com.microfocus.example.service;
 
+import com.microfocus.example.entity.Order;
 import com.microfocus.example.entity.Product;
 import com.microfocus.example.exception.MessageNotFoundException;
 import com.microfocus.example.exception.ProductNotFoundException;
 import com.microfocus.example.payload.request.ProductRequest;
+import com.microfocus.example.repository.OrderRepository;
 import com.microfocus.example.repository.ProductRepository;
+import com.microfocus.example.web.form.OrderForm;
 import com.microfocus.example.web.form.admin.AdminNewProductForm;
 import com.microfocus.example.web.form.admin.AdminProductForm;
 import org.slf4j.Logger;
@@ -33,9 +36,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Product Service to hide business logs / database persistence
@@ -50,6 +51,9 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Value("${app.data.page-size:25}")
     private Integer pageSize;
@@ -162,6 +166,25 @@ public class ProductService {
         ptmp.setAvailable(adminNewProductForm.getAvailable());
         Product newProduct = productRepository.saveAndFlush(ptmp);
         return newProduct;
+    }
+
+    public Order newOrderFromOrderForm(OrderForm orderForm) {
+        log.debug("newOrderFromOrderForm");
+        Order otmp = new Order();
+        otmp.setUser(orderForm.getUser());
+        otmp.setCart(orderForm.getCart());
+        otmp.setAmount(orderForm.getAmount());
+        otmp.setOrderDate(new Date());
+        Random r = new Random();
+        int low = 10;
+        int high = 100;
+        int result = r.nextInt(high-low) + low;
+        String formatted = String.format("%03d", result);
+        log.debug("Setting order number to: " + "OID-P100-"+formatted);
+        otmp.setOrderNum("OID-P100-"+formatted);
+        log.debug(otmp.getOrderNum());
+        Order newOrder = orderRepository.saveAndFlush(otmp);
+        return newOrder;
     }
 
 }
