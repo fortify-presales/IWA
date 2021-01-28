@@ -77,8 +77,6 @@
                 </div>
             </div>
 
-            <div th:replace="fragments/secondary-bg.html :: secondaryBackground ('/index.html')"></div>
-<!--
             <div class="site-section">
                 <div class="container">
                     <div class="row">
@@ -96,7 +94,7 @@
                                         <p>&ldquo;Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nemo omnis voluptatem consectetur quam tempore obcaecati maiores voluptate aspernatur iusto eveniet, placeat ab quod tenetur ducimus. Minus ratione sit quaerat unde.&rdquo;</p>
                                     </blockquote>
 
-                                    <p>&mdash; Kelly Holmes</p>
+                                    <p>&mdash; Sarah Peters</p>
                                 </div>
 
                                 <div class="testimony">
@@ -107,7 +105,7 @@
                                             unde.&rdquo;</p>
                                     </blockquote>
 
-                                    <p>&mdash; Rebecca Morando</p>
+                                    <p>&mdash; Brent Easter</p>
                                 </div>
 
                                 <div class="testimony">
@@ -118,7 +116,7 @@
                                             unde.&rdquo;</p>
                                     </blockquote>
 
-                                    <p>&mdash; Lucas Gallone</p>
+                                    <p>&mdash; Lucas Gallione</p>
                                 </div>
 
                                 <div class="testimony">
@@ -129,7 +127,7 @@
                                             unde.&rdquo;</p>
                                     </blockquote>
 
-                                    <p>&mdash; Andrew Neel</p>
+                                    <p>&mdash; Martin Van Dyck</p>
                                 </div>
 
                             </div>
@@ -137,25 +135,27 @@
                     </div>
                 </div>
             </div>
--->
 
-<!--
-            <section class="jumbotron text-center">
-                <div class="row">
-                    <h2 th:text="${message}" sec:authorize="isAnonymous()"></h2>
-                    <h2 th:text="@{'Welcome '+${#authentication.name}}" sec:authorize="isAuthenticated()"></h2>
-                    <p class="lead text-muted">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempor rhoncus mauris a rutrum.
-                        Nullam nec sem porttitor lorem imperdiet suscipit. Praesent rutrum orci a nunc euismod congue.
-                    </p>
-                    <p>
-                        <a th:href="@{/register}" sec:authorize="isAnonymous()" class="btn btn-info"> Register </a>
-                        <a th:href="@{/user}" sec:authorize="hasRole('ROLE_USER')" class="btn btn-info"> Your Profile </a>
-                        <a th:href="@{/admin}" sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-info"> Site Administration </a>
-                    </p>
-                </div>
-            </section>
--->
+            <div th:replace="fragments/secondary-bg.html :: secondaryBackground ('/index.html')"></div>
+
+
+            <!--
+                        <section class="jumbotron text-center">
+                            <div class="row">
+                                <h2 th:text="${message}" sec:authorize="isAnonymous()"></h2>
+                                <h2 th:text="@{'Welcome '+${#authentication.name}}" sec:authorize="isAuthenticated()"></h2>
+                                <p class="lead text-muted">
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempor rhoncus mauris a rutrum.
+                                    Nullam nec sem porttitor lorem imperdiet suscipit. Praesent rutrum orci a nunc euismod congue.
+                                </p>
+                                <p>
+                                    <a th:href="@{/register}" sec:authorize="isAnonymous()" class="btn btn-info"> Register </a>
+                                    <a th:href="@{/user}" sec:authorize="hasRole('ROLE_USER')" class="btn btn-info"> Your Profile </a>
+                                    <a th:href="@{/admin}" sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-info"> Site Administration </a>
+                                </p>
+                            </div>
+                        </section>
+            -->
 
 
 <!--

@@ -70,11 +70,8 @@ public class CartController {
         Optional<User> optionalUser = userService.findUserById(user.getId());
         if (optionalUser.isPresent()) {
             User utmp = optionalUser.get();
-            String[] names = utmp.getFirstName().split(" ");
             OrderForm orderForm = new OrderForm();
             orderForm.setUser(utmp);
-            model.addAttribute("firstname", names[0]);
-            model.addAttribute("lastname", names[names.length-1]);
             model.addAttribute("orderForm", orderForm);
             model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
         } else {

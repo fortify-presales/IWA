@@ -3,7 +3,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <div th:fragment="countrySelector (activeItem, required, disabled)">
         <label for="country" class="text-black">Country <span th:if="${required}" class="text-danger">*</span></label>
-        <select id="country" disabled="${disabled}" class="form-control">
+        <select id="country" th:disabled="${disabled}" class="form-control">
             <option th:selected="${activeItem}=='Afghanistan'" value="Afghanistan">Afghanistan</option>
             <option th:selected="${activeItem}=='Åland Islands'" value="Åland Islands">Åland Islands</option>
             <option th:selected="${activeItem}=='Albania'" value="Albania">Albania</option>

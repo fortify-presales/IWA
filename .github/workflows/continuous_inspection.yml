@@ -1,10 +1,16 @@
-# This workflow will build a Java project with Maven, upload source code to Fortify on Demand (for static analysis)
-# and if successful deploy the application to Heroku
+# This workflow will build a Java web project with Maven, upload the source code to Fortify on Demand (for static analysis),
+# download the details of any security issues found and upload them to GitHub. Finally, if successful deploy the application to Heroku.
 
 name: Continuous Inspection
 
 on:
+#
+# workflow_dispatch - can be used to manually invoke the workflow from GitHub UI
+#
   workflow_dispatch
+#
+# typically you would setup to run on "push" and uncomment the section under "push" below.check_run:
+#
 #  push:
 #    paths-ignore:
 #
@@ -81,7 +87,7 @@ jobs:
         FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
 
     # Once scan completes, pull SAST issues from Fortify on Demand and generate SARIF output. Be sure to set secrets/variables for your desired configuration and appropriate URLs
-    - name: Download Results
+    - name: Download Fortify on Demand Results
       uses: fortify/gha-fod-generate-sarif@master
       #if: ${{ secrets.FOD_RELEASE_ID }}
       with:
@@ -93,7 +99,7 @@ jobs:
         output: ./sarif/output.sarif
 
     # Import Fortify on Demand results to GitHub Security Code Scanning
-    - name: Import Results
+    - name: Import Results to GitHub
       uses: github/codeql-action/upload-sarif@v1
       #if: ${{ secrets.FOD_RELEASE_ID }}
       with:

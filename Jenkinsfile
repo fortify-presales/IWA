@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-//********************************************************************************
+//****************************************************************************************************
 // An example pipeline for DevSecOps using Micro Focus Fortify Application Security products
 // @author: Kevin A. Lee (kevin.lee@microfocus.com)
 //
@@ -8,9 +8,9 @@
 // Pre-requisites:
 // - Fortify SCA/ScanCentral SAST has been installed (for on-premise SAST)
 // - Fortify WebInspect/ScanCentral DAST has been installed (for on-premise DAST)
-// - A Fortify On Demand account and API access are available (for cloud based SAST)
+// - A Fortify On Demand account and API access are available (for cloud based SAST/DAST)
 // - Docker Pipeline plugin has been installed (Jenkins)
-// - [Optional] Sonatype Nexus IQ server has been installed for OSS vulnerabilities
+// - [Optional] Sonatype Nexus IQ server has been installed for OSS SCA vulnerabilities
 //
 // Typical node setup:
 // - Install Fortify SCA on the agent machine
@@ -24,13 +24,12 @@
 //		iwa-git-creds-id		    - Git login as Jenkins "Username with Password" credential
 //      iwa-ssc-ci-token-id         - Fortify Software Security Center "CIToken" authentication token as Jenkins Secret credential
 //      iwa-edast-auth-id           - Fortify Scan Central DAST authentication as "Jenkins Username with Password" credential
-//      iwa-fod-release-id          - Fortify on Demand Release Id as Jenkins Secret credential
 //      iwa-nexus-iq-token-id       - Sonatype Nexus IQ user token in form of "user code:pass code"
 //      iwa-dockerhub-creds-id      - DockerHub login as Jenkins "Username with Password" credential
 // All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
 // For Fortify on Demand (FOD) Global Authentication is used rather than Personal Access Tokens.
 //
-//********************************************************************************
+//****************************************************************************************************
 
 // The instances of Docker image and container that are created
 def dockerImage
@@ -47,56 +46,50 @@ pipeline {
     // Note: the pipeline needs to be executed at least once for the parameters to be available
     //
     parameters {
-        booleanParam(name: 'SCA_LOCAL',       	defaultValue: params.SCA_LOCAL_DEFAULT ?: false,
+        booleanParam(name: 'SCA_LOCAL',       	defaultValue: params.SCA_LOCAL ?: false,
             description: 'Use (local) Fortify SCA for Static Application Security Testing')
-        booleanParam(name: 'SCA_OSS',           defaultValue: params.SCA_OSS_DEFAULT ?: false,
+        booleanParam(name: 'SCA_OSS',           defaultValue: params.SCA_OSS ?: false,
             description: 'Use Fortify SCA with Sonatype Nexus IQ for Open Source Susceptibility Analysis')
-        booleanParam(name: 'SCANCENTRAL_SAST', 	defaultValue: params.SCANCENTRAL_SAST_DEFAULT ?: false,
+        booleanParam(name: 'SCANCENTRAL_SAST', 	defaultValue: params.SCANCENTRAL_SAST ?: false,
             description: 'Run a remote scan using Scan Central SAST (SCA) for Static Application Security Testing')
-        booleanParam(name: 'SCANCENTRAL_DAST', 	defaultValue: params.SCANCENTRAL_DAST_DEFAULT ?: false,
+        booleanParam(name: 'SCANCENTRAL_DAST', 	defaultValue: params.SCANCENTRAL_DAST ?: false,
             description: 'Run a remote scan using Scan Central DAST (WebInspect) for Dynamic Application Security Testing')
-        booleanParam(name: 'UPLOAD_TO_SSC',		defaultValue: params.UPLOAD_TO_SSC_DEFAULT ?: false,
+        booleanParam(name: 'UPLOAD_TO_SSC',		defaultValue: params.UPLOAD_TO_SSC ?: false,
             description: 'Enable upload of scan results to Fortify Software Security Center')             
-        booleanParam(name: 'FOD',       	    defaultValue: params.FOD_DEFAULT ?: false,
+        booleanParam(name: 'FOD_SAST',       	defaultValue: params.FOD_SAST ?: false,
             description: 'Use Fortify on Demand for Static Application Security Testing')
+        booleanParam(name: 'FOD_DAST',       	defaultValue: params.FOD_DAST ?: false,
+                description: 'Use Fortify on Demand for Dynamic Application Security Testing')        
         booleanParam(name: 'RELEASE_TO_DOCKERHUB', defaultValue: params.RELEASE_TO_DOCKERHUB_DEFAULT ?: false,
                 description: 'Release built and tested image to Docker Hub')
-        string(name: 'SSC_URL',                 defaultValue: params.SSC_URL_DEFAULT ?: "http://ssc.mfdemouk.com",
-                description: 'URL of Fortify Software Security Center')
-        string(name: 'SSC_APP_VERSION_ID',      defaultValue: params.SSC_APP_VERSION_ID_DEFAULT ?: "10002",
-                description: 'Id of Application in SSC to upload results to')
-        string(name: 'SSC_NOTIFY_EMAIL',        defaultValue: params.SSC_NOTIFY_EMAIL_DEFAULT ?: "do-not-reply@microfocus.com",
-                description: 'User to notify with SSC/ScanCentral information')
-        string(name: 'SSC_SENSOR_POOL_UUID',    defaultValue: params.SSC_SENSOR_POOL_UUID_DEFAULT ?: "00000000-0000-0000-0000-000000000002",
-                description: 'UUID of Scan Central Sensor Pool to use - leave for Default Pool')
-        string(name: 'EDAST_URL',               defaultValue: params.EDAST_URL_DEFAULT ?: "http://scancentral.mfdemouk.com/api",
-                description: 'ScanCentral DAST API URI')
-        string(name: 'EDAST_CICD',              defaultValue: params.EDAST_CICD_DEFAULT ?: "849638fd-6b27-42ff-af5c-08bdb82aaa69",
-                description: 'ScanCentral DAST CICD identifier')
-        string(name: 'FOD_RELEASE_ID',          defaultValue: params.FOD_RELEASE_ID_DEFAULT ?: "1000",
-                description: 'Fortify on Demand Release Id')
-        string(name: 'NEXUS_IQ_URL',            defaultValue: params.NEXUS_IQ_URL_DEFAULT ?: "https://sonatype.mfdemouk.com",
-                description: 'Nexus IQ URL')
-        string(name: 'DOCKER_ORG',              defaultValue: params.DOCKER_ORG_DEFAULT ?: "mfdemouk",
-                description: 'Docker organisation (in Docker Hub) to push released images to')
     }
 
     environment {
-        //
         // Application settings
-        //
 		APP_NAME = "IWA-Java"                      		    // Application name
         APP_VER = "master"                                  // Application release - GitHub master branch
         COMPONENT_NAME = "iwa"                              // Component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
-        GIT_CREDS = credentials('iwa-git-creds-id')
         JAVA_VERSION = 8                                    // Java version to compile as
         ISSUE_IDS = ""                                      // List of issues found from commit
-        //FOD_RELEASE_ID = credentials('iwa-fod-release-id')
         FOD_UPLOAD_DIR = 'fod'                              // Directory where FOD upload Zip is constructed
+
+        // Credential references
+        GIT_CREDS = credentials('iwa-git-creds-id')
         SSC_AUTH_TOKEN = credentials('iwa-ssc-ci-token-id')
         EDAST_AUTH = credentials('iwa-edast-auth-id')
         NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-token-id')
+
+        // The following are defaulted and can be override by creating a "Build parameter" of the same name
+        SSC_URL = ${params.SSC_URL_DEFAULT ?: "http://ssc.mfdemouk.com"} // URL of Fortify Software Security Center
+        SSC_APP_VERSION_ID = ${params.SSC_APP_VERSION_ID_DEFAULT ?: "10002"} // Id of Application in SSC to upload results to
+        SSC_NOTIFY_EMAIL = ${params.SSC_NOTIFY_EMAIL_DEFAULT ?: "do-not-reply@microfocus.com"} // User to notify with SSC/ScanCentral information
+        SSC_SENSOR_POOL_UUID = ${params.SSC_SENSOR_POOL_UUID_DEFAULT ?: "00000000-0000-0000-0000-000000000002"} // UUID of Scan Central Sensor Pool to use - leave for Default Pool
+        EDAST_URL = ${params.EDAST_URL_DEFAULT ?: "http://scancentral.mfdemouk.com/api"} // ScanCentral DAST API URI
+        EDAST_CICD = ${params.EDAST_CICD_DEFAULT ?: "bd286bd2-632c-434c-99ef-a8ce879434ec"} // ScanCentral DAST CICD identifier
+        FOD_RELEASE_ID = ${params.FOD_RELEASE_ID_DEFAULT ?: "6446"} // Fortify on Demand Release Id')
+        NEXUS_IQ_URL = ${params.NEXUS_IQ_URL_DEFAULT ?: "https://sonatype.mfdemouk.com"} // Nexus IQ URL
+        DOCKER_ORG = ${params.DOCKER_ORG_DEFAULT ?: "mfdemouk"} // Docker organisation (in Docker Hub) to push released images to
 	}
 
     tools {
@@ -157,7 +150,7 @@ pipeline {
             	anyOf {
             	    expression { params.SCA_LOCAL == true }
             	    expression { params.SCANCENTRAL_SAST == true }
-            	    expression { params.FOD == true }
+            	    expression { params.FOD_SAST == true }
         	    }
             }
             // Run on an Agent with "fortify" label applied
@@ -180,7 +173,7 @@ pipeline {
                     def classpath = readFile "${env.WORKSPACE}/cp.txt"
                     println "Using classpath: $classpath"
 
-                    if (params.FOD) {
+                    if (params.FOD_SAST) {
                         // Upload built application to Fortify on Demand and carry out Static Assessment
                         fodStaticAssessment releaseId: ${env.FOD_RELEASE_ID},
                             // bsiToken: "${env.FOD_BSI_TOKEN}",
@@ -206,8 +199,8 @@ pipeline {
                                 remoteOptionalConfig: [
                                     customRulepacks: '',
                                     filterFile: "etc\\sca-filter.txt",
-                                    notifyEmail: "${params.SSC_NOTIFY_EMAIL}",
-                                    sensorPoolUUID: "${params.SSC_SENSOR_POOL_UUID}"
+                                    notifyEmail: "${env.SSC_NOTIFY_EMAIL}",
+                                    sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
                                 ],
                                 uploadSSC: [appName: "${env.APP_NAME}", appVersion: "${env.APP_VER}"]
 
@@ -217,8 +210,8 @@ pipeline {
                                 remoteOptionalConfig: [
                                     customRulepacks: '',
                                     filterFile: "etc\\sca-filter.txt",
-                                    notifyEmail: "${params.SSC_NOTIFY_EMAIL}",
-                                    sensorPoolUUID: "${params.SSC_SENSOR_POOL_UUID}"
+                                    notifyEmail: "${env.SSC_NOTIFY_EMAIL}",
+                                    sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
                                 ]
                         }
                     } else if (params.SCA_LOCAL) {
@@ -271,9 +264,9 @@ pipeline {
                 script {
                     // run sourceandlibscanner - needs to have been installed and in the path
                     if (isUnix()) {
-                        sh "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${params.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${params.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${params.SSC_APP_VERSION_ID}"
+                        sh "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}"
                     } else {
-                        bat(script: "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${params.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${params.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${params.SSC_APP_VERSION_ID}")
+                        bat(script: "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}")
                     }
                 }
             }
@@ -288,10 +281,10 @@ pipeline {
                     unstash name: "${env.COMPONENT_NAME}_release"
                     if (isUnix()) {
                         // Create docker image using JAR file
-                        dockerImage = docker.build "${params.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
+                        dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
                     } else {
                         // Create docker image using JAR file
-                        dockerImage = docker.build("${params.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
+                        dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
                     }
                 }
             }
@@ -302,7 +295,7 @@ pipeline {
             	beforeAgent true
             	anyOf {
             	    expression { params.SCANCENTRAL_DAST == true }
-            	    expression { params.FOD == true }
+            	    expression { params.FOD_DAST == true }
         	    }
             }
             // Run on an Agent with "docker" label applied
@@ -339,14 +332,14 @@ pipeline {
                         println "Running ScanCentral DAST scan, please wait ..."
                         withCredentials([usernamePassword(credentialsId: 'iwa-edast-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                             edastApi = load 'bin/fortify-scancentral-dast.groovy'
-                            edastApi.setApiUri("${params.EDAST_URL}")
+                            edastApi.setApiUri("${env.EDAST_URL}")
                             edastApi.setDebug(true)
                             edastApi.authenticate("${USERNAME}", "${PASSWORD}")
-                            Integer scanId = edastApi.startScanAndWait("Jenkins initiated scan", "${params.EDAST_CICD}", 5)
+                            Integer scanId = edastApi.startScanAndWait("Jenkins initiated scan", "${env.EDAST_CICD}", 5)
                             String scanStatus = edastApi.getScanStatusValue(edastApi.getScanStatusId(scanId))
                             println "ScanCentral DAST scan id: ${scanId} - status: ${scanStatus}"
                         }
-					} else if (params.FOD) {
+					} else if (params.FOD_DAST) {
 						println "DAST via FOD is not yet implemented."						
                     } else {
                         println "No Dynamic Application Security Testing (DAST) to do."
