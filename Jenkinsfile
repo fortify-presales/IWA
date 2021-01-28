@@ -81,15 +81,15 @@ pipeline {
         NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-token-id')
 
         // The following are defaulted and can be override by creating a "Build parameter" of the same name
-        SSC_URL = ${params.SSC_URL_DEFAULT ?: "http://ssc.mfdemouk.com"} // URL of Fortify Software Security Center
-        SSC_APP_VERSION_ID = ${params.SSC_APP_VERSION_ID_DEFAULT ?: "10002"} // Id of Application in SSC to upload results to
-        SSC_NOTIFY_EMAIL = ${params.SSC_NOTIFY_EMAIL_DEFAULT ?: "do-not-reply@microfocus.com"} // User to notify with SSC/ScanCentral information
-        SSC_SENSOR_POOL_UUID = ${params.SSC_SENSOR_POOL_UUID_DEFAULT ?: "00000000-0000-0000-0000-000000000002"} // UUID of Scan Central Sensor Pool to use - leave for Default Pool
-        EDAST_URL = ${params.EDAST_URL_DEFAULT ?: "http://scancentral.mfdemouk.com/api"} // ScanCentral DAST API URI
-        EDAST_CICD = ${params.EDAST_CICD_DEFAULT ?: "bd286bd2-632c-434c-99ef-a8ce879434ec"} // ScanCentral DAST CICD identifier
-        FOD_RELEASE_ID = ${params.FOD_RELEASE_ID_DEFAULT ?: "6446"} // Fortify on Demand Release Id')
-        NEXUS_IQ_URL = ${params.NEXUS_IQ_URL_DEFAULT ?: "https://sonatype.mfdemouk.com"} // Nexus IQ URL
-        DOCKER_ORG = ${params.DOCKER_ORG_DEFAULT ?: "mfdemouk"} // Docker organisation (in Docker Hub) to push released images to
+        SSC_URL = "${params.SSC_URL_DEFAULT ?: 'http://ssc.mfdemouk.com'}" // URL of Fortify Software Security Center
+        SSC_APP_VERSION_ID = "${params.SSC_APP_VERSION_ID_DEFAULT ?: '10002'}" // Id of Application in SSC to upload results to
+        SSC_NOTIFY_EMAIL = "${params.SSC_NOTIFY_EMAIL_DEFAULT ?: 'do-not-reply@microfocus.com'}" // User to notify with SSC/ScanCentral information
+        SSC_SENSOR_POOL_UUID = "${params.SSC_SENSOR_POOL_UUID_DEFAULT ?: '00000000-0000-0000-0000-000000000002'}" // UUID of Scan Central Sensor Pool to use - leave for Default Pool
+        EDAST_URL = "${params.EDAST_URL_DEFAULT ?: 'http://scancentral.mfdemouk.com/api'}" // ScanCentral DAST API URI
+        EDAST_CICD = "${params.EDAST_CICD_DEFAULT ?: 'bd286bd2-632c-434c-99ef-a8ce879434ec'}" // ScanCentral DAST CICD identifier
+        FOD_RELEASE_ID = "${params.FOD_RELEASE_ID_DEFAULT ?: '6446'}" // Fortify on Demand Release Id
+        NEXUS_IQ_URL = "${params.NEXUS_IQ_URL_DEFAULT ?: 'https://sonatype.mfdemouk.com'}" // Nexus IQ URL
+        DOCKER_ORG = "${params.DOCKER_ORG_DEFAULT ?: 'mfdemouk'}" // Docker organisation (in Docker Hub) to push released images to
 	}
 
     tools {
