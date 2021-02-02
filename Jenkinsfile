@@ -251,7 +251,7 @@ pipeline {
             }
         }
 
-        stage('OSS') {
+        stage('SCA OSS') {
             when {
                 beforeAgent true
                 anyOf {
@@ -272,7 +272,7 @@ pipeline {
             }
         }
 
-        stage('Package') {
+        stage('Deploy') {
             // Run on "master" node
             agent { label 'master' }
             steps {
@@ -349,7 +349,7 @@ pipeline {
         }
         
 		// An example manual release checkpoint
-        stage('Prepare') {
+        stage('Stage') {
         	agent { label 'master' }
         	steps {
             	input id: 'Release', 

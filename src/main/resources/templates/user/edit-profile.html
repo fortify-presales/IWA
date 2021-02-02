@@ -30,6 +30,7 @@
                     <div class="col-md-9">
 
                         <form class="form-horizontal" action="#" th:action="@{/user/saveProfile}" th:object="${userForm}" method="post">
+						
                             <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
                                 <span th:text="${message}">message</span>
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -381,6 +382,7 @@
                                     <a class="btn btn-info" th:href="@{/user/profile}">Cancel</a>
                                 </div>
                             </div>
+							
                         </form>
 
                     </div>

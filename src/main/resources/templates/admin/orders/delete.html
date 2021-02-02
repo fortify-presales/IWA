@@ -4,7 +4,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{fragments/layout}">
 <head>
-    <title>Users View</title>
+    <title>Orders View</title>
 </head>
 <body>
 <div layout:fragment="content" th:remove="tag">
@@ -14,7 +14,7 @@
             <div class="row">
                 <div class="col-md-12 mb-0">
                     <a th:href="@{/admin/}">Site Admin</a> <span class="mx-2 mb-0">/</span>
-                    <a th:href="@{/admin/users}">Users</a> <span class="mx-2 mb-0">/</span>
+                    <a th:href="@{/admin/orders}">Orders</a> <span class="mx-2 mb-0">/</span>
                     <strong class="text-black">Delete</strong>
                 </div>
             </div>
@@ -28,12 +28,12 @@
             <div class="row">
 
                 <div class="col-md-3 mr-auto">
-                    <div th:replace="fragments/admin-menu.html :: adminMenu('/admin/users')"></div>
+                    <div th:replace="fragments/admin-menu.html :: adminMenu('/admin/orders')"></div>
                 </div>
 
                 <div class="col-md-9">
 
-                    <form action="#" th:action="@{/admin/users/{id}/delete(id=${adminUserForm.id})}" th:object="${adminUserForm}" method="post">
+                    <form class="form-horizontal" th:action="@{/admin/orders/{id}/delete(id=${adminOrderForm.id})}" th:object="${adminOrderForm}" method="post">
 
                         <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
                             <span th:text="${message}">message</span>
@@ -43,37 +43,30 @@
                         </div>
 
                         <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="orderNum" class="text-black">Order Number </label>
+                                <input readonly th:value="${adminOrderForm.orderNum}" type="text" class="form-control" id="orderNum" name="orderNum">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="user" class="text-black">User </label>
+                                <input readonly th:value="${adminOrderForm.user.email}" type="text" class="form-control" id="user" name="user">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="orderDate" class="text-black">Order Date </label>
+                                <input readonly th:value="${#dates.format(adminOrderForm.orderDate, 'MM-dd-yyyy')}" type="text" class="form-control" id="orderDate" name="orderDate">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="amount" class="text-black">Total Amount </label>
+                                <input readonly th:value="${adminOrderForm.amount}" type="text" class="form-control" id="amount" name="amount">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
                             <div class="col-md-12">
-                                <label for="username" class="text-black">Username </label>
-                                <input readonly th:value="${adminUserForm.username}" type="text" class="form-control" id="username" name="username">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <div class="col-md-6">
-                                <label for="firstname" class="text-black">First Name </label>
-                                <input readonly th:value="${adminUserForm.firstName}" type="text" class="form-control" id="firstname" name="firstname">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="lastname" class="text-black">Last Name </label>
-                                <input readonly th:value="${adminUserForm.lastName}" type="text" class="form-control" id="lastname" name="lastname">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <div class="col-md-6">
-                                <label for="email" class="text-black">Email Address </label>
-                                <input readonly th:value="${adminUserForm.email}" type="text" class="form-control" id="email" name="email">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="phone" class="text-black">Phone </label>
-                                <input readonly th:value="${adminUserForm.phone}" type="text" class="form-control" id="phone" name="phone" placeholder="Phone Number">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <div class=col-md-12">
-                                <h5 class="text-danger">Are you sure you wish to delete this user?</h5>
+                                <h5 class="danger">Are you sure you wish to delete this order?</h5>
                             </div>
                         </div>
 

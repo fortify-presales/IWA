@@ -32,40 +32,40 @@
                 </div>
 
                 <div class="col-md-9">
-                    <div class="col-md-10">
-                <form>
-                    <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
-                        <span th:text="${message}">message</span>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="form-group row">
-                        <label for="sentTo" class="col-sm-2 col-form-label">User:</label>
-                        <div class="col-sm-10">
-                            <input type="text" readonly class="form-control" id="sentTo" th:value="${messageForm.user.firstName}">
+
+                    <form class="form-horizontal">
+                        <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                            <span th:text="${message}">message</span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="sentDate" class="col-sm-2 col-form-label">Sent:</label>
-                        <div class="col-sm-10">
-                            <input type="text" readonly class="form-control" id="sentDate" th:value="${messageForm.sentDate}">
+                        <div class="form-group row">
+                            <label for="userFullName" class="col-sm-2 col-form-label">User</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="userFullName" th:value="${messageForm.user.firstName + ' ' + messageForm.user.lastName}">
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="messageText" class="col-sm-2 col-form-label">Message:</label>
-                        <div class="col-sm-10">
-                            <textarea readonly class="form-control" rows="10" id="messageText" th:field="${messageForm.text}"></textarea>
+                        <div class="form-group row">
+                            <label for="dateSent" class="col-sm-2 col-form-label">Date Sent</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="dateSent" th:value="${#dates.format(messageForm.sentDate, 'MM-dd-yyyy')}">
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-2"></div>
-                        <div class="col-sm-10">
-                            <a class="btn btn-primary" th:href="@{/admin/messages}"> Back </a>
+                        <div class="form-group row">
+                            <label for="messageText" class="col-sm-2 col-form-label">Message</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="messageText" th:value="${messageForm.text}">
+                            </div>
                         </div>
-                    </div>
-                </form>
-            </div>
+
+                        <div class="form-group row mt-4">
+                            <div class="col-md-12">
+                                <a class="btn btn-primary" th:href="@{/admin/messages}"> Back </a>
+                            </div>
+                        </div>
+                    </form>
+
                 </div>
 
             </div>

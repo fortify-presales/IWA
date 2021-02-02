@@ -92,6 +92,11 @@ public class DefaultController {
         return "/vulnerabilities.html";
     }
 
+    @GetMapping("/not-yet-implemented")
+    public String notYetImplemented(Model model, Principal principal) {
+        return "/error/not-implemented.html";
+    }
+
     @GetMapping("/site-message")
     @ResponseBody
     public String siteMessage() {

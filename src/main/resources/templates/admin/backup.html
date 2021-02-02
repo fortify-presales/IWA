@@ -57,7 +57,7 @@
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="profile" th:field="*{profile}" th:value="${backupForm.profile}">
                                     <div th:if="${#fields.hasErrors('profile')}">
-                                        <p class="badge bg-danger" th:if="${#fields.hasErrors('profile')}" th:errors="*{profile}"></p>
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('profile')}" th:errors="*{profile}"></p>
                                     </div>
                                 </div>
                             </div>
@@ -66,7 +66,7 @@
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="refreshInterval" th:field="*{refreshInterval}" th:value="${backupForm.refreshInterval}">
                                     <div th:if="${#fields.hasErrors('refreshInterval')}">
-                                        <p class="badge bg-danger" th:if="${#fields.hasErrors('refreshInterval')}" th:errors="*{refreshInterval}"></p>
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('refreshInterval')}" th:errors="*{refreshInterval}"></p>
                                     </div>
                                 </div>
                             </div>

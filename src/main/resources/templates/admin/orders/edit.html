@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Orders Edit</title>
+</head>
+<body>
+    <div layout:fragment="content" th:remove="tag">
+
+        <div class="bg-light py-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 mb-0">
+                        <a th:href="@{/admin/}">Site Admin</a> <span class="mx-2 mb-0">/</span>
+                        <a th:href="@{/admin/orders}">Orders</a> <span class="mx-2 mb-0">/</span>
+                        <strong class="text-black">Edit</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="site-section">
+
+            <div class="container">
+
+                <div class="row">
+
+                    <div class="col-md-3 mr-auto">
+                        <div th:replace="fragments/admin-menu.html :: adminMenu('/admin/orders')"></div>
+                    </div>
+
+                    <div class="col-md-9">
+
+                        <form class="form-horizontal" action="#" th:action="@{/admin/orders/{id}/save(id=${adminOrderForm.id})}" th:object="${adminOrderForm}" method="post">
+
+                            <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                                <span th:text="${message}">message</span>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="alert alert-danger" th:if="${#fields.hasErrors('global')}">
+                                <p th:each="error : ${#fields.errors('global')}" th:text="${error}">error</p>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('orderNum')}? 'has-error':''">
+                                    <label for="orderNum" class="text-black">Order Number </label>
+                                    <input readonly th:value="${adminOrderForm.orderNum}" type="text" class="form-control" id="orderNum" name="orderNum">
+                                    <div th:if="${#fields.hasErrors('orderNum')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('orderNum')}" th:errors="*{orderNum}"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="userEmail" class="text-black">User </label>
+                                    <input disabled th:value="${adminOrderForm.user.email}" type="text" class="form-control" name="userEmail">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('orderDate')}? 'has-error':''">
+                                    <label for="orderDate" class="text-black">Order Date </label>
+                                    <input readonly th:value="${#dates.format(adminOrderForm.orderDate, 'MM-dd-yyyy')}" type="text" class="form-control" id="orderDate" name="orderDate">
+                                    <div th:if="${#fields.hasErrors('orderDate')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('orderDate')}" th:errors="*{orderDate}"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('amount')}? 'has-error':''">
+                                    <label for="amount" class="text-black">Total Amount </label>
+                                    <input readonly th:value="${adminOrderForm.amount}" type="text" class="form-control" id="amount" name="amount">
+                                    <div th:if="${#fields.hasErrors('amount')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-check row">
+                                <div class="form-check form-check-inline" th:classappend="${#fields.hasErrors('shipped')}? 'has-error':''">
+                                    <input class="form-check-input" type="checkbox" id="shipped" th:field="*{shipped}"
+                                           th:value="${adminOrderForm.shipped}">
+                                    <label class="form-check-label" for="shipped">Shipped</label>
+                                    <div th:if="${#fields.hasErrors('shipped')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('shipped')}" th:errors="*{shipped}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('shippedDate')}? 'has-error':''">
+                                    <label for="shippedDate" class="text-black">Shipped Date </label>
+                                    <input th:value="${#dates.format(adminOrderForm.shippedDate, 'MM-dd-yyyy')}" type="text" th:field="*{shippedDate}" class="form-control" id="shippedDate" name="shippedDate">
+                                    <div th:if="${#fields.hasErrors('shippedDate')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('shippedDate')}" th:errors="*{shippedDate}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input hidden id="user.id" th:value="${adminOrderForm.user.id}" />
+                            <input hidden id="cart" th:field="*{cart}" th:value="${adminOrderForm.cart}" />
+
+                            <div class="form-group row mt-4">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-space btn-primary">Save</button>
+                                    <a class="btn btn-info" th:href="@{/admin/orders/{id}(id=${adminOrderForm.id})}">Cancel</a>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

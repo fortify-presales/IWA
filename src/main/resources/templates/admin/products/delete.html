@@ -32,96 +32,48 @@
                 </div>
 
                 <div class="col-md-9">
-                    <div class="col-md-10">
-                <form action="#" th:action="@{/admin/products/{id}/delete(id=${adminProductForm.id})}" th:object="${adminProductForm}" method="post">
-                    <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
-                        <span th:text="${message}">message</span>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="form-group row">
-                        <label for="code" class="col-sm-2 col-form-label">Code:</label>
-                        <div class="col-sm-10">
-                            <input type="text" readonly class="form-control" id="code" th:value="${adminProductForm.code}">
+
+                    <form class="form-horizontal" th:action="@{/admin/products/{id}/delete(id=${adminProductForm.id})}" th:object="${adminProductForm}" method="post">
+
+                        <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                            <span th:text="${message}">message</span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="name" class="col-sm-2 col-form-label">Name:</label>
-                        <div class="col-sm-10">
-                            <input type="text" readonly class="form-control" id="name" th:value="${adminProductForm.name}">
+
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="code" class="text-black">Code </label>
+                                <input readonly th:value="${adminProductForm.code}" type="text" class="form-control" id="code" name="code">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="name" class="text-black">Name </label>
+                                <input readonly th:value="${adminProductForm.name}" type="text" class="form-control" id="name" name="name">
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="summary" class="col-sm-2 col-form-label">Summary:</label>
-                        <div class="col-sm-10">
-                            <textarea readonly class="form-control" rows="5" id="summary" th:field="${adminProductForm.summary}"></textarea>
+
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label for="summary" class="text-black">Summary </label>
+                                <textarea readonly rows="5" th:text="${adminProductForm.summary}" type="text" class="form-control" id="summary" name="summary"></textarea>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="description" class="col-sm-2 col-form-label">Description:</label>
-                        <div class="col-sm-10">
-                            <textarea readonly class="form-control" rows="5" id="description" th:field="${adminProductForm.description}"></textarea>
+
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <h5 class="danger">Are you sure you wish to delete this product?</h5>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="image" class="col-sm-2 col-form-label">Image:</label>
-                        <div class="col-xs-4">
-                            <input type="text" readonly class="form-control" id="image" th:value="${adminProductForm.image}">
+
+                        <div class="form-group row mt-4">
+                            <div class="col-md-12">
+                                <button type="submit" name="action" value="delete" class="btn btn-space btn-danger"> Yes, Delete! </button>
+                                <button type="submit" name="action" value="cancel" class="btn btn-space btn-primary"> No, Cancel </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="price" class="col-sm-2 col-form-label">Price:</label>
-                        <div class="col-xs-2">
-                            <input type="text" readonly class="form-control" id="price" th:value="${#strings.replace(#numbers.formatCurrency(adminProductForm.price), '.00', '')}">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="inStock" class="col-sm-2 col-form-label">In Stock:</label>
-                        <div class="col-sm-10">
-                            <input class="form-check-input" type="checkbox" th:value="${adminProductForm.inStock}" id="inStock" disabled>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="timeToStock" class="col-sm-2 col-form-label">Time to Stock:</label>
-                        <div class="col-xs-2">
-                            <input type="text" readonly class="form-control" id="timeToStock" th:value="${adminProductForm.timeToStock}">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="rating" class="col-sm-2 col-form-label">Average Rating:</label>
-                        <div class="col-xs-2">
-                            <span th:each="i : ${#numbers.sequence( 1, adminProductForm.rating, 1)}">
-                                <i class="fas fa-star" style="color: cornflowerblue"> </i>
-                            </span>
-                            <span th:if="${adminProductForm.rating != 5}">
-                                <span th:each="i : ${#numbers.sequence(adminProductForm.rating, 4, 1)}">
-                                    <i class="fas fa-star" style="color: gray"> </i>
-                                </span>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="available" class="col-sm-2 col-form-label">Available:</label>
-                        <div class="col-sm-10">
-                            <input class="form-check-input" type="checkbox" th:value="${adminProductForm.available}" id="available" disabled>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-2"></div>
-                        <div class="col-sm-10">
-                            <p>Are you sure you wish to delete this product?</p>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-2"></div>
-                        <div class="col-sm-10">
-                            <button type="submit" name="action" value="delete" class="btn btn-space btn-primary"> Yes </button>
-                            <button type="submit" name="action" value="cancel" class="btn btn-space btn-default"> No </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+                    </form>
+
                 </div>
 
             </div>

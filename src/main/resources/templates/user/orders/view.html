@@ -46,7 +46,7 @@
                                         <tfoot>
                                             <tr>
                                                 <td colspan="2">
-                                                    <h5 class="text-muted" th:if="${orderForm.shippedDate}" th:text="${'This order was shipped on ' + #dates.format(orderForm.shippedDate, 'dd-MM-yyyy')}"> Ship Date </h5>
+                                                    <h5 class="text-muted" th:if="${orderForm.shippedDate}" th:text="${'This order was shipped on ' + #dates.format(orderForm.shippedDate, 'MM-dd-yyyy')}"> Ship Date </h5>
                                                     <h5 class="text-muted" th:unless="${orderForm.shippedDate}">This order has not yet shipped</h5>
                                                 </td>
                                             </tr>
@@ -58,7 +58,7 @@
                                             </tr>
                                             <tr>
                                                 <td>Order Date:</td>
-                                                <td><span th:text="${#dates.format(orderForm.orderDate, 'dd-MMMM-yyyy')}"></span></td>
+                                                <td><span th:text="${#dates.format(orderForm.orderDate, 'MM-dd-yyyy')}"></span></td>
                                             </tr>
                                             <tr>
                                                 <td>Items:</td>
@@ -74,8 +74,8 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="form-group row">
-                                <div class="col-sm-12">
+                            <div class="form-group row mt-4">
+                                <div class="col-md-12">
                                     <a class="btn btn-primary" th:href="@{/user/orders}"> Back </a>
                                 </div>
                             </div>

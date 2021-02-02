@@ -32,55 +32,84 @@
                 </div>
 
                 <div class="col-md-9">
-            <div class="col-md-10">
-                <form>
-                    <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
-                        <span th:text="${message}">message</span>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="form-group row">
-                        <label for="username" class="col-sm-2 col-form-label">Username:</label>
-                        <div class="col-sm-10">
-                            <input type="text" readonly class="form-control" id="username" th:value="${userForm.username}">
+
+                    <form class="form-horizontal">
+
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label for="username" class="text-black">Username </label>
+                                <input readonly th:value="${userForm.username}" type="text" class="form-control" id="username" name="username">
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="name" class="col-sm-2 col-form-label">Name:</label>
-                        <div class="col-sm-10">
-                            <input type="text" readonly class="form-control" id="name" th:value="${userForm.name}">
+
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="firstname" class="text-black">First Name </label>
+                                <input readonly th:value="${userForm.firstName}" type="text" class="form-control" id="firstname" name="firstname">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="lastname" class="text-black">Last Name </label>
+                                <input readonly th:value="${userForm.lastName}" type="text" class="form-control" id="lastname" name="lastname">
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="email" class="col-sm-2 col-form-label">Email:</label>
-                        <div class="col-sm-10">
-                            <input type="text" readonly class="form-control" id="email" th:value="${userForm.email}">
+
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="email" class="text-black">Email Address </label>
+                                <input readonly th:value="${userForm.email}" type="text" class="form-control" id="email" name="email">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="text-black">Phone </label>
+                                <input readonly th:value="${userForm.phone}" type="text" class="form-control" id="phone" name="phone" placeholder="Phone Number">
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="mobile" class="col-sm-2 col-form-label">Mobile:</label>
-                        <div class="col-sm-10">
-                            <input type="text" readonly class="form-control" id="mobile" th:value="${userForm.mobile}">
+
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label for="address" class="text-black">Address </label>
+                                <input readonly th:value="${userForm.address}" type="text" class="form-control" id="address" name="address" placeholder="Street address">
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="enabled" class="col-sm-2 col-form-label">Enabled:</label>
-                        <div class="col-sm-10">
-                            <input class="form-check-input" type="checkbox" th:value="${userForm.enabled}" id="enabled" disabled>
+
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="state" class="text-black">State / Region </label>
+                                <input readonly th:value="${userForm.state}" type="text" class="form-control" id="state" name="state">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="zip" class="text-black">Postal / Zip </label>
+                                <input readonly th:value="${userForm.zip}" type="text" class="form-control" id="zip" name="zip">
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-2"></div>
-                        <div class="col-sm-10">
-                            <a class="btn btn-primary" th:href="@{/admin/users/{id}/edit(id=${userForm.id})}"> Edit User </a>
-                            <a class="btn btn-info" th:href="@{/admin/users/{id}/changePassword(id=${userForm.id})}"> Change Password </a>
-                            <a class="btn btn-danger" th:href="@{/admin/users/{id}/delete(id=${userForm.id})}"> Delete User </a>
+
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="city" class="text-black">City </label>
+                                <input readonly th:value="${userForm.city}" type="text" class="form-control" id="city" name="city" placeholder="city">
+                            </div>
+                            <div class="col-md-6">
+                                <div readonly th:replace="fragments/country-selector.html :: countrySelector(${userForm.country}, false, true)"></div>
+                            </div>
                         </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+
+                        <div class="form-check row">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="enabled"
+                                       th:field="${userForm.enabled}" disabled>
+                                <label class="form-check-label" for="enabled">Enabled </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mt-4">
+                            <div class="col-md-12">
+                                <a class="btn btn-primary" th:href="@{/admin/users/{id}/edit(id=${userForm.id})}"> Edit User </a>
+                                <a class="btn btn-primary" th:href="@{/admin/users/{id}/changePassword(id=${userForm.id})}"> Change Password </a>
+                                <a class="btn btn-primary" th:href="@{/admin/users/{id}/delete(id=${userForm.id})}"> Delete User </a>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
 
             </div>
 

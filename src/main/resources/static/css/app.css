@@ -119,7 +119,7 @@ a:hover {
 }
 
 .site-section {
-    padding: 2.5em 0;
+    padding: 1.0em 0;
 }
 
 .site-section-sm {
@@ -128,12 +128,12 @@ a:hover {
 
 @media (min-width: 768px) {
     .site-section {
-        padding: 5em 0;
+        padding: 2.5em 0;
     }
 }
 
 .site-section.site-section-sm {
-    padding: 4em 0;
+    padding: 2em 0;
 }
 
 .site-section-heading {
@@ -1679,5 +1679,9 @@ a:hover {
     margin-bottom: 10px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+}
+
+.modal {
+    z-index: 10000000 !important;
 }
 

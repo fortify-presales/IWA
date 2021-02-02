@@ -31,50 +31,61 @@
                         </div>
 
                         <div class="col-md-9">
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th scope="col">Code</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Price</th>
-                            <th scope="col">In Stock</th>
-                            <th scope="col">Rating</th>
-                            <th scope="col">Available</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:if="${products.isEmpty()}">
-                            <td colspan="2"> No Products Available </td>
-                        </tr>
-                        <tr th:each="p : ${products}">
-                            <td><a th:href="@{/admin/products/{id}(id=${p.id})}"><span th:text="${p.code}"> Code </span></a></td>
-                            <td><span th:text="${p.name}"> Name </span></td>
-                            <td>
-                                <span th:text="${#strings.replace(#numbers.formatCurrency(p.price), '.00', '')}"> Price </span>
-                            </td>
-                            <td>
-                                <span th:if="${p.inStock}"> <i class="fas fa-check"></i> </span>
-                                <span th:unless="${p.inStock}"> <i class="fas fa-times"></i> </span>
-                            </td>
-                            <td>
-                                <span th:each="i : ${#numbers.sequence( 1, p.rating, 1)}">
-                                    <i class="fas fa-star" style="color: cornflowerblue"> </i>
-                                </span>
-                                    <span th:if="${p.rating != 5}">
-                                    <span th:each="i : ${#numbers.sequence(p.rating, 4, 1)}">
-                                        <i class="fas fa-star" style="color: gray"> </i>
-                                    </span>
-                                </span>
-                            </td>
-                            <td>
-                                <span th:if="${p.available}"> <i class="fas fa-check"></i> </span>
-                                <span th:unless="${p.available}"> <i class="fas fa-times"></i> </span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <a class="btn btn-primary" th:href="@{/admin/products/add}"> New Product </a>
-                </div>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Code</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Available</th>
+                                    <th scope="col">In Stock</th>
+                                    <th scope="col">On Sale</th>
+                                    <th scope="col">Rating</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:if="${products.isEmpty()}">
+                                    <td colspan="7"> No Products Available </td>
+                                </tr>
+                                <tr th:each="p : ${products}">
+                                    <td><a th:href="@{/admin/products/{id}(id=${p.id})}"><span th:text="${p.code}"> Code </span></a></td>
+                                    <td><span th:text="${p.name}"> Name </span></td>
+                                    <td>
+                                        <span th:text="${currencySymbol + #strings.replace(#numbers.formatDecimal(p.price, 0, 2), '.00', '')}"> Price </span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${p.available}"> <i class="fas fa-check"></i> </span>
+                                        <span th:unless="${p.available}"> <i class="fas fa-times"></i> </span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${p.onSale}"> <i class="fas fa-check"></i> </span>
+                                        <span th:unless="${p.onSale}"> <i class="fas fa-times"></i> </span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${p.inStock}"> <i class="fas fa-check"></i> </span>
+                                        <span th:unless="${p.inStock}"> <i class="fas fa-times"></i> </span>
+                                    </td>
+                                    <td>
+                                        <span th:each="i : ${#numbers.sequence( 1, p.rating, 1)}">
+                                            <i class="fas fa-star" style="color: cornflowerblue"> </i>
+                                        </span>
+                                            <span th:if="${p.rating != 5}">
+                                            <span th:each="i : ${#numbers.sequence(p.rating, 4, 1)}">
+                                                <i class="fas fa-star" style="color: gray"> </i>
+                                            </span>
+                                        </span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="form-group row mt-4">
+                                <div class="col-md-12">
+                                    <a class="btn btn-primary" th:href="@{/not-yet-implemented}">New Product</a>
+                                </div>
+                            </div>
+
+                        </div>
 
                     </div>
 

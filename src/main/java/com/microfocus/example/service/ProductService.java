@@ -22,12 +22,14 @@ package com.microfocus.example.service;
 import com.microfocus.example.entity.Order;
 import com.microfocus.example.entity.Product;
 import com.microfocus.example.exception.MessageNotFoundException;
+import com.microfocus.example.exception.OrderNotFoundException;
 import com.microfocus.example.exception.ProductNotFoundException;
 import com.microfocus.example.payload.request.ProductRequest;
 import com.microfocus.example.repository.OrderRepository;
 import com.microfocus.example.repository.ProductRepository;
 import com.microfocus.example.web.form.OrderForm;
 import com.microfocus.example.web.form.admin.AdminNewProductForm;
+import com.microfocus.example.web.form.admin.AdminOrderForm;
 import com.microfocus.example.web.form.admin.AdminProductForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -186,5 +188,32 @@ public class ProductService {
         Order newOrder = orderRepository.saveAndFlush(otmp);
         return newOrder;
     }
+
+    public Optional<Order> findOrderById(UUID id) {
+        return orderRepository.findById(id);
+    }
+
+    public List<Order> getAllOrders() { return orderRepository.findAll(); }
+
+    public void deleteOrderById(UUID id) {
+        orderRepository.deleteById(id);
+    }
+
+    public Order saveOrderFromAdminOrderForm(AdminOrderForm adminOrderForm) throws OrderNotFoundException {
+        Optional<Order> optionalOrder = orderRepository.findById(adminOrderForm.getId());
+        if (optionalOrder.isPresent()) {
+            Order otmp = optionalOrder.get();
+            otmp.setOrderNum(adminOrderForm.getOrderNum());
+            otmp.setOrderDate(adminOrderForm.getOrderDate());
+            otmp.setAmount(adminOrderForm.getAmount());
+            otmp.setCart(adminOrderForm.getCart());
+            otmp.setShipped(adminOrderForm.getShipped());
+            otmp.setShippedDate(adminOrderForm.getShippedDate());
+            return otmp;
+        } else {
+            throw new ProductNotFoundException("Order not found: " + adminOrderForm.getOrderNum());
+        }
+    }
+
 
 }

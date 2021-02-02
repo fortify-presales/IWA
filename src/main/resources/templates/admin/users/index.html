@@ -28,38 +28,44 @@
                         </div>
 
                         <div class="col-md-9">
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th scope="col">Username</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Mobile</th>
-                            <th scope="col">Enabled</th>
-                            <th scope="col">Roles</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:if="${users.isEmpty()}">
-                            <td colspan="2"> No Users Available </td>
-                        </tr>
-                        <tr th:each="u : ${users}">
-                            <td><a th:href="@{/admin/users/{id}(id=${u.id})}"><span th:text="${u.username}"> Username </span></a></td>
-                            <td><span th:text="${u.firstName}"> Name </span></td>
-                            <td><span th:text="${u.email}"> Email </span></td>
-                            <td><span th:text="${u.phone}"> Mobile </span></td>
-                            <td>
-                                <span th:if="${u.enabled}"> <i class="fas fa-check"></i> </span>
-                                <span th:unless="${u.enabled}"> <i class="fas fa-times"></i> </span>
-                            </td>
-                            <td>
-                                <span th:each="a : ${u.authorities}"><span th:text="${#strings.replace(a.name,'ROLE_','')}"> Role </span>&nbsp;</span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <a class="btn btn-primary" th:href="@{/admin/users/add}"> New User </a>
-                </div>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Username</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Mobile</th>
+                                    <th scope="col">Enabled</th>
+                                    <th scope="col">Roles</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:if="${users.isEmpty()}">
+                                    <td colspan="2"> No Users Available </td>
+                                </tr>
+                                <tr th:each="u : ${users}">
+                                    <td><a th:href="@{/admin/users/{id}(id=${u.id})}"><span th:text="${u.username}"> Username </span></a></td>
+                                    <td><span th:text="${u.firstName}"> Name </span></td>
+                                    <td><span th:text="${u.email}"> Email </span></td>
+                                    <td><span th:text="${u.phone}"> Mobile </span></td>
+                                    <td>
+                                        <span th:if="${u.enabled}"> <i class="fas fa-check"></i> </span>
+                                        <span th:unless="${u.enabled}"> <i class="fas fa-times"></i> </span>
+                                    </td>
+                                    <td>
+                                        <span th:each="a : ${u.authorities}"><span th:text="${#strings.replace(a.name,'ROLE_','')}"> Role </span>&nbsp;</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="form-group row mt-4">
+                                <div class="col-md-12">
+                                    <a class="btn btn-primary" th:href="@{/not-yet-implemented}">New User</a>
+                                </div>
+                            </div>
+
+                        </div>
 
                     </div>
 

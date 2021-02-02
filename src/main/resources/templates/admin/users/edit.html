@@ -32,70 +32,371 @@
                     </div>
 
                     <div class="col-md-9">
-                <form action="#" th:action="@{/admin/users/{id}/save(id=${adminUserForm.id})}" th:object="${adminUserForm}" method="post">
-                    <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
-                        <span th:text="${message}">message</span>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="alert alert-danger" th:if="${#fields.hasErrors('global')}">
-                        <p th:each="error : ${#fields.errors('global')}" th:text="${error}">error</p>
-                    </div>
-                    <div class="form-group row">
-                        <label for="username" class="col-sm-2 col-form-label">Username:</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="username" th:field="*{username}" th:value="${adminUserForm.username}">
-                            <div th:if="${#fields.hasErrors('username')}">
-                                <p class="badge bg-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+
+                        <form class="form-horizontal" action="#" th:action="@{/admin/users/{id}/save(id=${adminUserForm.id})}" th:object="${adminUserForm}" method="post">
+
+                            <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                                <span th:text="${message}">message</span>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group row" th:classappend="${#fields.hasErrors('name')}? 'has-error':''">
-                        <label for="name" class="col-sm-2 col-form-label">Name:</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="name" th:field="*{name}" th:value="${adminUserForm.name}">
-                            <div th:if="${#fields.hasErrors('name')}">
-                                <p class="badge bg-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+
+                            <div class="alert alert-danger" th:if="${#fields.hasErrors('global')}">
+                                <p th:each="error : ${#fields.errors('global')}" th:text="${error}">error</p>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group row" th:classappend="${#fields.hasErrors('email')}? 'has-error':''">
-                        <label for="email" class="col-sm-2 col-form-label">Email:</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="email" th:field="*{email}" th:value="${adminUserForm.email}">
-                            <div th:if="${#fields.hasErrors('email')}">
-                                <p class="badge bg-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+
+                            <div class="form-group row">
+                                <div class="col-md-12" th:classappend="${#fields.hasErrors('username')}? 'has-error':''">
+                                    <label for="username" class="text-black">Username <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="username" th:field="*{username}" th:value="${adminUserForm.username}">
+                                    <div th:if="${#fields.hasErrors('username')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group row" th:classappend="${#fields.hasErrors('mobile')}? 'has-error':''">
-                        <label for="mobile" class="col-sm-2 col-form-label">Mobile:</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="mobile" th:field="*{mobile}" th:value="${adminUserForm.mobile}">
-                            <div th:if="${#fields.hasErrors('mobile')}">
-                                <p class="badge bg-danger" th:if="${#fields.hasErrors('mobile')}" th:errors="*{mobile}"></p>
+
+                            <div class="form-group row">
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('firstName')}? 'has-error':''">
+                                    <label for="firstName" class="text-black">First Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="firstName" th:field="*{firstName}" th:value="${adminUserForm.firstName}">
+                                    <div th:if="${#fields.hasErrors('firstName')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('lastName')}? 'has-error':''">
+                                    <label for="lastName" class="text-black">Last Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="lastName" th:field="*{lastName}" th:value="${adminUserForm.lastName}">
+                                    <div th:if="${#fields.hasErrors('lastName')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group row" th:classappend="${#fields.hasErrors('enabled')}? 'has-error':''">
-                        <label for="enabled" class="col-sm-2 col-form-label">Enabled:</label>
-                        <div class="col-sm-10">
-                            <input type="checkbox" class="" id="enabled" th:field="*{enabled}"
-                                   th:value="${adminUserForm.enabled}">
-                            <div th:if="${#fields.hasErrors('enabled')}">
-                                <p class="badge bg-danger" th:if="${#fields.hasErrors('enabled')}" th:errors="*{enabled}"></p>
+
+                            <div class="form-group row">
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('email')}? 'has-error':''">
+                                    <label for="email" class="text-black">Email Address <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="email" th:field="*{email}" th:value="${adminUserForm.email}">
+                                    <div th:if="${#fields.hasErrors('email')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('phone')}? 'has-error':''">
+                                    <label for="phone" class="text-black">Phone <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="phone" th:field="*{phone}" th:value="${adminUserForm.phone}">
+                                    <div th:if="${#fields.hasErrors('phone')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12" th:classappend="${#fields.hasErrors('address')}? 'has-error':''">
+                                    <label for="address" class="text-black">Address <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="address" th:field="*{address}" th:value="${adminUserForm.address}">
+                                    <div th:if="${#fields.hasErrors('address')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('state')}? 'has-error':''">
+                                    <label for="state" class="text-black">State / Region <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="state" th:field="*{state}" th:value="${adminUserForm.state}">
+                                    <div th:if="${#fields.hasErrors('state')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('state')}" th:errors="*{state}"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('zip')}? 'has-error':''">
+                                    <label for="zip" class="text-black">Postal / Zip <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="zip" th:field="*{zip}" th:value="${adminUserForm.zip}">
+                                    <div th:if="${#fields.hasErrors('zip')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('zip')}" th:errors="*{zip}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('state')}? 'has-error':''">
+                                    <label for="city" class="text-black">City <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="city" th:field="*{city}" th:value="${adminUserForm.city}">
+                                    <div th:if="${#fields.hasErrors('city')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('country')}? 'has-error':''">
+                                    <label for="country" class="text-black">Country <span class="text-danger">*</span></label>
+                                    <select id="country" th:field="*{country}" class="form-control">
+                                        <option th:selected="${adminUserForm.country}=='Afghanistan'" value="Afghanistan">Afghanistan</option>
+                                        <option th:selected="${adminUserForm.country}=='Åland Islands'" value="Åland Islands">Åland Islands</option>
+                                        <option th:selected="${adminUserForm.country}=='Albania'" value="Albania">Albania</option>
+                                        <option th:selected="${adminUserForm.country}=='Algeria'" value="Algeria">Algeria</option>
+                                        <option th:selected="${adminUserForm.country}=='American Samoa'" value="American Samoa">American Samoa</option>
+                                        <option th:selected="${adminUserForm.country}=='Andorra'" value="Andorra">Andorra</option>
+                                        <option th:selected="${adminUserForm.country}=='Angola'" value="Angola">Angola</option>
+                                        <option th:selected="${adminUserForm.country}=='Anguilla'" value="Anguilla">Anguilla</option>
+                                        <option th:selected="${adminUserForm.country}=='Antarctica'" value="Antarctica">Antarctica</option>
+                                        <option th:selected="${adminUserForm.country}=='Antigua and Barbuda'" value="Antigua and Barbuda">Antigua and Barbuda</option>
+                                        <option th:selected="${adminUserForm.country}=='Argentina'" value="Argentina">Argentina</option>
+                                        <option th:selected="${adminUserForm.country}=='Armenia'" value="Armenia">Armenia</option>
+                                        <option th:selected="${adminUserForm.country}=='Aruba'" value="Aruba">Aruba</option>
+                                        <option th:selected="${adminUserForm.country}=='Australia'" value="Australia">Australia</option>
+                                        <option th:selected="${adminUserForm.country}=='Austria'" value="Austria">Austria</option>
+                                        <option th:selected="${adminUserForm.country}=='Azerbaijan'" value="Azerbaijan">Azerbaijan</option>
+                                        <option th:selected="${adminUserForm.country}=='Bahamas'" value="Bahamas">Bahamas</option>
+                                        <option th:selected="${adminUserForm.country}=='Bahrain'" value="Bahrain">Bahrain</option>
+                                        <option th:selected="${adminUserForm.country}=='Bangladesh'" value="Bangladesh">Bangladesh</option>
+                                        <option th:selected="${adminUserForm.country}=='Barbados'" value="Barbados">Barbados</option>
+                                        <option th:selected="${adminUserForm.country}=='Belarus'" value="Belarus">Belarus</option>
+                                        <option th:selected="${adminUserForm.country}=='Belgium'" value="Belgium">Belgium</option>
+                                        <option th:selected="${adminUserForm.country}=='Belize'" value="Belize">Belize</option>
+                                        <option th:selected="${adminUserForm.country}=='Benin'" value="Benin">Benin</option>
+                                        <option th:selected="${adminUserForm.country}=='Bermuda'" value="Bermuda">Bermuda</option>
+                                        <option th:selected="${adminUserForm.country}=='Bhutanm'" value="Bhutan">Bhutan</option>
+                                        <option th:selected="${adminUserForm.country}=='Bolivia'" value="Bolivia">Bolivia</option>
+                                        <option th:selected="${adminUserForm.country}=='Bosnia and Herzegovina'" value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+                                        <option th:selected="${adminUserForm.country}=='Botswana'" value="Botswana">Botswana</option>
+                                        <option th:selected="${adminUserForm.country}=='Bouvet Island'" value="Bouvet Island">Bouvet Island</option>
+                                        <option th:selected="${adminUserForm.country}=='Brazil'" value="Brazil">Brazil</option>
+                                        <option th:selected="${adminUserForm.country}=='British Indian Ocean Territory'" value="British Indian Ocean Territory">British Indian Ocean Territory</option>
+                                        <option th:selected="${adminUserForm.country}=='Brunei Darussalam'" value="Brunei Darussalam">Brunei Darussalam</option>
+                                        <option th:selected="${adminUserForm.country}=='Bulgaria'" value="Bulgaria">Bulgaria</option>
+                                        <option th:selected="${adminUserForm.country}=='Burkina Faso'" value="Burkina Faso">Burkina Faso</option>
+                                        <option th:selected="${adminUserForm.country}=='Burundi'" value="Burundi">Burundi</option>
+                                        <option th:selected="${adminUserForm.country}=='Cambodia'" value="Cambodia">Cambodia</option>
+                                        <option th:selected="${adminUserForm.country}=='Cameroon'" value="Cameroon">Cameroon</option>
+                                        <option th:selected="${adminUserForm.country}=='Canada'" value="Canada">Canada</option>
+                                        <option th:selected="${adminUserForm.country}=='Cape Verde'" value="Cape Verde">Cape Verde</option>
+                                        <option th:selected="${adminUserForm.country}=='Cayman Islands'" value="Cayman Islands">Cayman Islands</option>
+                                        <option th:selected="${adminUserForm.country}=='Central African Republic'" value="Central African Republic">Central African Republic</option>
+                                        <option th:selected="${adminUserForm.country}=='Chad'" value="Chad">Chad</option>
+                                        <option th:selected="${adminUserForm.country}=='Chile'" value="Chile">Chile</option>
+                                        <option th:selected="${adminUserForm.country}=='China'" value="China">China</option>
+                                        <option th:selected="${adminUserForm.country}=='Christmas Island'" value="Christmas Island">Christmas Island</option>
+                                        <option th:selected="${adminUserForm.country}=='Cocos (Keeling) Islands'" value="Cocos (Keeling) Islands">Cocos (Keeling) Islands</option>
+                                        <option th:selected="${adminUserForm.country}=='Colombia'" value="Colombia">Colombia</option>
+                                        <option th:selected="${adminUserForm.country}=='Comoros'" value="Comoros">Comoros</option>
+                                        <option th:selected="${adminUserForm.country}=='Congo'" value="Congo">Congo</option>
+                                        <option th:selected="${adminUserForm.country}=='Congo, The Democratic Republic of The'" value="Congo, The Democratic Republic of The">Congo, The Democratic Republic of The</option>
+                                        <option th:selected="${adminUserForm.country}=='Cook Islands'" value="Cook Islands">Cook Islands</option>
+                                        <option th:selected="${adminUserForm.country}=='Costa Rica'" value="Costa Rica">Costa Rica</option>
+                                        <option th:selected="${adminUserForm.country}=='Cote D ivoire'" value="Cote D voire">Cote D ivoire</option>
+                                        <option th:selected="${adminUserForm.country}=='Croatia'" value="Croatia">Croatia</option>
+                                        <option th:selected="${adminUserForm.country}=='Cuba'" value="Cuba">Cuba</option>
+                                        <option th:selected="${adminUserForm.country}=='Cyprus'" value="Cyprus">Cyprus</option>
+                                        <option th:selected="${adminUserForm.country}=='Czech Republic'" value="Czech Republic">Czech Republic</option>
+                                        <option th:selected="${adminUserForm.country}=='Denmark'" value="Denmark">Denmark</option>
+                                        <option th:selected="${adminUserForm.country}=='Djibouti'" value="Djibouti">Djibouti</option>
+                                        <option th:selected="${adminUserForm.country}=='Dominica'" value="Dominica">Dominica</option>
+                                        <option th:selected="${adminUserForm.country}=='Dominican Republic'" value="Dominican Republic">Dominican Republic</option>
+                                        <option th:selected="${adminUserForm.country}=='Ecuador'" value="Ecuador">Ecuador</option>
+                                        <option th:selected="${adminUserForm.country}=='Egypt'" value="Egypt">Egypt</option>
+                                        <option th:selected="${adminUserForm.country}=='El Salvador'" value="El Salvador">El Salvador</option>
+                                        <option th:selected="${adminUserForm.country}=='Equatorial Guinea'" value="Equatorial Guinea">Equatorial Guinea</option>
+                                        <option th:selected="${adminUserForm.country}=='Eritrea'" value="Eritrea">Eritrea</option>
+                                        <option th:selected="${adminUserForm.country}=='Estonia'" value="Estonia">Estonia</option>
+                                        <option th:selected="${adminUserForm.country}=='Ethiopia'" value="Ethiopia">Ethiopia</option>
+                                        <option th:selected="${adminUserForm.country}=='Falkland Islands (Malvinas)'" value="Falkland Islands (Malvinas)">Falkland Islands (Malvinas)</option>
+                                        <option th:selected="${adminUserForm.country}=='Faroe Islands'" value="Faroe Islands">Faroe Islands</option>
+                                        <option th:selected="${adminUserForm.country}=='Fiji'" value="Fiji">Fiji</option>
+                                        <option th:selected="${adminUserForm.country}=='Finland'" value="Finland">Finland</option>
+                                        <option th:selected="${adminUserForm.country}=='France'" value="France">France</option>
+                                        <option th:selected="${adminUserForm.country}=='French Guiana'" value="French Guiana">French Guiana</option>
+                                        <option th:selected="${adminUserForm.country}=='French Polynesia'" value="French Polynesia">French Polynesia</option>
+                                        <option th:selected="${adminUserForm.country}=='French Southern Territories'" value="French Southern Territories">French Southern Territories</option>
+                                        <option th:selected="${adminUserForm.country}=='Gabon'" value="Gabon">Gabon</option>
+                                        <option th:selected="${adminUserForm.country}=='Gambia'" value="Gambia">Gambia</option>
+                                        <option th:selected="${adminUserForm.country}=='Georgia'" value="Georgia">Georgia</option>
+                                        <option th:selected="${adminUserForm.country}=='Germany'" value="Germany">Germany</option>
+                                        <option th:selected="${adminUserForm.country}=='Ghana'" value="Ghana">Ghana</option>
+                                        <option th:selected="${adminUserForm.country}=='Gibraltar'" value="Gibraltar">Gibraltar</option>
+                                        <option th:selected="${adminUserForm.country}=='Greece'" value="Greece">Greece</option>
+                                        <option th:selected="${adminUserForm.country}=='Greenland'" value="Greenland">Greenland</option>
+                                        <option th:selected="${adminUserForm.country}=='Grenada'" value="Grenada">Grenada</option>
+                                        <option th:selected="${adminUserForm.country}=='Guadeloupe'" value="Guadeloupe">Guadeloupe</option>
+                                        <option th:selected="${adminUserForm.country}=='Guam'" value="Guam">Guam</option>
+                                        <option th:selected="${adminUserForm.country}=='Guatemala'" value="Guatemala">Guatemala</option>
+                                        <option th:selected="${adminUserForm.country}=='Guernsey'" value="Guernsey">Guernsey</option>
+                                        <option th:selected="${adminUserForm.country}=='Guinea'" value="Guinea">Guinea</option>
+                                        <option th:selected="${adminUserForm.country}=='Guinea-bissau'" value="Guinea-bissau">Guinea-bissau</option>
+                                        <option th:selected="${adminUserForm.country}=='Guyana'" value="Guyana">Guyana</option>
+                                        <option th:selected="${adminUserForm.country}=='Haiti'" value="Haiti">Haiti</option>
+                                        <option th:selected="${adminUserForm.country}=='Heard Island and Mcdonald Islands'" value="Heard Island and Mcdonald Islands">Heard Island and Mcdonald Islands</option>
+                                        <option th:selected="${adminUserForm.country}=='Holy See (Vatican City State)'" value="Holy See (Vatican City State)">Holy See (Vatican City State)</option>
+                                        <option th:selected="${adminUserForm.country}=='Honduras'" value="Honduras">Honduras</option>
+                                        <option th:selected="${adminUserForm.country}=='Hong Kong'" value="Hong Kong">Hong Kong</option>
+                                        <option th:selected="${adminUserForm.country}=='Hungary'" value="Hungary">Hungary</option>
+                                        <option th:selected="${adminUserForm.country}=='Iceland'" value="Iceland">Iceland</option>
+                                        <option th:selected="${adminUserForm.country}=='India'" value="India">India</option>
+                                        <option th:selected="${adminUserForm.country}=='Indonesia'" value="Indonesia">Indonesia</option>
+                                        <option th:selected="${adminUserForm.country}=='Iran, Islamic Republic of'" value="Iran, Islamic Republic of">Iran, Islamic Republic of</option>
+                                        <option th:selected="${adminUserForm.country}=='Iraq'" value="Iraq">Iraq</option>
+                                        <option th:selected="${adminUserForm.country}=='Ireland'" value="Ireland">Ireland</option>
+                                        <option th:selected="${adminUserForm.country}=='Isle of Man'" value="Isle of Man">Isle of Man</option>
+                                        <option th:selected="${adminUserForm.country}=='Israel'" value="Israel">Israel</option>
+                                        <option th:selected="${adminUserForm.country}=='Italy'" value="Italy">Italy</option>
+                                        <option th:selected="${adminUserForm.country}=='Jamaica'" value="Jamaica">Jamaica</option>
+                                        <option th:selected="${adminUserForm.country}=='Japan'" value="Japan">Japan</option>
+                                        <option th:selected="${adminUserForm.country}=='Jersey'" value="Jersey">Jersey</option>
+                                        <option th:selected="${adminUserForm.country}=='Jordan'" value="Jordan">Jordan</option>
+                                        <option th:selected="${adminUserForm.country}=='Kazakhstan'" value="Kazakhstan">Kazakhstan</option>
+                                        <option th:selected="${adminUserForm.country}=='Kenya'" value="Kenya">Kenya</option>
+                                        <option th:selected="${adminUserForm.country}=='Kiribati'" value="Kiribati">Kiribati</option>
+                                        <option th:selected="${adminUserForm.country}=='Korea, Democratic Peoples Republic of'" value="Korea, Democratic Peoples Republic of">Korea, Democratic Peoples Republic of</option>
+                                        <option th:selected="${adminUserForm.country}=='Korea, Republic of'" value="Korea, Republic of">Korea, Republic of</option>
+                                        <option th:selected="${adminUserForm.country}=='Kuwait'" value="Kuwait">Kuwait</option>
+                                        <option th:selected="${adminUserForm.country}=='Kyrgyzstan'" value="Kyrgyzstan">Kyrgyzstan</option>
+                                        <option th:selected="${adminUserForm.country}=='Lao Peoples Democratic Republic'" value="Lao Peoples Democratic Republic">Lao Peoples Democratic Republic</option>
+                                        <option th:selected="${adminUserForm.country}=='Latvia'" value="Latvia">Latvia</option>
+                                        <option th:selected="${adminUserForm.country}=='Lebanon'" value="Lebanon">Lebanon</option>
+                                        <option th:selected="${adminUserForm.country}=='Lesotho'" value="Lesotho">Lesotho</option>
+                                        <option th:selected="${adminUserForm.country}=='Liberia'" value="Liberia">Liberia</option>
+                                        <option th:selected="${adminUserForm.country}=='Libyan Arab Jamahiriya'" value="Libyan Arab Jamahiriya">Libyan Arab Jamahiriya</option>
+                                        <option th:selected="${adminUserForm.country}=='Liechtenstein'" value="Liechtenstein">Liechtenstein</option>
+                                        <option th:selected="${adminUserForm.country}=='Lithuania'" value="Lithuania">Lithuania</option>
+                                        <option th:selected="${adminUserForm.country}=='Luxembourg'" value="Luxembourg">Luxembourg</option>
+                                        <option th:selected="${adminUserForm.country}=='Macao'" value="Macao">Macao</option>
+                                        <option th:selected="${adminUserForm.country}=='Macedonia, The Former Yugoslav Republic of'" value="Macedonia, The Former Yugoslav Republic of">Macedonia, The Former Yugoslav Republic of</option>
+                                        <option th:selected="${adminUserForm.country}=='Madagascar'" value="Madagascar">Madagascar</option>
+                                        <option th:selected="${adminUserForm.country}=='Malawi'" value="Malawi">Malawi</option>
+                                        <option th:selected="${adminUserForm.country}=='Malaysia'" value="Malaysia">Malaysia</option>
+                                        <option th:selected="${adminUserForm.country}=='Maldives'" value="Maldives">Maldives</option>
+                                        <option th:selected="${adminUserForm.country}=='Mali'" value="Mali">Mali</option>
+                                        <option th:selected="${adminUserForm.country}=='Malta'" value="Malta">Malta</option>
+                                        <option th:selected="${adminUserForm.country}=='Marshall Islands'" value="Marshall Islands">Marshall Islands</option>
+                                        <option th:selected="${adminUserForm.country}=='Martinique'" value="Martinique">Martinique</option>
+                                        <option th:selected="${adminUserForm.country}=='Mauritania'" value="Mauritania">Mauritania</option>
+                                        <option th:selected="${adminUserForm.country}=='Mauritius'" value="Mauritius">Mauritius</option>
+                                        <option th:selected="${adminUserForm.country}=='Mayotte'" value="Mayotte">Mayotte</option>
+                                        <option th:selected="${adminUserForm.country}=='Mexico'" value="Mexico">Mexico</option>
+                                        <option th:selected="${adminUserForm.country}=='Micronesia, Federated States of'" value="Micronesia, Federated States of">Micronesia, Federated States of</option>
+                                        <option th:selected="${adminUserForm.country}=='Moldova, Republic of'" value="Moldova, Republic of">Moldova, Republic of</option>
+                                        <option th:selected="${adminUserForm.country}=='Monaco'" value="Monaco">Monaco</option>
+                                        <option th:selected="${adminUserForm.country}=='Mongolia'" value="Mongolia">Mongolia</option>
+                                        <option th:selected="${adminUserForm.country}=='Montenegro'" value="Montenegro">Montenegro</option>
+                                        <option th:selected="${adminUserForm.country}=='Montserrat'" value="Montserrat">Montserrat</option>
+                                        <option th:selected="${adminUserForm.country}=='Morocco'" value="Morocco">Morocco</option>
+                                        <option th:selected="${adminUserForm.country}=='Mozambique'" value="Mozambique">Mozambique</option>
+                                        <option th:selected="${adminUserForm.country}=='Myanmar'" value="Myanmar">Myanmar</option>
+                                        <option th:selected="${adminUserForm.country}=='Namibia'" value="Namibia">Namibia</option>
+                                        <option th:selected="${adminUserForm.country}=='Nauru'" value="Nauru">Nauru</option>
+                                        <option th:selected="${adminUserForm.country}=='Nepal'" value="Nepal">Nepal</option>
+                                        <option th:selected="${adminUserForm.country}=='Netherlands'" value="Netherlands">Netherlands</option>
+                                        <option th:selected="${adminUserForm.country}=='Netherlands Antilles'" value="Netherlands Antilles">Netherlands Antilles</option>
+                                        <option th:selected="${adminUserForm.country}=='New Caledonia'" value="New Caledonia">New Caledonia</option>
+                                        <option th:selected="${adminUserForm.country}=='New Zealand'" value="New Zealand">New Zealand</option>
+                                        <option th:selected="${adminUserForm.country}=='Nicaragua'" value="Nicaragua">Nicaragua</option>
+                                        <option th:selected="${adminUserForm.country}=='Niger'" value="Niger">Niger</option>
+                                        <option th:selected="${adminUserForm.country}=='Nigeria'" value="Nigeria">Nigeria</option>
+                                        <option th:selected="${adminUserForm.country}=='Niue'" value="Niue">Niue</option>
+                                        <option th:selected="${adminUserForm.country}=='Norfolk Island'" value="Norfolk Island">Norfolk Island</option>
+                                        <option th:selected="${adminUserForm.country}=='Northern Mariana Islands'" value="Northern Mariana Islands">Northern Mariana Islands</option>
+                                        <option th:selected="${adminUserForm.country}=='Norway'" value="Norway">Norway</option>
+                                        <option th:selected="${adminUserForm.country}=='Oman'" value="Oman">Oman</option>
+                                        <option th:selected="${adminUserForm.country}=='Pakistan'" value="Pakistan">Pakistan</option>
+                                        <option th:selected="${adminUserForm.country}=='Palau'" value="Palau">Palau</option>
+                                        <option th:selected="${adminUserForm.country}=='Palestinian Territory, Occupied'" value="Palestinian Territory, Occupied">Palestinian Territory, Occupied</option>
+                                        <option th:selected="${adminUserForm.country}=='Panama'" value="Panama">Panama</option>
+                                        <option th:selected="${adminUserForm.country}=='Papua New Guinea'" value="Papua New Guinea">Papua New Guinea</option>
+                                        <option th:selected="${adminUserForm.country}=='Paraguay'" value="Paraguay">Paraguay</option>
+                                        <option th:selected="${adminUserForm.country}=='Peru'" value="Peru">Peru</option>
+                                        <option th:selected="${adminUserForm.country}=='Philippines'" value="Philippines">Philippines</option>
+                                        <option th:selected="${adminUserForm.country}=='Pitcairn'" value="Pitcairn">Pitcairn</option>
+                                        <option th:selected="${adminUserForm.country}=='Poland'" value="Poland">Poland</option>
+                                        <option th:selected="${adminUserForm.country}=='Portugal'" value="Portugal">Portugal</option>
+                                        <option th:selected="${adminUserForm.country}=='Puerto Rico'" value="Puerto Rico">Puerto Rico</option>
+                                        <option th:selected="${adminUserForm.country}=='Qatar'" value="Qatar">Qatar</option>
+                                        <option th:selected="${adminUserForm.country}=='Reunion'" value="Reunion">Reunion</option>
+                                        <option th:selected="${adminUserForm.country}=='Romania'" value="Romania">Romania</option>
+                                        <option th:selected="${adminUserForm.country}=='Russian Federation'" value="Russian Federation">Russian Federation</option>
+                                        <option th:selected="${adminUserForm.country}=='Rwanda'" value="Rwanda">Rwanda</option>
+                                        <option th:selected="${adminUserForm.country}=='Saint Helena'" value="Saint Helena">Saint Helena</option>
+                                        <option th:selected="${adminUserForm.country}=='Saint Kitts and Nevis'" value="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
+                                        <option th:selected="${adminUserForm.country}=='Saint Lucia'" value="Saint Lucia">Saint Lucia</option>
+                                        <option th:selected="${adminUserForm.country}=='Saint Pierre and Miquelon'" value="Saint Pierre and Miquelon">Saint Pierre and Miquelon</option>
+                                        <option th:selected="${adminUserForm.country}=='Saint Vincent and The Grenadines'" value="Saint Vincent and The Grenadines">Saint Vincent and The Grenadines</option>
+                                        <option th:selected="${adminUserForm.country}=='Samoa'" value="Samoa">Samoa</option>
+                                        <option th:selected="${adminUserForm.country}=='San Marino'" value="San Marino">San Marino</option>
+                                        <option th:selected="${adminUserForm.country}=='Sao Tome and Principe'" value="Sao Tome and Principe">Sao Tome and Principe</option>
+                                        <option th:selected="${adminUserForm.country}=='Saudi Arabia'" value="Saudi Arabia">Saudi Arabia</option>
+                                        <option th:selected="${adminUserForm.country}=='Senegal'" value="Senegal">Senegal</option>
+                                        <option th:selected="${adminUserForm.country}=='Serbia'" value="Serbia">Serbia</option>
+                                        <option th:selected="${adminUserForm.country}=='Seychelles'" value="Seychelles">Seychelles</option>
+                                        <option th:selected="${adminUserForm.country}=='Sierra Leone'" value="Sierra Leone">Sierra Leone</option>
+                                        <option th:selected="${adminUserForm.country}=='Singapore'" value="Singapore">Singapore</option>
+                                        <option th:selected="${adminUserForm.country}=='Slovakia'" value="Slovakia">Slovakia</option>
+                                        <option th:selected="${adminUserForm.country}=='Slovenia'" value="Slovenia">Slovenia</option>
+                                        <option th:selected="${adminUserForm.country}=='Solomon Islands'" value="Solomon Islands">Solomon Islands</option>
+                                        <option th:selected="${adminUserForm.country}=='Somalia'" value="Somalia">Somalia</option>
+                                        <option th:selected="${adminUserForm.country}=='South Africa'" value="South Africa">South Africa</option>
+                                        <option th:selected="${adminUserForm.country}=='South Georgia and The South Sandwich Islands'" value="South Georgia and The South Sandwich Islands">South Georgia and The South Sandwich Islands</option>
+                                        <option th:selected="${adminUserForm.country}=='Spain'" value="Spain">Spain</option>
+                                        <option th:selected="${adminUserForm.country}=='Sri Lanka'" value="Sri Lanka">Sri Lanka</option>
+                                        <option th:selected="${adminUserForm.country}=='Sudan'" value="Sudan">Sudan</option>
+                                        <option th:selected="${adminUserForm.country}=='Suriname'" value="Suriname">Suriname</option>
+                                        <option th:selected="${adminUserForm.country}=='Svalbard and Jan Mayen'" value="Svalbard and Jan Mayen">Svalbard and Jan Mayen</option>
+                                        <option th:selected="${adminUserForm.country}=='Swaziland'" value="Swaziland">Swaziland</option>
+                                        <option th:selected="${adminUserForm.country}=='Sweden'" value="Sweden">Sweden</option>
+                                        <option th:selected="${adminUserForm.country}=='Switzerland'" value="Switzerland">Switzerland</option>
+                                        <option th:selected="${adminUserForm.country}=='Syrian Arab Republic'" value="Syrian Arab Republic">Syrian Arab Republic</option>
+                                        <option th:selected="${adminUserForm.country}=='Taiwan'" value="Taiwan">Taiwan, Province of China</option>
+                                        <option th:selected="${adminUserForm.country}=='Tajikistan'" value="Tajikistan">Tajikistan</option>
+                                        <option th:selected="${adminUserForm.country}=='Tanzania, United Republic of'" value="Tanzania, United Republic of">Tanzania, United Republic of</option>
+                                        <option th:selected="${adminUserForm.country}=='Thailand'" value="Thailand">Thailand</option>
+                                        <option th:selected="${adminUserForm.country}=='Timor-leste'" value="Timor-leste">Timor-leste</option>
+                                        <option th:selected="${adminUserForm.country}=='Togo'" value="Togo">Togo</option>
+                                        <option th:selected="${adminUserForm.country}=='Tokelau'" value="Tokelau">Tokelau</option>
+                                        <option th:selected="${adminUserForm.country}=='Tonga'" value="Tonga">Tonga</option>
+                                        <option th:selected="${adminUserForm.country}=='Trinidad and Tobago'" value="Trinidad and Tobago">Trinidad and Tobago</option>
+                                        <option th:selected="${adminUserForm.country}=='Tunisia'" value="Tunisia">Tunisia</option>
+                                        <option th:selected="${adminUserForm.country}=='Turkey'" value="Turkey">Turkey</option>
+                                        <option th:selected="${adminUserForm.country}=='Turkmenistan'" value="Turkmenistan">Turkmenistan</option>
+                                        <option th:selected="${adminUserForm.country}=='Turks and Caicos Islands'" value="Turks and Caicos Islands">Turks and Caicos Islands</option>
+                                        <option th:selected="${adminUserForm.country}=='Tuvalu'" value="Tuvalu">Tuvalu</option>
+                                        <option th:selected="${adminUserForm.country}=='Uganda'" value="Uganda">Uganda</option>
+                                        <option th:selected="${adminUserForm.country}=='Ukraine'" value="Ukraine">Ukraine</option>
+                                        <option th:selected="${adminUserForm.country}=='United Arab Emirates'" value="United Arab Emirates">United Arab Emirates</option>
+                                        <option th:selected="${adminUserForm.country}=='United Kingdom'" value="United Kingdom">United Kingdom</option>
+                                        <option th:selected="${adminUserForm.country}=='United States'" value="United States">United States</option>
+                                        <option th:selected="${adminUserForm.country}=='United States Minor Outlying Islands'" value="United States Minor Outlying Islands">United States Minor Outlying Islands</option>
+                                        <option th:selected="${adminUserForm.country}=='Uruguay'" value="Uruguay">Uruguay</option>
+                                        <option th:selected="${adminUserForm.country}=='Uzbekistan'" value="Uzbekistan">Uzbekistan</option>
+                                        <option th:selected="${adminUserForm.country}=='Vanuatu'" value="Vanuatu">Vanuatu</option>
+                                        <option th:selected="${adminUserForm.country}=='Venezuela'" value="Venezuela">Venezuela</option>
+                                        <option th:selected="${adminUserForm.country}=='Viet Nam'" value="Viet Nam">Viet Nam</option>
+                                        <option th:selected="${adminUserForm.country}=='Virgin Islands, British'" value="Virgin Islands, British">Virgin Islands, British</option>
+                                        <option th:selected="${adminUserForm.country}=='Virgin Islands, U.S.'" value="Virgin Islands, U.S.">Virgin Islands, U.S.</option>
+                                        <option th:selected="${adminUserForm.country}=='Wallis and Futuna'" value="Wallis and Futuna">Wallis and Futuna</option>
+                                        <option th:selected="${adminUserForm.country}=='Western Sahara'" value="Western Sahara">Western Sahara</option>
+                                        <option th:selected="${adminUserForm.country}=='Yemen'" value="Yemen">Yemen</option>
+                                        <option th:selected="${adminUserForm.country}=='Zambia'" value="Zambia">Zambia</option>
+                                        <option th:selected="${adminUserForm.country}=='Zimbabwe'" value="Zimbabwe">Zimbabwe</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-check row">
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('enabled')}? 'has-error':''">
+                                    <input type="checkbox" class="form-check-input" id="enabled" th:field="*{enabled}"
+                                           th:value="${adminUserForm.enabled}">
+                                    <label for="enabled" class="form-check-label">Enabled</label>
+                                    <div th:if="${#fields.hasErrors('enabled')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('enabled')}" th:errors="*{enabled}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row mt-4">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-space btn-primary">Save</button>
+                                    <a class="btn btn-info" th:href="@{/admin/users/{id}(id=${adminUserForm.id})}">Cancel</a>
+                                </div>
+                            </div>
+                            
+                        </form>
+
                     </div>
-                    <div class="form-group row">
-                        <div class="col-sm-2"></div>
-                        <div class="col-sm-10">
-                            <button type="submit" class="btn btn-space btn-primary">Save</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
 
                 </div>
 

@@ -40,9 +40,15 @@
                                 </button>
                             </div>
                             <div class="form-group row">
-                                <div class="col-sm-12">
-                                    <h5 class="text-muted">Message sent on <span th:text="${#dates.format(messageForm.sentDate, 'dd-MM-yyyy HH:mm')}"></span></h5>
-                                    <p th:text="${messageForm.text}"></p>
+                                <label for="dateSent" class="col-sm-2 col-form-label">Date Sent</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly class="form-control-plaintext" id="dateSent" th:value="${#dates.format(messageForm.sentDate, 'MM-dd-yyyy')}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="messageText" class="col-sm-2 col-form-label">Message</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly class="form-control-plaintext" id="messageText" th:value="${messageForm.text}">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -51,6 +57,7 @@
                                 </div>
                             </div>
                         </form>
+
                     </div>
 
                 </div>

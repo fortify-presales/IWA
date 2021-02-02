@@ -17,7 +17,9 @@
                             </span>
                             <h2 class="display-3 text-black">Page Not Found</h2>
                             <p class="lead mb-5">We're sorry the page your requested cannot be found!</p>
-                            <p><a th:href="@{/products}" class="btn btn-md height-auto px-4 py-3 btn-primary">Back to Shop</a></p>
+                            <p>
+                                <button type="submit" class="btn btn-md height-auto px-4 py-3 btn-primary" onclick="window.history.go(-1);">Back</button>
+                            </p>
                         </div>
                     </div>
                 </div>

@@ -37,12 +37,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
- * Controller for administrative pages
+ * Controller for administration of products
  *
  * @author Kevin A. Lee
  */
@@ -64,8 +62,8 @@ public class AdminProductController {
     }
 
     @GetMapping("/{id}")
-    public String viewProducts(@PathVariable("id") UUID productId,
-                               Model model, Principal principal) {
+    public String viewProduct(@PathVariable("id") UUID productId,
+                              Model model, Principal principal) {
         Optional<Product> optionalProduct = productService.findProductById(productId);
         if (optionalProduct.isPresent()) {
             AdminProductForm adminProductForm = new AdminProductForm(optionalProduct.get());
@@ -171,6 +169,9 @@ public class AdminProductController {
     }
     
     private Model setModelDefaults(Model model, Principal principal, String controllerName, String actionName) {
+        Locale currentLocale = Locale.getDefault();
+        Currency currency = Currency.getInstance(currentLocale);
+        model.addAttribute("currencySymbol", currency.getSymbol());
         model.addAttribute("product", WebUtils.getLoggedInUser(principal));
         model.addAttribute("messageCount", "0");
         model.addAttribute("controllerName", controllerName);

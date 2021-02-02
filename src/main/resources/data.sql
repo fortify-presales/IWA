@@ -25,6 +25,8 @@ VALUES ('dfc1d81b-4a7e-4248-80f7-8445ee5cb68e', 'e18c8bcc-935d-444d-a194-3a32a3b
 INSERT INTO user_authorities (authority_id, user_id)
 VALUES ('6bdd6188-d659-4390-8d37-8f090d2ed69a', '32e7db01-86bc-4687-9ecb-d79b265ac14f');
 INSERT INTO user_authorities (authority_id, user_id)
+VALUES ('6bdd6188-d659-4390-8d37-8f090d2ed69a', 'db4cfab1-ff1d-4bca-a662-394771841383');
+INSERT INTO user_authorities (authority_id, user_id)
 VALUES ('dfc1d81b-4a7e-4248-80f7-8445ee5cb68e', '92a82f45-7a03-42f3-80f8-ce4e9892409d');
 INSERT INTO products (id, code, name, rating, summary, description, image, price, in_stock, time_to_stock, available)
 VALUES ('eec467c8-5de9-4c7c-8541-7b31614d31a0', 'SWA234-A568-00010', 'Solodox 750', 4,

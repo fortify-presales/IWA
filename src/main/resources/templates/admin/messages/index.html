@@ -28,6 +28,7 @@
                 </div>
 
                 <div class="col-md-9">
+
                     <table class="table">
                         <thead>
                         <tr>
@@ -35,23 +36,21 @@
                             <th scope="col">Summary</th>
                             <th scope="col">Sent</th>
                             <th scope="col">Read</th>
-                            <th scope="col">View</th>
-                            <th scope="col">Delete</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:if="${messages.isEmpty()}">
-                            <td colspan="2"> No Messages Available </td>
+                            <td colspan="6"> No Messages Available </td>
                         </tr>
-                        <tr th:each="m : ${messages}">
+                        <tr th:each="m : ${messages}" th:classappend="${m.read} ? text-muted : text-info">
                             <td><span th:text="${m.user.username}"> To </span></td>
-                            <td><span th:text="${#strings.abbreviate(m.text,40)}"> Text </span></td>
-                            <td><span th:text="${#dates.format(m.sentDate, 'dd-MM-yyyy HH:mm')}"> Sent </span></td>
+                            <td><a th:href="@{/admin/messages/{id}(id=${m.id})}"><span th:text="${#strings.abbreviate(m.text,50)}"> Text </span></a></td>
+                            <td><span th:text="${#dates.format(m.sentDate, 'MM-dd-yyyy')}"> Sent </span></td>
                             <td>
                                 <span th:if="${m.read}"> <i class="fas fa-check"></i> </span>
                                 <span th:unless="${m.read}"> <i class="fas fa-times"></i> </span>
                             </td>
-                            <td>
+                            <!--td>
                                 <a type="button" class="btn btn-primary btn-sm" role="button" th:href="@{/admin/messages/{id}(id=${m.id})}">
                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                 </a>
@@ -60,22 +59,22 @@
                                 <a type="button" class="btn btn-sm btn-danger" role="button" data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${m.id }">
                                     <i class="fa fa-trash" aria-hidden="true"></i>
                                 </a>
-                            </td>
+                            </td-->
 
                             <!-- delete modal -->
                             <div class="modal modal-warning fade in" th:id="modal-warning+${m.id }" >
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
+                                            <h5 class="modal-title">Delete Message</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">×</span></button>
-                                            <h5 class="modal-title">Delete Message</h5>
                                         </div>
                                         <div class="modal-body">
-                                            <h3>Are you sure want to delete this message?</h3>
+                                            <p>Are you sure want to delete this message?</p>
                                         </div>
                                         <div class="modal-footer">
-                                            <form action="#" th:action="@{/admin/messages/delete/{id}(id=${m.id})}" method="post">
+                                            <form th:action="@{/admin/messages/delete/{id}(id=${m.id})}" method="post">
                                                 <button type="submit" class="btn btn-danger" role="button"><i class="fa fa-check"></i>&nbsp;Yes</button>
                                                 <button type="button" class="btn btn-default" role="button" data-dismiss="modal">No</button>
                                             </form>
@@ -86,7 +85,12 @@
                         </tr>
                         </tbody>
                     </table>
-                    <!--a class="btn btn-primary" th:href="@{/admin/messages/add}">New Message</a-->
+
+                    <div class="form-group row mt-4">
+                        <div class="col-md-12">
+                            <a class="btn btn-primary" th:href="@{/not-yet-implemented}">New Message</a>
+                        </div>
+                    </div>
 
                 </div>
             </div>

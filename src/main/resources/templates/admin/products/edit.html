@@ -32,122 +32,140 @@
                     </div>
 
                     <div class="col-md-9">
-                <form action="#" th:action="@{/admin/products/{id}/save(id=${adminProductForm.id})}" th:object="${adminProductForm}" method="post">
-                    <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
-                        <span th:text="${message}">message</span>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="alert alert-danger" th:if="${#fields.hasErrors('global')}">
-                        <p th:each="error : ${#fields.errors('global')}" th:text="${error}">error</p>
-                    </div>
-                    <div class="form-group row">
-                        <label for="username" class="col-sm-2 col-form-label">Code:</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="username" th:field="*{code}" th:value="${adminProductForm.code}">
-                            <div th:if="${#fields.hasErrors('code')}">
-                                <p class="badge bg-danger" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></p>
+
+                        <form class="form-horizontal" action="#" th:action="@{/admin/products/{id}/save(id=${adminProductForm.id})}" th:object="${adminProductForm}" method="post">
+
+                            <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                                <span th:text="${message}">message</span>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group row" th:classappend="${#fields.hasErrors('name')}? 'has-error':''">
-                        <label for="name" class="col-sm-2 col-form-label">Name:</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="name" th:field="*{name}" th:value="${adminProductForm.name}">
-                            <div th:if="${#fields.hasErrors('name')}">
-                                <p class="badge bg-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+
+                            <div class="alert alert-danger" th:if="${#fields.hasErrors('global')}">
+                                <p th:each="error : ${#fields.errors('global')}" th:text="${error}">error</p>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group row" th:classappend="${#fields.hasErrors('summary')}? 'has-error':''">
-                        <label for="summary" class="col-sm-2 col-form-label">Summary:</label>
-                        <div class="col-sm-10">
-                            <textarea class="form-control" rows="5" id="summary" th:field="*{summary}" th:value="${adminProductForm.summary}"></textarea>
-                            <div th:if="${#fields.hasErrors('summary')}">
-                                <p class="badge bg-danger" th:if="${#fields.hasErrors('summary')}" th:errors="*{summary}"></p>
+
+                            <div class="form-group row">
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('code')}? 'has-error':''">
+                                    <label for="code" class="text-black">Code <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="code" th:field="*{code}" th:value="${adminProductForm.code}">
+                                    <div th:if="${#fields.hasErrors('code')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('name')}? 'has-error':''">
+                                    <label for="name" class="text-black">Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="name" th:field="*{name}" th:value="${adminProductForm.name}">
+                                    <div th:if="${#fields.hasErrors('name')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group row" th:classappend="${#fields.hasErrors('description')}? 'has-error':''">
-                        <label for="description" class="col-sm-2 col-form-label">Description:</label>
-                        <div class="col-sm-10">
-                            <textarea class="form-control" rows="5" id="description" th:field="*{description}" th:value="${adminProductForm.description}"></textarea>
-                            <div th:if="${#fields.hasErrors('description')}">
-                                <p class="badge bg-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+
+                            <div class="form-group row">
+                                <div class="col-md-12" th:classappend="${#fields.hasErrors('summary')}? 'has-error':''">
+                                    <label for="summary" class="text-black">Summary <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" rows="5" id="summary" th:field="*{summary}" th:text="${adminProductForm.summary}"></textarea>
+                                    <div th:if="${#fields.hasErrors('summary')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('summary')}" th:errors="*{summary}"></p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group row" th:classappend="${#fields.hasErrors('image')}? 'has-error':''">
-                        <label for="image" class="col-sm-2 col-form-label">Image:</label>
-                        <div class="col-xs-4">
-                            <input type="text" class="form-control" id="image" th:field="*{image}" autocomplete="off"
-                                   th:value="${adminProductForm.image}">
-                            <div th:if="${#fields.hasErrors('image')}">
-                                <p class="badge bg-danger" th:if="${#fields.hasErrors('image')}" th:errors="*{image}"></p>
+
+                            <div class="form-group row">
+                                <div class="col-md-12" th:classappend="${#fields.hasErrors('description')}? 'has-error':''">
+                                    <label for="description" class="text-black">Description <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" rows="5" id="description" th:field="*{description}" th:text="${adminProductForm.description}"></textarea>
+                                    <div th:if="${#fields.hasErrors('description')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group row" th:classappend="${#fields.hasErrors('price')}? 'has-error':''">
-                        <label for="price" class="col-sm-2 col-form-label">Price:</label>
-                        <div class="col-xs-2">
-                            <input type="text" class="form-control" id="price" th:field="*{price}" autocomplete="off"
-                            th:value="${adminProductForm.price}">
-                            <div th:if="${#fields.hasErrors('price')}">
-                                <p class="badge bg-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></p>
+
+                            <div class="form-group row">
+                                <div class="col-md-12" th:classappend="${#fields.hasErrors('image')}? 'has-error':''">
+                                    <label for="image" class="text-black">Image Link <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="image" th:field="*{image}" th:value="${adminProductForm.image}">
+                                    <div th:if="${#fields.hasErrors('image')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('image')}" th:errors="*{image}"></p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group row" th:classappend="${#fields.hasErrors('inStock')}? 'has-error':''">
-                        <label for="inStock" class="col-sm-2 col-form-label">In Stock:</label>
-                        <div class="col-xs-2">
-                            <input type="checkbox" class="" id="inStock" th:field="*{inStock}"
-                                   th:value="${adminProductForm.inStock}">
-                            <div th:if="${#fields.hasErrors('inStock')}">
-                                <p class="badge bg-danger" th:if="${#fields.hasErrors('inStock')}" th:errors="*{inStock}"></p>
+
+                            <div class="form-group row">
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('price')}? 'has-error':''">
+                                    <label for="price" class="text-black">Price <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="price" th:field="*{price}" th:value="${adminProductForm.price}">
+                                    <div th:if="${#fields.hasErrors('price')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('salePrice')}? 'has-error':''">
+                                    <label for="salePrice" class="text-black">Sale Price <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="salePrice" th:field="*{salePrice}" th:value="${adminProductForm.salePrice}">
+                                    <div th:if="${#fields.hasErrors('salePrice')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('salePrice')}" th:errors="*{salePrice}"></p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group row" th:classappend="${#fields.hasErrors('timeToStock')}? 'has-error':''">
-                        <label for="timeToStock" class="col-sm-2 col-form-label">Time to Stock:</label>
-                        <div class="col-xs-2">
-                            <input type="text" class="form-control" id="timeToStock" th:field="*{timeToStock}" autocomplete="off"
-                                   th:value="${adminProductForm.timeToStock}">
-                            <div th:if="${#fields.hasErrors('timeToStock')}">
-                                <p class="badge bg-danger" th:if="${#fields.hasErrors('timeToStock')}" th:errors="*{timeToStock}"></p>
+
+                            <div class="form-group row">
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('timeToStock')}? 'has-error':''">
+                                    <label for="timeToStock" class="text-black">Time to Stock <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="timeToStock" th:field="*{timeToStock}" th:value="${adminProductForm.timeToStock}">
+                                    <div th:if="${#fields.hasErrors('timeToStock')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('timeToStock')}" th:errors="*{timeToStock}"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('rating')}? 'has-error':''">
+                                    <label for="rating" class="text-black">Rating <span class="text-danger">*</span></label>
+                                    <select id="rating" class="form-control" th:field="*{rating}">
+                                        <option th:each="i : ${#numbers.sequence(1, 5)}" th:value="${i}" th:text="${i}"
+                                                th:selected="${i==adminProductForm.rating}"></option>
+                                    </select>
+                                    <div th:if="${#fields.hasErrors('rating')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group row" th:classappend="${#fields.hasErrors('rating')}? 'has-error':''">
-                        <label for="rating" class="col-sm-2 col-form-label">Average Rating:</label>
-                        <div class="col-xs-2">
-                            <select id="rating" th:field="*{rating}">
-                                <option th:each="i : ${#numbers.sequence(1, 5)}" th:value="${i}" th:text="${i}"
-                                        th:selected="${i==adminProductForm.rating}"></option>
-                            </select>
-                            <div th:if="${#fields.hasErrors('rating')}">
-                                <p class="badge bg-danger" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></p>
+
+                            <div class="form-check row">
+                                <div class="form-check form-check-inline" th:classappend="${#fields.hasErrors('inStock')}? 'has-error':''">
+                                    <input class="form-check-input" type="checkbox" id="inStock" th:field="*{inStock}"
+                                           th:value="${adminProductForm.inStock}">
+                                    <label class="form-check-label" for="inStock">In Stock</label>
+                                    <div th:if="${#fields.hasErrors('inStock')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('inStock')}" th:errors="*{inStock}"></p>
+                                    </div>
+                                </div>
+                                <div class="form-check form-check-inline" th:classappend="${#fields.hasErrors('onSale')}? 'has-error':''">
+                                    <input class="form-check-input" type="checkbox"  id="onSale" th:field="*{onSale}"
+                                           th:value="${adminProductForm.onSale}">
+                                    <label class="form-check-label" for="onSale">On Sale</label>
+                                    <div th:if="${#fields.hasErrors('onSale')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('onSale')}" th:errors="*{onSale}"></p>
+                                    </div>
+                                </div>
+                                <div class="form-check form-check-inline" th:classappend="${#fields.hasErrors('available')}? 'has-error':''">
+                                    <input class="form-check-input" type="checkbox" id="available" th:field="*{available}"
+                                           th:value="${adminProductForm.available}">
+                                    <label class="form-check-label" for="available">Available</label>
+                                    <div th:if="${#fields.hasErrors('available')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('available')}" th:errors="*{available}"></p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group row" th:classappend="${#fields.hasErrors('available')}? 'has-error':''">
-                        <label for="available" class="col-sm-2 col-form-label">Enabled:</label>
-                        <div class="col-xs-2">
-                            <input type="checkbox" class="" id="available" th:field="*{available}"
-                                   th:value="${adminProductForm.available}">
-                            <div th:if="${#fields.hasErrors('available')}">
-                                <p class="badge bg-danger" th:if="${#fields.hasErrors('available')}" th:errors="*{available}"></p>
+
+                            <div class="form-group row mt-4">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-space btn-primary">Save</button>
+                                    <a class="btn btn-info" th:href="@{/admin/products/{id}(id=${adminProductForm.id})}">Cancel</a>
+                                </div>
                             </div>
-                        </div>
+                        </form>
+
                     </div>
-                    <div class="form-group row">
-                        <div class="col-sm-2"></div>
-                        <div class="col-sm-10">
-                            <button type="submit" class="btn btn-space btn-primary">Save</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
 
                 </div>
 
