@@ -46,6 +46,7 @@ public class ApiStatusResponse {
     }
 
     @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
@@ -80,6 +81,7 @@ public class ApiStatusResponse {
             return this;
         }
 
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
         public ApiResponseBuilder atTime(LocalDateTime timestamp) {
             this.timestamp = timestamp;
             return this;

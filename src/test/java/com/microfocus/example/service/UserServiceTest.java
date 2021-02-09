@@ -50,9 +50,7 @@ public class UserServiceTest extends BaseIntegrationTest {
             try {
                 userService.saveUserFromUserForm(userForm);
                 Optional<User> updatedUser = userService.findUserByUsername(DataSeeder.TEST_USER1_USERNAME);
-                if (updatedUser.isPresent()) {
-                    assertThat(updatedUser.get().getFirstName()).isEqualTo("Test User 1 Updated");
-                }
+                updatedUser.ifPresent(user -> assertThat(user.getFirstName()).isEqualTo("Test User 1 Updated"));
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }
@@ -70,9 +68,7 @@ public class UserServiceTest extends BaseIntegrationTest {
             try {
                 userService.updateUserPasswordFromPasswordForm(optionalUser.get().getId(), passwordForm);
                 Optional<User> updatedUser = userService.findUserByUsername(DataSeeder.TEST_USER1_USERNAME);
-                if (updatedUser.isPresent()) {
-                    assertThat(updatedUser.get().getFirstName()).isEqualTo("Test");
-                }
+                updatedUser.ifPresent(user -> assertThat(user.getFirstName()).isEqualTo("Test"));
             } catch (Exception ex) {
                 fail(ex.getMessage());
             }

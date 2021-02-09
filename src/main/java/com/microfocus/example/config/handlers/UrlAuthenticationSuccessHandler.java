@@ -101,6 +101,8 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
                 targetUrl = targetUrl.replace("/cart", "/cart/checkout");
             } else if (targetUrl.endsWith("/login")) {
                 targetUrl = targetUrl.replace("/login", "/user");
+            } else if (targetUrl.endsWith("/register")) {
+                targetUrl = targetUrl.replace("/register", "/user");
             } else if (targetPath.equals("/")) {
                 targetUrl = targetUrl + "user";
             }

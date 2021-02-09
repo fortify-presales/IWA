@@ -35,16 +35,16 @@ public class CustomErrorController implements ErrorController {
         ModelAndView modelAndView = new ModelAndView();
 
         if(response.getStatus() == HttpStatus.NOT_FOUND.value()) {
-            modelAndView.setViewName("/error/404-not-found");
+            modelAndView.setViewName("error/404-not-found");
         }
         else if(response.getStatus() == HttpStatus.FORBIDDEN.value()) {
-            modelAndView.setViewName("/error/403-access-denied");
+            modelAndView.setViewName("error/403-access-denied");
         }
         else if(response.getStatus() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-            modelAndView.setViewName("/error/500-internal-error");
+            modelAndView.setViewName("error/500-internal-error");
         }
         else {
-            modelAndView.setViewName("/error/default");
+            modelAndView.setViewName("error/default");
         }
 
         return modelAndView;

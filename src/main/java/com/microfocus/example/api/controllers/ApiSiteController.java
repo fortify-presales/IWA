@@ -19,19 +19,29 @@
 
 package com.microfocus.example.api.controllers;
 
+import com.microfocus.example.entity.User;
+import com.microfocus.example.exception.UserNotFoundException;
+import com.microfocus.example.payload.request.RegisterUserRequest;
 import com.microfocus.example.payload.response.ApiStatusResponse;
+import com.microfocus.example.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * A RESTFul controller for accessing site information.
@@ -44,6 +54,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiSiteController {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(ApiSiteController.class);
+
+    @Autowired
+    private UserService userService;
 
     public class SiteStatus {
         private String health;
@@ -79,6 +92,59 @@ public class ApiSiteController {
         log.debug("API::Retrieving Site Status");
         SiteStatus siteStatus = new SiteStatus("GREEN", "The site is currently healthy");
         return ResponseEntity.ok().body(siteStatus);
+    }
+
+    @Operation(summary = "Check if username is taken", description = "Check if a user with the specified username already exists in the site", tags = {"site"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+    })
+    @GetMapping(value = {"/usernameAlreadyExists/{username}"}, produces =  {"application/json"})
+    public ResponseEntity<Boolean> usernameIsTaken(
+            @Parameter(description = "Username to check. Cannot be empty.", example = "user1", required = true) @PathVariable("username") String username) {
+        log.debug("API::Checking for user with username: " + username);
+        Optional<User> user = userService.findUserByUsername(username);
+        if (user.isPresent()) {
+            return new ResponseEntity<Boolean>(Boolean.TRUE, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Boolean>(Boolean.FALSE, HttpStatus.OK);
+        }
+    }
+
+    @Operation(summary = "Check if email exists", description = "Check if a user with the specified email address already exists in the site", tags = {"site"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+    })
+    @GetMapping(value = {"/emailAlreadyExists/{email}"}, produces =  {"application/json"})
+    public ResponseEntity<Boolean> emailIsTaken(
+            @Parameter(description = "Email address to check. Cannot be empty.", example = "user1@localhost.com", required = true) @PathVariable("email") String email) {
+        log.debug("API::Checking for user with email: " + email);
+        Optional<User> user = userService.findUserByEmail(email);
+        if (user.isPresent()) {
+            return new ResponseEntity<Boolean>(Boolean.TRUE, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Boolean>(Boolean.FALSE, HttpStatus.OK);
+        }
+    }
+
+    @Operation(summary = "Register a new user", description = "Register a new user with the site", tags = {"site"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = RegisterUserRequest.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "409", description = "User Already Exists", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+    })
+    @PostMapping(value = {"/registerUser"}, produces = {"application/json"}, consumes = {"application/json"})
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<User> registerUser(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody RegisterUserRequest newUser) {
+        //newUser.setId(new UUID()); // set to 0 for sequence id generation
+        log.debug("API::Registering new user: " + newUser.toString());
+        return new ResponseEntity<>(userService.registerUser(newUser), HttpStatus.OK);
     }
 
 }

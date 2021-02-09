@@ -21,12 +21,15 @@ package com.microfocus.example.service;
 
 import com.microfocus.example.entity.Order;
 import com.microfocus.example.entity.Product;
+import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.MessageNotFoundException;
 import com.microfocus.example.exception.OrderNotFoundException;
 import com.microfocus.example.exception.ProductNotFoundException;
+import com.microfocus.example.payload.request.OrderRequest;
 import com.microfocus.example.payload.request.ProductRequest;
 import com.microfocus.example.repository.OrderRepository;
 import com.microfocus.example.repository.ProductRepository;
+import com.microfocus.example.repository.UserRepository;
 import com.microfocus.example.web.form.OrderForm;
 import com.microfocus.example.web.form.admin.AdminNewProductForm;
 import com.microfocus.example.web.form.admin.AdminOrderForm;
@@ -41,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 /**
- * Product Service to hide business logs / database persistence
+ * Product Service for products and orders to hide business logs / database persistence
  *
  * @author Kevin A. Lee
  */
@@ -56,6 +59,9 @@ public class ProductService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Value("${app.data.page-size:25}")
     private Integer pageSize;
@@ -193,7 +199,18 @@ public class ProductService {
         return orderRepository.findById(id);
     }
 
+    public Optional<Order> findOrderByNumber(String number) {
+        return orderRepository.findByNumber(number);
+    }
+
     public List<Order> getAllOrders() { return orderRepository.findAll(); }
+
+    public List<Order> getAllOrders(Integer offset, String keywords) {
+        if (keywords != null && !keywords.isEmpty()) {
+            return orderRepository.findOrdersByKeywords(keywords, offset, pageSize);
+        }
+        return orderRepository.listOrders(offset, pageSize);
+    }
 
     public void deleteOrderById(UUID id) {
         orderRepository.deleteById(id);
@@ -215,5 +232,33 @@ public class ProductService {
         }
     }
 
+    public boolean orderExistsById(UUID id) {
+        return orderRepository.existsById(id);
+    }
+
+    public Order saveOrderFromApi(UUID orderId, OrderRequest order) {
+        Order otmp = new Order();
+        // are we creating a new order or updating an existing order?
+        if (orderId == null) {
+            otmp.setId(null);
+            otmp.setOrderDate(new Date());
+        } else {
+            otmp.setId(orderId);
+            otmp.setOrderDate(otmp.getOrderDate());
+            // check it exists
+            if (!orderExistsById(orderId))
+                throw new OrderNotFoundException("Order not found with id: " + orderId);
+        }
+        otmp.setOrderNum(order.getOrderNum());
+        otmp.setCart(order.getCart());
+        otmp.setAmount(order.getAmount());
+        Optional<User> optionalUser = userRepository.findById(order.getUserId());
+        if (optionalUser.isPresent()) {
+            otmp.setUser(optionalUser.get());
+        }
+        otmp.setShipped(order.getShipped());
+        otmp.setShippedDate(order.getShippedDate());
+        return orderRepository.save(otmp);
+    }
 
 }

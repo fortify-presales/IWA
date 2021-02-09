@@ -21,9 +21,11 @@ package com.microfocus.example.repository;
 
 import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.Order;
+import com.microfocus.example.entity.Product;
 import com.microfocus.example.web.form.MessageForm;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -34,13 +36,18 @@ public interface OrderRepositoryCustom {
 
     public List<Order> findByUserId(UUID userId);
 
-    public List<Order> findByOrderNum(String orderNum);
+    public Optional<Order> findByNumber(String code);
+
+    List<Order> listOrders(int offset, int limit);
 
     public long countByUserId(UUID userId);
 
     public long countNotShippedByUserId(UUID userId);
 
     public void markOrderAsShippedById(UUID orderId);
+
+    List<Order> findOrdersByKeywords(String keywords, int offset, int limit);
+
 
     //public Order save(OrderRequest order);
 

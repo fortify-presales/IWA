@@ -80,7 +80,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                     ResultSet results = stmt.executeQuery(
                             "SELECT u.*, a.name as authority " +
                                     "FROM users u, authorities a INNER JOIN user_authorities ua on a.id = ua.authority_id " +
-                                    "WHERE u.id = ua.user_id AND u.username LIKE '%" + username + "%'");
+                                    "WHERE u.id = ua.user_id AND u.username LIKE '" + username + "'");
                     if (results.next()) {
                         log.debug("Found matching user in database for: " + username);
                         results.beforeFirst();
@@ -137,11 +137,30 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
         return optionalUser;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public Optional<User> findUserByEmail(String email) {
+        log.debug("UserRepositoryImpl::findUserByEmail");
+        List<User> users = new ArrayList<>();
+        Query q = entityManager.createQuery(
+                "SELECT u FROM User u WHERE u.email = :email",
+                User.class);
+        q.setParameter("email", email);
+        users = (List<User>) q.getResultList();
+        Optional<User> optionalUser = Optional.empty();
+        if (!users.isEmpty()) {
+            optionalUser = Optional.of(users.get(0));
+        } else {
+            log.debug("Unable to find email: " + email);
+        }
+        return optionalUser;
+    }
+
     @SuppressWarnings("unchecked")
     public List<User> findUsersByUsername(String username) {
         List<User> result = new ArrayList<>();
         Query q = entityManager.createQuery(
-                "SELECT u FROM User u WHERE u.username LIKE :username",
+                "SELECT u FROM User u WHERE u.username = :username",
                 User.class);
         q.setParameter("username", username);
         result = (List<User>)q.getResultList();

@@ -41,5 +41,4 @@ public interface ProductRepositoryCustom {
 
     List<Product> findAvailableProductsByKeywords(String keywords, int offset, int limit);
 
-
 }

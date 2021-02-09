@@ -19,9 +19,7 @@
 
 package com.microfocus.example.repository;
 
-import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.Order;
-import com.microfocus.example.payload.request.OrderRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +27,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -60,12 +60,43 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Order> findByOrderNum(String orderNum) {
-        Query query = entityManager.createQuery(
-                "SELECT o FROM Order o WHERE o.orderNum LIKE ?1",
+    public Optional<Order> findByNumber(String code) {
+        List<Order> result = new ArrayList<>();
+        Query q = entityManager.createQuery(
+                "SELECT o FROM Order o WHERE lower(o.orderNum) = lower(?1)",
                 Order.class);
-        query.setParameter(1, orderNum);
-        return query.getResultList();
+        q.setParameter(1, code);
+        result = (List<Order>)q.getResultList();
+        Optional<Order> optionalOrder = Optional.empty();
+        if (!result.isEmpty()) {
+            optionalOrder = Optional.of(result.get(0));
+        }
+        return optionalOrder;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Order> listOrders(int offset, int limit) {
+        List<Order> result = new ArrayList<>();
+        Query q = entityManager.createQuery(
+                "SELECT o FROM Order o",
+                Order.class);
+        q.setFirstResult(offset);
+        q.setMaxResults(limit);
+        result = (List<Order>)q.getResultList();
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Order> findOrdersByKeywords(String keywords, int offset, int limit) {
+        List<Order> result = new ArrayList<>();
+        Query q = entityManager.createQuery(
+                "SELECT o FROM Order o WHERE lower(o.orderNum) LIKE lower(?1)",
+                Order.class);
+        q.setParameter(1, "%"+keywords+"%");
+        q.setFirstResult(offset);
+        q.setMaxResults(limit);
+        result = (List<Order>)q.getResultList();
+        return result;
     }
 
     @SuppressWarnings("unchecked")

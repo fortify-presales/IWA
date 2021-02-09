@@ -19,10 +19,11 @@
 
 package com.microfocus.example.api.controllers;
 
-import com.microfocus.example.payload.request.ProductRequest;
+import com.microfocus.example.entity.Order;
+import com.microfocus.example.exception.OrderNotFoundException;
+import com.microfocus.example.payload.request.OrderRequest;
 import com.microfocus.example.payload.response.ApiStatusResponse;
-import com.microfocus.example.entity.Product;
-import com.microfocus.example.exception.ProductNotFoundException;
+import com.microfocus.example.payload.response.OrderResponse;
 import com.microfocus.example.payload.response.ProductResponse;
 import com.microfocus.example.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +34,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;import org.slf4j.LoggerFactory;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,21 +50,40 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * A RESTFul controller for accessing product information.
+ * A RESTFul controller for accessing order information.
  *
  * @author Kevin A. Lee
  */
 @RestController
-@RequestMapping(value = "/api/v3/products")
-@Tag(name = "products", description = "Product operations")
-public class ApiProductController {
+@RequestMapping(value = "/api/v3/orders")
+@Tag(name = "orders", description = "Order operations")
+public class ApiOrderController {
 
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ApiProductController.class);
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ApiOrderController.class);
 
     @Autowired
     private ProductService productService;
 
-    @Operation(summary = "Find products by keyword(s)", description = "Keyword search by %keyword% format", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @Operation(summary = "Find order by Id", description = "Find an order by UUID", tags = {"orders"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = OrderResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Order Not Found", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+    })
+    @GetMapping(value = {"/{id}"}, produces =  {"application/json"})
+    public ResponseEntity<OrderResponse> findOrderById(
+            @Parameter(description = "UUID of the order to be found. Cannot be empty.", example = "c9b31f33-17a4-4fcd-927e-c14cdee32201", required = true) @PathVariable("id") UUID id) {
+        log.debug("API::Retrieving order with UUID: " + id);
+        if (!productService.orderExistsById(id))
+            throw new OrderNotFoundException("Order with UUID: " + id.toString() + " does not exist.");
+        Optional<Order> order = productService.findOrderById(id);
+        return order.map(value -> new ResponseEntity<>(new OrderResponse(value), HttpStatus.OK)).orElse(null);
+    }
+
+    @Operation(summary = "Find orders by keyword(s)", description = "Keyword search by %keyword% format", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ProductResponse.class)))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -71,93 +92,74 @@ public class ApiProductController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
     @GetMapping(value = {""}, produces = {"application/json"})
-    public ResponseEntity<List<ProductResponse>> getProductsByKeywords(
-            @Parameter(description = "Keyword(s) search for products to be found.") @RequestParam("keywords") Optional<String> keywords,
+    public ResponseEntity<List<OrderResponse>> getOrdersByKeywords(
+            @Parameter(description = "Keyword(s) search for orders to be found.") @RequestParam("keywords") Optional<String> keywords,
             @Parameter(description = "Offset of the starting record. 0 indicates the first record.") @RequestParam("offset") Optional<Integer> offset,
             @Parameter(description = "Maximum records to return. The maximum value allowed is 50.") @RequestParam("limit") Optional<Integer> limit) {
-        log.debug("API::Retrieving products by keyword(s)");
+        log.debug("API::Retrieving orders by keyword(s)");
         // TODO: implement keywords, offset and limit
         if (keywords.equals(Optional.empty())) {
             return ResponseEntity.ok().body(
-                productService.getAllProducts().stream()
-                    .map(ProductResponse::new)
-                    .collect(Collectors.toList()));
+                    productService.getAllOrders().stream()
+                            .map(OrderResponse::new)
+                            .collect(Collectors.toList()));
         } else {
             String k = (keywords.orElse(""));
             Integer o = (offset.orElse(0));
             return new ResponseEntity<>(
-                productService.getAllProducts(o, k).stream()
-                    .map(ProductResponse::new)
-                    .collect(Collectors.toList()), HttpStatus.OK);
+                    productService.getAllOrders(o, k).stream()
+                            .map(OrderResponse::new)
+                            .collect(Collectors.toList()), HttpStatus.OK);
         }
     }
 
-    @Operation(summary = "Find product by Id", description = "Find a product by UUID", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @Operation(summary = "Create a new order", description = "Creates a new order", tags = {"orders"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = ProductResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = OrderResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Product Not Found", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
-    })
-    @GetMapping(value = {"/{id}"}, produces =  {"application/json"})
-    public ResponseEntity<ProductResponse> findProductById(
-            @Parameter(description = "UUID of the product to be found. Cannot be empty.", example = "eec467c8-5de9-4c7c-8541-7b31614d31a0", required = true) @PathVariable("id") UUID id) {
-        log.debug("API::Retrieving product with UUID: " + id);
-        if (!productService.productExistsById(id))
-            throw new ProductNotFoundException("Product with UUID: " + id.toString() + " does not exist.");
-        Optional<Product> product = productService.findProductById(id);
-        return product.map(value -> new ResponseEntity<>(new ProductResponse(value), HttpStatus.OK)).orElse(null);
-    }
-
-    @Operation(summary = "Create a new product", description = "Creates a new product", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = ProductResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
-            @ApiResponse(responseCode = "409", description = "Product Already Exists", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Order Already Exists", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
     @PostMapping(value = {""}, produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<ProductResponse> createProduct(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody ProductRequest newProduct) {
-        log.debug("API::Creating new product: " + newProduct.toString());
-        return new ResponseEntity<>(new ProductResponse(productService.saveProductFromApi(null, newProduct)), HttpStatus.OK);
+    public ResponseEntity<OrderResponse> createOrder(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody OrderRequest newOrder) {
+        log.debug("API::Creating new order: " + newOrder.toString());
+        return new ResponseEntity<>(new OrderResponse(productService.saveOrderFromApi(null, newOrder)), HttpStatus.OK);
     }
 
-    @Operation(summary = "Update a product", description = "Update an existing product", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @Operation(summary = "Update an order", description = "Update an existing order", tags = {"orders"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = ProductResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = OrderResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Product Not Found", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Order Not Found", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
     @PutMapping(value = {"/{id}"}, produces = {"application/json"}, consumes = {"application/json"})
-    public ResponseEntity<ProductResponse> updateProduct(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody ProductRequest newProduct,
-            @Parameter(description = "UUID of the product to be updated. Cannot be empty.", example = "eec467c8-5de9-4c7c-8541-7b31614d31a0", required = true) @PathVariable("id") UUID id) {
-        log.debug("API::Updating product with UUID: " + id);
-        return new ResponseEntity<>(new ProductResponse(productService.saveProductFromApi(id, newProduct)), HttpStatus.OK);
+    public ResponseEntity<OrderResponse> updateOrder(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody OrderRequest newOrder,
+            @Parameter(description = "UUID of the order to be updated. Cannot be empty.", example = "c9b31f33-17a4-4fcd-927e-c14cdee32201", required = true) @PathVariable("id") UUID id) {
+        log.debug("API::Updating order with UUID: " + id);
+        return new ResponseEntity<>(new OrderResponse(productService.saveOrderFromApi(id, newOrder)), HttpStatus.OK);
     }
 
-    @Operation(summary = "Delete a product", description = "Delete a product", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @Operation(summary = "Delete a order", description = "Delete an order", tags = {"orders"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Product Not Found", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class)))
+            @ApiResponse(responseCode = "404", description = "Order Not Found", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class)))
     })
     @DeleteMapping (value = {"/{id}"})
-    public ResponseEntity<ApiStatusResponse> deleteProduct(
-            @Parameter(description = "UUID of the product to be updated. Cannot be empty.", example = "eec467c8-5de9-4c7c-8541-7b31614d31a0", required = true) @PathVariable("id") UUID id) {
-        log.debug("API@::Deleting product with UUID: " + id);
-        productService.deleteProductById(id);
+    public ResponseEntity<ApiStatusResponse> deleteOrder(
+            @Parameter(description = "UUID of the order to be updated. Cannot be empty.", example = "c9b31f33-17a4-4fcd-927e-c14cdee32201", required = true) @PathVariable("id") UUID id) {
+        log.debug("API@::Deleting order with UUID: " + id);
+        productService.deleteOrderById(id);
         ApiStatusResponse apiStatusResponse = new ApiStatusResponse
                 .ApiResponseBuilder()
                 .withSuccess(true)

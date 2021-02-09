@@ -27,6 +27,7 @@ import com.microfocus.example.exception.InvalidPasswordException;
 import com.microfocus.example.exception.MessageNotFoundException;
 import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.payload.request.MessageRequest;
+import com.microfocus.example.payload.request.RegisterUserRequest;
 import com.microfocus.example.repository.MessageRepository;
 import com.microfocus.example.repository.OrderRepository;
 import com.microfocus.example.repository.RoleRepository;
@@ -74,6 +75,8 @@ public class UserService {
         return userRepository.findUserByUsername(username);
     }
 
+    public Optional<User> findUserByEmail(String email) { return userRepository.findUserByEmail(email); }
+
     public List<User> getAllUsers() {
         return (List<User>) userRepository.findAll();
     }
@@ -96,6 +99,23 @@ public class UserService {
 
     public boolean userExistsById(UUID id) {
         return userRepository.existsById(id);
+    }
+
+    public User registerUser(RegisterUserRequest newUser) {
+        log.debug("UserService:registerUser");
+        Set<Authority> authorities = new HashSet<Authority>();
+        authorities.add(roleRepository.findByName("ROLE_USER").get());
+        User utmp = new User();
+        utmp.setUsername(newUser.getUsername());
+        utmp.setFirstName(newUser.getFirstName());
+        utmp.setLastName(newUser.getLastName());
+        utmp.setPassword(EncryptedPasswordUtils.encryptPassword(newUser.getPassword()));
+        utmp.setEmail(newUser.getEmail());
+        utmp.setPhone(newUser.getPhone());
+        utmp.setEnabled(true);
+        utmp.setDateCreated(new Date());
+        utmp.setAuthorities(authorities);
+        return userRepository.saveAndFlush(utmp);
     }
 
     public User saveUser(User user) {

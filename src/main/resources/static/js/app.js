@@ -56,6 +56,7 @@ if (app != null) {
     new Vue({
         el: '#app',
         components: {
+            'register-user': httpVueLoader('/js/components/RegisterUser.vue'),
             'unread-message-count': httpVueLoader('/js/components/UnreadMessageCount.vue'),
             'shopping-cart-add': httpVueLoader('/js/components/CartAdd.vue'),
             'shopping-cart-count': httpVueLoader('/js/components/CartCount.vue'),

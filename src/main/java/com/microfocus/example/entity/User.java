@@ -61,7 +61,8 @@ public class User implements Serializable {
     private UUID id;
 
     @NotEmpty(message = "{user.username.notEmpty}")
-    @Size(min = 2, max = 10, message = "{user.username.invalidLength}")
+    @Size(min = 4, max = 10, message = "{user.username.invalidLength}")
+    @Pattern(regexp = "(^[a-z|0-9]{4,10}$)", message = "{user.username.invalidCharacters}")
     @Column(nullable = false, unique = true)
     private String username;
 
@@ -88,7 +89,7 @@ public class User implements Serializable {
     private String email;
 
     @NotEmpty(message = "{user.phone.notEmpty}")
-    @Pattern(regexp = "(^$|[0-9]{10})", message = "{user.phone.invalidFormat}")
+    @Pattern(regexp = "(^(?!0+$)[0-9]{7,12}$)", message = "{user.phone.invalidFormat}")
     @Column(unique = true)
     private String phone;
 

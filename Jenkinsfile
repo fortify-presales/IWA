@@ -225,7 +225,7 @@ pipeline {
                         // Translate source files
                         fortifyTranslate buildID: "${env.COMPONENT_NAME}",
                             projectScanType: fortifyJava(javaSrcFiles:
-                                '\""src/main/java/**/*\"" \""src/main/resources/**/*\""',
+                                '\""src/main/java/**/*\"" \""src/main/resources/**/*\"" \""Dockerfile*\""',
                             javaVersion: "${env.JAVA_VERSION}",
                             javaClasspath: "$classpath"),
                             addJVMOptions: '',

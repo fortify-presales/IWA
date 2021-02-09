@@ -30,6 +30,11 @@
                                         </span>
                                     </div>
                                 </div>
+                                <div th:if="${param.registerSuccess}">
+                                    <div class="alert alert-info">
+                                        You have been successfully registered. Please login.
+                                    </div>
+                                </div>
                                 <div th:if="${param.logout}">
                                     <div class="alert alert-info">
                                         You have been logged out. Please re-login.

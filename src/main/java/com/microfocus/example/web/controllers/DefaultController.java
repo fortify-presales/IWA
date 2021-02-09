@@ -63,6 +63,11 @@ public class DefaultController {
         return "login";
     }
 
+    @GetMapping("/register")
+    public String register(Model model, Principal principal) {
+        return "register";
+    }
+
     @GetMapping("/services")
     public String services(Model model, Principal principal) {
         return "services";
