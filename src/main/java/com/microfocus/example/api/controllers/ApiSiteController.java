@@ -22,7 +22,10 @@ package com.microfocus.example.api.controllers;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.payload.request.RegisterUserRequest;
+import com.microfocus.example.payload.request.SubscribeUserRequest;
 import com.microfocus.example.payload.response.ApiStatusResponse;
+import com.microfocus.example.payload.response.RegisterUserResponse;
+import com.microfocus.example.payload.response.SubscribeUserResponse;
 import com.microfocus.example.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -133,18 +136,32 @@ public class ApiSiteController {
 
     @Operation(summary = "Register a new user", description = "Register a new user with the site", tags = {"site"})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = RegisterUserRequest.class))),
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = RegisterUserResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "409", description = "User Already Exists", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
     @PostMapping(value = {"/registerUser"}, produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<User> registerUser(
+    public ResponseEntity<RegisterUserResponse> registerUser(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody RegisterUserRequest newUser) {
-        //newUser.setId(new UUID()); // set to 0 for sequence id generation
         log.debug("API::Registering new user: " + newUser.toString());
-        return new ResponseEntity<>(userService.registerUser(newUser), HttpStatus.OK);
+        return new ResponseEntity<>(userService.registerUser(newUser), HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "Subscribe a new user", description = "Subscribe a new user to the newsletter", tags = {"site"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = SubscribeUserResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "409", description = "User Already Exists", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+    })
+    @PostMapping(value = {"/subscribeUser"}, produces = {"application/json"}, consumes = {"application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<SubscribeUserResponse> subscribeUser(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody SubscribeUserRequest newUser) {
+        log.debug("API::Subscribing a user to the newsletter: " + newUser.toString());
+        return new ResponseEntity<>(userService.subscribeUser(newUser), HttpStatus.OK);
     }
 
 }

@@ -62,7 +62,8 @@ if (app != null) {
             'shopping-cart-count': httpVueLoader('/js/components/CartCount.vue'),
             'shopping-cart-summary': httpVueLoader('/js/components/CartSummary.vue'),
             'shopping-cart': httpVueLoader('/js/components/ShoppingCart.vue'),
-            'order-summary': httpVueLoader('/js/components/OrderSummary.vue')
+            'order-summary': httpVueLoader('/js/components/OrderSummary.vue'),
+            'subscribe-newsletter': httpVueLoader('/js/components/SubscribeNewsletter.vue')
         }
     })
 }

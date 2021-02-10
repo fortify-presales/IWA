@@ -73,6 +73,16 @@ public class DefaultController {
         return "services";
     }
 
+    @GetMapping("/prescriptions")
+    public String prescriptions(Model model, Principal principal) {
+        return "prescriptions";
+    }
+
+    @GetMapping("/advice")
+    public String advice(Model model, Principal principal) {
+        return "advice";
+    }
+
     @GetMapping("/access-denied")
     public String accessDenied(Model model, Principal principal) {
         if (principal != null) {

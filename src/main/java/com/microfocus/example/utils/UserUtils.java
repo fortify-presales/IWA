@@ -22,24 +22,36 @@ package com.microfocus.example.utils;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+
 public class UserUtils {
 
     private static final Logger log = LoggerFactory.getLogger(AdminUtils.class);
 
-    public void writeUser(String username, String password) throws IOException {
-        JsonFactory jfactory = new JsonFactory();
+    public static final String USER_INFO_FILE = "data/user_info.json";
+    public static final String NEWSLETTER_USER_FILE = "data/newsletter_registration.json";
 
-        JsonGenerator jGenerator = jfactory.createGenerator(new File("~/user_info.json"), JsonEncoding.UTF8);
+    public static void writeUser(String username, String password) throws IOException {
+        JsonFactory jsonFactory = new JsonFactory();
+
+        File dataFile = new File(USER_INFO_FILE);
+        if (dataFile.createNewFile()){
+            log.debug("Created: " + USER_INFO_FILE);
+        }
+
+        JsonGenerator jGenerator = jsonFactory.createGenerator(new File("data/user_info.json"), JsonEncoding.UTF8);
 
         jGenerator.writeStartObject();
 
@@ -55,6 +67,56 @@ public class UserUtils {
         jGenerator.writeEndObject();
 
         jGenerator.close();
+    }
+
+    public static void registerUser(String firstName, String lastName, String email) throws IOException, ParseException {
+        JsonFactory jsonFactory = new JsonFactory();
+
+        JSONParser jsonParser = new JSONParser();
+        JSONArray jsonArray = new JSONArray();
+
+        File dataFile = new File(NEWSLETTER_USER_FILE);
+        if (dataFile.exists()) {
+            jsonArray = (JSONArray) jsonParser.parse(new FileReader(NEWSLETTER_USER_FILE));
+        } else {
+            dataFile.createNewFile();
+            log.debug("Created: " + NEWSLETTER_USER_FILE);
+        }
+
+        try (OutputStream fos = new FileOutputStream(dataFile, false)) {
+
+            JsonGenerator jGenerator = jsonFactory.createGenerator(fos, JsonEncoding.UTF8);
+            jGenerator.writeStartArray();
+
+            for (Object jsonObject : jsonArray)
+            {
+                jGenerator.writeStartObject();
+                JSONObject person = (JSONObject) jsonObject;
+                jGenerator.writeFieldName("firstName");
+                jGenerator.writeRawValue("\"" + (String) person.get("firstName") + "\"");
+                jGenerator.writeFieldName("lastName");
+                jGenerator.writeRawValue("\"" + (String) person.get("lastName") + "\"");
+                jGenerator.writeFieldName("email");
+                jGenerator.writeRawValue("\"" + (String) person.get("email") + "\"");
+                jGenerator.writeEndObject();
+
+            }
+
+            // write new user
+            jGenerator.writeStartObject();
+            jGenerator.writeFieldName("firstName");
+            jGenerator.writeRawValue("\"" + firstName + "\"");
+            jGenerator.writeFieldName("lastName");
+            jGenerator.writeRawValue("\"" + lastName + "\"");
+            jGenerator.writeFieldName("email");
+            jGenerator.writeRawValue("\"" + email + "\"");
+            jGenerator.writeEndObject();
+
+            jGenerator.writeEndArray();
+
+            jGenerator.close();
+        }
+
     }
 
     public void logZipContents(String fName)

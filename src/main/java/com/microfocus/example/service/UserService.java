@@ -28,21 +28,27 @@ import com.microfocus.example.exception.MessageNotFoundException;
 import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.payload.request.MessageRequest;
 import com.microfocus.example.payload.request.RegisterUserRequest;
+import com.microfocus.example.payload.request.SubscribeUserRequest;
+import com.microfocus.example.payload.response.RegisterUserResponse;
+import com.microfocus.example.payload.response.SubscribeUserResponse;
 import com.microfocus.example.repository.MessageRepository;
 import com.microfocus.example.repository.OrderRepository;
 import com.microfocus.example.repository.RoleRepository;
 import com.microfocus.example.repository.UserRepository;
 import com.microfocus.example.utils.EncryptedPasswordUtils;
+import com.microfocus.example.utils.UserUtils;
 import com.microfocus.example.web.form.*;
 import com.microfocus.example.web.form.admin.AdminNewUserForm;
 import com.microfocus.example.web.form.admin.AdminPasswordForm;
 import com.microfocus.example.web.form.admin.AdminUserForm;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -101,7 +107,7 @@ public class UserService {
         return userRepository.existsById(id);
     }
 
-    public User registerUser(RegisterUserRequest newUser) {
+    public RegisterUserResponse registerUser(RegisterUserRequest newUser) {
         log.debug("UserService:registerUser");
         Set<Authority> authorities = new HashSet<Authority>();
         authorities.add(roleRepository.findByName("ROLE_USER").get());
@@ -115,7 +121,21 @@ public class UserService {
         utmp.setEnabled(true);
         utmp.setDateCreated(new Date());
         utmp.setAuthorities(authorities);
-        return userRepository.saveAndFlush(utmp);
+        userRepository.saveAndFlush(utmp);
+        RegisterUserResponse registeredUser = new RegisterUserResponse(utmp.getUsername(), utmp.getPassword(),
+                newUser.getFirstName(), utmp.getLastName(), utmp.getEmail(), utmp.getPhone());
+        return registeredUser;
+    }
+
+    public SubscribeUserResponse subscribeUser(SubscribeUserRequest newUser) {
+        log.debug("UserService:subscribeUser");
+        try {
+            UserUtils.registerUser(null, null, newUser.getEmail());
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+        SubscribeUserResponse subscribedUser = new SubscribeUserResponse(null, null, newUser.getEmail());
+        return subscribedUser;
     }
 
     public User saveUser(User user) {

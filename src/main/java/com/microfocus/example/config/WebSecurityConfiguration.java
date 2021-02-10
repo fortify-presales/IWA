@@ -107,6 +107,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .authorizeRequests()
                         .antMatchers(HttpMethod.POST, "/api/v3/authentication/**").permitAll()
                         .antMatchers(HttpMethod.GET,"/api/v3/site/**").permitAll()
+                        .antMatchers(HttpMethod.POST, "/api/v3/site/subscribeUser").permitAll()
                         .antMatchers(HttpMethod.POST, "/api/v3/site/registerUser").permitAll()
                         .antMatchers(HttpMethod.POST, "/api/v3/site/validateUser").permitAll()
                         .antMatchers(HttpMethod.GET, "/api/v3/users/unread-message-count").permitAll()
