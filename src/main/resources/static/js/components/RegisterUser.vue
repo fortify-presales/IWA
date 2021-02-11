@@ -14,14 +14,24 @@
     </div>
 
     <div class="form-group row">
-      <div class="col-md-6">
-        <label for="username" class="text-black">Username </label>
-        <input type="text" class="form-control" id="username" v-model="user.username" name="username" placeholder="Enter desired username"
-               :class="usernameFormObj.text != null ? (usernameFormObj.isValid ? 'is-valid' : 'is-invalid') : ''">
-        <div v-if="!usernameFormObj.isValid" class="invalid-feedback">
+      <div class="col-md-12">
+        <label for="username" class="text-black">Username <span class="text-danger">*</span></label>
+        <div class="input-group">
+          <input type="text" class="form-control" id="username" v-model="user.username" name="username" aria-describedby="usernameHelpBlock"
+                 :class="usernameFormObj.text != null ? (usernameFormObj.isValid ? 'is-valid' : 'is-invalid') : ''">
+          <div class="input-group-prepend">
+            <button class="btn btn-outline-secondary" type="button" @click="checkUsername">Check Username</button>
+          </div>
+        </div>
+        <small id="usernameHelpBlock" class="form-text text-muted">
+          Bust be 6-20 characters long, containing letters and numbers, and not spaces, special characters, or emojis.
+        </small>
+      </div>
+      <div class="col-md-12">
+        <div v-if="!usernameFormObj.isValid" class="invalid-feedback" style="display: block">
           <span v-text="usernameFormObj.text"></span>
         </div>
-        <div v-if="usernameFormObj.isValid" class="valid-feedback">
+        <div v-if="usernameFormObj.isValid" class="valid-feedback" style="display: block">
           <span v-text="usernameFormObj.text"></span>
         </div>
       </div>
@@ -29,7 +39,7 @@
 
     <div class="form-group row">
       <div class="col-md-6">
-        <label for="firstName" class="text-black">First Name </label>
+        <label for="firstName" class="text-black">First Name <span class="text-danger">*</span></label>
         <input type="text" class="form-control" id="firstName" v-model="user.firstName" name="firstName"
                :class="firstNameFormObj.text != null ? (firstNameFormObj.isValid ? 'is-valid' : 'is-invalid') : ''">
         <div v-if="!firstNameFormObj.isValid" class="invalid-feedback">
@@ -38,7 +48,7 @@
         <div v-if="firstNameFormObj.isValid" class="valid-feedback"> </div>
       </div>
       <div class="col-md-6">
-        <label for="lastName" class="text-black">Last Name </label>
+        <label for="lastName" class="text-black">Last Name <span class="text-danger">*</span></label>
         <input type="text" class="form-control" id="lastName" v-model="user.lastName" name="lastName"
                :class="lastNameFormObj.text != null ? (lastNameFormObj.isValid ? 'is-valid' : 'is-invalid') : ''">
         <div v-if="!lastNameFormObj.isValid" class="invalid-feedback">
@@ -50,24 +60,30 @@
 
     <div class="form-group row">
       <div class="col-md-6">
-        <label for="email" class="text-black">Email </label>
-        <input type="text" class="form-control" id="email" v-model="user.email" name="email" placeholder="Email Address"
+        <label for="email" class="text-black">Email <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="email" v-model="user.email" name="email" aria-describedby="emailHelpBlock"
                :class="emailFormObj.text != null ? (emailFormObj.isValid ? 'is-valid' : 'is-invalid') : ''">
-        <div v-if="!emailFormObj.isValid" class="invalid-feedback">
+        <small id="emailHelpBlock" class="form-text text-muted">
+          A valid email address.
+        </small>
+        <div v-if="!emailFormObj.isValid" class="invalid-feedback" style="display: block">
           <span v-text="emailFormObj.text"></span>
         </div>
-        <div v-if="emailFormObj.isValid" class="valid-feedback">
+        <div v-if="emailFormObj.isValid" class="valid-feedback" style="display: block">
           <span v-text="emailFormObj.text"></span>
         </div>
       </div>
       <div class="col-md-6">
-        <label for="phone" class="text-black">Phone </label>
-        <input type="text" class="form-control" id="phone" v-model="user.phone" name="phone" placeholder="Phone Number"
+        <label for="phone" class="text-black">Phone <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="phone" v-model="user.phone" name="phone" aria-describedby="phoneHelpBlock"
                :class="phoneFormObj.text != null ? (phoneFormObj.isValid ? 'is-valid' : 'is-invalid') : ''">
-        <div v-if="!phoneFormObj.isValid" class="invalid-feedback">
+        <small id="phoneHelpBlock" class="form-text text-muted">
+          Must be 7-12 digits long.
+        </small>
+        <div v-if="!phoneFormObj.isValid" class="invalid-feedback" style="display: block">
           <span v-text="phoneFormObj.text"></span>
         </div>
-        <div v-if="phoneFormObj.isValid" class="valid-feedback">
+        <div v-if="phoneFormObj.isValid" class="valid-feedback" style="display: block">
           <span v-text="phoneFormObj.text"></span>
         </div>
       </div>
@@ -75,22 +91,28 @@
 
     <div class="form-group row">
       <div class="col-md-6">
-        <label for="password" class="text-black">Password </label>
-        <input type="password" class="form-control" id="password" v-model="user.password" name="password" place="Enter your desired password"
+        <label for="password" class="text-black">Password <span class="text-danger">*</span></label>
+        <input type="password" class="form-control" id="password" v-model="user.password" name="password" aria-describedby="passwordHelpBlock"
                :class="passwordFormObj.text != null ? (passwordFormObj.isValid ? 'is-valid' : 'is-invalid') : ''">
-        <div v-if="!passwordFormObj.isValid" class="invalid-feedback">
+        <small id="passwordHelpBlock" class="form-text text-muted">
+          Must be 8-20 characters long, containing letters, numbers and special characters.
+        </small>
+        <div v-if="!passwordFormObj.isValid" class="invalid-feedback" style="display: block">
           <span v-text="passwordFormObj.text"></span>
         </div>
-        <div v-if="passwordFormObj.isValid" class="valid-feedback"> </div>
+        <div v-if="passwordFormObj.isValid" class="valid-feedback" style="display: block"> </div>
       </div>
       <div class="col-md-6">
-        <label for="confirmPassword" class="text-black">Confirm Password </label>
-        <input type="password" class="form-control" id="confirmPassword" v-model="user.confirm" name="confirmPassword" placeholder="Confirm your password"
+        <label for="confirmPassword" class="text-black">Confirm Password <span class="text-danger">*</span></label>
+        <input type="password" class="form-control" id="confirmPassword" v-model="user.confirm" name="confirmPassword" aria-describedby="confirmPasswordHelpBlock"
                :class="confirmFormObj.text != null ? (confirmFormObj.isValid ? 'is-valid' : 'is-invalid') : ''">
-        <div v-if="!confirmFormObj.isValid" class="invalid-feedback">
+        <small id="confirmPasswordHelpBlock" class="form-text text-muted">
+          Confirm your password.
+        </small>
+        <div v-if="!confirmFormObj.isValid" class="invalid-feedback" style="display: block">
           <span v-text="confirmFormObj.text"></span>
         </div>
-        <div v-if="confirmFormObj.isValid" class="valid-feedback"> </div>
+        <div v-if="confirmFormObj.isValid" class="valid-feedback" style="display: block"> </div>
       </div>
     </div>
 
@@ -135,6 +157,30 @@
 
     },
     methods: {
+      async checkUsername(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!this.user.username) {
+          this.usernameFormObj.isValid = false;
+          this.usernameFormObj.text = "A username is required";
+          this.formError = true;
+        } else if (!this.validUsername(this.user.username)) {
+          this.usernameFormObj.isValid = false;
+          this.usernameFormObj.text = "Username should be between 4 and 10 characters or digits";
+          this.formError = true;
+        } else if (await this.usernameTaken(this.user.username)) {
+          this.usernameFormObj.isValid = false;
+          this.usernameFormObj.text = "The username is already taken";
+          console.log("username is taken")
+          this.formError = true;
+        } else {
+          this.usernameFormObj.isValid = true;
+          this.usernameFormObj.text = "Username is available";
+          this.formError = false;
+        }
+
+      },
       async checkForm(e) {
         this.errors = [];
 
@@ -169,7 +215,7 @@
 
         if (!this.user.lastName) {
           this.lastNameFormObj.isValid = false;
-          this.lastNameFormObj.text = "A lastName is required";
+          this.lastNameFormObj.text = "A last name is required";
           this.formError = true;
         } else {
           this.lastNameFormObj.isValid = true;
@@ -259,7 +305,6 @@
       validUsername: function(username) {
         const re = /^[a-z|0-9]{4,10}$/;
         return re.test(username);
-        return true;
       },
       async usernameTaken(username) {
         try {

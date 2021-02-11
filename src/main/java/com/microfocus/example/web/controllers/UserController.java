@@ -85,8 +85,7 @@ public class UserController {
             model.addAttribute("alertClass", "alert-danger");
             return "user/not-found";
         }
-        model.addAttribute("controllerName", "User");
-        model.addAttribute("actionName", "home");
+        this.setModelDefaults(model, principal, "User", "home");
         return "user/home";
     }
 
@@ -104,8 +103,7 @@ public class UserController {
             model.addAttribute("alertClass", "alert-danger");
             return "user/not-found";
         }
-        model.addAttribute("controllerName", "User");
-        model.addAttribute("actionName", "profile");
+        this.setModelDefaults(model, principal, "User", "profile");
         return "user/profile";
     }
 
@@ -122,9 +120,7 @@ public class UserController {
             model.addAttribute("alertClass", "alert-danger");
             return "user/not-found";
         }
-        model.addAttribute("messageCount", "0");
-        model.addAttribute("controllerName", "User");
-        model.addAttribute("actionName", "editProfile");
+        this.setModelDefaults(model, principal, "User", "editProfile");
         return "user/edit-profile";
     }
 
@@ -141,9 +137,7 @@ public class UserController {
             model.addAttribute("alertClass", "alert-danger");
             return "user/not-found";
         }
-        model.addAttribute("messageCount", "0");
-        model.addAttribute("controllerName", "User");
-        model.addAttribute("actionName", "changePassword");
+        this.setModelDefaults(model, principal, "User", "changePassword");
         return "user/change-password";
     }
 
@@ -158,8 +152,7 @@ public class UserController {
         model.addAttribute("messages", messages);
         model.addAttribute("unreadMessageCount", userService.getUserUnreadMessageCount(user.getId()));
         model.addAttribute("totalMessageCount", messages.size());
-        model.addAttribute("controllerName", "User");
-        model.addAttribute("actionName", "messages");
+        this.setModelDefaults(model, principal, "User", "messages");
         return "user/messages/index";
     }
 
@@ -193,7 +186,7 @@ public class UserController {
             // does user have permission to read this message?
             UUID messageUserId = optionalMessage.get().getUser().getId();
             if (!messageUserId.equals(loggedInUserId)) {
-                log.debug("User id: " + loggedInUserId + " trying access message for: " + messageUserId);
+                log.debug("User id: " + loggedInUserId + " trying to access message for: " + messageUserId);
                 return "/user/messages/access-denied";
             }
             MessageForm messageForm = new MessageForm(optionalMessage.get());
@@ -205,6 +198,7 @@ public class UserController {
             model.addAttribute("alertClass", "alert-danger");
             return "/user/messages/not-found";
         }
+        this.setModelDefaults(model, principal, "User", "viewMessage");
         return "/user/messages/view";
     }
 
@@ -219,8 +213,7 @@ public class UserController {
         model.addAttribute("orders", orders);
         model.addAttribute("unshippedOrderCount", userService.getUserUnshippedOrderCount(user.getId()));
         model.addAttribute("totalOrderCount", orders.size());
-        model.addAttribute("controllerName", "User");
-        model.addAttribute("actionName", "orders");
+        this.setModelDefaults(model, principal, "User", "orders");
         return "user/orders/index";
     }
 
@@ -251,7 +244,7 @@ public class UserController {
             // does user have permission to view this order?
             UUID orderUserId = optionalOrder.get().getUser().getId();
             if (!orderUserId.equals(loggedInUserId)) {
-                log.debug("User id: " + loggedInUserId + " trying access order for: " + orderUserId);
+                log.debug("User id: " + loggedInUserId + " trying to access order for: " + orderUserId);
                 return "/user/order/access-denied";
             }
             OrderForm orderForm = new OrderForm(optionalOrder.get());
@@ -266,6 +259,7 @@ public class UserController {
             model.addAttribute("alertClass", "alert-danger");
             return "/user/orders/not-found";
         }
+        this.setModelDefaults(model, principal, "User", "viewOrder");
         return "/user/orders/view";
     }
 
@@ -298,6 +292,7 @@ public class UserController {
                 bindingResult.addError(usernameError);
             }
         }
+        this.setModelDefaults(model, principal, "User", "saveProfile");
         return "user/profile";
     }
 
@@ -328,6 +323,7 @@ public class UserController {
                 bindingResult.addError(usernameError);
             }
         }
+        this.setModelDefaults(model, principal, "User", "savePassword");
         return "user/home";
     }
 
@@ -338,6 +334,16 @@ public class UserController {
         model.addAttribute("message", "Successfully deleted message!");
         model.addAttribute("alertClass", "alert-success");
         return "redirect:/user/messages/";
+    }
+
+    private Model setModelDefaults(Model model, Principal principal, String controllerName, String actionName) {
+        Locale currentLocale = Locale.getDefault();
+        Currency currency = Currency.getInstance(currentLocale);
+        model.addAttribute("currencySymbol", currency.getSymbol());
+        model.addAttribute("user", WebUtils.getLoggedInUser(principal));
+        model.addAttribute("controllerName", controllerName);
+        model.addAttribute("actionName", actionName);
+        return model;
     }
 
 }

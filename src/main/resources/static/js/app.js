@@ -3,6 +3,16 @@ jQuery(document).ready(function($) {
 
     "use strict";
 
+    // animate out any auto dismiss alerts
+    var autoDismiss = function() {
+        $(".auto-dismiss").each(function (i, obj) {
+            $(this).fadeTo(2000, 500).slideUp(500, function () {
+                $(this).slideUp(500);
+            });
+        });
+    }
+    autoDismiss();
+
     var searchShow = function() {
         // alert();
         var searchWrap = $('.search-wrap');

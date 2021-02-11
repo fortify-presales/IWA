@@ -40,18 +40,18 @@ public class UserUtils {
 
     private static final Logger log = LoggerFactory.getLogger(AdminUtils.class);
 
-    public static final String USER_INFO_FILE = "data/user_info.json";
-    public static final String NEWSLETTER_USER_FILE = "data/newsletter_registration.json";
+    public static final String USER_INFO_FILE = "user_info.json";
+    public static final String NEWSLETTER_USER_FILE = "newsletter_registration.json";
 
     public static void writeUser(String username, String password) throws IOException {
         JsonFactory jsonFactory = new JsonFactory();
 
-        File dataFile = new File(USER_INFO_FILE);
+        File dataFile = new File(getFilePath(USER_INFO_FILE));
         if (dataFile.createNewFile()){
-            log.debug("Created: " + USER_INFO_FILE);
+            log.debug("Created: " + getFilePath(USER_INFO_FILE));
         }
 
-        JsonGenerator jGenerator = jsonFactory.createGenerator(new File("data/user_info.json"), JsonEncoding.UTF8);
+        JsonGenerator jGenerator = jsonFactory.createGenerator(dataFile, JsonEncoding.UTF8);
 
         jGenerator.writeStartObject();
 
@@ -75,12 +75,12 @@ public class UserUtils {
         JSONParser jsonParser = new JSONParser();
         JSONArray jsonArray = new JSONArray();
 
-        File dataFile = new File(NEWSLETTER_USER_FILE);
+        File dataFile = new File(getFilePath(NEWSLETTER_USER_FILE));
         if (dataFile.exists()) {
-            jsonArray = (JSONArray) jsonParser.parse(new FileReader(NEWSLETTER_USER_FILE));
+            jsonArray = (JSONArray) jsonParser.parse(new FileReader(getFilePath(NEWSLETTER_USER_FILE)));
         } else {
             dataFile.createNewFile();
-            log.debug("Created: " + NEWSLETTER_USER_FILE);
+            log.debug("Created: " + getFilePath(NEWSLETTER_USER_FILE));
         }
 
         try (OutputStream fos = new FileOutputStream(dataFile, false)) {
@@ -131,6 +131,10 @@ public class UserUtils {
         //zf.close();
 // END EXAMPLE
 
+    }
+
+    private static String getFilePath(String relativePath) {
+        return System.getProperty("user.home") + File.separatorChar + relativePath;
     }
 
 }

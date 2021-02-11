@@ -97,11 +97,12 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
         } else if (isUser) {
             log.debug("targetPath=" + targetPath);
             log.debug("targetUrl=" + targetUrl);
-            if (targetUrl.endsWith("/cart")) {
+            if (targetUrl.contains("?")) targetUrl = targetUrl.substring(0, targetUrl.indexOf("?"));
+            if (targetPath.endsWith("/cart")) {
                 targetUrl = targetUrl.replace("/cart", "/cart/checkout");
-            } else if (targetUrl.endsWith("/login")) {
+            } else if (targetPath.endsWith("/login")) {
                 targetUrl = targetUrl.replace("/login", "/user");
-            } else if (targetUrl.endsWith("/register")) {
+            } else if (targetPath.endsWith("/register")) {
                 targetUrl = targetUrl.replace("/register", "/user");
             } else if (targetPath.equals("/")) {
                 targetUrl = targetUrl + "user";
