@@ -64,7 +64,6 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     @Override
     @SuppressWarnings("unchecked")
     public Optional<User> findUserByUsername(String username) throws UserLockedOutException, UsernameNotFoundException {
-        log.debug("UserRepositoryImpl::findUserByUsername");
         List<User> users = new ArrayList<>();
 
 // INSECURE EXAMPLE: SQL Injection
@@ -140,7 +139,6 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     @Override
     @SuppressWarnings("unchecked")
     public Optional<User> findUserByEmail(String email) {
-        log.debug("UserRepositoryImpl::findUserByEmail");
         List<User> users = new ArrayList<>();
         Query q = entityManager.createQuery(
                 "SELECT u FROM User u WHERE u.email = :email",

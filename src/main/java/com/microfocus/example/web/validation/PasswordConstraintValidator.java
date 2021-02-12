@@ -64,7 +64,6 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
         FileReader frPassList = null;
         try {
             //String filename = System.getProperty("com.microfocus.example.passwordList");
-            log.debug("Using file: " + invalidPasswordList + " for Password Constraint Validator");
             //File dictionaryFile = new File(filename);
             //String invalidPasswordList = FileUtils.readFileToString(dictionaryFile);
             File invalidPasswordFile = new File(this.getClass().getResource(invalidPasswordList).getFile());

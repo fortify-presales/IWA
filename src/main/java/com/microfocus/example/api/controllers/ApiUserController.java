@@ -147,7 +147,7 @@ public class ApiUserController {
     @DeleteMapping (value = {"/{id}"})
     public ResponseEntity<ApiStatusResponse> deleteUser(
             @Parameter(description = "UUID of the user to be updated. Cannot be empty.", example = "db4cfab1-ff1d-4bca-a662-394771841383", required = true) @PathVariable("id") UUID id) {
-        log.debug("API@::Deleting user with UUID: " + id);
+        log.debug("API::Deleting user with UUID: " + id);
         userService.deleteUserById(id);
         ApiStatusResponse apiStatusResponse = new ApiStatusResponse
                 .ApiResponseBuilder()

@@ -97,11 +97,8 @@ public class AdminOrderController {
                               BindingResult bindingResult, Model model,
                               RedirectAttributes redirectAttributes,
                               Principal principal) {
-        log.debug("AdminOrderController:saveOrder");
-
         if (!bindingResult.hasErrors()) {
             try {
-                log.debug("Updating order: " + adminOrderForm.getId());
                 productService.saveOrderFromAdminOrderForm(adminOrderForm);
                 redirectAttributes.addFlashAttribute("message", "Order updated successfully.");
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
@@ -111,7 +108,6 @@ public class AdminOrderController {
                 bindingResult.addError(orderIdError);
             }
         }
-        log.debug(bindingResult.toString());
         this.setModelDefaults(model, principal, "Admin", "saveOrder");
         return "admin/orders/edit";
     }

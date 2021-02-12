@@ -105,7 +105,6 @@ public class AdminUserController {
                                   Principal principal) {
         if (!bindingResult.hasErrors()) {
             try {
-                log.debug("Updating user: " + adminUserForm.getId());
                 userService.saveUserFromAdminUserForm(adminUserForm);
                 redirectAttributes.addFlashAttribute("message", "User updated successfully.");
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");

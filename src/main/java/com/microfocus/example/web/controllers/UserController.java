@@ -252,7 +252,6 @@ public class UserController {
             Locale currentLocale = Locale.getDefault();
             Currency currency = Currency.getInstance(currentLocale);
             model.addAttribute("locale", currentLocale);
-            log.debug(currentLocale.toString());
             model.addAttribute("currencySymbol", currency.getSymbol());
         } else {
             model.addAttribute("message", "Internal error accessing order!");
@@ -272,12 +271,10 @@ public class UserController {
                                   BindingResult bindingResult, Model model,
                                   RedirectAttributes redirectAttributes,
                                   Principal principal) {
-        log.debug("UserController::userSaveProfile");
         if (bindingResult.hasErrors()) {
             return "user/edit-profile";
         } else {
             try {
-                log.debug("Saving:" + userForm.toString());
                 userService.saveUserFromUserForm(userForm);
                 redirectAttributes.addFlashAttribute("message", "Profile updated successfully.");
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");

@@ -9,7 +9,7 @@
     <body>
         <div layout:fragment="content" th:remove="tag">
 
-            <div class="site-blocks-cover" style="background-image: url('/img/home_hero_1.jpg');">
+            <div class="site-blocks-cover" style="background-image: url('/img/home_hero_1a.jpg');">
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-7 mx-auto order-lg-2 py-5">
@@ -20,10 +20,6 @@
                             <div class="jumbotron text-center" style="opacity: 0.9">
                                 <h2 th:text="${message}" sec:authorize="isAnonymous()"></h2>
                                 <h2 th:text="@{'Welcome '+${#authentication.name}}" sec:authorize="isAuthenticated()"></h2>
-                                <p class="lead text-muted pb-3">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempor rhoncus mauris a rutrum.
-                                    Nullam nec sem porttitor lorem imperdiet suscipit. Praesent rutrum orci a nunc euismod congue.
-                                </p>
                                 <p>
                                     <a th:href="@{/register}" sec:authorize="isAnonymous()" class="btn p-2 btn-outline-info"> Register </a>
                                     <a th:href="@{/user}" sec:authorize="hasRole('ROLE_USER')" class="btn p-2 btn-outline-info"> Your Profile </a>
@@ -76,6 +72,8 @@
                     </div>
                 </div>
             </div>
+
+            <new-products th:attr="currency=${currencySymbol}"></new-products>
 
             <div class="site-section">
                 <div class="container">

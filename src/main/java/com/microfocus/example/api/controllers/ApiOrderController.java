@@ -158,7 +158,7 @@ public class ApiOrderController {
     @DeleteMapping (value = {"/{id}"})
     public ResponseEntity<ApiStatusResponse> deleteOrder(
             @Parameter(description = "UUID of the order to be updated. Cannot be empty.", example = "c9b31f33-17a4-4fcd-927e-c14cdee32201", required = true) @PathVariable("id") UUID id) {
-        log.debug("API@::Deleting order with UUID: " + id);
+        log.debug("API::Deleting order with UUID: " + id);
         productService.deleteOrderById(id);
         ApiStatusResponse apiStatusResponse = new ApiStatusResponse
                 .ApiResponseBuilder()

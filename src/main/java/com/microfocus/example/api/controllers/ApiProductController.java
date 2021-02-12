@@ -76,20 +76,15 @@ public class ApiProductController {
             @Parameter(description = "Offset of the starting record. 0 indicates the first record.") @RequestParam("offset") Optional<Integer> offset,
             @Parameter(description = "Maximum records to return. The maximum value allowed is 50.") @RequestParam("limit") Optional<Integer> limit) {
         log.debug("API::Retrieving products by keyword(s)");
-        // TODO: implement keywords, offset and limit
-        if (keywords.equals(Optional.empty())) {
-            return ResponseEntity.ok().body(
-                productService.getAllProducts().stream()
-                    .map(ProductResponse::new)
-                    .collect(Collectors.toList()));
-        } else {
-            String k = (keywords.orElse(""));
-            Integer o = (offset.orElse(0));
-            return new ResponseEntity<>(
-                productService.getAllProducts(o, k).stream()
-                    .map(ProductResponse::new)
-                    .collect(Collectors.toList()), HttpStatus.OK);
+        if (limit.isPresent()) {
+            productService.setPageSize(limit.orElse(productService.getPageSize()));
         }
+        String k = (keywords.orElse(""));
+        Integer o = (offset.orElse(0));
+        return new ResponseEntity<>(
+            productService.getAllProducts(o, k).stream()
+                .map(ProductResponse::new)
+                .collect(Collectors.toList()), HttpStatus.OK);
     }
 
     @Operation(summary = "Find product by Id", description = "Find a product by UUID", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
@@ -156,7 +151,7 @@ public class ApiProductController {
     @DeleteMapping (value = {"/{id}"})
     public ResponseEntity<ApiStatusResponse> deleteProduct(
             @Parameter(description = "UUID of the product to be updated. Cannot be empty.", example = "eec467c8-5de9-4c7c-8541-7b31614d31a0", required = true) @PathVariable("id") UUID id) {
-        log.debug("API@::Deleting product with UUID: " + id);
+        log.debug("API::Deleting product with UUID: " + id);
         productService.deleteProductById(id);
         ApiStatusResponse apiStatusResponse = new ApiStatusResponse
                 .ApiResponseBuilder()

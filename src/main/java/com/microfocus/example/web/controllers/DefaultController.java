@@ -20,6 +20,8 @@
 package com.microfocus.example.web.controllers;
 
 import java.security.Principal;
+import java.util.Currency;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +54,9 @@ public class DefaultController {
 
     @GetMapping("/")
     public String index(Model model, Principal principal) {
+        Locale currentLocale = Locale.getDefault();
+        Currency currency = Currency.getInstance(currentLocale);
+        model.addAttribute("currencySymbol", currency.getSymbol());
         model.addAttribute("message", message);
         return "index";
     }

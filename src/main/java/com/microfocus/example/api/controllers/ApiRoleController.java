@@ -146,7 +146,7 @@ public class ApiRoleController {
     @DeleteMapping (value = {"/{id}"})
     public ResponseEntity<ApiStatusResponse> deleteRole(
             @Parameter(description = "UUID of the role to be updated. Cannot be empty.", example = "6bdd6188-d659-4390-8d37-8f090d2ed69a", required = true) @PathVariable("id") Integer id) {
-        log.debug("API@::Deleting role with UUID: " + id);
+        log.debug("API::Deleting role with UUID: " + id);
         roleService.deleteRoleById(id);
         ApiStatusResponse apiStatusResponse = new ApiStatusResponse
                 .ApiResponseBuilder()

@@ -25,6 +25,7 @@ import com.microfocus.example.utils.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,13 +47,19 @@ public class ProductController {
 
     private static final Logger log = LoggerFactory.getLogger(ProductController.class);
 
+    @Value("${app.data.page-size:25}")
+    private Integer defaultPageSize;
+
     @Autowired
     private ProductService productService;
 
     @GetMapping(value = {"", "/"})
-    public String index(Model model, @Param("keywords") String keywords, Principal principal) {
+    public String index(Model model, @Param("keywords") String keywords, @Param("limit") Integer limit, Principal principal) {
+        log.debug("keywords="+keywords);
         this.setModelDefaults(model, principal, "Product", "index");
-        List<Product> products = productService.getAllActiveProducts(1, keywords);
+        if (limit == null) limit = defaultPageSize;
+        productService.setPageSize(limit);
+        List<Product> products = productService.getAllActiveProducts(0, keywords);
         model.addAttribute("keywords", keywords);
         model.addAttribute("products", products);
         model.addAttribute("productCount", products.size());

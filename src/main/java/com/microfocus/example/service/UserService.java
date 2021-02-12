@@ -108,7 +108,6 @@ public class UserService {
     }
 
     public RegisterUserResponse registerUser(RegisterUserRequest newUser) {
-        log.debug("UserService:registerUser");
         Set<Authority> authorities = new HashSet<Authority>();
         authorities.add(roleRepository.findByName("ROLE_USER").get());
         User utmp = new User();
@@ -128,7 +127,6 @@ public class UserService {
     }
 
     public SubscribeUserResponse subscribeUser(SubscribeUserRequest newUser) {
-        log.debug("UserService:subscribeUser");
         try {
             UserUtils.registerUser(null, null, newUser.getEmail());
         } catch (IOException | ParseException e) {
@@ -143,7 +141,6 @@ public class UserService {
     }
 
     public User saveUserFromUserForm(UserForm userForm) throws InvalidPasswordException, UserNotFoundException {
-        log.debug("UserService:saveUserFromUserForm");
         Optional<User> optionalUser = userRepository.findUserByUsername(userForm.getUsername());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();

@@ -737,7 +737,7 @@ a:hover {
 
 .site-blocks-cover, .site-blocks-cover > .container > .row {
     min-height: 700px;
-    height: calc(100vh);
+    //height: calc(100vh);
 }
 
 .site-blocks-cover.inner-page, .site-blocks-cover.inner-page .row {

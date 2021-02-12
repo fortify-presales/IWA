@@ -128,7 +128,6 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
 
         HttpHeaders httpHeader = new HttpHeaders();
         List<MediaType> acceptHeader = MediaType.parseMediaTypes(Arrays.asList(request.getHeaderValues(HttpHeaders.ACCEPT)));
-        log.debug(acceptHeader.toString());
 
         ArrayList<String> errors = new ArrayList<>();
         for (final FieldError error : ex.getBindingResult().getFieldErrors()) {

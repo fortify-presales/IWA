@@ -60,7 +60,7 @@ pipeline {
             description: 'Use Fortify on Demand for Static Application Security Testing')
         booleanParam(name: 'FOD_DAST',       	defaultValue: params.FOD_DAST ?: false,
                 description: 'Use Fortify on Demand for Dynamic Application Security Testing')        
-        booleanParam(name: 'RELEASE_TO_DOCKERHUB', defaultValue: params.RELEASE_TO_DOCKERHUB_DEFAULT ?: false,
+        booleanParam(name: 'RELEASE_TO_DOCKERHUB', defaultValue: params.RELEASE_TO_DOCKERHUB ?: false,
                 description: 'Release built and tested image to Docker Hub')
     }
 
@@ -81,15 +81,15 @@ pipeline {
         NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-token-id')
 
         // The following are defaulted and can be override by creating a "Build parameter" of the same name
-        SSC_URL = "${params.SSC_URL_DEFAULT ?: 'http://ssc.mfdemouk.com'}" // URL of Fortify Software Security Center
-        SSC_APP_VERSION_ID = "${params.SSC_APP_VERSION_ID_DEFAULT ?: '10002'}" // Id of Application in SSC to upload results to
-        SSC_NOTIFY_EMAIL = "${params.SSC_NOTIFY_EMAIL_DEFAULT ?: 'do-not-reply@microfocus.com'}" // User to notify with SSC/ScanCentral information
-        SSC_SENSOR_POOL_UUID = "${params.SSC_SENSOR_POOL_UUID_DEFAULT ?: '00000000-0000-0000-0000-000000000002'}" // UUID of Scan Central Sensor Pool to use - leave for Default Pool
-        EDAST_URL = "${params.EDAST_URL_DEFAULT ?: 'http://scancentral.mfdemouk.com/api'}" // ScanCentral DAST API URI
-        EDAST_CICD = "${params.EDAST_CICD_DEFAULT ?: 'bd286bd2-632c-434c-99ef-a8ce879434ec'}" // ScanCentral DAST CICD identifier
-        FOD_RELEASE_ID = "${params.FOD_RELEASE_ID_DEFAULT ?: '6446'}" // Fortify on Demand Release Id
-        NEXUS_IQ_URL = "${params.NEXUS_IQ_URL_DEFAULT ?: 'https://sonatype.mfdemouk.com'}" // Nexus IQ URL
-        DOCKER_ORG = "${params.DOCKER_ORG_DEFAULT ?: 'mfdemouk'}" // Docker organisation (in Docker Hub) to push released images to
+        SSC_URL = "${params.SSC_URL ?: 'http://ssc.mfdemouk.com'}" // URL of Fortify Software Security Center
+        SSC_APP_VERSION_ID = "${params.SSC_APP_VERSION_ID ?: '10002'}" // Id of Application in SSC to upload results to
+        SSC_NOTIFY_EMAIL = "${params.SSC_NOTIFY_EMAIL ?: 'do-not-reply@microfocus.com'}" // User to notify with SSC/ScanCentral information
+        SSC_SENSOR_POOL_UUID = "${params.SSC_SENSOR_POOL_UUID ?: '00000000-0000-0000-0000-000000000002'}" // UUID of Scan Central Sensor Pool to use - leave for Default Pool
+        EDAST_URL = "${params.EDAST_URL ?: 'http://scancentral.mfdemouk.com/api'}" // ScanCentral DAST API URI
+        EDAST_CICD = "${params.EDAST_CICD ?: 'bd286bd2-632c-434c-99ef-a8ce879434ec'}" // ScanCentral DAST CICD identifier
+        FOD_RELEASE_ID = "${params.FOD_RELEASE_ID ?: '6446'}" // Fortify on Demand Release Id
+        NEXUS_IQ_URL = "${params.NEXUS_IQ_URL ?: 'https://sonatype.mfdemouk.com'}" // Nexus IQ URL
+        DOCKER_ORG = "${params.DOCKER_ORG ?: 'mfdemouk'}" // Docker organisation (in Docker Hub) to push released images to
 	}
 
     tools {
@@ -264,9 +264,9 @@ pipeline {
                 script {
                     // run sourceandlibscanner - needs to have been installed and in the path
                     if (isUnix()) {
-                        sh "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}"
+                        sh "sourceandlibscanner -auto -bt mvn -bf pom.xml -bc 'dependency:unpack-dependencies -Dclassifier=sources -DexcludeTransitive -DskipTests package' -scan -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}"
                     } else {
-                        bat(script: "sourceandlibscanner -auto -scan -bt mvn -bf pom.xml -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}")
+                        bat(script: "sourceandlibscanner -auto -bt mvn -bf pom.xml -bc 'dependency:unpack-dependencies -Dclassifier=sources -DexcludeTransitive -DskipTests package' -scan -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}")
                     }
                 }
             }
@@ -406,9 +406,5 @@ pipeline {
             }
         }
     }
-
-}
-
-def cleanupContainer() {
 
 }

@@ -66,6 +66,14 @@ public class ProductService {
     @Value("${app.data.page-size:25}")
     private Integer pageSize;
 
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
     public Optional<Product> findProductById(UUID id) {
         return productRepository.findById(id);
     }
@@ -81,8 +89,9 @@ public class ProductService {
     public List<Product> getAllProducts(Integer offset, String keywords) {
         if (keywords != null && !keywords.isEmpty()) {
             return productRepository.findProductsByKeywords(keywords, offset, pageSize);
+        } else {
+            return productRepository.listProducts(offset, pageSize);
         }
-        return productRepository.listProducts(offset, pageSize);
     }
 
     public List<Product> getAllActiveProducts(Integer offset, String keywords) {
@@ -177,7 +186,6 @@ public class ProductService {
     }
 
     public Order newOrderFromOrderForm(OrderForm orderForm) {
-        log.debug("newOrderFromOrderForm");
         Order otmp = new Order();
         otmp.setUser(orderForm.getUser());
         otmp.setCart(orderForm.getCart());
@@ -188,9 +196,7 @@ public class ProductService {
         int high = 100;
         int result = r.nextInt(high-low) + low;
         String formatted = String.format("%03d", result);
-        log.debug("Setting order number to: " + "OID-P100-"+formatted);
         otmp.setOrderNum("OID-P100-"+formatted);
-        log.debug(otmp.getOrderNum());
         Order newOrder = orderRepository.saveAndFlush(otmp);
         return newOrder;
     }
