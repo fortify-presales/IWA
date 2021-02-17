@@ -11,6 +11,7 @@
         <link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.15.2/css/all.css} "/>
         <link rel="stylesheet" type="text/css" th:href="@{/css/owl.carousel.min.css}"/>
         <link rel="stylesheet" type="text/css" th:href="@{/css/owl.theme.default.min.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/icomoon/style.css}"/>
         <link rel="stylesheet" type="text/css" th:href="@{/css/app.css}"/>
 
         <link rel="shortcut icon" type="image/ico" th:href="@{/img/favicons/favicon.ico}"/>
@@ -18,7 +19,7 @@
         <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">IWA Pharmacy Direct</title>
     </head>
     <body>
-        <div id="app" class="d-flex flex-column min-vh-100">
+        <div id="app" class="d-flex flex-column min-vh-100 site-wrap">
             <th:block th:replace="fragments/header :: header"/>
             <th:block layout:fragment="content"/>
             <th:block th:replace="fragments/footer :: footer"/>

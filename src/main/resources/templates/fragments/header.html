@@ -3,13 +3,14 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <body>
         <th:block th:fragment="header">
+
             <div class="site-navbar py-2">
 
                 <div class="search-wrap">
                     <div class="container">
-                        <a href="#" class="search-close js-search-close"><i class="fas fa-times"></i></a>
+                        <a href="#" class="search-close js-search-close"><span class="icon-close2"></span></a>
                         <form th:action="@{/products}" method="GET">
-                            <input type="text" class="form-control" name="keywords" id="nav-keywords" placeholder="Search keyword and hit enter...">
+                            <input type="text" class="form-control" name="keywords" id="nav-keywords" placeholder="Search keyword(s) and hit enter...">
                         </form>
                     </div>
                 </div>
@@ -18,14 +19,14 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="logo">
                             <div class="site-logo">
-                                <a class="navbar-brand" th:href="@{/}">
+                                <a class="navbar-brand js-logo-clone" th:href="@{/}">
                                     <img th:src="@{/img/logo.png}" alt="IWA Pharmacy Direct">
                                 </a>
                             </div>
                         </div>
                         <div class="main-nav d-none d-lg-block">
                             <nav class="site-navigation text-right text-md-center" role="navigation">
-                                <ul class="site-menu d-none d-lg-block">
+                                <ul class="site-menu js-clone-nav d-none d-lg-block">
                                     <li class="has-children">
                                         <a th:href="@{/products}">Shop</a>
                                         <ul class="dropdown">
@@ -84,103 +85,73 @@
                                 </ul>
                             </nav>
                         </div>
-                        <div class="secondary-nav navbar-right">
-                            <nav class="site-navigation" role="navigation">
-                                <ul class="site-menu d-none d-lg-block">
-                                    <li>
-                                        <a class="nav-link js-search-open" th:href="@{/products}"> <!--class="icons-btn d-inline-block js-search-open"-->
-                                            <i class="fas fa-search fa-fw"></i>
+
+                        <div class="site-top-icons">
+                            <ul>
+                                <li>
+                                    <a href="#" class="icons-btn d-inline-block js-search-open">
+                                        <span class="icon-search"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <div class="has-children">
+                                        <a sec:authorize="isAnonymous()" th:href="@{/login}" class="icons-menu d-inline-block">
+                                            <span class="icon-account_circle"></span>
+                                            <span class="my-account-text">My Account</span>
                                         </a>
-                                    </li>
-                                    <li sec:authorize="isAnonymous()">
-                                        <a class="nav-link" th:href="@{/login}">
-                                            <i class="fas fa-user-circle fa-fw"></i>
-                                            <span>My Account</span>
+                                        <ul sec:authorize="isAnonymous()" class="dropdown">
+                                            <li>
+                                                <a th:href="@{/login}">
+                                                    <i class="fas fa-sign-in-alt fa-fw"></i> Login
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="nav-link" target="_blank" th:href="@{/swagger-ui.html(url='@{/v3/api-docs}')}">
+                                                    <i class="fas fa-code fa-fw"></i> API Explorer
+                                                </a>
+                                            </li>
+                                        </ul>
+                                        <a sec:authorize="isAuthenticated()" th:href="@{/user}" class="icons-menu d-inline-block">
+                                            <span class="icon-account_circle"></span>
+                                            <span class="my-account-text" th:text="@{${#authentication.name}}"></span>
                                         </a>
-                                    </li>
-                                    <li sec:authorize="isAuthenticated()" class="has-children">
-                                        <a href="#" class="has-children" role="button">
-                                            <i class="fas fa-user-circle fa-fw"></i>
-                                            <span th:text="@{${#authentication.name}}"></span>
-                                        </a>
-                                        <ul class="dropdown">
-                                            <li><a th:href="@{/user}"><i class="fas fa-home fa-fw"></i> Home </a></li>
-                                            <li><a th:href="@{/admin}" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fas fa-tools fa-fw"></i> Site Administration </a></li>
-                                            <li><a th:href="@{/console}" target="_blank" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fas fa-database fa-fw"></i> Database Console</a></li>
-                                            <li role="separator" class="divider"></li>
-                                            <li sec:authorize="isAuthenticated()">
+                                        <ul sec:authorize="isAuthenticated()" class="dropdown">
+                                            <li>
+                                                <a th:href="@{/user}"><i class="fas fa-home fa-fw"></i> Home </a>
+                                            </li>
+                                            <li sec:authorize="hasRole('ROLE_ADMIN')">
+                                                <a th:href="@{/admin}"><i class="fas fa-tools fa-fw"></i> Site Administration </a>
+                                            </li>
+                                            <li sec:authorize="hasRole('ROLE_ADMIN')">
+                                                <a th:href="@{/console}" target="_blank"><i class="fas fa-database fa-fw"></i> Database Console</a>
+                                            </li>
+                                            <li>
                                                 <a class="nav-link" target="_blank" th:href="@{/swagger-ui.html(url='@{/v3/api-docs}')}"><i class="fas fa-code fa-fw"></i> API Explorer </a>
+                                            </li>
+                                            <li sec:authorize="isAuthenticated()">
                                                 <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt fa-fw"></i> Logout </a>
                                             </li>
                                         </ul>
-                                    </li>
-                                    <li>
-                                        <a th:href="@{/cart}" class="icons-btn btn-white d-inline-block bag">
-                                            <i class="fas fa-shopping-cart fa-fw"></i>
-                                            <shopping-cart-count></shopping-cart-count>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </nav>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a th:href="@{/cart}" class="icons-btn d-inline-block bag">
+                                        <span class="icon-shopping-bag"></span>
+                                        <shopping-cart-count></shopping-cart-count>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="site-menu-toggle js-menu-toggle ml-3 d-inline-block d-lg-none">
+                                        <span class="icon-menu"></span>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
+
                     </div>
                 </div>
             </div>
 
-            <!--
-            <nav class="iwa-navbar navbar-inverse navbar-static-top">
-                <div class="container">
-                    <div class="navbar-header">
-                        <a class="navbar-brand" th:href="@{/}">
-                            <img th:src="@{/img/logo.png}" alt="IWA Pharmacy Direct"/>
-                        </a>
-                    </div>
-                    <div id="navbar" class="collapse navbar-collapse">
-                        <ul class="nav navbar-nav pages">
-                            <li>
-                                <a th:href="@{/products}">Shop</a>
-                            </li>
-                            <li>
-                                <a th:href="@{/prescriptions}">Prescriptions</a>
-                            </li>
-                            <li>
-                                <a th:href="@{/services}">Services</a>
-                            </li>
-                            <li>
-                                <a th:href="@{/advice}">Health & Advice</a>
-                            </li>
-                        </ul>
-                        <ul class="nav navbar-nav navbar-right">
-                            <li sec:authorize="isAnonymous()">
-                                <a class="nav-link" th:href="@{/login}"><i class="fas fa-sign-in-alt fa-fw"></i> Login </a>
-                            </li>
-                            --
-                            <li class="nav-item text-nowrap" sec:authorize="isAnonymous()">
-                                <a class="nav-link" th:href="@{/register}"><i class="fas fa-door-open"></i> Register</a>
-                            </li>
-                            --
-                            <li sec:authorize="isAuthenticated()" class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-user-circle fa-fw"></i>
-                                    <span th:text="@{${#authentication.name}}"></span>
-                                    <span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a th:href="@{/user}"><i class="fas fa-address-card fa-fw"></i> User Profile </a></li>
-                                    <li><a th:href="@{/admin}" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fas fa-tools fa-fw"></i> Site Administration </a></li>
-                                    <li><a th:href="@{/console}" target="_blank" sec:authorize="hasRole('ROLE_ADMIN')"><i class="fas fa-database fa-fw"></i> Database Console</a></li>
-                                    <li role="separator" class="divider"></li>
-                                    <li sec:authorize="isAuthenticated()">
-                                        <a class="nav-link" target="_blank" th:href="@{/swagger-ui.html(url='@{/v3/api-docs}')}"><i class="fas fa-code fa-fw"></i> API Explorer </a>
-                                        <a class="nav-link" th:href="@{/logout}"><i class="fas fa-sign-out-alt fa-fw"></i> Logout </a>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-            -->
         </th:block>
     </body>
 </html>

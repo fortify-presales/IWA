@@ -171,6 +171,34 @@ a:hover {
     border-top: 1px solid #edf0f5 !important;
 }
 
+#site-header .col,#site-header .col-auto{padding-right:5px;padding-left:5px}
+#site-header-top{height:46px}
+#site-header-logo-left{float:left}
+#site-header-logo-right{display:none}
+#site-header-cart{position:relative}
+#site-header-cart-qty{position:absolute;top:0;right:12px;font-size:11px;line-height:14px;background:#212529;border-radius:50%;color:#fff;height:14px;width:14px;text-align:center}
+
+#site-header-cart a{font-size:1.5rem;text-decoration:none}
+#site-header-cart a .badge{color:#fff}
+#site-header-bottom a{display:block;line-height:36px}
+#site-header-bottom a:hover{text-decoration:none}
+#site-header_nav{clear:both}
+#site-header .collapsing{position:initial;height:initial;overflow:initial;transition:initial}
+@media screen and (prefers-reduced-motion:reduce) {
+#site-header .collapsing{transition:initial}
+}
+@media (min-width: 576px) {
+#site-header .row{margin-right:-15px;margin-left:-15px}
+#site-header .col,#site-header .col-auto{padding-right:15px;padding-left:15px}
+#site-header-logo-right{float:left;display:block;margin-left:4px}
+}
+
+@media (min-width: 992px) {
+#site-header-menu-toggler{display:none!important}
+#site-header-nav a{display:inline-block;margin-right:20px}
+#site-header-nav{clear:none;display:block!important;float:left}
+}
+
 .site-footer {
     font-size: 12px;
     background-color: #3c3d41;
@@ -246,9 +274,9 @@ a:hover {
     line-height: 40px;
 }
 
-.sign-in-text {
-    display: inline !important;
-    width: 100px !important;
+.my-account-text {
+    font-size: 12px !important;
+    vertical-align: text-top;
 }
 
 @media (max-width: 991.98px) {
@@ -317,11 +345,19 @@ a:hover {
 }
 
 .site-navbar a:hover {
-    color: #000;
+    color:rgba(255,255,255,0.80);
 }
 
 .site-navbar .icon {
     font-size: 20px;
+}
+
+.site-navbar .site-top-icons a {
+    color: #fff;
+}
+
+.site-navbar .site-top-icons a:hover {
+    color:rgba(255,255,255,0.80);
 }
 
 .site-navbar .site-top-icons ul, .site-navbar .site-top-icons ul li {
@@ -335,7 +371,7 @@ a:hover {
 }
 
 .site-navbar .site-top-icons ul li a {
-    margin-right: 10px;
+    /*margin-right: 10px;*/
 }
 
 .site-navbar .site-top-icons ul li a.site-cart {
@@ -372,6 +408,121 @@ a:hover {
 .site-navbar .site-top-icons ul li:last-child a {
     padding-right: 0;
 }
+
+.site-navbar .site-top-icons .has-children {
+    position: relative;
+}
+
+.site-navbar .site-top-icons .has-children > a {
+    position: relative;
+    padding-right: 20px;
+}
+
+.site-navbar .site-top-icons .has-children > a::before {
+    position: absolute;
+    content: "\e313";
+    font-size: 16px;
+    top: 50%;
+    right: 0;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    font-family: 'icomoon';
+}
+
+.site-navbar .site-top-icons .has-children .dropdown {
+    visibility: hidden;
+    opacity: 0;
+    top: 100%;
+    position: absolute;
+    text-align: left;
+    border-top: 2px solid #8c92a0;
+    -webkit-box-shadow: 0 0px 4px 0px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0px 4px 0px rgba(0, 0, 0, 0.05);
+    border-left: 1px solid #5c626e;
+    border-right: 1px solid #5c626e;
+    border-bottom: 1px solid #5c626e;
+    padding: 0px 0;
+    margin-top: 20px;
+    margin-left: 0px;
+    background: #3c3d41;
+    -webkit-transition: 0.2s 0s;
+    -o-transition: 0.2s 0s;
+    transition: 0.2s 0s;
+}
+
+.site-navbar .site-top-icons .has-children .dropdown a {
+    font-size: 16px;
+    text-transform: none;
+    letter-spacing: normal;
+    -webkit-transition: 0s all;
+    -o-transition: 0s all;
+    transition: 0s all;
+}
+
+.site-navbar .site-top-icons .has-children .dropdown .active > a {
+    color: #51eaea !important;
+}
+
+.site-navbar .site-top-icons .has-children .dropdown > li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    min-width: 200px;
+}
+
+.site-navbar .site-top-icons .has-children .dropdown > li > a {
+    padding: 9px 20px;
+    display: block;
+}
+
+.site-navbar .site-top-icons .has-children .dropdown > li > a:hover {
+    background: #f4f5f9;
+    color: #25262a;
+}
+
+.site-navbar .site-top-icons .has-children .dropdown > li.has-children > a:before {
+    content: "\e315";
+    right: 20px;
+}
+
+.site-navbar .site-top-icons .has-children .dropdown > li.has-children > .dropdown, .site-navbar .site-navigation .site-menu .has-children .dropdown > li.has-children > ul {
+    left: 100%;
+    top: 0;
+}
+
+.site-navbar .site-top-icons .has-children .dropdown > li.has-children:hover > a, .site-navbar .site-navigation .site-menu .has-children .dropdown > li.has-children:active > a, .site-navbar .site-navigation .site-menu .has-children .dropdown > li.has-children:focus > a {
+    background: #f4f5f9;
+    color: #25262a;
+}
+
+.site-navbar .site-top-icons .has-children a {
+    /*text-transform: uppercase;*/
+}
+
+.site-navbar .site-top-icons .has-children:hover > a, .site-navbar .site-navigation .site-menu .has-children:focus > a, .site-navbar .site-navigation .site-menu .has-children:active > a {
+    color: #fff;
+}
+
+.site-navbar .site-top-icons .has-children:hover, .site-navbar .site-navigation .site-menu .has-children:focus, .site-navbar .site-navigation .site-menu .has-children:active {
+    cursor: pointer;
+}
+
+.site-navbar .site-top-icons .has-children:hover > .dropdown, .site-navbar .site-navigation .site-menu .has-children:focus > .dropdown, .site-navbar .site-navigation .site-menu .has-children:active > .dropdown {
+    -webkit-transition-delay: 0s;
+    -o-transition-delay: 0s;
+    transition-delay: 0s;
+    margin-top: 0px;
+    visibility: visible;
+    opacity: 1;
+}
+
+
 
 .site-navbar .site-navigation.border-bottom {
     border-bottom: 1px solid #f3f3f4 !important;
@@ -433,6 +584,7 @@ a:hover {
 
 .site-navbar .site-navigation .site-menu .has-children > a::before {
     position: absolute;
+    content: "\e313";
     font-size: 16px;
     top: 50%;
     right: 0;
@@ -444,9 +596,7 @@ a:hover {
     font-variant: normal;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
-    font-family: 'Font Awesome 5 Free';
-    content: "\f107";
-    font-weight: 900;
+    font-family: 'icomoon';
 }
 
 .site-navbar .site-navigation .site-menu .has-children .dropdown {
@@ -1315,6 +1465,8 @@ a:hover {
 
 .search-wrap .search-close span {
     font-size: 30px;
+    color: #000;
+    vertical-align: middle;
 }
 
 .title-section h2 {

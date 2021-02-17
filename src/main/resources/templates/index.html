@@ -18,9 +18,9 @@
                                 <h1 class="main-title">Welcome To IWA Pharmacy Direct</h1>
                             </div>
                             <div class="jumbotron text-center" style="opacity: 0.9">
-                                <h2 th:text="${message}" sec:authorize="isAnonymous()"></h2>
-                                <h2 th:text="@{'Welcome '+${#authentication.name}}" sec:authorize="isAuthenticated()"></h2>
-                                <p>
+                                <h4 th:text="${message}" sec:authorize="isAnonymous()"></h4>
+                                <h4 th:text="@{'Welcome back to our site, '+${#authentication.name}}" sec:authorize="isAuthenticated()"></h4>
+                                <p class="pt-4">
                                     <a th:href="@{/register}" sec:authorize="isAnonymous()" class="btn p-2 btn-outline-info"> Register </a>
                                     <a th:href="@{/user}" sec:authorize="hasRole('ROLE_USER')" class="btn p-2 btn-outline-info"> Your Profile </a>
                                     <a th:href="@{/admin}" sec:authorize="hasRole('ROLE_ADMIN')" class="btn p-2 btn-outline-info"> Site Administration </a>
@@ -135,122 +135,6 @@
             </div>
 
             <div th:replace="fragments/secondary-bg.html :: secondaryBackground ('/index.html')"></div>
-
-
-            <!--
-                        <section class="jumbotron text-center">
-                            <div class="row">
-                                <h2 th:text="${message}" sec:authorize="isAnonymous()"></h2>
-                                <h2 th:text="@{'Welcome '+${#authentication.name}}" sec:authorize="isAuthenticated()"></h2>
-                                <p class="lead text-muted">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempor rhoncus mauris a rutrum.
-                                    Nullam nec sem porttitor lorem imperdiet suscipit. Praesent rutrum orci a nunc euismod congue.
-                                </p>
-                                <p>
-                                    <a th:href="@{/register}" sec:authorize="isAnonymous()" class="btn btn-info"> Register </a>
-                                    <a th:href="@{/user}" sec:authorize="hasRole('ROLE_USER')" class="btn btn-info"> Your Profile </a>
-                                    <a th:href="@{/admin}" sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-info"> Site Administration </a>
-                                </p>
-                            </div>
-                        </section>
-            -->
-
-
-<!--
-            <section>
-                <div class="row">
-                    <div class="col-md-7">
-                        <div id="myCarousel" class="carousel slide" data-ride="carousel">
-                            <ol class="carousel-indicators">
-                                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                                <li data-target="#myCarousel" data-slide-to="1"></li>
-                                <li data-target="#myCarousel" data-slide-to="2"></li>
-                            </ol>
-
-                            <div class="carousel-inner" role="listbox">
-                                <div class="item active">
-                                    <img th:src="@{/img/pexels-photo-large-1.jpg}" width="640" height="400" alt="Buy your medication"/>
-                                    <div class="carousel-caption">
-                                        Buy all of your medications online.
-                                    </div>
-                                </div>
-
-                                <div class="item">
-                                    <img th:src="@{/img/pexels-photo-large-2.jpg}" width="640" height="400" alt="Ask our Consultants"/>
-                                    <div class="carousel-caption">
-                                        Speak to our consultants for advice.
-                                    </div>
-                                </div>
-
-                                <div class="item">
-                                    <img th:src="@{/img/pexels-photo-large-3.jpg}" width="640" height="400" alt="Secure and Discreet"/>
-                                    <div class="carousel-caption">
-                                        Secure purchase and discreet delivery.
-                                    </div>
-                                </div>
-                            </div>
-
-                            <a class="left carousel-control" href="#myCarousel" data-slide="prev">
-                                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                                <span class="sr-only">Previous</span>
-                            </a>
-                            <a class="right carousel-control" href="#myCarousel" data-slide="next">
-                                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                                <span class="sr-only">Next</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="col-md-5">
-                        <div class="panel panel-default text-center" style="height:400px">
-                            <div class="panel-body">
-                                <img th:src="@{/img/sale.png}" alt="Sale" width="140" height="80"/>
-                                <div style="padding-top: 20px">
-                                    <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-                                    <p>Praesent commodo cursus magna. Cras mattis consectetur purus sit amet fermentum. Aliquam ultrices euismod neque eget fringilla.</p>
-                                    <a th:href="@{/products}" sec:authorize="isAnonymous()" class="btn btn-info"> View Now </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
--->
-
-<!--
-            <section class="text-center" style="padding: 20px;">
-                <div class="row equal">
-                    <div class="col-lg-4">
-                        <div class="thumbnail">
-                            <img th:src="@{/img/pexels-photo-1.jpg}" alt="photo-1" width="200" height="200" class="img-thumbnail"/>
-                            <h2>News</h2>
-                            <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna. Cras mattis consectetur purus sit amet fermentum.</p>
-                            <p>Etiam euismod, lorem ut commodo viverra, justo sem egestas lorem, quis lacinia dui nunc eu lacus. Integer non risus eget purus fringilla maximus. Praesent suscipit dolor at molestie cursus. Nam ac elit maximus, sagittis nunc eget, ultrices turpis.</p>
-                            <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="thumbnail">
-                            <img th:src="@{/img/pexels-photo-4.jpg}" alt="photo-1" width="200" height="200" class="img-thumbnail"/>
-                            <h2>Your Account</h2>
-                            <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis consectetur purus sit amet fermentum. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh.</p>
-                            <p>Aliquam venenatis at diam at bibendum. Nam aliquam urna ac cursus efficitur. Aliquam ultrices euismod neque eget fringilla. Ut pellentesque mollis tortor rhoncus rhoncus. Nam placerat pellentesque leo a porta.</p>
-                            <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="thumbnail">
-                            <img th:src="@{/img/pexels-photo-3.jpg}" alt="photo-1" width="200" height="200" class="img-thumbnail"/>
-                            <h2>Your Health</h2>
-                            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-                            Praesent rutrum augue magna, sed convallis ipsum fringilla eget. Mauris sodales arcu eget leo pulvinar, et posuere lectus iaculis. Nunc vehicula tortor ac turpis sagittis condimentum. Maecenas convallis efficitur metus.</p>
-                            <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
-                        </div>
-                    </div>
-                </div>
-            </section>
--->
 
         </div>
 

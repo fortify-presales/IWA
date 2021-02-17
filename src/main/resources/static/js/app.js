@@ -5,6 +5,7 @@ jQuery(document).ready(function($) {
 
     // create site menu for mobile browsers
     var siteMenuClone = function() {
+        console.log("siteMenuClone");
 
         $('<div class="site-mobile-menu"></div>').prependTo('.site-wrap');
 
@@ -23,6 +24,7 @@ jQuery(document).ready(function($) {
 
         $('.js-clone-nav').each(function() {
             var $this = $(this);
+            console.log("cloning:" + $this)
             $this.clone().attr('class', 'site-nav-wrap').appendTo('.site-mobile-menu-body');
         });
 
@@ -66,6 +68,7 @@ jQuery(document).ready(function($) {
             var $this = $(this),
                 w = $this.width();
 
+            console.log("width="+w)
             if ( w > 768 ) {
                 if ( $('body').hasClass('offcanvas-menu') ) {
                     $('body').removeClass('offcanvas-menu');
@@ -172,4 +175,8 @@ if (app != null) {
             'subscribe-newsletter': httpVueLoader('/js/components/SubscribeNewsletter.vue')
         }
     })
+}
+
+window.FontAwesomeConfig = {
+    searchPseudoElements: true
 }

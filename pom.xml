@@ -343,6 +343,9 @@
                                             <directory>${basedir}/</directory>
                                             <includes>
                                                 <include>src/**/*</include>
+                                                <include>pom.xml</include>
+                                                <include>Dockerfile*</include>
+                                                <include>docker-compose.yml</include>
                                             </includes>
                                             <excludes>
                                                 <!-- exclude test source code -->
