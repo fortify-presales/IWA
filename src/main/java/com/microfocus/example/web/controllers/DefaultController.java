@@ -98,13 +98,13 @@ public class DefaultController {
                     + "you do not have permission to access this page.";
             model.addAttribute("message", message);
         }
-        return "/error/403-access-denied";
+        return "error/403-access-denied";
     }
 
     @GetMapping("/backdoor")
     public String backdoor(Model model, Principal principal) {
         log.debug("Oops! Someone has found the backdoor!");
-        return "/admin/backdoor.html";
+        return "admin/backdoor";
     }
 
     @GetMapping("/vulnerabilities")

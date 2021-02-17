@@ -179,7 +179,7 @@ public class UserController {
             CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
             loggedInUserId = loggedInUser.getId();
         } else {
-            return "/user/error";
+            return "user/not-found";
         }
         Optional<Message> optionalMessage = userService.findMessageById(messageId);
         if (optionalMessage.isPresent()) {
@@ -187,7 +187,7 @@ public class UserController {
             UUID messageUserId = optionalMessage.get().getUser().getId();
             if (!messageUserId.equals(loggedInUserId)) {
                 log.debug("User id: " + loggedInUserId + " trying to access message for: " + messageUserId);
-                return "/user/messages/access-denied";
+                return "user/messages/access-denied";
             }
             MessageForm messageForm = new MessageForm(optionalMessage.get());
             model.addAttribute("messageForm", messageForm);
@@ -196,10 +196,10 @@ public class UserController {
         } else {
             model.addAttribute("message", "Internal error accessing message!");
             model.addAttribute("alertClass", "alert-danger");
-            return "/user/messages/not-found";
+            return "user/messages/not-found";
         }
         this.setModelDefaults(model, principal, "User", "viewMessage");
-        return "/user/messages/view";
+        return "user/messages/view";
     }
 
     //
@@ -237,7 +237,7 @@ public class UserController {
             CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
             loggedInUserId = loggedInUser.getId();
         } else {
-            return "/user/error";
+            return "user/not-found";
         }
         Optional<Order> optionalOrder = userService.findOrderById(orderId);
         if (optionalOrder.isPresent()) {
@@ -245,7 +245,7 @@ public class UserController {
             UUID orderUserId = optionalOrder.get().getUser().getId();
             if (!orderUserId.equals(loggedInUserId)) {
                 log.debug("User id: " + loggedInUserId + " trying to access order for: " + orderUserId);
-                return "/user/order/access-denied";
+                return "user/orders/access-denied";
             }
             OrderForm orderForm = new OrderForm(optionalOrder.get());
             model.addAttribute("orderForm", orderForm);
@@ -256,10 +256,10 @@ public class UserController {
         } else {
             model.addAttribute("message", "Internal error accessing order!");
             model.addAttribute("alertClass", "alert-danger");
-            return "/user/orders/not-found";
+            return "user/orders/not-found";
         }
         this.setModelDefaults(model, principal, "User", "viewOrder");
-        return "/user/orders/view";
+        return "user/orders/view";
     }
 
     //
