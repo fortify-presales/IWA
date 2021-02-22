@@ -18,3 +18,12 @@ steps:
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'fortify'
 
+- task: FortifyOnDemandStatic@7
+  inputs:
+    FortifyProjects: 'fod'
+    ReleaseId: 6547
+    FodConnection: 'FOD_BSI_KAL'
+    EntitlementPreference: '1'
+    InProgressScanActionType: '2'
+    RemediationScanPreference: '2'
+    PolicyFailAction: '0'
