@@ -499,6 +499,23 @@
                             <!-- configure the plugin here -->
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>unpack- templates</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <!-- causes unpacking error -->
+                            <excludeArtifactIds>bootstrap,jquery</excludeArtifactIds>
+                            <excludeTransitive>true</excludeTransitive>
+                            <classifier>sources</classifier>
+                            <type>jar</type>
+                            <outputDirectory>target/dependency</outputDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
