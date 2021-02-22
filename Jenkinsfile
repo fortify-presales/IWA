@@ -262,11 +262,11 @@ pipeline {
             agent {label "fortify"}
             steps {
                 script {
-                    // run sourceandlibscanner - needs to have been installed and in the path
+                    // run sourceandlibscanner - needs to have been installed and in the path -Dclassifier=sources
                     if (isUnix()) {
-                        sh "sourceandlibscanner -auto -bt mvn -bf pom.xml -bc 'dependency:unpack-dependencies -Dclassifier=sources -DexcludeTransitive -DskipTests package' -scan -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}"
+                        sh 'sourceandlibscanner -auto -bt mvn -bf pom.xml -bc "dependency:unpack-dependencies -Dclassifier=sources -DexcludeTransitive -DskipTests package" -scan -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}'
                     } else {
-                        bat(script: "sourceandlibscanner -auto -bt mvn -bf pom.xml -bc 'dependency:unpack-dependencies -Dclassifier=sources -DexcludeTransitive -DskipTests package' -scan -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}")
+                        bat(/sourceandlibscanner -auto -bt mvn -bf pom.xml -bc "dependency:unpack-dependencies -Dclassifier=sources -DexcludeTransitive -DskipTests package" -scan -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}/)
                     }
                 }
             }
