@@ -266,7 +266,7 @@ pipeline {
                     if (isUnix()) {
                         sh 'sourceandlibscanner -auto -bt mvn -bf pom.xml -bc "dependency:unpack-dependencies -Dclassifier=sources -DexcludeTransitive -DskipTests package" -scan -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}'
                     } else {
-                        def stdout = powershell(returnStdout: true, script: ".\\bin\\fortify-sourceandlibscanner.ps")
+                        def stdout = powershell(returnStdout: true, script: ".\\bin\\fortify-sourceandlibscanner.ps1")
                         println stdout
                         //bat(/sourceandlibscanner -auto -bt mvn -bf pom.xml -bc "dependency:unpack-dependencies -Dclassifier=sources -DexcludeTransitive -DskipTests package" -scan -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}/)
                     }
