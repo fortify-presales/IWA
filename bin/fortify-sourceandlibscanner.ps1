@@ -57,7 +57,7 @@ process {
     Write-Host Scanning source files and libs ...
     Write-Host ************************************************************
     & sourceandlibscanner -auto -scan -bt mvn -bf pom.xml  `
-        -bc 'dependency:unpack-dependencies -Dcom.fortify.sca.ProjectRoot=.fortify -Dclassifier=sources -DexcludeTransitive -DskipTests package' `
+        -bc 'dependency:unpack-dependencies -DskipTests package' `
         -sonatype -iqurl $NexusIQUrl -nexusauth $NexusIQAuth -iqappid $NexusIQAppId -stage build -r iqReport.json `
         -upload -ssc $SSCURL -ssctoken $SSCAuthToken -versionid $SSCAppVersionId
 }

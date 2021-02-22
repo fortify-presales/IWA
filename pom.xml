@@ -500,7 +500,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>unpack- templates</id>
+                        <id>unpack-sources</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>unpack-dependencies</goal>
