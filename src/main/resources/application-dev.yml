@@ -65,7 +65,7 @@ app:
   data:
     page-size: 25
   messages:
-    home: Please feel free to browse our products.
+    home: Welcome to our site!
   jwt:
     secret: iwaSecretKey
     expiration-ms: 86400000

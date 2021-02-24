@@ -20,7 +20,7 @@ public class DefaultControllerTest extends BaseIntegrationTest {
     private MockMvc mvc;
 
     @Value("${app.messages.home:default-value}")
-    private String message = "Hello World";
+    private String message = "Welcome to our site!";
 
     @Test
     public void getHello() throws Exception {

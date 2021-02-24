@@ -17,5 +17,5 @@ VALUES ('d67dbf99-e775-4d1b-87f7-0b86c739a5ba', 'bd5b9e2f-ac55-4e34-a76d-599b7e5
         0);
 INSERT INTO orders (id, user_id, order_num, amount, shipped, cart)
 VALUES ('c97f4c8b-4c14-4d0c-9354-69fd7ee324da', 'bd5b9e2f-ac55-4e34-a76d-599b7e5b3308', 'TEST-O000-0001', 100.0, 0,
-        '[{"id":"6bbbeb10-6709-4163-a790-f691b09d6aca","name":"Dontax","price":25,"quantity":4}]')
+        '[{"id":"6bbbeb10-6709-4163-a790-f691b09d6aca","name":"Dontax","price":8.50,"quantity":4}]')
 
