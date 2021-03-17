@@ -121,16 +121,12 @@ public class UserUtils {
 
     public void logZipContents(String fName)
             throws IOException, SecurityException, IllegalStateException, NoSuchElementException {
-// INSECURE EXAMPLE: Unreleased Resource Files 	
         ZipFile zf = new ZipFile(fName);
         @SuppressWarnings("unchecked")
 		Enumeration<ZipEntry> e = (Enumeration<ZipEntry>) zf.entries();
         while (e.hasMoreElements()) {
             log.info(e.nextElement().toString());
         }
-        //zf.close();
-// END EXAMPLE
-
     }
 
     private static String getFilePath(String relativePath) {

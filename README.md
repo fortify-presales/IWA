@@ -46,7 +46,7 @@ and requesting Services (prescriptions, health checks etc) - however it is mostl
 
 ## Forking the Repository
 
-> In order to execute the example scenarios described here you will need to "fork" a copy of this repository into
+In order to execute the example scenarios described here you will need to "fork" a copy of this repository into
 your own GitHub account. The process of "forking" is described in detail in the [GitHub documentation](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) - you can
 start the process by clicking on the "Fork" button at the top right.
 
@@ -292,10 +292,14 @@ It makes use of the [Fortify GitLab CI Templates](https://gitlab.com/Fortify/git
 
 ### Azure DevOps Pipelines
 
-TBD
+For a fully working Azure DevOps pipeline see the sister project [IWA.NET](https://dev.azure.com/mfdemouk/IWA.NET).
 
 ## Developing and Contributing
 
 Please see the [Contribution Guide](CONTRIBUTING.md) for information on how to develop and contribute.
 
 If you have any problems, please consult [GitHub Issues](https://github.com/mfdemo/iwa/issues) to see if has already been discussed.
+
+## Licensing
+
+This application is made available under the [GNU General Public License V3](LICENSE)

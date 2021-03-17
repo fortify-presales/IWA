@@ -2,10 +2,18 @@
 # Example script to perform Fortify SCA static analysis
 #
 
-$UploadToSSC = $True
-$FortifySSCUrl = "http://localhost:8080/ssc/"
-$FortifySSCAppId = 10000
-$FortifySSCAppVersionId = 10000
+$UploadToSSC = $False
+
+# SSC URL from environment variable
+$SSCUrl = $Env:SSC_URL
+if ($sscurl) { $UploadToSSC = $True }
+
+# SSC AnalysisUploadToken token from environment variable
+$SSCAuthToken = $Env:SSC_ANALYSIS_UPLOAD_TOKEN
+
+# SSC Application version id to upload results to from environment variable
+# Can be retrieved using: fortifyclient listApplicationVersions -url $scurl -user [your-username] -password [your-password]
+$SSCAppVersionId = $Env:SSC_APPLICATION_ID
 
 # Check Maven is on the path
 if ((Get-Command "mvn.cmd" -ErrorAction SilentlyContinue) -eq $null)
@@ -47,14 +55,14 @@ $ClassPath = Get-Content -Path .\target\cp.txt
 Write-Host ************************************************************
 Write-Host Translating source files...
 Write-Host ************************************************************
-& sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' -b iwa -jdk 1.8 -java-build-dir "target/classes" `
-    -cp $ClassPath "src/main/java/**/*" "src/main/resources/**/*"
+& sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' '-Dcom.fortify.sca.EnableDOMModeling=true' -b iwa -jdk 1.8 -java-build-dir "target/classes" `
+    -cp $ClassPath "src/main/java/**/*" "src/main/resources/**/*" "Dockerfile*"
 
 # Scan the application
 Write-Host ************************************************************
 Write-Host Scanning source files...
 Write-Host ************************************************************
-& sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' -b iwa -findbugs -cp $ClassPath  -java-build-dir "target/classes" `
+& sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' '-Dcom.fortify.sca.EnableDOMModeling=true' -b iwa -findbugs -cp $ClassPath  -java-build-dir "target/classes" `
 	-build-project "Insecure Web App" -build-version "v1.0" -build-label "SNAPSHOT" -scan -f target\iwa.fpr
 # -filter etc\sca-filter.txt
 
@@ -66,9 +74,9 @@ Write-Host ************************************************************
 & ReportGenerator '-Dcom.fortify.sca.ProjectRoot=.fortify' -user "Demo User" -format pdf -f target\iwa.pdf -source target\iwa.fpr
 
 # Upload results to SSC
-Write-Host ************************************************************
-Write-Host Uploading results to SSC
-Write-Host ************************************************************
 if ($UploadToSSC) {
-	& fortifyclient uploadFPR -file target\iwa.fpr -url $FortifySSCUrl -authtoken $Env:SSC_AUTH_TOKEN -applicationVersionID $FortifySSCAppVersionId
+    Write-Host ************************************************************
+    Write-Host Uploading results to SSC
+    Write-Host ************************************************************
+	& fortifyclient uploadFPR -file target\iwa.fpr -url $SSCUrl -authtoken $SSCAuthToken -applicationVersionID $SSCAppVersionId
 }	

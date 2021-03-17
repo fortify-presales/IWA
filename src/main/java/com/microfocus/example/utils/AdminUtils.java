@@ -57,7 +57,6 @@ public class AdminUtils {
             throw new BackupException("Profile contains non alpha numeric characters, cannot start backup");
 */
 
-// INSECURE EXAMPLE: Command Injection
         String[] backupCommand = {
                 "cmd.exe", "/K", "dir", "c:\\util\\backup.bat",
                 "-profile", profile
@@ -68,7 +67,6 @@ public class AdminUtils {
         log.info("Running: " + Arrays.toString(backupCommand));
         // call backup tool API
         log.info("Running: " + Arrays.toString(cleanupCommand));
-// END EXAMPLE
 
         // call backup tool API
         backupId = getBackupId();
@@ -90,11 +88,9 @@ public class AdminUtils {
         }
 */
 
-// INSECURE EXAMPLE: Often Misused: Boolean.getBoolean()
         if(Boolean.getBoolean(isLocked(backupId))){
             return"LOCKED";
         }
-// END EXAMPLE
         return isReady(backupId);
     }
 
@@ -119,11 +115,9 @@ public class AdminUtils {
         return sr.nextInt(Integer.MAX_VALUE);
  */
 
-// INSECURE EXAMPLE: Insecure Randomness and Hardcoded Seed
         Random r=new Random();
         r.setSeed(12345);
         return r.nextInt();
-// END EXAMPLE
     }
 
     private static String isLocked(int backupId) {

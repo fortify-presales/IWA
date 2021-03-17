@@ -132,9 +132,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     public List<Product> findAvailableProductsByKeywords(String keywords, int offset, int limit) {
         List<Product> products = new ArrayList<>();
 
-// INSECURE EXAMPLE: SQL Injection
-
-        Session session = entityManager.unwrap(Session.class);
+       Session session = entityManager.unwrap(Session.class);
         Integer productCount = session.doReturningWork(new ReturningWork<Integer>() {
 
             @Override
@@ -173,8 +171,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
             }
         });
         log.debug("Found " + productCount + " products.");
-
-// END EXAMPLE
 
         return products;
     }

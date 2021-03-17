@@ -7,27 +7,27 @@ on:
 #
 # workflow_dispatch - can be used to manually invoke the workflow from GitHub UI
 #
-  workflow_dispatch
+#  workflow_dispatch
 #
 # typically you would setup to run on "push" and uncomment the section under "push" below.check_run:
 #
-#  push:
-#    paths-ignore:
-#
-#      - .github/workflows/create_github_issues_from_fod.yml
-#      - .github/workflows/static_security_testing.yml
-#      - .github/workflows/dynamic_security_testing.yml
-#      - 'etc/**'
-#      - 'media/**'
-#      - 'Jenkinsfile'
-#      - 'azure-pipelines.yml'
-#      - '.gitlab-ci.yml'
-#      - 'README.md'
-#    branches:
-#      - master
-#  pull_request:
-#    branches:
-#      - master
+  push:
+    paths-ignore:
+      - .github/workflows/create_github_issues_from_fod.yml
+      - .github/workflows/static_security_testing.yml
+      - .github/workflows/dynamic_security_testing.yml
+      - 'bin/**'
+      - 'data/**'
+      - 'etc/**'
+      - 'media/**'
+      - 'Jenkinsfile'
+      - '.gitlab-ci.yml'
+      - 'README.md'
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build-test-deploy:

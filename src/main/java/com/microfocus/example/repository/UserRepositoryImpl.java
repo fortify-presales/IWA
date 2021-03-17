@@ -66,8 +66,6 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     public Optional<User> findUserByUsername(String username) throws UserLockedOutException, UsernameNotFoundException {
         List<User> users = new ArrayList<>();
 
-// INSECURE EXAMPLE: SQL Injection
-
         Session session = entityManager.unwrap(Session.class);
         Integer authorityCount = session.doReturningWork(new ReturningWork<Integer>() {
 
