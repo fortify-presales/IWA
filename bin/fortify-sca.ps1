@@ -2,11 +2,10 @@
 # Example script to perform Fortify SCA static analysis
 #
 
-$UploadToSSC = $False
+$UploadToSSC = $True
 
 # SSC URL from environment variable
 $SSCUrl = $Env:SSC_URL
-if ($sscurl) { $UploadToSSC = $True }
 
 # SSC AnalysisUploadToken token from environment variable
 $SSCAuthToken = $Env:SSC_ANALYSIS_UPLOAD_TOKEN

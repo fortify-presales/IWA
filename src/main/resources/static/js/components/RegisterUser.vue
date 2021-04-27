@@ -124,7 +124,7 @@
   </form>
 </template>
 
-<script src="./RegisterUser.js"></script>
+<script src="/js/components/RegisterUser.js"></script>
 
 <style scoped>
 </style>

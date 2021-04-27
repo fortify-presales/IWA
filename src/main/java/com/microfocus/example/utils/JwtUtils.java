@@ -40,10 +40,11 @@ public class JwtUtils {
     @Value("${app.jwt.expiration-ms}")
     private int jwtExpirationMs;
 
+    @Value("${app.jwt.refresh-ms}")
+    private int jwtRefreshMs;
+
     public String generateJwtToken(Authentication authentication) {
-
         CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
-
 
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))
@@ -51,6 +52,21 @@ public class JwtUtils {
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
+    }
+
+    public String refreshJwtToken(Authentication authentication) {
+        CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
+
+        return Jwts.builder()
+                .setSubject((userPrincipal.getUsername()))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + jwtRefreshMs))
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
+    }
+
+    public long getExpirationFromJwtToken(String token) {
+        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getExpiration().getTime();
     }
 
     public String getUserNameFromJwtToken(String token) {

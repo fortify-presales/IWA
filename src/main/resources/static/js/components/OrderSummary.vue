@@ -24,7 +24,7 @@
   </div>
 </template>
 
-<script src="OrderSummary.js"></script>
+<script src="/js/components/OrderSummary.js"></script>
 
 <style scoped>
 </style>

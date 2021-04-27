@@ -2,7 +2,7 @@
   <span id="shopping-cart-count" class="number">{{ count }}</span>
 </template>
 
-<script src="./CartCount.js"></script>
+<script src="/js/components/CartCount.js"></script>
 
 <style scoped>
 </style>

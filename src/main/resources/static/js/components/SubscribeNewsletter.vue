@@ -17,7 +17,7 @@
 
 </template>
 
-<script src="./SubscribeNewsletter.js"></script>
+<script src="/js/components/SubscribeNewsletter.js"></script>
 
 <style scoped>
 .confirmation-modal {

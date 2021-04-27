@@ -19,19 +19,22 @@
 
 package com.microfocus.example.payload.response;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 public class JwtResponse {
     private String token;
     private String type = "Bearer";
+    private long expiration;
     private UUID id;
     private String username;
     private String email;
     private List<String> roles;
 
-    public JwtResponse(String accessToken, UUID id, String username, String email, List<String> roles) {
+    public JwtResponse(String accessToken, long expiration, UUID id, String username, String email, List<String> roles) {
         this.token = accessToken;
+        this.expiration = expiration;
         this.id = id;
         this.username = username;
         this.email = email;
@@ -44,6 +47,14 @@ public class JwtResponse {
 
     public void setAccessToken(String accessToken) {
         this.token = accessToken;
+    }
+
+    public long getTokenExpiration() {
+        return expiration;
+    }
+
+    public void setTokenExpiration(long expiration) {
+        this.expiration = expiration;
     }
 
     public String getTokenType() {

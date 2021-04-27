@@ -122,7 +122,7 @@
   </div>
 </template>
 
-<script src="./ShoppingCart.js"></script>
+<script src="/js/components/ShoppingCart.js"></script>
 
 <style scoped>
 </style>

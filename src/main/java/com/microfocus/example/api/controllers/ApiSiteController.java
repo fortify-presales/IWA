@@ -19,14 +19,19 @@
 
 package com.microfocus.example.api.controllers;
 
+import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.User;
-import com.microfocus.example.exception.UserNotFoundException;
+import com.microfocus.example.payload.request.LoginRequest;
 import com.microfocus.example.payload.request.RegisterUserRequest;
 import com.microfocus.example.payload.request.SubscribeUserRequest;
 import com.microfocus.example.payload.response.ApiStatusResponse;
+import com.microfocus.example.payload.response.JwtResponse;
 import com.microfocus.example.payload.response.RegisterUserResponse;
 import com.microfocus.example.payload.response.SubscribeUserResponse;
+import com.microfocus.example.repository.RoleRepository;
+import com.microfocus.example.repository.UserRepository;
 import com.microfocus.example.service.UserService;
+import com.microfocus.example.utils.JwtUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -34,17 +39,23 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * A RESTFul controller for accessing site information.
@@ -60,6 +71,23 @@ public class ApiSiteController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    RoleRepository roleRepository;
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Autowired
+    JwtUtils jwtUtils;
 
     public class SiteStatus {
         private String health;
@@ -162,6 +190,38 @@ public class ApiSiteController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody SubscribeUserRequest newUser) {
         log.debug("API::Subscribing a user to the newsletter: " + newUser.toString());
         return new ResponseEntity<>(userService.subscribeUser(newUser), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Sign in", description = "Sign in to the system", tags = {"site"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = User.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+    })
+    @PostMapping(value = {"/sign-in"}, produces = {"application/json"}, consumes = {"application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> signIn(@Valid @RequestBody LoginRequest loginRequest) {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
+
+        CustomUserDetails iwaUser = (CustomUserDetails) authentication.getPrincipal();
+        User user = iwaUser.getUserDetails();
+        List<String> roles = authentication.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(new JwtResponse(jwt,
+                jwtUtils.getExpirationFromJwtToken(jwt),
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                roles));
     }
 
 }

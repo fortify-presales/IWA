@@ -133,7 +133,7 @@ public class ApiUserController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody User newUser,
             @Parameter(description = "UUID of the user to be updated. Cannot be empty.", example = "db4cfab1-ff1d-4bca-a662-394771841383", required = true) @PathVariable("id") UUID id) {
         log.debug("API::Updating user with UUID: " + id);
-        return new ResponseEntity<>(userService.saveUser(newUser), HttpStatus.OK);
+        return new ResponseEntity<>(userService.saveUserFromApi(newUser), HttpStatus.OK);
     }
 
     @Operation(summary = "Delete a user", description = "Delete an existing user", tags = {"users"}, security = @SecurityRequirement(name = "JWT Authentication"))

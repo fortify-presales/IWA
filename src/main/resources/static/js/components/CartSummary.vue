@@ -35,7 +35,7 @@
   </div>
 </template>
 
-<script src="./CartSummary.js"></script>
+<script src="/js/components/CartSummary.js"></script>
 
 <style scoped>
 </style>

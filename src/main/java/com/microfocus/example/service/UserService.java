@@ -140,6 +140,30 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User saveUserFromApi(User apiUser) throws InvalidPasswordException, UserNotFoundException {
+        Optional<User> optionalUser = userRepository.findUserByUsername(apiUser.getUsername());
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if (!apiUser.getPassword().isEmpty()) {
+                if (!EncryptedPasswordUtils.matches(apiUser.getPassword(), user.getPassword())) {
+                    throw new InvalidPasswordException("Password is incorrect");
+                }
+            }
+            user.setFirstName(apiUser.getFirstName());
+            user.setLastName(apiUser.getLastName());
+            user.setEmail(apiUser.getEmail());
+            user.setPhone(apiUser.getPhone());
+            user.setAddress(apiUser.getAddress());
+            user.setCity(apiUser.getCity());
+            user.setState(apiUser.getState());
+            user.setZip(apiUser.getZip());
+            user.setCountry(apiUser.getCountry());
+            return userRepository.saveAndFlush(user);
+        } else {
+            throw new UserNotFoundException("Username not found: " + apiUser.getUsername());
+        }
+    }
+
     public User saveUserFromUserForm(UserForm userForm) throws InvalidPasswordException, UserNotFoundException {
         Optional<User> optionalUser = userRepository.findUserByUsername(userForm.getUsername());
         if (optionalUser.isPresent()) {

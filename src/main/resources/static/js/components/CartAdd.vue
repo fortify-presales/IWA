@@ -15,7 +15,7 @@
   </div>
 </template>
 
-<script src="./CartAdd.js"></script>
+<script src="/js/components/CartAdd.js"></script>
 
 <style scoped>
 </style>

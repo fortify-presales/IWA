@@ -67,3 +67,4 @@ app:
   jwt:
     secret: iwaSecretKey
     expiration-ms: 86400000
+    refresh-ms: 86400000

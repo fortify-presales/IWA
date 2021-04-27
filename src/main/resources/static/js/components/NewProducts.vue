@@ -32,7 +32,7 @@
   </div>
 </template>
 
-<script src="./NewProducts.js"></script>
+<script src="/js/components/NewProducts.js"></script>
 
 <style scoped>
 </style>
