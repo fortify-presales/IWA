@@ -165,7 +165,7 @@ you need to package and upload the source code to Fortify on Demand. To prepare 
 execute the following command:
 
 ```
-mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -Pfortify clean verify package
+mvn "-Dmaven.compiler.debuglevel=lines,vars,source" "-DskipTests" -P fortify clean verify package
 ```
 
 This will create a directory called `fod` which you can *Zip* up and upload to Fortify on Demand.
@@ -177,8 +177,8 @@ It can be invoked via the following from a PowerShell prompt:
 # Create the fod.zip Zip file
 Compress-Archive -Path .\fod -DestinationPath .\fod.zip
 # Upload and start the static scan
-.\bin\fortify-fod.ps1 -ZipFile '.\fod.zip' -ApplicationName 'IWA' -ReleaseName 'master' -Notes 'GitHub Action initiated scan' `
-    -FodApiUri 'https://api.emea.fortify.com' -FodApiUsername 'FOD_ACCESS_KEY' -FodApiPassword 'FOD_SECRET_KEY'
+.\bin\fortify-fod.ps1 -ZipFile '.\fod.zip' -ApplicationName 'JavaIWA' -ReleaseName 'master' -Notes 'PowerShell initiated scan' `
+    -FodApiUri 'https://api.emea.fortify.com' -FodApiKey 'FOD_ACCESS_KEY' -FodApiSecret 'FOD_SECRET_KEY'
 ``` 
 
 where `FOD_ACCESS_KEY` and `FOD_SECRET_KEY` are the values of an API Key and Secret you have created in the Fortify on

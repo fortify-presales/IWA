@@ -17,10 +17,10 @@ param (
     [string]$FODApiUri,
 
     [Parameter(Mandatory)]
-    [string]$FODApiUsername,
+    [string]$FODApiKey,
 
     [Parameter(Mandatory)]
-    [string]$FODApiPassword,
+    [string]$FODApiSecret,
 
     [Parameter()]
     [string]$FODApiGrantType = 'ClientCredentials',
@@ -50,8 +50,8 @@ process {
 
     # Configure API
     Write-Verbose "Configuring FOD API ..."
-    $PWord = ConvertTo-SecureString -String $FODApiPassword -AsPlainText -Force
-    $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $FODApiUsername, $PWord
+    $PWord = ConvertTo-SecureString -String $FODApiSecret -AsPlainText -Force
+    $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $FODApiKey, $PWord
     Set-FODConfig -ApiUri $FODApiUri -GrantType $FODApiGrantType -Scope $FODApiScope
     Get-FODToken -Credential $Credential
 

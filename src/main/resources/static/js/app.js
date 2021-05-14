@@ -15,19 +15,15 @@ jQuery(document).ready(function($) {
 
         $('<div class="site-mobile-menu-body"></div>').appendTo('.site-mobile-menu');
 
-
-
         $('.js-logo-clone').clone().appendTo('.site-mobile-menu-logo');
 
         $('<span class="ion-ios-close js-menu-toggle"></div>').prependTo('.site-mobile-menu-close');
-
 
         $('.js-clone-nav').each(function() {
             var $this = $(this);
             console.log("cloning:" + $this)
             $this.clone().attr('class', 'site-nav-wrap').appendTo('.site-mobile-menu-body');
         });
-
 
         setTimeout(function() {
 
@@ -89,7 +85,7 @@ jQuery(document).ready(function($) {
             }
         })
 
-        // click outside offcanvas
+        // click outside off canvas
         $(document).mouseup(function(e) {
             var container = $(".site-mobile-menu");
             if (!container.is(e.target) && container.has(e.target).length === 0) {
