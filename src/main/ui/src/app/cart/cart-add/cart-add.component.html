@@ -1,0 +1,41 @@
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Item added to your shopping cart</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div class="form-group">
+        <p>One fine body&hellip;</p>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <div class="container">
+      <div class="text-center">
+        <div class="btn-group-vertical p-2">
+          <button type="button" class="btn btn-outline-primary m-2" (click)="modal.close('buy')">Buy now</button>
+          <button type="button" class="btn btn-outline-secondary m-2" (click)="modal.close('continue')">Continue shopping</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<div class="add-to-cart">
+  <div class="mb-5">
+    <div class="input-group mb-3" style="max-width: 220px;">
+      <div class="input-group-prepend">
+        <button id="quantity-minus" (click)="decrementQuantity()" class="btn btn-outline-primary js-btn-minus" type="button">&minus;</button>
+      </div>
+      <input name="quantity" type="text" class="form-control text-center" (change)="quantityTextEntered($event)" [(ngModel)]="quantity">
+      <div class="input-group-append">
+        <button id="quantity-plus" (click)="incrementQuantity()" class="btn btn-outline-primary js-btn-plus" type="button">&#43;</button>
+      </div>
+    </div>
+  </div>
+  <!-- [attr.disabled]="!inStock" -->
+  <p><button type="submit" (click)="addToCart(content)" class="buy-now btn btn-sm height-auto px-4 py-3 btn-primary">Add To Cart</button></p>
+</div>
