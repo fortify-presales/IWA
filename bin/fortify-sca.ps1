@@ -2,80 +2,50 @@
 # Example script to perform Fortify SCA static analysis
 #
 
-$UploadToSSC = $True
+# Import some supporting functions
+Import-Module $PSScriptRoot\modules\FortifyFunctions.psm1
 
-# SSC URL from environment variable
-$SSCUrl = $Env:SSC_URL
+# Import local environment specific settings
+$EnvSettings = $(ConvertFrom-StringData -StringData (Get-Content ".\.env" | Out-String))
+$AppName = $EnvSettings['SSC_APP_NAME']
+$AppVersion = $EnvSettings['SSC_APP_VER_NAME']
+$SSCUrl = $EnvSettings['SSC_URL']
+$SSCAuthToken = $EnvSettings['SSC_AUTH_TOKEN']
+$ScanSwitches = "-Dcom.fortify.sca.Phase0HigherOrder.Languages=javascript,typescript -Dcom.fortify.sca.EnableDOMModeling=true -Dcom.fortify.sca.follow.imports=true -Dcom.fortify.sca.exclude.unimported.node.modules=true"
 
-# SSC AnalysisUploadToken token from environment variable
-$SSCAuthToken = $Env:SSC_ANALYSIS_UPLOAD_TOKEN
+# Test we have Fortify installed successfully
+Test-Environment
+if ([string]::IsNullOrEmpty($AppName)) { throw "Application Name has not been set" }
 
-# SSC Application version id to upload results to from environment variable
-# Can be retrieved using: fortifyclient listApplicationVersions -url $scurl -user [your-username] -password [your-password]
-$SSCAppVersionId = $Env:SSC_APPLICATION_ID
+# Run the translation and scan
 
-# Check Maven is on the path
-if ((Get-Command "mvn.cmd" -ErrorAction SilentlyContinue) -eq $null)
-{
-    Write-Error "Unable to find mvn.cmd in your PATH"
-    Break
-}
-
-# Check Source Analyzer is on the path
-if ((Get-Command "sourceanalyzer.exe" -ErrorAction SilentlyContinue) -eq $null)
-{
-    Write-Error "Unable to find sourceanalyzer.exe in your PATH"
-    Break
-}
-
-# Check Fortify Client is installed
-if ((Get-Command "fortifyclient.bat" -ErrorAction SilentlyContinue) -eq $null)
-{
-    Write-Host "fortifyclient.bat is not in your PATH, will not upload to SSC"
-}
-
-# Clean Project and scan results from previous run
-Write-Host ************************************************************
-Write-Host Cleaning project and scan results from previous run...
-Write-Host ************************************************************
-& mvn clean
-& sourceanalyzer -Dcom.fortify.sca.ProjectRoot=.fortify -b iwa -clean
+Write-Host Cleaning up workspace...
+& sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' -b "$AppName" -clean
 
 # Compile the application
-Write-Host ************************************************************
 Write-Host Re-compiling application in debug mode...
-Write-Host ************************************************************
 & mvn -P release,jar -DskipTests '-Dmaven.compiler.debuglevel="lines,vars,source"' verify package
 # write dependencies to file we can use later in sourceanalyzer command
 & mvn dependency:build-classpath '-Dmdep.outputFile=.\target\cp.txt'
 $ClassPath = Get-Content -Path .\target\cp.txt
 
-# Translate source files
-Write-Host ************************************************************
-Write-Host Translating source files...
-Write-Host ************************************************************
-& sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' '-Dcom.fortify.sca.EnableDOMModeling=true' -b iwa -jdk 1.8 -java-build-dir "target/classes" `
-    -cp $ClassPath "src/main/java/**/*" "src/main/resources/**/*" "Dockerfile*"
+Write-Host Running translation...
+& sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' $ScanSwitches -b "$AppName" `
+    -jdk 1.8 -java-build-dir "target/classes" -cp $ClassPath -verbose `
+    -exclude ".\src\main\resources\static\js\lib" -exclude ".\src\main\resources\static\css\lib" -exclude ".\node_modules" `
+    "src/main/java/**/*" "src/main/resources/**/*" "Dockerfile*"
 
-# Scan the application
-Write-Host ************************************************************
-Write-Host Scanning source files...
-Write-Host ************************************************************
-& sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' '-Dcom.fortify.sca.EnableDOMModeling=true' -b iwa -findbugs -cp $ClassPath  -java-build-dir "target/classes" `
-	-build-project "Insecure Web App" -build-version "v1.0" -build-label "SNAPSHOT" -scan -f target\iwa.fpr
-# -filter etc\sca-filter.txt
+Write-Host Running scan...
+& sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' $ScanSwitches -b "$AppName" `
+    -cp $ClassPath  -java-build-dir "target/classes" -verbose `
+   -build-project "$AppName" -build-version "$AppVersion" -build-label "SNAPSHOT" -scan -f "$($AppName).fpr"
 
+Write-Host Generating PDF report...
+& ReportGenerator '-Dcom.fortify.sca.ProjectRoot=.fortify' -user "Demo User" -format pdf -f "$($AppName).pdf" -source "$($AppName).fpr"
 
-# Generate a PDF Report
-Write-Host ************************************************************
-Write-Host Generating PDF report
-Write-Host ************************************************************
-& ReportGenerator '-Dcom.fortify.sca.ProjectRoot=.fortify' -user "Demo User" -format pdf -f target\iwa.pdf -source target\iwa.fpr
+if (![string]::IsNullOrEmpty($SSCUrl)) {
+    Write-Host Uploading results to SSC...
+    & fortifyclient uploadFPR -file "$($AppName).fpr" -url $SSCUrl -authtoken $SSCAuthToken -application $AppName -applicationVersion $AppVersion
+}
 
-# Upload results to SSC
-if ($UploadToSSC) {
-    Write-Host ************************************************************
-    Write-Host Uploading results to SSC
-    Write-Host ************************************************************
-	& fortifyclient uploadFPR -file target\iwa.fpr -url $SSCUrl -authtoken $SSCAuthToken -applicationVersionID $SSCAppVersionId
-}	
+Write-Host Done.

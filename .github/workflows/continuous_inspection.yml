@@ -101,7 +101,7 @@ jobs:
     # Import Fortify on Demand results to GitHub Security Code Scanning
     - name: Import Results to GitHub
       uses: github/codeql-action/upload-sarif@v1
-      #if: ${{ secrets.FOD_RELEASE_ID }}
+      if: hashFiles('./sarif/output.sarif') != ''
       with:
         sarif_file: ./sarif/output.sarif
 #

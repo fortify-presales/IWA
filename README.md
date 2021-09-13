@@ -177,7 +177,7 @@ It can be invoked via the following from a PowerShell prompt:
 # Create the fod.zip Zip file
 Compress-Archive -Path .\fod -DestinationPath .\fod.zip
 # Upload and start the static scan
-.\bin\fortify-fod.ps1 -ZipFile '.\fod.zip' -ApplicationName 'JavaIWA' -ReleaseName 'master' -Notes 'PowerShell initiated scan' `
+.\bin\fortify-fod.ps1 -ZipFile '.\fod.zip' -ApplicationName 'IWA' -ReleaseName 'master' -Notes 'PowerShell initiated scan' `
     -FodApiUri 'https://api.emea.fortify.com' -FodApiKey 'FOD_ACCESS_KEY' -FodApiSecret 'FOD_SECRET_KEY'
 ``` 
 

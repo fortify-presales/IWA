@@ -562,7 +562,8 @@
 
             <!-- Generate OpenAPI descriptor during integrate phase -->
             <!-- Requires application to be running: "mvn spring-boot:run" and then "mvn integration-test" -->
-            <!--plugin>
+            <!--
+            <plugin>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-maven-plugin</artifactId>
                 <version>1.0</version>
@@ -579,9 +580,11 @@
                     <outputFileName>openapi.json</outputFileName>
                     <outputDir>etc</outputDir>
                 </configuration>
-            </plugin-->
+            </plugin>
+            -->
 
             <!-- Angular build -->
+            <!--
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
@@ -632,8 +635,9 @@
 
                 </executions>
             </plugin>
+            -->
 
-            <!-- Deployment to Heroku -->
+            <!-- Example Deployment to Heroku -->
             <plugin>
                 <groupId>com.heroku.sdk</groupId>
                 <artifactId>heroku-maven-plugin</artifactId>
