@@ -1,21 +1,12 @@
-# This workflow will build a Java web project with Maven, upload the source code to Fortify on Demand (for static analysis),
-# download the details of any security issues found and upload them to GitHub. Finally, if successful deploy the application to Heroku.
+# Default Continuous Inspection workflow
 
 name: Continuous Inspection
 
 on:
-#
-# workflow_dispatch - can be used to manually invoke the workflow from GitHub UI
-#
-#  workflow_dispatch
-#
-# typically you would setup to run on "push" and uncomment the section under "push" below.check_run:
-#
+  # Triggers the workflow on push or pull request events but only for the master branch
   push:
     paths-ignore:
-      - .github/workflows/create_github_issues_from_fod.yml
-      - .github/workflows/static_security_testing.yml
-      - .github/workflows/dynamic_security_testing.yml
+      - .github/workflows/**
       - 'bin/**'
       - 'data/**'
       - 'etc/**'
@@ -23,16 +14,34 @@ on:
       - 'Jenkinsfile'
       - '.gitlab-ci.yml'
       - 'README.md'
+      - 'LICENSE'
     branches:
-      - master
+    - '**'        # matches every branch
   pull_request:
-    branches:
-      - master
+    branches: [ master ]
 
+ # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      useScanCentral:
+        description: 'Carry out Application Security testing using Fortify ScanCentral SAST'
+        required: false
+        default: 'false'
+      useFortifyOnDemand:
+        description: 'Carry out Application Security testing using Fortify on Demand'
+        required: false
+        default: 'true'
+      sscVulnFilterSetId:
+        description: 'ID of the SSC filter set from which to pull SAST issues'
+        required: false
+        
 jobs:
-  build-test-deploy:
+
+  Build-And-Test:
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    #runs-on: self-hosted
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
 
     # Checkout the code
     steps:
@@ -51,98 +60,429 @@ jobs:
       with:
         java-version: 1.8
 
-    # Build / Test with Maven (debug)
+    # Build / Test with Maven
     - name: Build with Maven
-      run: mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P fortify,jar -B clean verify package --file pom.xml
+      run: mvn -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
 
-#
-# Fortify on Demand static scan using "official" GitHub Actions
-#  
-    # Prepare source+dependencies for upload. 
-    # Update PACKAGE_OPTS based on the ScanCentral Client documentation and your project's included tech stack(s).
-    #   ScanCentral Client will download dependencies for maven, gradle and msbuild projects.
-    #   For other build tools, add your build commands to the workflow to download necessary dependencies and prepare according to Fortify on Demand Packaging documentation.
-    - name: Download Fortify ScanCentral Client
-      uses: fortify/gha-setup-scancentral-client@v1
-    - name: Package Code + Dependencies
-      run: scancentral package $PACKAGE_OPTS -o package.zip
-      #if: ${{ secrets.FOD_RELEASE_ID }}
-      env:
-        PACKAGE_OPTS: "-bt mvn"
+  ScanCentral-SAST-Scan:
+    # Use the appropriate runner for building your source code.
+    # TODO: Use a Windows runner for .NET projects that use msbuild. Additional changes to RUN commands will be required to switch to Windows syntax.
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.useScanCentral == 'true' }} 
 
-    # Start Fortify on Demand SAST scan. Be sure to set secrets/variables for your desired configuration and appropriate URLs
-    - name: Download Fortify on Demand Universal CI Tool
-      uses: fortify/gha-setup-fod-uploader@v1
-    - name: Perform SAST Scan
-      run: java -jar $FOD_UPLOAD_JAR -z package.zip -aurl $FOD_API_URL -purl $FOD_URL -rid "$FOD_RELEASE_ID" -tc "$FOD_TENANT" -uc "$FOD_USER" "$FOD_PAT" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
-      #if: ${{ secrets.FOD_RELEASE_ID }}
-      env:
-        FOD_TENANT: ${{ secrets.FOD_TENANT }}
-        FOD_USER: ${{ secrets.FOD_USER }}
-        FOD_PAT: ${{ secrets.FOD_PAT }}
-        FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
-        FOD_URL: ${{ secrets.FOD_URL }}
-        FOD_API_URL: ${{ secrets.FOD_API_URL }}
-        FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -I 1 -apf"
-        FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
+    steps:
+      # Check out source code
+      - name: Check Out Source Code
+        uses: actions/checkout@v2
 
-    # Once scan completes, pull SAST issues from Fortify on Demand and generate SARIF output. Be sure to set secrets/variables for your desired configuration and appropriate URLs
-    - name: Download Fortify on Demand Results
-      uses: fortify/gha-fod-generate-sarif@master
-      #if: ${{ secrets.FOD_RELEASE_ID }}
-      with:
-        base-url: ${{ secrets.FOD_URL }}
-        tenant: ${{ secrets.FOD_TENANT }}
-        user: ${{ secrets.FOD_USER }}
-        password: ${{ secrets.FOD_PAT }}
-        release-id: ${{ secrets.FOD_RELEASE_ID }}
-        output: ./sarif/output.sarif
+      # Java 8 required by ScanCentral Client and FoD Uploader(Univeral CI Tool)
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+            java-version: 1.8
 
-    # Import Fortify on Demand results to GitHub Security Code Scanning
-    - name: Import Results to GitHub
-      uses: github/codeql-action/upload-sarif@v1
-      if: hashFiles('./sarif/output.sarif') != ''
-      with:
-        sarif_file: ./sarif/output.sarif
-#
-# Fortify on Demand static scan using PowerShellForFOD module
-# 
-    # Package up the source code and pom so that it can be uploaded to FOD
-    #- name: Zip up source code
-    #  uses: papeloto/action-zip@v1
-    #  with:
-    #    files: fod/ pom.xml
-    #    dest: fod.zip
+      # Build / Test with Maven (debug)
+      - name: Build with Maven
+        run: mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P fortify,jar -B clean verify package --file pom.xml
 
-    # Upload fod.zip to Fortify on Demand for static application security testing
-    #- name: SAST with FOD/SCA
-    #  shell: pwsh
-    #  run: |
-    #    $ScanSummary = .\fortify-fod.ps1 -ZipFile '.\fod.zip' -ApplicationName 'IWA (Java)' -ReleaseName 'master' -Notes 'GitHub Action initiated scan' -FodApiUri 'https://api.emea.fortify.com' -FodApiUsername '${{ secrets.FOD_ACCESS_KEY }}' -FodApiPassword '${{ secrets.FOD_SECRET_KEY }}' -Raw
-    #    $ScanId = $ScanSummary.scanId
-    #    $ReleaseName = $ScanSummary.releaseName
-    #    $ScanStatus = $ScanSummary.analysisStatusType
-    #    $StarRating = $ScanSummary.starRating
-    #    $IssueCountCritical = $ScanSummary.issueCountCritical
-    #    $IssueCountHigh = $ScanSummary.issueCountHigh
-    #    $IssueCountMedium = $ScanSummary.issueCountMedium
-    #    $IssueCountLow = $ScanSummary.issueCountLow
-    #    $TotalIssues = $ScanSummary.issueCountTotal
-    #    Write-Host "Finished scan $ScanId with status '$ScanStatus'"
-    #    Write-Host "Release '$ReleaseName' has a $StarRating star rating"
-    #    Write-Host "Critical Issues:  $IssueCountCritical"
-    #    Write-Host "High Issues:      $IssueCountHigh"
-    #    Write-Host "Medium Issues:    $IssueCountMedium"
-    #    Write-Host "Low Issues:       $IssueCountLow"
-    #    Write-Host "Total Issues:     $IssueCountTotal"
-    #    if ($StarRating -lt 1) { exit 1 } # set to your own criteria
-    #  env:
-    #    repo-token: "${{ secrets.GITHUB_TOKEN }}"
+      # Get the branch name or pr number
+      - name: Extract branch name
+        shell: pwsh
+        run: |
+          if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
+            $BranchName = $Env:GITHUB_REF -replace 'refs/pull/', ''
+            $PRNumber = $BranchName -replace '/merge', ''
+            $BranchName = "[PR]" + $Env:SOURCE_BRANCH + "#" + $PRNumber
+            Write-Output "::set-output name=branch::$BranchName"
+          } else {
+            $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
+            Write-Output "::set-output name=branch::$BranchName"
+          }  
+        env:
+          SOURCE_BRANCH: ${{ github.head_ref }}  
+        id: extract_branch
 
-    # Create WAR file for deployment to Heroku (testing is skipped as we already did it earlier)
-    # then deploy it using Heroku Maven plugin
-    - name: Heroku Deployment with Maven
-      run: mvn -P war -DskipTests -B heroku:deploy-war --file pom.xml
-      if: always()
-      env:
-        HEROKU_API_KEY: "${{ secrets.HEROKU_API_KEY }}"
+      # Verify if SSC release with name matching branch name exists and if not create it
+      # TODO: Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
+      #   Credentials should be obtained from your SSC instance (it is recommended to use a CI_TOKEN).
+      #   SSC_PARENT_VERSION is the application version corresponding to the parent branch of any newly created branch, this is typically "master" or "main"
+      # The PowerShellForSSC module is used to carry out the automation (see: https://github.com/fortify-community-plugins/PowerShellForSSC)
+      - name: Verify SSC Release
+        id: verify_ssc_release
+        shell: pwsh
+        run: |
+          Write-Output "Installing PowerShellForSSC module ..."
+          Install-Module PowerShellForSSC -Scope CurrentUser -Force -Repository PSGallery
+          Write-Output "Configuring SSC API $Env:SSC_URL ..."
+          $PWord = ConvertTo-SecureString -String "$Env:SSC_PASSWORD" -AsPlainText -Force
+          $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$Env:SSC_USER", $PWord
+          Set-SSCConfig -SscUri $Env:SSC_URL -TokenType UnifiedLoginToken -Credential $Credential
+          Get-SSCToken
+          Write-Output "Checking for existence of $Env:GITHUB_BRANCH_NAME version in application $Env:SSC_APPLICATION_NAME"
+          if (-not (Test-SSCApplicationVersion -ApplicationName $Env:SSC_APPLICATION_NAME -VersionName $Env:GITHUB_BRANCH_NAME))  {
+              Write-Output "Application version does not exist, creating it..."
+              $AppId = Get-SSCApplicationId -ApplicationName $Env:SSC_APPLICATION_NAME
+              # Create any AttributeObjects first - note others might be mandatory
+              $attributes = @(
+                  New-SSCAttributeObject -AttributeDefinitionId 5 -Value "New"
+                  New-SSCAttributeObject -AttributeDefinitionId 6 -Value "Internal"
+                  New-SSCAttributeObject -AttributeDefinitionId 7 -Value "internalnetwork"
+                  New-SSCAttributeObject -AttributeDefinitionId 1 -Value "High"
+              )
+              $VersionObject = New-SSCApplicationVersionObject -ApplicationId $AppId -Name $Env:GITHUB_BRANCH_NAME -Description "Created automatically from GitHub" -IssueTemplateId "Prioritized-HighRisk-Project-Template" -Attributes $attributes -CopyData -CopyState -CopyVersionId $env:SSC_PARENT_VERSION
+              $VersionResponse = Add-SSCApplicationVersion -ApplicationVersion $VersionObject -ForceVerbose
+              $VersionId = $VersionResponse.id
+              Write-Output "::set-output name=SSC_APP_VER_ID::$VersionId"
+              Start-Sleep -Seconds 30 # Brief pause to make sure release has been created!
+          } else {
+              Write-Output "Application version exists..."
+              $VersionId = Get-SSCApplicationVersionId -ApplicationName $Env:SSC_APPLICATION_NAME -VersionName $Env:GITHUB_BRANCH_NAME
+              Write-Output "::set-output name=SSC_APP_VER_ID::$VersionId"
+          }    
+          $VersionName = $Env:SSC_APPLICATION_NAME + ":" + $Env:GITHUB_BRANCH_NAME
+          Write-Output "::set-output name=SSC_APP_VER_NAME::$VersionName"
+        env:
+          SSC_USER: ${{ secrets.SSC_USER }}
+          SSC_PASSWORD: ${{ secrets.SSC_PASSWORD }}
+          SSC_APPLICATION_NAME: "IWA"
+          SSC_PARENT_VERSION: ${{ secrets.SSC_PARENT_VERSION }}
+          SSC_URL: "${{ secrets.SSC_URL }}"
+          GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
+
+      # Set up Fortify ScanCentral Client
+      #   ScanCentral Client documentation is located at https://www.microfocus.com/documentation/fortify-software-security-center/
+      - name: Download Fortify ScanCentral Client
+        uses: fortify/gha-setup-scancentral-client@v1   
+        with:
+          version: 21.1.2                                      # On-prem customers should specify a client version that matches their ScanCentral environment
+          client-auth-token: ${{ secrets.CLIENT_AUTH_TOKEN }}  # Optional, but required if ScanCentral Controller requires client authentication
+
+      # Run Fortify ScanCentral Client
+      # Update BUILD_OPTS (-bt none) based on the ScanCentral Client documentation and your project's included tech stack(s).
+      #   ScanCentral Client will download dependencies for maven, gradle and msbuild projects.
+      #   For other build tools, add your build commands to the workflow to download necessary dependencies and prepare according to Fortify SCA documentation.
+      - name: Start SAST Scan
+        id: start_scancentral_scan
+        shell: pwsh
+        run: |
+          $ScanCentralOutput = & scancentral -url $Env:SC_CONTROLLER_URL start -bt none -upload -application $Env:SSC_APPLICATION -version $Env:SSC_VERSION -uptoken $Env:SSC_UPLOAD_TOKEN -email $Env:SC_EMAIL 
+          Write-Output $ScanCentralOutput
+          $ScanCentralToken = $ScanCentralOutput | Where-Object {$_ -match 'Submitted job and received token:\s+'} | ForEach-Object { $_ -replace 'Submitted job and received token:\s+', '' }
+          Write-Output "::set-output name=SC_TOKEN::$ScanCentralToken"
+          Write-Output "Set SC_TOKEN to $ScanCentralToken"
+        env:                                            
+          SC_CONTROLLER_URL: ${{ secrets.SC_CONTROLLER_URL }}
+          SC_EMAIL: ${{ secrets.SC_EMAIL }}
+          SSC_UPLOAD_TOKEN: ${{ secrets.SSC_UPLOAD_TOKEN }}
+          SSC_APPLICATION: "IWA"
+          SSC_VERSION: ${{ steps.extract_branch.outputs.branch }}
+
+      # Poll ScanCentral status
+      - name: Check SAST Scan Status
+        id: check_scancentral_scan
+        shell: pwsh
+        run: |
+          do {
+            $ScanCentralOutput = & scancentral -url $Env:SC_CONTROLLER_URL status -token $Env:SC_TOKEN
+            Write-Output $ScanCentralOutput
+            $ScanCentralStatus = $ScanCentralOutput | Where-Object {$_ -match 'The job state is:\s+'} | ForEach-Object { $_ -replace 'The job state is:\s+', '' }
+            $SSCStatus = $ScanCentralOutput | Where-Object {$_ -match 'SSC upload state is:\s+'} | ForEach-Object { $_ -replace 'SSC upload state is:\s+', '' }
+            Write-Output "The job state is: $ScanCentralStatus"
+            Write-Output "SSC upload state is: $SSCStatus"
+            if ($ScanCentralStatus -ne "COMPLETED" -and $SSCStatus -ne "COMPLETED") {
+              Write-Output "Sleeping for $Env:SC_POLL_INTERVAL seconds..."
+              Start-Sleep -Seconds $Env:SC_POLL_INTERVAL
+            }
+          } while ($ScanCentralStatus -ne "COMPLETED" -and $SSCStatus -ne "COMPLETED")
+          Write-Output "::set-output name=SC_STATUS::$ScanCentralStatus"
+          Write-Output "::set-output name=SSC_STATUS::$SSCStatus"
+        env:                                            
+          SC_CONTROLLER_URL: ${{ secrets.SC_CONTROLLER_URL }}
+          SC_TOKEN: ${{ steps.start_scancentral_scan.outputs.SC_TOKEN }}
+          SC_POLL_INTERVAL: 10
+          SSC_APPLICATION: "IWA"
+
+      # Automatically Approve any SSC artifacts
+      - name: Approve SSC artifacts
+        id: approve_ssc_artifacts
+        shell: pwsh
+        run: |
+          Write-Output "Configuring SSC API $Env:SSC_URL ..."
+          $PWord = ConvertTo-SecureString -String "$Env:SSC_PASSWORD" -AsPlainText -Force
+          $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$Env:SSC_USER", $PWord
+          Set-SSCConfig -SscUri $Env:SSC_URL -TokenType UnifiedLoginToken -Credential $Credential
+          Get-SSCToken
+          Write-Output "Checking release $Env:GITHUB_BRANCH_NAME to see if any artifacts need approval"
+          $AppVersionId = (Get-SSCScanCentralSASTJob -JobToken $Env:SC_TOKEN -Fields pvId -Raw).pvId
+          Write-Output "::set-output name=SSC_APP_VER_ID::$AppVersionId"
+          $ArtifactIds = Get-SSCApplicationVersionArtifacts -Id $AppVersionId -Query "status:REQUIRE_AUTH" -Fields "id" -Raw
+          if ($ArtifactIds) {
+              $AId = ($ArtifactIds[0]).id
+              Write-Output "Approving Artifact id $AId on application version $AppVersionId"
+              Approve-SSCArtifacts -Ids $AId -Comment "Automatically approved from GitHub"
+          } else {
+              Write-Output "No SSC artifacts require approval..."
+          }
+        env:
+          SSC_USER: ${{ secrets.SSC_USER }}
+          SSC_PASSWORD: ${{ secrets.SSC_PASSWORD }}
+          SSC_APPLICATION_NAME: "IWA"
+          SSC_URL: "${{ secrets.SSC_URL }}"
+          GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
+          SC_TOKEN: ${{ steps.start_scancentral_scan.outputs.SC_TOKEN }} 
+        
+      # Pull SAST issues from Fortify Software Security Center and generate GitHub-optimized SARIF output
+      - name: Export Results
+        uses: fortify/gha-export-vulnerabilities@v1
+        with:
+          ssc_base_url: ${{ secrets.SSC_URL }}
+          ssc_user: ${{ secrets.SSC_USER }}
+          ssc_password: ${{ secrets.SSC_PASSWORD }}
+          ssc_version_id: ${{ steps.verify_ssc_release.outputs.SSC_APP_VER_ID }}
+          #ssc_version_name: ${{ steps.verify_ssc_release.outputs.SSC_APP_VER_NAME }}
+          ssc_vuln_filter_set_id: ${{ github.event.inputs.sscVulnFilterSetId }}
+
+      # Check if SARIF output file has been created
+      - name: Check file existence
+        id: check_files_sast
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "./gh-fortify-sast.sarif"
+
+      # Import Fortify SAST results to GitHub Security Code Scanning
+      - name: Import Results
+        if: steps.check_files_sast.outputs.files_exists == 'true'
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: ./gh-fortify-sast.sarif
+
+      # Archive ScanCentral Client logs on failure
+      - name: Save ScanCentral Logs
+        uses: actions/upload-artifact@v2                
+        if: failure()
+        with:
+           name: scancentral-logs
+           path: ~/.fortify/scancentral*/log
+           
+      # Run script to check the results of the scan to determine success/failure
+      - name: Check SSC Scan Status
+        shell: pwsh
+        run: |
+          Write-Output "Configuring SSC API $Env:SSC_URL ..."
+          $PWord = ConvertTo-SecureString -String "$Env:SSC_PASSWORD" -AsPlainText -Force
+          $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$Env:SSC_USER", $PWord
+          Set-SSCConfig -SscUri $Env:SSC_URL -TokenType UnifiedLoginToken -Credential $Credential
+          Get-SSCToken
+          Write-Output "Checking release $Env:GITHUB_BRANCH_NAME to see if it passes security gate"
+          $Issues = Get-SSCApplicationVersionIssues -Id $Env:SSC_APP_VER_ID -Query '[fortify priority order]:critical [fortify priority order]:high' -Raw
+          $TotalIssueCount = $Issues.Count
+          $CriticalIssueCount = ($Issues | Where-Object {$_.friority -eq "Critical"}).Count
+          $HighIssueCount = ($Issues | Where-Object {$_.friority -eq "Critical"}).Count
+          Write-Output "Critical issues: $CriticalIssueCount"
+          Write-Output "High issues: $HighIssueCount"
+          Write-Output "Total issues: $TotalIssueCount"
+          # Example of using issue data
+          if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
+            if ($IssueCount -gt 1) { exit 1 } # Fail if more than 1 issue - set to your own criteria
+          } 
+        env:
+          SSC_USER: ${{ secrets.SSC_USER }}
+          SSC_PASSWORD: ${{ secrets.SSC_PASSWORD }}
+          SSC_APPLICATION_NAME: "IWA"
+          SSC_URL: "${{ secrets.SSC_URL }}"
+          SSC_APP_VER_ID: ${{ steps.verify_ssc_release.outputs.SSC_APP_VER_ID }}
+          GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
+
+  FoD-SAST-Scan:
+    # Use the appropriate runner for building your source code.
+    # TODO: Use a Windows runner for .NET projects that use msbuild. Additional changes to RUN commands will be required to switch to Windows syntax.
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.useFortifyOnDemand == 'true' }} 
+
+    steps:
+      # Check out source code
+      - name: Check Out Source Code
+        uses: actions/checkout@v2
+
+      # Java 8 required by ScanCentral Client and FoD Uploader(Univeral CI Tool)
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+            java-version: 1.8
+
+      # Build / Test with Maven (debug)
+      - name: Build with Maven
+        run: mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P fortify,jar -B clean verify package --file pom.xml
+
+      # Get the branch name or pr number
+      - name: Extract branch name
+        shell: pwsh
+        run: |
+          if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
+            $BranchName = $Env:GITHUB_REF -replace 'refs/pull/', ''
+            $PRNumber = $BranchName -replace '/merge', ''
+            $BranchName = "[PR]" + $Env:SOURCE_BRANCH + "#" + $PRNumber
+            Write-Output "::set-output name=branch::$BranchName"
+          } else {
+            $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
+            Write-Output "::set-output name=branch::$BranchName"
+          }  
+        env:
+          SOURCE_BRANCH: ${{ github.head_ref }}  
+        id: extract_branch
+
+      # Verify if FoD release with name matching branch name exists and if not create it
+      # TODO: Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
+      #   Credentials should be obtained from your FoD tenant (only API Key can is used here but could be changed to Personal Access Token).
+      #   FOD_PARENT_RELEASE_ID is the FoD release id corresponding to the parent branch of any newly created branch, this is typically "master" or "main"
+      # The PowerShellForFOD module is used to carry out the automation (see: https://github.com/fortify-community-plugins/PowerShellForFOD)
+      - name: Verify FOD Release
+        shell: pwsh
+        run: |
+          Write-Output "Installing PowerShellForFOD module ..."
+          Install-Module PowerShellForFOD -Scope CurrentUser -Force -Repository PSGallery
+          Write-Output "Configuring FOD API $Env:FOD_API_URI or $env.FOD_API_URI ..."
+          $PWord = ConvertTo-SecureString -String "$Env:FOD_PAT" -AsPlainText -Force
+          $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$Env:FOD_TENANT\$Env:FOD_USER", $PWord
+          Set-FODConfig -ApiUri $Env:FOD_API_URI -GrantType UsernamePassword -Scope api-tenant
+          Get-FODToken -Credential $Credential
+          Write-Output "Checking for existence of $Env:GITHUB_BRANCH_NAME release in application $Env:FOD_APPLICATION_NAME"
+          if (-not (Test-FODRelease -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME)) { 
+              Write-Output "Release does not exist, creating it..."
+              $AppId = Get-FODApplicationId -ApplicationName $Env:FOD_APPLICATION_NAME
+              $NewReleaseObj = New-FODReleaseObject -ApplicationId $AppId -Name $Env:GITHUB_BRANCH_NAME -Description "Created automatically from GitHub" -CopyState -CopyReleaseId $env:FOD_PARENT_RELEASE_ID -SDLCStatus Development
+              $RelResponse = Add-FODRelease -Release $NewReleaseObj
+              $ReleaseId = $RelResponse.releaseId
+              Write-Output "::set-output name=FOD_RELEASE_ID::$ReleaseId"
+              Start-Sleep -Seconds 30 # Brief pause to make sure release has been created!
+          } else {
+              Write-Output "Release exists..."
+              $ReleaseId = Get-FODReleaseId -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME
+              Write-Output "::set-output name=FOD_RELEASE_ID::$ReleaseId"
+          }    
+        id: verify_fod_release
+        env:
+          FOD_TENANT: ${{ secrets.FOD_TENANT }}
+          FOD_USER: ${{ secrets.FOD_USER }}
+          FOD_PAT: ${{ secrets.FOD_PAT }}
+          FOD_APPLICATION_NAME: "IWA"
+          FOD_PARENT_RELEASE_ID: ${{ secrets.FOD_PARENT_RELEASE_ID }}
+          FOD_URL: "https://emea.fortify.com/"
+          FOD_API_URI: "https://api.emea.fortify.com/"
+          GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
+
+      # Prepare source+dependencies for upload. The default example is for a Maven project that uses pom.xml.
+      # TODO: Update PACKAGE_OPTS based on the ScanCentral Client documentation for your project's included tech stack(s). Helpful hints:
+      #   ScanCentral Client will download dependencies for maven (-bt mvn) and gradle (-bt gradle).
+      #   ScanCentral Client can download dependencies for msbuild projects (-bt msbuild); however, you must convert the workflow to use a Windows runner.
+      #   ScanCentral has additional options that should be set for PHP and Python projects
+      #   For other build tools, add your build commands to download necessary dependencies and prepare according to Fortify on Demand Packaging documentation.
+      #   ScanCentral Client documentation is located at https://www.microfocus.com/documentation/fortify-software-security-center/
+      - name: Download Fortify ScanCentral Client
+        uses: fortify/gha-setup-scancentral-client@v1
+      - name: Package Code + Dependencies
+        run: scancentral package $PACKAGE_OPTS -o package.zip
+        env:
+            PACKAGE_OPTS: "-bt none"
+
+      # Start Fortify on Demand SAST scan and wait until results complete. For more information on FoDUploader commands, see https://github.com/fod-dev/fod-uploader-java
+      # TODO: Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
+      #   Credentials and release ID should be obtained from your FoD tenant (either Personal Access Token or API Key can be used).
+      #   Automated Audit preference should be configured for the release's Static Scan Settings in the Fortify on Demand portal.
+      - name: Download Fortify on Demand Universal CI Tool
+        uses: fortify/gha-setup-fod-uploader@v1
+      - name: Perform SAST Scan
+        run: java -jar $FOD_UPLOAD_JAR -z package.zip -aurl $FOD_API_URL -purl $FOD_URL -rid "$FOD_RELEASE_ID" -tc "$FOD_TENANT" -uc "$FOD_USER" "$FOD_PAT" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
+        env:
+            FOD_TENANT: ${{ secrets.FOD_TENANT }}
+            FOD_USER: ${{ secrets.FOD_USER }}
+            FOD_PAT: ${{ secrets.FOD_PAT }}
+            FOD_RELEASE_ID: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
+            FOD_URL: "https://emea.fortify.com/"
+            FOD_API_URL: "https://api.emea.fortify.com/"
+            FOD_UPLOADER_OPTS: "-ep 2 -pp 2 -I 1 -apf"
+            FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
+
+      # Pull SAST issues from Fortify on Demand and generate GitHub-optimized SARIF output
+      - name: Export Results
+        uses: fortify/gha-export-vulnerabilities@v1
+        with:
+          fod_base_url: https://emea.fortify.com
+          fod_tenant: ${{ secrets.FOD_TENANT }}
+          fod_user: ${{ secrets.FOD_USER }}
+          fod_password: ${{ secrets.FOD_PAT }}
+          fod_release_id: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
+
+      # Check if SARIF output file has been created
+      - name: Check file existence
+        id: check_files_fod
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "./gh-fortify-sast.sarif"
+
+      # Import Fortify SAST results to GitHub Security Code Scanning
+      - name: Import Results
+        if: steps.check_files_fod.outputs.files_exists == 'true'
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: ./gh-fortify-sast.sarif
+
+      # Run script to check the results of the scan to determine success/failure
+      - name: Check FOD Scan Status
+        shell: pwsh
+        run: |
+          Write-Output "Configuring FOD API $Env:FOD_API_URI or $env.FOD_API_URI ..."
+          $PWord = ConvertTo-SecureString -String "$Env:FOD_PAT" -AsPlainText -Force
+          $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$Env:FOD_TENANT\$Env:FOD_USER", $PWord
+          Set-FODConfig -ApiUri $Env:FOD_API_URI -GrantType UsernamePassword -Scope api-tenant
+          Get-FODToken -Credential $Credential
+          Write-Output "Checking status of FOD Release $Env:FOD_RELEASE_ID"
+          $ScanSummary = Get-FODReleaseScans -ReleaseId $Env:FOD_RELEASE_ID -OrderBy completedDateTime -Limit 1
+          $ScanId = $ScanSummary.scanId
+          $ReleaseName = $ScanSummary.releaseName
+          $ScanStatus = $ScanSummary.analysisStatusType
+          $StarRating = $ScanSummary.starRating
+          $IssueCountCritical = $ScanSummary.issueCountCritical
+          $IssueCountHigh = $ScanSummary.issueCountHigh
+          $IssueCountMedium = $ScanSummary.issueCountMedium
+          $IssueCountLow = $ScanSummary.issueCountLow
+          $IssueCountTotal = $ScanSummary.issueCountTotal
+          Write-Output "Finished scan $ScanId with status '$ScanStatus'"
+          Write-Output "Release '$ReleaseName' has a $StarRating star rating"
+          Write-Output "Critical Issues:  $IssueCountCritical"
+          Write-Output "High Issues:      $IssueCountHigh"
+          Write-Output "Medium Issues:    $IssueCountMedium"
+          Write-Output "Low Issues:       $IssueCountLow"
+          Write-Output "Total Issues:     $TotalIssues"
+          # Example of using issue data
+          if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
+            if ($StarRating -lt 2) { exit 1 } # Fail if less than 2 star rating - set to your own criteria
+          } 
+        env:
+          FOD_TENANT: ${{ secrets.FOD_TENANT }}
+          FOD_USER: ${{ secrets.FOD_USER }}
+          FOD_PAT: ${{ secrets.FOD_PAT }}
+          FOD_APPLICATION_NAME: "IWA"
+          FOD_RELEASE_ID: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
+          FOD_URL: "https://emea.fortify.com/"
+          FOD_API_URI: "https://api.emea.fortify.com/"
+
+  ScanCentral-DAST-Scan:
+    if: ${{ false }} 
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+  FoD-DAST-Scan:
+    if: ${{ false }} 
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
