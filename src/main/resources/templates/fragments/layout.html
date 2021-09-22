@@ -1,16 +1,19 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
     <head>
         <meta charset="utf-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.5.3/css/bootstrap.min.css}"/>
-        <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap-vue/1.3.0/bootstrap-vue.css}"/>
+        <!--link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap-vue/1.3.0/bootstrap-vue.css}"/-->
         <link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.15.2/css/all.css} "/>
         <link rel="stylesheet" type="text/css" th:href="@{/css/owl.carousel.min.css}"/>
         <link rel="stylesheet" type="text/css" th:href="@{/css/owl.theme.default.min.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/star-rating.min.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/star-rating-theme.min.css}"/>
         <link rel="stylesheet" type="text/css" th:href="@{/css/icomoon/style.css}"/>
         <link rel="stylesheet" type="text/css" th:href="@{/css/app.css}"/>
 
@@ -23,6 +26,7 @@
             <th:block th:replace="fragments/header :: header"/>
             <th:block layout:fragment="content"/>
             <th:block th:replace="fragments/footer :: footer"/>
+            <th:block layout:fragment="script"/>
         </div>
     </body>
 </html>

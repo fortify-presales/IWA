@@ -103,7 +103,7 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
             } else if (targetPath.endsWith("/login")) {
                 targetUrl = targetUrl.replace("/login", "/user");
             } else if (targetPath.endsWith("/register")) {
-                targetUrl = targetUrl.replace("/register", "/user");
+                targetUrl = targetUrl.replace("/register", "/");
             } else if (targetPath.equals("/")) {
                 targetUrl = targetUrl + "user";
             }

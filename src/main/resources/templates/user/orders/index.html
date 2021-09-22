@@ -57,7 +57,7 @@
                                         <span th:unless="${o.shipped}"> <i class="fas fa-times"></i> </span>
                                     </td>
                                     <td><a th:href="@{/user/orders/{id}(id=${o.id})}"><span th:text="${#strings.abbreviate(o.orderNum,40)}"> Order Number </span></a></td>
-                                    <td><span th:text="${#strings.replace(#numbers.formatCurrency(o.amount), '.00', '')}"> Amount </span></td>
+                                    <td><span th:text="${currencySymbol + #strings.replace(#numbers.formatDecimal(o.amount, 0, 2), '.00', '')}"> Amount </span></td>
                                     <td>
                                         <span th:if="${o.shippedDate}" th:text="${#dates.format(o.shippedDate, 'MM-dd-yyyy')}"> Shipped Date </span>
                                     </td>

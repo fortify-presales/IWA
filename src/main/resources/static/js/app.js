@@ -155,7 +155,7 @@ jQuery(document).ready(function($) {
 
 });
 
-var app = document.getElementById("app");
+/*var app = document.getElementById("app");
 if (app != null) {
     new Vue({
         el: '#app',
@@ -171,7 +171,7 @@ if (app != null) {
             'subscribe-newsletter': httpVueLoader('/js/components/SubscribeNewsletter.vue')
         }
     })
-}
+}*/
 
 window.FontAwesomeConfig = {
     searchPseudoElements: true

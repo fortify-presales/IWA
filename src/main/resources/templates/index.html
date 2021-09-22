@@ -21,7 +21,7 @@
                                 <h4 th:text="${message}" sec:authorize="isAnonymous()"></h4>
                                 <h4 th:text="@{'Welcome back to our site, '+${#authentication.name}}" sec:authorize="isAuthenticated()"></h4>
                                 <p class="pt-4">
-                                    <a th:href="@{/register}" sec:authorize="isAnonymous()" class="btn p-2 btn-outline-info"> Register </a>
+                                    <a th:href="@{/user/register}" sec:authorize="isAnonymous()" class="btn p-2 btn-outline-info"> Register </a>
                                     <a th:href="@{/user}" sec:authorize="hasRole('ROLE_USER')" class="btn p-2 btn-outline-info"> Your Profile </a>
                                     <a th:href="@{/admin}" sec:authorize="hasRole('ROLE_ADMIN')" class="btn p-2 btn-outline-info"> Site Administration </a>
                                     <a th:href="@{/products}" class="btn p-2 btn-outline-success">Shop Now</a>
@@ -73,7 +73,20 @@
                 </div>
             </div>
 
-            <new-products th:attr="currency=${currencySymbol}"></new-products>
+            <div id="new-products">
+                <div class="site-section bg-light">
+                    <div class="container">
+                        <div class="row">
+                            <div class="title-section text-center col-12">
+                                <h2 class="text-uppercase">New Products</h2>
+                            </div>
+                        </div>
+                        <div id="product-data" class="row">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="site-section">
                 <div class="container">
@@ -138,5 +151,15 @@
 
         </div>
 
+        <th:block layout:fragment="script">
+            <script type="text/javascript" th:src="@{/js/components/NewProducts.js}"></script>
+            <script type="text/javascript" th:inline="javascript">
+                (function ($) {
+                    $(document).ready(function () {
+                        $('#new-products').NewProducts({ currencySymbol : /*[[${currencySymbol}]]*/ '&#164;'});
+                    });
+                })(jQuery);
+            </script>
+        </th:block>
     </body>
 </html>

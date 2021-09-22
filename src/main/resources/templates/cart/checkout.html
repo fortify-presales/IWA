@@ -184,7 +184,43 @@
                                 <div class="col-md-12">
                                     <h2 class="h3 mb-3 text-black">Your Order</h2>
                                     <div class="p-3 p-lg-5 border">
-                                        <shopping-cart-summary th:attr="currency=${currencySymbol}"></shopping-cart-summary>
+
+                                        <div id="cart-summary">
+                                            <div id="empty-cart" class="d-none">
+                                               <div class="row">
+                                                <div class="offset-2 text-center pb-5">
+                                                  <h5>Your shopping cart is empty!</h5>
+                                                  <div class="offset-1 pt-4">
+                                                      <button type="submit" class="btn btn-md height-auto px-4 py-3 btn-primary" onclick="window.location.href='/products'">Continue Shopping</button>
+                                                  </div>
+                                                </div>
+                                               </div>
+                                            </div>
+                                            <div id="item-cart" class="d-none">
+                                              <table id="item-table" class="table table-sm site-block-order-table">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th>Product</th>
+                                                        <th>Total</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                      <td class="text-black"><strong>Subtotal</strong></td>
+                                                      <td class="text-black"><strong><span id="cart-subtotal" class="text-xs-right"></span></strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-black"><strong>Total</strong></td>
+                                                        <td class="text-black"><strong><span id="order-total" class="text-xs-right"></span></strong></td>
+                                                    </tr>
+                                                </tfoot>
+                                              </table>
+                                            </div>
+                                        </div>
+
                                         <div class="border mb-3">
                                             <h3 class="h6 mb-0"><a class="d-block" data-toggle="collapse" href="#collapsebank" role="button"
                                                                    aria-expanded="false" aria-controls="collapsebank">Direct Bank Transfer</a></h3>
@@ -224,8 +260,8 @@
                                         <div class="form-group">
                                             <form action="#" th:action="@{/cart/order}" method="post">
                                                 <input hidden type="text" id="userId" th:field="*{orderForm.user}" th:value="${orderForm.user}">
-                                                <input hidden type="text" id="jsonCart" th:field="*{orderForm.cart}" th:value="${orderForm.cart}">
-                                                <input hidden type="text" id="orderAmount" th:field="*{orderForm.amount}" th:value="${orderForm.amount}">
+                                                <input hidden type="text" id="jsonCart" th:field="*{orderForm.cart}" >
+                                                <input hidden type="text" id="orderAmount" th:field="*{orderForm.amount}">
                                                 <button type="submit" class="btn btn-primary btn-lg btn-block">Place Order</button>
                                             </form>
                                         </div>
@@ -243,5 +279,16 @@
             <div th:replace="fragments/secondary-bg.html :: secondaryBackground ('/index.html')"></div>
 
         </div>
+
+        <th:block layout:fragment="script">
+            <script type="text/javascript" th:src="@{/js/components/CartSummary.js}"></script>
+            <script type="text/javascript" th:inline="javascript">
+                (function ($) {
+                    $(document).ready(function () {
+                        $('#cart-summary').CartSummary( { currencySymbol : /*[[${currencySymbol}]]*/ '&#164;'} );
+                    });
+                })(jQuery);
+            </script>
+        </th:block>
     </body>
 </html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+    <head>
+        <title>Register</title>
+    </head>
+    <body>
+        <div layout:fragment="content" th:remove="tag">
+
+            <div class="bg-light py-3">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 mb-0"><a th:href="@{/user/register/}">Register</a> </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="site-section">
+
+                <div class="container">
+
+                    <form th:action="@{/user/register}" th:object="${registerUserForm}" class="form-horizontal needs-validation form-register" autocomplete="off" method="post">
+
+                        <h1 class="h3 mb-3 font-weight-normal">Enter your registration details</h1>
+
+                        <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                            <span th:text="${message}">message</span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div th:object="${registerUserForm}" th:remove="tag">
+                            <div class="alert alert-danger" th:if="${#fields.hasErrors('global')}">
+                                <p th:each="error : ${#fields.errors('global')}" th:text="${error}">error</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div id="check-username" class="col-md-12">
+                                <label for="username" class="text-black">Username <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="username" name="username" th:field="*{username}" th:value="${registerUserForm.username}" aria-describedby="usernameHelpBlock">
+                                    <div class="input-group-prepend">
+                                        <button class="btn btn-outline-secondary" type="button" id="check-username-button">Check Username</button>
+                                    </div>
+                                </div>
+                                <small id="usernameHelpBlock" class="form-text text-muted">
+                                    Bust be 6-20 characters long, containing letters and numbers, and not spaces, special characters, or emojis.
+                                </small>
+                            </div>
+                            <div class="col-md-12">
+                                <div th:if="${#fields.hasErrors('username')}">
+                                    <p class="alert alert-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+                                </div>
+                                <div id="username-taken" class="d-none">
+                                    <p class="alert alert-danger"></p>
+                                </div>
+                                <div id="username-available" class="d-none">
+                                    <p class="alert alert-success"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="firstName" class="text-black">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" th:field="*{firstName}" th:value="${registerUserForm.firstName}">
+                                <div th:if="${#fields.hasErrors('firstName')}">
+                                    <p class="alert alert-danger" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="lastName" class="text-black">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" th:field="*{lastName}" th:value="${registerUserForm.lastName}">
+                                <div th:if="${#fields.hasErrors('lastName')}">
+                                    <p class="alert alert-danger" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="email" class="text-black">Email <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="email" name="email" th:field="*{email}" th:value="${registerUserForm.email}" aria-describedby="emailHelpBlock">
+                                <small id="emailHelpBlock" class="form-text text-muted">
+                                    A valid email address.
+                                </small>
+                                <div th:if="${#fields.hasErrors('email')}">
+                                    <p class="alert alert-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="text-black">Phone <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="phone" name="phone" th:field="*{phone}" th:value="${registerUserForm.phone}" aria-describedby="phoneHelpBlock">
+                                <small id="phoneHelpBlock" class="form-text text-muted">
+                                    Must be 7-12 digits long.
+                                </small>
+                                <div th:if="${#fields.hasErrors('phone')}">
+                                    <p class="alert alert-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="password" class="text-black">Password <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="password" name="password" th:field="*{password}" th:value="${registerUserForm.password}" aria-describedby="passwordHelpBlock">
+                                <small id="passwordHelpBlock" class="form-text text-muted">
+                                    Must be 8-20 characters long, containing letters, numbers and special characters.
+                                </small>
+                                <div th:if="${#fields.hasErrors('password')}">
+                                    <p class="alert alert-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="confirmPassword" class="text-black">Confirm Password <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="confirmPassword" name="confirmPassword" th:field="*{confirmPassword}" th:value="${registerUserForm.confirmPassword}" aria-describedby="confirmPasswordHelpBlock">
+                                <small id="confirmPasswordHelpBlock" class="form-text text-muted">
+                                    Confirm your password.
+                                </small>
+                                <div th:if="${#fields.hasErrors('confirmPassword')}">
+                                    <p class="alert alert-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mt-4">
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary">Register</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <th:block layout:fragment="script">
+            <script type="text/javascript" th:src="@{/js/components/CheckUsername.js}"></script>
+            <script type="text/javascript" th:inline="javascript">
+                (function ($) {
+                    $(document).ready(function () {
+                        $('#check-username').CheckUsername();
+                    });
+                })(jQuery);
+            </script>
+        </th:block>
+    </body>
+</html>
