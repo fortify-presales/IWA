@@ -1,42 +1,42 @@
 #
-# Example script to perform static application security testing (SAST) using Fortify ScanCentral
+# Example script to perform Fortify SCA static analysis
 #
 
-# SSC URL from environment variable
-$ssccurl = $Env:SSC_URL 
+# Import some supporting functions
+Import-Module $PSScriptRoot\modules\FortifyFunctions.psm1
 
-# SSC ScanCentralCtrlToken from environment variable
-# Can be created using: fortifyclient token -gettoken ScanCentralCtrlToken -url $scurl -user [your-username] -password [your-password] 
-$ssctoken = $Env:SSC_SCANCENTRAL_CTRL_TOKEN
+# Import local environment specific settings
+$EnvSettings = $(ConvertFrom-StringData -StringData (Get-Content ".\.env" | Where-Object {-not ($_.StartsWith('#'))} | Out-String))
+$AppName = $EnvSettings['SSC_APP_NAME']
+$AppVersion = $EnvSettings['SSC_APP_VER_NAME']
+$SSCUrl = $EnvSettings['SSC_URL']
+$SSCAuthToken = $EnvSettings['SSC_AUTH_TOKEN'] # CIToken
+$ScanCentralCtrlUrl = $EnvSettings['SCANCENTRAL_CTRL_URL']
+$ScanCentralCtrlToken = $EnvSettings['SCANCENTRAL_CTRL_TOKEN'] # ScanCentralCtrlToken
+$ScanCentralPoolId = $EnvSettings['SCANCENTRAL_POOL_ID']
+$ScanCentralEmail = $EnvSettings['SCANCENTRAL_EMAIL']
+$ScanSwitches = "-Dcom.fortify.sca.Phase0HigherOrder.Languages=javascript,typescript -Dcom.fortify.sca.EnableDOMModeling=true -Dcom.fortify.sca.follow.imports=true -Dcom.fortify.sca.exclude.unimported.node.modules=true"
 
-# SSC Application version id to upload results to from environment variable
-# Can be retrieved using: fortifyclient listApplicationVersions -url $scurl -user [your-username] -password [your-password] 
-$sscappid = $Env:SSC_APPLICATION_ID
+# Test we have Fortify installed successfully
+Test-Environment
+if ([string]::IsNullOrEmpty($ScanCentralCtrlUrl)) { throw "ScanCentral Controller URL has not been set" }
+if ([string]::IsNullOrEmpty($ScanCentralCtrlToken)) { throw "ScanCentral Controller Token has not been set" }
+if ([string]::IsNullOrEmpty($ScanCentralEmail)) { throw "ScanCentral Email has not been set" }
+if ([string]::IsNullOrEmpty($SSCAuthToken)) { throw "SSC Authentication token has not been set" }
+if ([string]::IsNullOrEmpty($AppName)) { throw "Application Name has not been set" }
+if ([string]::IsNullOrEmpty($AppVersion)) { throw "Application Version has not been set" }
 
-# SSC AnalysisUploadToken token from environment variable
-$sscuptoken = $Env:SSC_ANALYSIS_UPLOAD_TOKEN
+# Upload and run the scan
 
-# ScanCentral Pool UUID to use - Default Pool
-$ScanCentralPool = "00000000-0000-0000-0000-000000000002"
-
-# example path for ScanCentral client - SCA path
-$env:Path += ";C:\Tools\scancentral\bin"
-
-
-# Check ScanCentral client is on the path
-if ((Get-Command "scancentral.bat" -ErrorAction SilentlyContinue) -eq $null)
-{
-    Write-Error "Unable to find scancentral.bat in your PATH"
-    Break
-}
-
-# Start the scan using ScanCentral and Maven build tool
-Write-Host ************************************************************
 Write-Host Invoking ScanCentral...
-Write-Host ************************************************************
-# "C:\Program Files\Fortify\Fortify_SCA_and_Apps_20.2.1\bin\scancentral.bat" -sscurl http://ssc.mfdemouk.com -ssctoken b7d50934-69ab-49e0-b15b-33f63de4d6fc
-# start -bt mvn -bf pom.xml -email kevin.lee@microfocus.com -pool 00000000-0000-0000-0000-000000000002 -filter etc\sca-filter.txt
-& scancentral -sscurl $ssccurl -ssctoken $ssctoken start -upload -versionid $sscappid -b iwa -uptoken $sscuptoken -bt mvn -bf pom.xml
+Write-Host "scancentral -url $ScanCentralCtrlUrl -ssctoken $SSCAuthToken start -upload -uptoken $ScanCentralCtrlToken -b $AppName --application $AppName --application-version $AppVersion -email $ScanCentralEmail -bt mvn -bf pom.xml -scan"
+& scancentral -url $ScanCentralCtrlUrl -ssctoken $SSCAuthToken start -bt mvn -bf pom.xml -upload `
+    -uptoken $ScanCentralCtrlToken -b $AppName `
+    --application $AppName --application-version $AppVersion  `
+    -email $ScanCentralEmail
 
+Write-Host
 Write-Host You can check ongoing status with:
-Write-Host "scancentral -sscurl $ssccurl -ssctoken $ssctoken status -token [returned-token]"
+Write-Host " scancentral -url $ScanCentralCtrlUrl status -token [received-token]"
+
+Write-Host Done.

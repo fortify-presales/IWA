@@ -16,5 +16,12 @@ function Test-Environment {
         $UploadToSSC = $False
     }
 
+    # Check ScanCentral client is on the path
+    if ((Get-Command "scancentral.bat" -ErrorAction SilentlyContinue) -eq $null)
+    {
+        Write-Error "Unable to find scancentral.bat in your PATH"
+        Break
+    }
+
     Write-Host "OK."
 }

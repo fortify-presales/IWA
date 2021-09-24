@@ -2,8 +2,21 @@
 # Example script to perform Fortify WebInspect dynamic analysis
 #
 
-# Application URL when deployed
-$AppUrl = "http://localhost:8080"
+# Import some supporting functions
+Import-Module $PSScriptRoot\modules\FortifyFunctions.psm1
+
+# Import local environment specific settings
+$EnvSettings = $(ConvertFrom-StringData -StringData (Get-Content ".\.env" | Where-Object {-not ($_.StartsWith('#'))} | Out-String))
+$AppName = $EnvSettings['SSC_APP_NAME']
+$AppVersion = $EnvSettings['SSC_APP_VER_NAME']
+$AppUrl = $EnvSettings['APP_URL']
+$SSCUrl = $EnvSettings['SSC_URL']
+$SSCAuthToken = $EnvSettings['SSC_AUTH_TOKEN'] # CIToken
+$ScanSwitches = "-Dcom.fortify.sca.Phase0HigherOrder.Languages=javascript,typescript -Dcom.fortify.sca.EnableDOMModeling=true -Dcom.fortify.sca.follow.imports=true -Dcom.fortify.sca.exclude.unimported.node.modules=true"
+
+# Test we have Fortify installed successfully
+Test-Environment
+if ([string]::IsNullOrEmpty($AppName)) { throw "Application Name has not been set" }
 
 # WebInspect policy to use - 1008 = Crtical and High only
 $WIPolicyId = 1008
@@ -18,15 +31,16 @@ if ((Get-Command "WI.exe" -ErrorAction SilentlyContinue) -eq $null)
     Break
 }
 
-# Generate API Settings for REST API scan
-#Write-Host ************************************************************
-#Write-Host Generating settings for API scan...
-#Write-Host ************************************************************
-#& wiswag -i ".\etc\WISwagConfig.json" -ice -it Swagger -wiOutput ApiScanSettings.xml
-
-# Execute dynamic scan
-Write-Host ************************************************************
 Write-Host Executing dynamic scan...
-Write-Host ************************************************************
 & wi -s ".\etc\IWA-UI-Dev-Settings.xml" -macro ".\etc\IWA-UI-Dev-Login.webmacro" -u $AppUrl `
-    -ep ".\target\wi-iwa.fpr" -ps $WIPolicyId
+    -ep ".\IWA-DAST.fpr" -ps $WIPolicyId
+
+Write-Host Generating PDF report...
+& ReportGenerator '-Dcom.fortify.sca.ProjectRoot=.fortify' -user "Demo User" -format pdf -f "$($AppName).pdf" -source "$($AppName).fpr"
+
+if (![string]::IsNullOrEmpty($SSCUrl)) {
+    Write-Host Uploading results to SSC...
+    & fortifyclient uploadFPR -file "$($AppName).fpr" -url $SSCUrl -authtoken $SSCAuthToken -application $AppName -applicationVersion $AppVersion
+}
+
+Write-Host Done.

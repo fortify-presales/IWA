@@ -62,7 +62,7 @@ process {
         $FortifyToken = $Response.token
         $Headers.Add('Authorization', $FortifyToken)
     } catch {
-        Write-Error -Exception $_.Exception -Message "eDAST API call failed: $_"
+        Write-Error -Exception $_.Exception -Message "scanCentral DAST API call failed: $_"
     }
 
     # Get possible scan status values
@@ -76,7 +76,7 @@ process {
         $Response = Invoke-RestMethod -Headers $Headers @Params
         $ScanStatusValues = $Response
     } catch {
-        Write-Error -Exception $_.Exception -Message "eDAST API call failed: $_"
+        Write-Error -Exception $_.Exception -Message "scanCentral DAST API call failed: $_"
     }
 
     # Start the scan
@@ -97,7 +97,7 @@ process {
         $ScanId = $Response.id
         Write-Host "Started scan id: $ScanId"
     } catch {
-        Write-Error -Exception $_.Exception -Message "eDAST API call failed: $_"
+        Write-Error -Exception $_.Exception -Message "scanCentral DAST API call failed: $_"
     }
 
     # Poll the scan
@@ -115,7 +115,7 @@ process {
             $ScanStatusId = ($Response.item.scanStatusType) - 1
             $ScanStatus = $ScanStatusValues.Item($ScanStatusId).text
         } catch {
-            Write-Error -Exception $_.Exception -Message "eDAST API call failed: $_"
+            Write-Error -Exception $_.Exception -Message "scanCentral DAST API call failed: $_"
         }
         Write-Host "Scan id: '$ScanId' current status: $ScanStatus ($ScanStatusId)"
     } until ($ScanStatusId -in 4..6 -or $ScanStatusId -in 14..16)
