@@ -1,4 +1,4 @@
-# Default Continuous Inspection workflow
+# Default Continuous Inspection workflow including Application Security Testing with Fortify
 
 name: Continuous Inspection
 
@@ -41,8 +41,6 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-
     # Checkout the code
     steps:
     - name: Checkout
@@ -66,7 +64,7 @@ jobs:
 
   ScanCentral-SAST-Scan:
     # Use the appropriate runner for building your source code.
-    # TODO: Use a Windows runner for .NET projects that use msbuild. Additional changes to RUN commands will be required to switch to Windows syntax.
+    # Use a Windows runner for .NET projects that use msbuild. Additional changes to RUN commands will be required to switch to Windows syntax.
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.useScanCentral == 'true' }} 
 
@@ -80,10 +78,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
             java-version: 1.8
-
-      # Build / Test with Maven (debug)
-      #- name: Build with Maven
-      #  run: mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P fortify,jar -B clean verify package --file pom.xml
 
       # Get the branch name or pr number
       - name: Extract branch name
@@ -103,7 +97,7 @@ jobs:
         id: extract_branch
 
       # Verify if SSC release with name matching branch name exists and if not create it
-      # TODO: Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
+      # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
       #   Credentials should be obtained from your SSC instance (it is recommended to use a CI_TOKEN).
       #   SSC_PARENT_VERSION is the application version corresponding to the parent branch of any newly created branch, this is typically "master" or "main"
       # The PowerShellForSSC module is used to carry out the automation (see: https://github.com/fortify-community-plugins/PowerShellForSSC)
@@ -178,6 +172,8 @@ jobs:
           SSC_VERSION: ${{ steps.extract_branch.outputs.branch }}
 
       # Poll ScanCentral status
+      # An example of how to use ScanCentral token received from previous step to poll for results
+      # You can just use the "-block" option to wait for results but we will use the token later as well
       - name: Check SAST Scan Status
         id: check_scancentral_scan
         shell: pwsh
@@ -203,6 +199,7 @@ jobs:
           SSC_APPLICATION: "IWA"
 
       # Automatically Approve any SSC artifacts
+      # An example of how to automatically approve the upload of results to SSC
       - name: Approve SSC artifacts
         id: approve_ssc_artifacts
         shell: pwsh
@@ -295,7 +292,7 @@ jobs:
 
   FoD-SAST-Scan:
     # Use the appropriate runner for building your source code.
-    # TODO: Use a Windows runner for .NET projects that use msbuild. Additional changes to RUN commands will be required to switch to Windows syntax.
+    # Use a Windows runner for .NET projects that use msbuild. Additional changes to RUN commands will be required to switch to Windows syntax.
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.useFortifyOnDemand == 'true' }} 
 
@@ -332,7 +329,7 @@ jobs:
         id: extract_branch
 
       # Verify if FoD release with name matching branch name exists and if not create it
-      # TODO: Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
+      # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
       #   Credentials should be obtained from your FoD tenant (only API Key can is used here but could be changed to Personal Access Token).
       #   FOD_PARENT_RELEASE_ID is the FoD release id corresponding to the parent branch of any newly created branch, this is typically "master" or "main"
       # The PowerShellForFOD module is used to carry out the automation (see: https://github.com/fortify-community-plugins/PowerShellForFOD)
@@ -372,7 +369,7 @@ jobs:
           GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
 
       # Prepare source+dependencies for upload. The default example is for a Maven project that uses pom.xml.
-      # TODO: Update PACKAGE_OPTS based on the ScanCentral Client documentation for your project's included tech stack(s). Helpful hints:
+      # Update PACKAGE_OPTS based on the ScanCentral Client documentation for your project's included tech stack(s). Helpful hints:
       #   ScanCentral Client will download dependencies for maven (-bt mvn) and gradle (-bt gradle).
       #   ScanCentral Client can download dependencies for msbuild projects (-bt msbuild); however, you must convert the workflow to use a Windows runner.
       #   ScanCentral has additional options that should be set for PHP and Python projects
@@ -383,10 +380,10 @@ jobs:
       - name: Package Code + Dependencies
         run: scancentral package $PACKAGE_OPTS -o package.zip
         env:
-            PACKAGE_OPTS: "-bt none"
+            PACKAGE_OPTS: "-bt mvn"
 
       # Start Fortify on Demand SAST scan and wait until results complete. For more information on FoDUploader commands, see https://github.com/fod-dev/fod-uploader-java
-      # TODO: Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
+      # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
       #   Credentials and release ID should be obtained from your FoD tenant (either Personal Access Token or API Key can be used).
       #   Automated Audit preference should be configured for the release's Static Scan Settings in the Fortify on Demand portal.
       - name: Download Fortify on Demand Universal CI Tool
