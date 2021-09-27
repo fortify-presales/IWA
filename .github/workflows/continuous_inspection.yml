@@ -308,16 +308,16 @@ jobs:
             java-version: 1.8
 
       # Build / Test with Maven (debug)
-      # "mvn -P fortify package" produces an fod directory with source code and dependencies
+      # "mvn -P fortify package" produces an fod.zip file with source code and dependencies
       - name: Build with Maven
         run: mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P fortify,jar -B clean verify package --file pom.xml
 
       # Package up the source code and pom so that it can be uploaded to FOD
-      - name: Zip up fod directory
-        uses: papeloto/action-zip@v1
-        with:
-          files: fod/ pom.xml
-          dest: fod.zip
+      #- name: Zip up source code
+      #  uses: papeloto/action-zip@v1
+      #  with:
+      #    files: fod/ pom.xml
+      #    dest: fod.zip
 
       # Get the branch name or pr number
       - name: Extract branch name
@@ -386,7 +386,7 @@ jobs:
       - name: Download Fortify ScanCentral Client
         uses: fortify/gha-setup-scancentral-client@v1
       - name: Package Code + Dependencies
-        run: scancentral package $PACKAGE_OPTS -o package.zip
+        run: scancentral package $PACKAGE_OPTS -o fod.zip
         env:
             PACKAGE_OPTS: "-bt mvn"
 
@@ -397,7 +397,7 @@ jobs:
       - name: Download Fortify on Demand Universal CI Tool
         uses: fortify/gha-setup-fod-uploader@v1
       - name: Perform SAST Scan
-        run: java -jar $FOD_UPLOAD_JAR -z $FOD_UPLOAD_FILE -aurl $FOD_API_URL -purl $FOD_URL -rid "$FOD_RELEASE_ID" -tc "$FOD_TENANT" -uc "$FOD_USER" "$FOD_PAT" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
+        run: java -jar $FOD_UPLOAD_JAR -z fod.zip -aurl $FOD_API_URL -purl $FOD_URL -rid "$FOD_RELEASE_ID" -tc "$FOD_TENANT" -uc "$FOD_USER" "$FOD_PAT" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
         env:
             FOD_TENANT: ${{ secrets.FOD_TENANT }}
             FOD_USER: ${{ secrets.FOD_USER }}
@@ -407,7 +407,6 @@ jobs:
             FOD_API_URL: "https://api.emea.fortify.com/"
             FOD_UPLOADER_OPTS: "-ep 2 -pp 2 -I 1 -apf"
             FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
-            FOD_UPLOAD_FILE: "fod.zip" # fod.zip or package.zip
 
       # Pull SAST issues from Fortify on Demand and generate GitHub-optimized SARIF output
       - name: Export Results
