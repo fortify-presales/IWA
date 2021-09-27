@@ -390,6 +390,14 @@ jobs:
         env:
             PACKAGE_OPTS: "-bt mvn"
 
+      # TEST - Save fod.zip
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          name: fod.zip
+          path: fod.zip
+          retention-days: 5
+
       # Start Fortify on Demand SAST scan and wait until results complete. For more information on FoDUploader commands, see https://github.com/fod-dev/fod-uploader-java
       # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
       #   Credentials and release ID should be obtained from your FoD tenant (either Personal Access Token or API Key can be used).
