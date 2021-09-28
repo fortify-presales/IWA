@@ -294,7 +294,8 @@ jobs:
     # Use the appropriate runner for building your source code.
     # Use a Windows runner for .NET projects that use msbuild. Additional changes to RUN commands will be required to switch to Windows syntax.
     runs-on: ubuntu-latest
-    if: ${{ (github.event_name == 'push') || (github.event.inputs.useFortifyOnDemand == 'true') }}
+    # FoD-SAST-Scan will be default job unless "workflow_dispatch" then you can select FoD or ScanCentral
+    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.useFortifyOnDemand == 'true') }}
 
     steps:
       # Check out source code
