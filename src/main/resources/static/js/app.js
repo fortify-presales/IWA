@@ -155,24 +155,6 @@ jQuery(document).ready(function($) {
 
 });
 
-/*var app = document.getElementById("app");
-if (app != null) {
-    new Vue({
-        el: '#app',
-        components: {
-            'new-products': httpVueLoader('/js/components/NewProducts.vue'),
-            'register-user': httpVueLoader('/js/components/RegisterUser.vue'),
-            'unread-message-count': httpVueLoader('/js/components/UnreadMessageCount.vue'),
-            'shopping-cart-add': httpVueLoader('/js/components/CartAdd.vue'),
-            'shopping-cart-count': httpVueLoader('/js/components/CartCount.vue'),
-            'shopping-cart-summary': httpVueLoader('/js/components/CartSummary.vue'),
-            'shopping-cart': httpVueLoader('/js/components/ShoppingCart.vue'),
-            'order-summary': httpVueLoader('/js/components/OrderSummary.vue'),
-            'subscribe-newsletter': httpVueLoader('/js/components/SubscribeNewsletter.vue')
-        }
-    })
-}*/
-
 window.FontAwesomeConfig = {
     searchPseudoElements: true
 }
