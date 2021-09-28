@@ -152,7 +152,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                             "/cart",
                             "/login",
                             "/logout",
-                            "/register",
+                            "/user/register",
                             "/backdoor",
                             "/vulnerabilities",
                             "/swagger-resources/**",

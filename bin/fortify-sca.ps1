@@ -6,11 +6,11 @@
 Import-Module $PSScriptRoot\modules\FortifyFunctions.psm1
 
 # Import local environment specific settings
-$EnvSettings = $(ConvertFrom-StringData -StringData (Get-Content ".\.env" | Out-String))
+$EnvSettings = $(ConvertFrom-StringData -StringData (Get-Content ".\.env" | Where-Object {-not ($_.StartsWith('#'))} | Out-String))
 $AppName = $EnvSettings['SSC_APP_NAME']
 $AppVersion = $EnvSettings['SSC_APP_VER_NAME']
 $SSCUrl = $EnvSettings['SSC_URL']
-$SSCAuthToken = $EnvSettings['SSC_AUTH_TOKEN']
+$SSCAuthToken = $EnvSettings['SSC_AUTH_TOKEN'] # CIToken
 $ScanSwitches = "-Dcom.fortify.sca.Phase0HigherOrder.Languages=javascript,typescript -Dcom.fortify.sca.EnableDOMModeling=true -Dcom.fortify.sca.follow.imports=true -Dcom.fortify.sca.exclude.unimported.node.modules=true"
 
 # Test we have Fortify installed successfully

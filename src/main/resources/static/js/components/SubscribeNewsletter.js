@@ -1,86 +1,44 @@
-module.exports = {
-    name: 'subscribe-newsletter',
-    props: {},
-    data: function () {
-        return {
-            formError: false,
-            userEmail: null,
-            feedbackMessage: null,
-            serverError: false
-        };
-    },
-    async created() {
-    },
-    methods: {
-        async registerUser(e) {
+$.fn.SubscribeNewsletter = function (options) {
+    return this.each(function (index, el) {
 
-            e.preventDefault();
-            e.stopPropagation();
+        var settings = $.extend({
+            color: "#556b2f",
+            backgroundColor: "white"
+        });
 
-            if (!this.userEmail) {
-                this.feedbackMessage = "Please enter your email address to subscribe.";
-                this.formError = true;
-            } else if (!this.validEmail(this.userEmail)) {
-                this.feedbackMessage = "Please provide a valid email address to subscribe";
-                this.formError = true;
-            } else {
-                this.formError = false;
-            }
-
-            if (!this.formError) {
-                let subscribeRequest = {
-                    'firstName': '',
-                    'lastName': '',
-                    'email': this.userEmail,
-                }
-                console.log("Subscribing user: " + JSON.stringify(subscribeRequest))
-                let axiosConfig = {
-                    headers: {
-                        'Content-Type': 'application/json;charset=UTF-8',
-                        "Access-Control-Allow-Origin": "*",
+        var $this = $(this), $email = $this.find('#email-subscribe-input');
+        $this.find('#email-subscribe-button').on('click', function () {
+            if (_validateEmail($email.val())) {
+                _saveEmail($email.val()).then(response => {
+                    if (response.success) {
+                        _showConfirmationText("Thankyou your email address '" + $email.val() + "' has been registered.", "text-success");
+                    } else {
+                        _showConfirmationText("There was an error registering your email address.", "text-danger");
                     }
-                };
-                axios.post("/api/v3/site/subscribeUser", JSON.stringify(subscribeRequest), axiosConfig)
-                    .then((response) => {
-                        this.feedbackMessage = "Thank you - you are now subscribed to our newsletter."
-                    })
-                    .catch(error => {
-                        this.serverError = true;
-                        if (error.response) {
-                            console.log(error.response.data);
-                            this.feedbackMessage = "Error registering: ";
-                            if (error.response.data.body) {
-                                this.errors = error.response.data.body.errors
-                                this.feedbackMessage += error.response.data.body.errors.toString();
-                            }
-                            //console.log(error.response.status);
-                            //console.log(error.response.headers);
-                        } else if (error.request) {
-                            console.log(error.request);
-                        } else {
-                            console.log('Error', error.message)
-                        }
-                        //console.log(error.config);
-                    });
+                }).catch(error => {
+                    _showConfirmationText("There was an error registering your email address.", "text-danger");
+                });
+            } else {
+                _showConfirmationText("Please supply a valid email address.", "text-danger");
             }
+        });
+    });
 
-            this.showModal();
+    function _showConfirmationText(text, cssClass) {
+        var confirmationH5 = document.createElement("h5"); confirmationH5.classList.add(cssClass); confirmationH5.innerHTML = text;
+        var confirmationDiv = document.createElement("div"); confirmationDiv.classList.add("m-4", "text-center");
+        confirmationDiv.appendChild(confirmationH5);
+        $('#confirmation-modal').find('#confirmation-modal-body').empty().append(confirmationDiv);
+        $('#confirmation-modal').modal('toggle');
+        return confirmationDiv;
+    }
 
-        },
-        showModal() {
-            this.$refs['confirmation-modal'].show();
-        },
-        hideModal() {
-            this.$refs['confirmation-modal'].hide()
-        },
-        validEmail: function (email) {
-            const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            return re.test(email);
-        },
-    },
-    computed: {},
-    watch: {},
-    mounted() {
+    async function _saveEmail(email) {
+        return await $.post("/api/v3/site/subscribe-user", { firstName: "", lastName: "", email: email }).then();
+    }
 
-    },
+    function _validateEmail(email) {
+        var emailExpression = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        return emailExpression.test(email);
+    }
 };

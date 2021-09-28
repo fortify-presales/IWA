@@ -5,7 +5,7 @@
     [CmdletBinding()]
 param (
     [Parameter(Mandatory)]
-    [string]$ZipFile = '.\fod.zip',
+    [string]$ZipFile = '.\foD.zip',
 
     [Parameter(Mandatory)]
     [string]$ApplicationName,
@@ -14,19 +14,19 @@ param (
     [string]$ReleaseName,
 
     [Parameter(Mandatory)]
-    [string]$FODApiUri,
+    [string]$FoDApiUri,
 
     [Parameter(Mandatory)]
-    [string]$FODApiKey,
+    [string]$FoDApiKey,
 
     [Parameter(Mandatory)]
-    [string]$FODApiSecret,
+    [string]$FoDApiSecret,
 
     [Parameter()]
-    [string]$FODApiGrantType = 'ClientCredentials',
+    [string]$FoDApiGrantType = 'ClientCredentials',
 
     [Parameter()]
-    [string]$FODApiScope = 'api-tenant',
+    [string]$FoDApiScope = 'api-tenant',
 
     [Parameter()]
     [string]$Notes = 'Uploaded from PowerShellForFOD',
@@ -42,22 +42,22 @@ begin {
         Write-Error "File $ZipFile does not exist!" -ErrorAction Stop
     }
 
-    # Make sure PowerShellForFOD Module is installed
-    Write-Host "Installing PowerShellForFOD module ..."
-    Install-Module PowerShellForFOD -Scope CurrentUser -Force -Repository PSGallery
+    # Make sure PowerShellForFoD Module is installed
+    Write-Host "Installing PowerShellForFoD module ..."
+    Install-Module PowerShellForFoD -Scope CurrentUser -Force -Repository PSGallery
 }
 process {
 
     # Configure API
-    Write-Verbose "Configuring FOD API ..."
-    $PWord = ConvertTo-SecureString -String $FODApiSecret -AsPlainText -Force
-    $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $FODApiKey, $PWord
-    Set-FODConfig -ApiUri $FODApiUri -GrantType $FODApiGrantType -Scope $FODApiScope
-    Get-FODToken -Credential $Credential
+    Write-Verbose "Configuring FoD API ..."
+    $PWord = ConvertTo-SecureString -String $FoDApiSecret -AsPlainText -Force
+    $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $FoDApiKey, $PWord
+    Set-FoDConfig -ApiUri $FoDApiUri -GrantType $FoDApiGrantType -Scope $FoDApiScope
+    Get-FoDToken -Credential $Credential
 
     try
     {
-        $ReleaseId = Get-FODReleaseId -ApplicationName $ApplicationName -ReleaseName $ReleaseName
+        $ReleaseId = Get-FoDReleaseId -ApplicationName $ApplicationName -ReleaseName $ReleaseName
         if ($ReleaseId) {
             Write-Host "Found release id: '$ReleaseId' in application '$ApplicationName'"
         } else{
@@ -70,7 +70,7 @@ process {
     # Start Scan
     $ZipFilePath = (Resolve-Path -Path $ZipFile).Path
     Write-Host "Uploading" $ZipFile "for scanning ..."
-    $StaticScan = Start-FODStaticScan -ReleaseId $ReleaseId -ZipFile $ZipFilePath -EntitlementPreference SubscriptionOnly `
+    $StaticScan = Start-FoDStaticScan -ReleaseId $ReleaseId -ZipFile $ZipFilePath -EntitlementPreference SubscriptionOnly `
         -RemediationScanPreference NonRemediationScanOnly -InProgressScanPreference DoNotStartScan `
         -Notes $Notes -Raw
     $ScanId = $StaticScan.scanId
@@ -79,7 +79,7 @@ process {
     Write-Host "Polling status of scan ..."
     do {
         Start-Sleep -s $PollingInterval # sleep for X seconds
-        $ScanSummary = Get-FODScanSummary -Id $ScanId
+        $ScanSummary = Get-FoDScanSummary -Id $ScanId
         $ScanStatus = $ScanSummary.analysisStatusType
         Write-Host "Scan id: '$ScanId' status: $ScanStatus"
     } until (

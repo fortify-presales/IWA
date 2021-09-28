@@ -62,12 +62,35 @@
                                             </tr>
                                             <tr>
                                                 <td>Items:</td>
-                                                <td >
-                                                    <order-summary th:attr="cart=${orderForm.cart},currency=${currencySymbol}"></order-summary>
+                                                <td>
+
+                                                    <div id="order-summary">
+                                                        <div id="empty-order" class="d-none">
+                                                           <div class="row">
+                                                            <div class="offset-2 text-center pb-5">
+                                                              <h5>Your order was empty!</h5>
+                                                            </div>
+                                                           </div>
+                                                        </div>
+                                                        <div id="item-order" class="d-none">
+                                                            <table id="item-table" class="table table-sm site-block-order-table">
+                                                                <thead class="thead-light">
+                                                                <tr>
+                                                                    <th>Product</th>
+                                                                    <th>Total</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td><strong>Total Amount:</strong></td>
+                                                <td><strong>Total:</strong></td>
                                                 <td><strong><span th:text="${currencySymbol + #strings.replace(#numbers.formatDecimal(orderForm.amount, 0, 2), '.00', '')}"> Amount </span></strong></td>
                                             </tr>
                                         </tbody>
@@ -90,5 +113,16 @@
         </div>
 
     </div>
+
+    <th:block layout:fragment="script">
+        <script type="text/javascript" th:src="@{/js/components/OrderSummary.js}"></script>
+        <script type="text/javascript" th:inline="javascript">
+            (function ($) {
+                $(document).ready(function () {
+                    $('#order-summary').OrderSummary({ cart: /*[[${orderForm.cart}]]*/ '', currencySymbol: /*[[${currencySymbol}]]*/ '&#164;' });
+                });
+            })(jQuery);
+        </script>
+    </th:block>
 </body>
 </html>

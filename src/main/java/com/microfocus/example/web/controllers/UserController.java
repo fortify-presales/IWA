@@ -23,14 +23,13 @@ import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.Order;
 import com.microfocus.example.entity.User;
+import com.microfocus.example.exception.EmailAddressTakenException;
 import com.microfocus.example.exception.InvalidPasswordException;
 import com.microfocus.example.exception.UserNotFoundException;
+import com.microfocus.example.exception.UsernameTakenException;
 import com.microfocus.example.service.UserService;
 import com.microfocus.example.utils.WebUtils;
-import com.microfocus.example.web.form.MessageForm;
-import com.microfocus.example.web.form.OrderForm;
-import com.microfocus.example.web.form.PasswordForm;
-import com.microfocus.example.web.form.UserForm;
+import com.microfocus.example.web.form.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -331,6 +330,38 @@ public class UserController {
         model.addAttribute("message", "Successfully deleted message!");
         model.addAttribute("alertClass", "alert-success");
         return "redirect:/user/messages/";
+    }
+
+    @GetMapping("/register")
+    public String registerUser(Model model, Principal principal) {
+        RegisterUserForm registerUserForm = new RegisterUserForm();
+        model.addAttribute("registerUserForm", registerUserForm);
+        this.setModelDefaults(model, principal, "User", "register");
+        return "user/register";
+    }
+
+    @PostMapping("/register")
+    public String registerUser(@Valid @ModelAttribute("registerUserForm") RegisterUserForm registerUserForm,
+                               BindingResult bindingResult, Model model,
+                               RedirectAttributes redirectAttributes,
+                               Principal principal) {
+        if (bindingResult.hasErrors()) {
+            return "user/register";
+        } else {
+           try {
+                User utmp = userService.registerUser(registerUserForm);
+                return "redirect:/login?registerSuccess";
+            } catch (UsernameTakenException ex) {
+                log.error("UsernameTakenException registering user: " + registerUserForm.getUsername());
+                FieldError usernameError = new FieldError("registerUserForm", "username", ex.getMessage());
+                bindingResult.addError(usernameError);
+            } catch (EmailAddressTakenException ex) {
+               log.error("EmailAddressTakenException registering user: " + registerUserForm.getEmail());
+               FieldError emailError = new FieldError("registerUserForm", "email", ex.getMessage());
+               bindingResult.addError(emailError);
+           }
+        }
+        return "user/register";
     }
 
     private Model setModelDefaults(Model model, Principal principal, String controllerName, String actionName) {

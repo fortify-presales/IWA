@@ -23,9 +23,7 @@ import com.microfocus.example.entity.Authority;
 import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.Order;
 import com.microfocus.example.entity.User;
-import com.microfocus.example.exception.InvalidPasswordException;
-import com.microfocus.example.exception.MessageNotFoundException;
-import com.microfocus.example.exception.UserNotFoundException;
+import com.microfocus.example.exception.*;
 import com.microfocus.example.payload.request.MessageRequest;
 import com.microfocus.example.payload.request.RegisterUserRequest;
 import com.microfocus.example.payload.request.SubscribeUserRequest;
@@ -52,7 +50,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * User Service to hide business logs / database persistance
+ * User Service to hide business logs / database persistence
  * @author Kevin A. Lee
  */
 @Service
@@ -107,7 +105,36 @@ public class UserService {
         return userRepository.existsById(id);
     }
 
-    public RegisterUserResponse registerUser(RegisterUserRequest newUser) {
+    public User registerUser(RegisterUserForm newUser) throws UsernameTakenException, EmailAddressTakenException {
+        if (findUserByUsername(newUser.getUsername()).isPresent()) {
+            throw new UsernameTakenException(newUser.getUsername());
+        }
+        if (findUserByEmail(newUser.getEmail()).isPresent()) {
+            throw new EmailAddressTakenException(newUser.getEmail());
+        }
+        Set<Authority> authorities = new HashSet<Authority>();
+        authorities.add(roleRepository.findByName("ROLE_USER").get());
+        User utmp = new User();
+        utmp.setUsername(newUser.getUsername());
+        utmp.setFirstName(newUser.getFirstName());
+        utmp.setLastName(newUser.getLastName());
+        utmp.setPassword(EncryptedPasswordUtils.encryptPassword(newUser.getPassword()));
+        utmp.setEmail(newUser.getEmail());
+        utmp.setPhone(newUser.getPhone());
+        utmp.setEnabled(true);
+        utmp.setDateCreated(new Date());
+        utmp.setAuthorities(authorities);
+        userRepository.saveAndFlush(utmp);
+        return utmp;
+    }
+
+    public RegisterUserResponse registerUser(RegisterUserRequest newUser) throws UsernameTakenException, EmailAddressTakenException {
+        if (findUserByUsername(newUser.getUsername()).isPresent()) {
+            throw new UsernameTakenException(newUser.getUsername());
+        }
+        if (findUserByEmail(newUser.getEmail()).isPresent()) {
+            throw new EmailAddressTakenException(newUser.getEmail());
+        }
         Set<Authority> authorities = new HashSet<Authority>();
         authorities.add(roleRepository.findByName("ROLE_USER").get());
         User utmp = new User();

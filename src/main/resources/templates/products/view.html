@@ -64,9 +64,47 @@
                             <span th:unless="${product.inStock}" th:text="|In stock in ${product.timeToStock} days|" class="alert alert-light text-dark"> </span>
                         </h4>
 
-                        <shopping-cart-add th:attr="pid=${product.id},instock=${product.inStock}"></shopping-cart-add>
+                        <div class="cart-add">
+                            <div class="mb-5">
+                                <div class="input-group mb-3" style="max-width: 180px;">
+                                    <div class="input-group-prepend">
+                                        <button id="quantity-minus" class="btn btn-outline-primary js-btn-minus" type="button">&minus;</button>
+                                    </div>
+                                    <input class="form-control text-center" value="1" id="quantity-value" readonly>
+                                    <div class="input-group-append">
+                                        <button id="quantity-plus" class="btn btn-outline-primary js-btn-plus" type="button">&plus;</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <p>
+                                <a th:if="${product.inStock}" id="add-to-cart" href="#" class="buy-now btn btn-sm height-auto px-4 py-3 btn-primary">Add To Cart</a>
+                                <a th:unless="${product.inStock}" id="add-to-cart" href="#" class="disabled buy-now btn btn-sm height-auto px-4 py-3 btn-primary">Add To Cart</a>
+                            </p>
+                        </div>
 
-                </div>
+                        <div class="confirmation-modal">
+                            <div id="checkout-now-modal" role="dialog" aria-hidden="true" class="modal fade" style="display: none;">
+                                <div class="modal-dialog modal-md">
+                                    <div tabindex="-1" role="document" aria-labelledby="checkout-now-header" aria-describedby="checkout-now-modal-body" class="modal-content">
+                                        <header id="checkout-now-modal-header" class="modal-header">
+                                            <h5 class="modal-title">Checkout Now</h5>
+                                            <button type="button" aria-label="Close" class="close" data-dismiss="modal">×</button>
+                                        </header>
+                                        <div id="checkout-now-modal-body" class="modal-body">
+                                            <div class="m-4 text-center">
+                                                <h4></h4>
+                                            </div>
+                                        </div>
+                                        <footer id="checkout-now-modal-footer" class="modal-footer">
+                                            <button id="checkout-now" type="button" class="btn btn-primary" data-dismiss="modal">Buy now</button>
+                                            <button id="continue-shopping" type="button" class="btn btn-secondary" data-dismiss="modal">Continue shopping</button>
+                                        </footer>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
 
                 </div>
 
@@ -77,5 +115,14 @@
         <div th:replace="fragments/secondary-bg.html :: secondaryBackground ('/index.html')"></div>
 
     </div>
+
+    <th:block layout:fragment="script">
+        <script type="text/javascript" th:src="@{/js/components/CartAdd.js}"></script>
+        <script type="text/javascript" th:inline="javascript">
+            (function ($) {
+                $('.cart-add').CartAdd({ pid: /*[[${product.id}]]*/ 'unknown' });
+            })(jQuery);
+        </script>
+    </th:block>
 </body>
 </html>

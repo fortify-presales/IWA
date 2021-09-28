@@ -10,14 +10,14 @@
 *   [Running the Application](#running-the-application)
 *   [Application Security Testing Integrations](#application-security-testing-integrations)
     * [SAST using Fortify SCA command line](#static-analysis-using-fortify-sca-command-line)
-    * [SAST using Fortify SCA maven plugin](#static-analysis-using-fortify-sca-maven-plugin)
     * [SAST using Fortify ScanCentral SAST](#static-analysis-using-fortify-scancentral-sast)
     * [Open Source Susceptibility Analysis using Sonatype Nexus IQ](#open-source-susceptibility-analysis-using-sonatype-nexus-iq)
     * [SAST using Fortify on Demand](#static-analysis-using-fortify-on-demand)
     * [DAST using Fortify WebInspect](#dynamic-analysis-using-fortify-webinspect)
     * [DAST using Fortify ScanCentral DAST](#dynamic-analysis-using-fortify-scancentral-dast)
-    * [API Security Testing using Fortify WebInspect and Postman](#api-security-testing-using-fortify-webinspect-and-postman)
     * [DAST using Fortify on Demand](#dynamic-analysis-using-fortify-on-demand)
+    * [API Security Testing using Fortify WebInspect and Postman](#api-security-testing-using-fortify-webinspect-and-postman)
+    * [API Security Testing using ScanCentral DAST](#api-security-testing-using-scancentral-dast-and-postman)
 *   [Build and Pipeline Integrations](#build-and-pipeline-integrations)
     * [Jenkins Pipeline](#jenkins-pipeline)
     * [GitHub Actions](#github-actions)
@@ -29,16 +29,14 @@
 ## Overview
 
 _IWA (Insecure Web App) Pharmacy Direct_ is an example Java/Spring Web Application for use in **DevSecOps** scenarios and demonstrations.
-The source code includes some examples of insecure code - which can be found using static and dynamic application
-security testing tools such as [Fortify SCA](https://www.microfocus.com/en-us/products/static-code-analysis-sas),
-[Fortify On Demand](https://www.microfocus.com/en-us/products/application-security-testing)
-and [Fortify WebInspect](https://www.microfocus.com/en-us/products/webinspect-dynamic-analysis-dast).
+It includes some examples of bad and insecure code - which can be found using static and dynamic application
+security testing tools such as [Micro Focus Fortify](https://www.microfocus.com/en-us/cyberres/application-security).
 
-One of the main aims of this project is to illustrate how security can be embedded early and continuously in
-the development lifecycle - so a number of "integrations" to common build and pipeline tools are provided.
+One of the main aims of this project is to illustrate how security can be embedded early ("Shift-Left") and continuously ("CI/CD") in
+the development lifecycle. Therefore, a number of examples of "integrations" to common CI/CD pipeline tools are provided.
 
 The application is intended to provide the functionality of a typical "online pharmacy", including purchasing Products (medication)
-and requesting Services (prescriptions, health checks etc) - however it is mostly a work in progress!
+and requesting Services (prescriptions, health checks etc). It has a modern-ish HTML front end (with some JavaScript) and a Swagger based API.
 
 *Please note: the application should not be used in a production environment!*
 
@@ -46,9 +44,8 @@ and requesting Services (prescriptions, health checks etc) - however it is mostl
 
 ## Forking the Repository
 
-In order to execute the example scenarios described here you will need to "fork" a copy of this repository into
-your own GitHub account. The process of "forking" is described in detail in the [GitHub documentation](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) - you can
-start the process by clicking on the "Fork" button at the top right.
+In order to execute example scenarios for yourself it is recommended that you "fork" a copy of this repository into
+your own GitHub account. The process of "forking" is described in detail in the [GitHub documentation](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) - you can start the process by clicking on the "Fork" button at the top right.
 
 ## Building the Application
 
@@ -71,8 +68,7 @@ This will create a WAR file (called `iwa.war`) in the `target` directory.
 
 ## Running the Application
 
-There are a number of ways of running the application depending on the scenario(s) that
-you wish to execute.
+There are a number of ways of running the application depending on the scenario(s) that you wish to execute.
 
 ### Development (IDE/command line)
 
@@ -82,12 +78,15 @@ To run (and test) locally in development mode, execute the following from the co
 mvn spring-boot:run
 ```
 
-Then navigate to the URL: [http://localhost:8080](http://localhost:8080). 
+Then navigate to the URL: [http://localhost:8080](http://localhost:8080). You can carry out a number of
+actions unauthenticated, but if you want to login you can do so as one of the following users:
 
-The website allows you to login with the following default users:
+- **user1/password**
+- **user2/password**
+  
+There is also an administrative user:
 
-- Standard user: **user/password**
-- Administration user: **admin/password**
+- **admin/password**
 
 ### Release (Docker Image)
 
@@ -113,102 +112,173 @@ docker run -d -p 8080:8080 iwa
 ```
 
 There is also an example `docker-compose.yml` file that illustrates how to run the application with HTTPS/SSL using
-[nginx](https://www.nginx.com/) and [certbot](https://certbot.eff.org/) - please note this is for reference only as it uses a specific domain name.
+[nginx](https://www.nginx.com/) and [certbot](https://certbot.eff.org/) - please note this is for reference only as it 
+uses a "hard-coded" domain name.
 
 ## Application Security Testing Integrations
+
+### Creating an environment (.env) file
+
+Most of the following examples need environment and user specific credentials. These are loaded from a file called `.env`
+in the project root directory. This file is not created by default (and should never be stored in source control). An example
+with all of the possible settings for the following scenarios is illustrated below:
+
+```aidl
+APP_URL=http://localhost:8080
+SSC_URL=http://localhost:9090/ssc
+SSC_USERNAME=admin
+SSC_PASSWORD=admin
+SSC_AUTH_TOKEN=6b16aa46-35d7-4ea6-98c1-8b780851fb37
+SSC_APP_NAME=IWA
+SSC_APP_VER_NAME=master
+SCANCENTRAL_CTRL_URL=http://localhost:9090/scancentral-ctrl
+SCANCENTRAL_CTRL_TOKEN=96846342-1349-4e36-b94f-11ed96b9a1e3
+SCANCENTRAL_POOL_ID=00000000-0000-0000-0000-000000000002
+SCANCENTRAL_EMAIL=info@microfocus.com
+SCANCENTRAL_DAST_API=http://localhost:8088/api/
+NEXUS_IQ_URL=http://localhost:8090
+NEXUS_IQ_AUTH=gTvvcLQ3:NDZ6bIzhFTRIyT9UtPaQaSEc0HaDsQd3ELvXnkohBGmK
+NEXUS_IQ_APP_ID=IWA
+FOD_API_URL=https://api.emea.fortify.com
+FOD_API_KEY=89795c5f-798c-48d5-8c4a-de999692cdd4
+FOD_API_SECRET=XXXXX
+DisableSSLSecurity=true
+```
 
 ### SAST using Fortify SCA command line
 
 There is an example PowerShell script [fortify-sca.ps1](bin/fortify-sca.ps1) that you can use to execute static application security testing
-via [Fortify SCA](https://www.microfocus.com/en-us/products/static-code-analysis-sast/overview). This script runs a
-"sourceanalyzer" translation and scan on the project's source code. It creates a Fortify Project Results file called `target\iwa.fpr`
-which you can open using the Fortify `auditworkbench` tool. It also creates a PDF report called `iwa.pdf` and optionally
-uploads the results to [Fortify Software Security Center](https://www.microfocus.com/en-us/products/software-security-assurance-sdlc/overview).
+via [Fortify SCA](https://www.microfocus.com/en-us/products/static-code-analysis-sast/overview).
 
-### SAST using Fortify SCA Maven plugin
-
-To carry out a Fortify SCA scan with Maven you first need to have installed the Maven plugin. This plugin
-is found in the `_FORTIFY_SCA_HOME_\plugins\maven` directory. Once you have installed the
-plugin you can then execute the commands similar to the following:
-
-```
-mvn com.fortify.sca.plugins.maven:sca-maven-plugin:20.2.0:clean
-mvn package -DskipTests com.fortify.sca.plugins.maven:sca-maven-plugin:20.2.0:translate
-mvn com.fortify.sca.plugins.maven:sca-maven-plugin:20.2.0:scan -Dfortify.sca.Xmx=3G
+```aidl
+.\bin\fortify-sca.ps1
 ```
 
-This will product an FPR file in the `target\fortify` directory. You can optionally produce a
-PDF report using the `ReportGenerator` tool with the following command:
+This script runs a "sourceanalyzer" translation and scan on the project's source code. It creates a Fortify Project Results file called `IWA.fpr`
+which you can open using the Fortify `auditworkbench` tool:
 
+```aidl
+auditworkbench.cmd .\IWA.fpr
 ```
-ReportGenerator -Dcom.fortify.sca.ProjectRoot=target\fortify -user "Demo User" -format pdf -f target\fortify\iwa.pdf `
-    -source target\fortify\iwa.fpr
+
+It also creates a PDF report called `IWA.pdf` and optionally
+uploads the results to [Fortify Software Security Center](https://www.microfocus.com/en-us/products/software-security-assurance-sdlc/overview) (SSC).
+
+In order to upload to SSC you will need to have entries in the `.env` similar to the following:
+
+```aidl
+SSC_URL=http://localhost:9090/ssc
+SSC_AUTH_TOKEN=28145aad-c40d-426d-942b-f6d6aec9c56f
+SSC_APP_NAME=IWA
+SSC_APP_VER_NAME=master
 ```
+
+The `SSC_AUTH_TOKEN` entry should be set to the value of a 'CIToken' created in SSC _"Administration->Token Management"_.
 
 ### SAST using Fortify ScanCentral SAST
 
-The provided [Jenkinsfile](Jenkinsfile) includes an example for running a remote scan using Fortify ScanCentral SAST. There is also a PowerShell
-script [fortify-scancentral-sast.ps1](bin\fortify-scancentral-sast.ps1) for running a remote scan from the command
-line.
+There is a PowerShell script [fortify-scancentral-sast.ps1](bin\fortify-scancentral-sast.ps1) that you can use to package
+up the project and initiate a remote scan using Fortify ScanCentral SAST:
 
-### Open Source Susceptibility Analysis using Sonatype Nexus IQ
+```aidl
+.\bin\fortify-scancentral-sast.ps1
+```
 
-The provided [Jenkinsfile](Jenkinsfile) includes support for running open source susceptibility analysis using the integration between
-[Sonatype Nexus IQ](https://www.sonatype.com/nexus/lifecycle) and the [Fortify Source And Lib Scanner](https://marketplace.microfocus.com/fortify/content/fortify-sourceandlibscanner).
-There is also an example PowerShell script file [fortify-sourceandlibscanner.ps1](bin\fortify-sourceandlibscanner.ps1)
-for running a scan from the command line.
+In order to use ScanCentral SAST you will need to have entries in the `.env` similar to the following:
+
+```aidl
+SSC_URL=http://localhost:9090/ssc
+SSC_AUTH_TOKEN=6b16aa46-35d7-4ea6-98c1-8b780851fb37
+SSC_APP_NAME=IWA
+SSC_APP_VER_NAME=master
+SCANCENTRAL_CTRL_URL=http://localhost:9090/scancentral-ctrl
+SCANCENTRAL_CTRL_TOKEN=96846342-1349-4e36-b94f-11ed96b9a1e3
+SCANCENTRAL_POOL_ID=00000000-0000-0000-0000-000000000002
+SCANCENTRAL_EMAIL=test@test.com
+```
+
+The `SCANCENTRAL_CTRL_TOKEN` entry should be set to the value of a 'ScanCentralCtrlToken ' created in SSC _"Administration->Token Management"_.
+
+Once the scan has been initiated you can check its status from the SSC User Interface or using the command:
+
+```aidl
+ scancentral -url [your-controller-url] status -token [returned-token]
+```
+
+where `[returned-token]` is the value of the token displayed after the scan request has been submitted.
+
+### Open Source Software Composition Analysis using Sonatype Nexus
+
+There is a PowerShell script [fortify-sourceandlibscanner.ps1](bin\fortify-sourceandlibscanner.ps1) that you can use to carry out
+Open Source Software Composition Analysis (using [Sonatype Nexus](https://www.sonatype.com/products/open-source-security-dependency-management) 
+and upload the results to SSC:
+
+```aidl
+.\bin\fortify-sourceandlibscanner.ps1
+```
+
+In order to user Nexus IQ Server you will need to have entries in the `.env` similar to the following:
+
+```aidl
+SSC_URL=http://localhost:9090/ssc
+SSC_AUTH_TOKEN=6b16aa46-35d7-4ea6-98c1-8b780851fb37
+SSC_APP_NAME=IWA
+SSC_APP_VER_NAME=master
+NEXUS_IQ_URL=http://nexus-iq-server:8080
+NEXUS_IQ_AUTH=XXX:YYY
+NEXUS_IQ_APP_ID=IWA
+```
+
+where `NEXUS_IQ_AUTH` is an encoded User token created in the Nexus IQ Server UI, e.g. "User Code:Passcode". 
 
 ### SAST using Fortify on Demand
 
 To execute a [Fortify on Demand](https://www.microfocus.com/en-us/products/application-security-testing/overview) SAST scan
-you need to package and upload the source code to Fortify on Demand. To prepare the source code to be uploaded you can
-execute the following command:
+you need to package and upload the source code to Fortify on Demand. To package the code into a Zip file for uploading
+you can use the `scancentral` command utility as following:
 
+```aidl
+scancentral package -bt mvn -bf pom.xml --output fod.zip
 ```
-mvn "-Dmaven.compiler.debuglevel=lines,vars,source" "-DskipTests" -P fortify clean verify package
-```
 
-This will create a directory called `fod` which you can *Zip* up and upload to Fortify on Demand.
-
-There is also an example PowerShell script file [fortify-fod.ps1](bin/fortify-fod.ps1) that you can run to start a Fortify on Demand static scan.
-It can be invoked via the following from a PowerShell prompt:
+You can then upload this manually using the Fortify on Demand UI or you can use the PowerShell script file [fortify-fod.ps1](bin/fortify-fod.ps1) 
+provided to upload the file and start a Fortify on Demand static scan as follows:
 
 ```PowerShell
-# Create the fod.zip Zip file
-Compress-Archive -Path .\fod -DestinationPath .\fod.zip
-# Upload and start the static scan
 .\bin\fortify-fod.ps1 -ZipFile '.\fod.zip' -ApplicationName 'IWA' -ReleaseName 'master' -Notes 'PowerShell initiated scan' `
     -FodApiUri 'https://api.emea.fortify.com' -FodApiKey 'FOD_ACCESS_KEY' -FodApiSecret 'FOD_SECRET_KEY'
 ``` 
 
 where `FOD_ACCESS_KEY` and `FOD_SECRET_KEY` are the values of an API Key and Secret you have created in the Fortify on
-Demand portal.
+Demand portal. This script makes use of the [PowerShellForFOD](https://github.com/fortify-community-plugins/PowerShellForFOD) 
+PowerShell module.
 
 ### DAST using Fortify WebInspect
 
-To carry out a WebInspect scan you should first deploy the application to a Java Application server such as [Apache Tomcat](https://tomcat.apache.org/)
-or start it using the Docker approach described above. Then you can start a scan using the following:
+To carry out a WebInspect scan you should first "run" the application using one of the steps described above.
+Then you can start a scan using the following command line:
 
 ```
-"C:\Program Files\Fortify\Fortify WebInspect\WI.exe\WI.exe" -s ".\etc\IWA-UI-Dev-Settings.xml" -macro ".\etc\IWA-UI-Dev-Login.webmacro" -u "http://localhost:8080" -ep ".\target\wi-iwa.fpr" -ps 1008
+"C:\Program Files\Fortify\Fortify WebInspect\WI.exe" -s ".\etc\IWA-UI-Dev-Settings.xml" -macro ".\etc\IWA-UI-Dev-Login.webmacro" -u "http://localhost:8080" -ep ".\IWA-DAST.fpr" -ps 1008
 ```
 
 This will start a scan using the Default Settings and Login Macro files provided in the `etc` directory. It assumes
 the application is running on "localhost:8080". It will run a "Critical and High Priority" scan using the policy with id 1008. 
-Once completed you can open the WebInspect "Desktop Client" and navigate to the scan created for this execution.
-
-An FPR called `wi-iwa.fpr` will be available in the `target` directory. You can generate a
-PDF report from this file using `ReportGenerator` or upload it to Fortify SSC or Fortify on Demand.
+Once completed you can open the WebInspect "Desktop Client" and navigate to the scan created for this execution. An FPR file
+called `IWA-DAST.fpr` will also be available - you can open it with `auditworkbench` (or generate a
+PDF report from using `ReportGenerator`). You could also upload it to Fortify SSC or Fortify on Demand.
 
 There is an example PowerShell script file [fortify-webinspect.ps1](bin\fortify-webinspect.ps1) that you can run to 
-execute the above commands.
+execute the scan and upload the results to SSC:
+
+```aidl
+.\bin\fortify-webinspect.ps1
+```
 
 ### DAST using Fortify ScanCentral DAST
 
-The provided [Jenkinsfile](Jenkinsfile) includes support for running a remote scan using Fortify ScanCentral DAST through a Groovy
-script [fortify-scancentral-dast.groovy](bin\fortify-scancentral-dast.groovy). 
-
-There is also an example PowerShell script file [fortify-scancentral-dast.ps1](bin\fortify-scancentral-dast.ps1).
+To carry out a ScanCentral DAST scan you should first "run" the application using one of the steps described above.
+Then you can start a scan using the provided PowerShell script [fortify-scancentral-dast.ps1](bin\fortify-scancentral-dast.ps1).
 It can be invoked via the following from a PowerShell prompt:
 
 ```PowerShell
@@ -216,9 +286,14 @@ It can be invoked via the following from a PowerShell prompt:
     -CiCdToken 'CICD_TOKEN_ID'
 ``` 
 
-where `SCANCENTRAL_DAST_API` is the URL of the ScanCentral DAS API configured in Software Security Center and
+where `SCANCENTRAL_DAST_API` is the URL of the ScanCentral DAST API configured in SSC and
 `SSC_USERNAME` and `SSC_PASSWORD` are the login credentials of a Software Security Center user who is permitted to
-run scans. Finally, `CICD_TOKEN_ID` is the CICD identifier of a "Scan Settings" you have previously created.
+run scans. Finally, `CICD_TOKEN_ID` is the "CICD identifier" of the "Scan Settings" you have previously created from the UI.
+
+### DAST using Fortify on Demand
+
+You can invoke a Fortify on Demand dynamic scan using the [PowerShellForFOD](https://github.com/fortify-community-plugins/PowerShellForFOD) PowerShell module.
+For examples on how to achieve this see [here](https://github.com/fortify-community-plugins/PowerShellForFOD/blob/master/USAGE.md#starting-a-dynamic-scan).
 
 ### API Security Testing using Fortify WebInspect and Postman
 
@@ -226,23 +301,24 @@ The IWA application includes a fully documented [Swagger](https://swagger.io/sol
 API which you can browse to at 
 [http://localhost:8080/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config](http://localhost:8080/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config).
 You can carry out security testing of this API using Fortify WebInspect or ScanCentral DAST. A [Postman](https://www.postman.com/downloads/) 
-collection is provided to help in this. You can exercise the collection using [newman](https://github.com/postmanlabs/newman) 
-from the command line as follows:
+collection is provided to help in this. You can exercise the collection using [newman](https://github.com/postmanlabs/newman). For example from a PowerShell
+command prompt on Windows:
 
 ```PowerShell
-newman run .\etc\IWA-API.postman_collection.json --environment .\etc\IWA-API-Dev.postman_environment.json
+newman run .\etc\IWA-API-Dev-Auth.postman_collection.json --environment .\etc\IWA-API-Dev.postman_environment.json --export-environment .\etc\IWA-API-Dev.postman_environment.json
+newman run .\etc\IWA-API-Dev-Workflow.postman_collection.json --environment .\etc\IWA-API-Dev.postman_environment.json
 ```
 
-You can also use this collection with WebInspect as follows: 
+In order to use this collection with WebInspect you will need to make sure newman is on the path and then you can run:
 
 ```PowerShell
-"C:\Program Files\Fortify\Fortify WebInspect\WI.exe\WI.exe" -pwc ".\etc\IWA-API-Dev.postman_collection.json" -ps 1008
+& "C:\Program Files\Fortify\Fortify WebInspect\WI.exe" -pwc .\etc\IWA-API-Dev-Workflow.postman_collection.json -pec .\etc\IWA-API-Dev.postman_environment.json -ep ".\IWA-API.fpr"
 ```
 
-### DAST using Fortify on Demand
+### API Security Testing using ScanCentral DAST and Postman
 
-You can invoke a Fortify on Demand dynamic scan using the [PowerShellForFOD](https://github.com/fortify-community-plugins/PowerShellForFOD) PowerShell module that i have written.
-For examples on how to achieve this see [here](https://github.com/fortify-community-plugins/PowerShellForFOD/blob/master/USAGE.md#starting-a-dynamic-scan).
+You can also import the Postman collections into ScanCentral DAST and run the resultant setup using the [fortify-scancentral-dast.ps1](bin\fortify-scancentral-dast.ps1)
+script and the relevant CICD Identifier.
 
 ## Build and Pipeline Integrations
 
@@ -272,12 +348,9 @@ you will need to do for a successful invocation.
 
 This repository includes a [GitHub Actions](https://github.com/features/actions) example
 [workflow](.github/workflows/continuous_inspection.yml) that
-automates the build of the application and uploads the source code to
-[Fortify on Demand](https://www.microfocus.com/en-us/products/application-security-testing) for SAST.
-
-The example workflow runs on every push to the *master* branch and on every "pull request" that is created.
-
-It makes use of the [Fortify GitHub Actions](https://github.com/marketplace/actions/fortify-on-demand-scan).
+automates the build of the application and scans the code using either
+[Fortify on Demand](https://www.microfocus.com/en-us/products/application-security-testing) or ScanCentral.
+By default the scans do not run on every code push and will need to be invoked manually from the GitHub UI.
 
 There are also additional user-initiated workflows than can be run ad-hoc for executing individual static or
 dynamic scans.
