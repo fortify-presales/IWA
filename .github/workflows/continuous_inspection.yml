@@ -31,10 +31,6 @@ on:
         description: 'Carry out Application Security testing using Fortify on Demand'
         required: false
         default: 'true'
-      skipFoDScan:
-        description: 'Skip FoD upload and scan - for testing only'
-        required: false
-        default: 'false'
       sscVulnFilterSetId:
         description: 'ID of the SSC filter set from which to pull SAST issues'
         required: false
@@ -390,27 +386,27 @@ jobs:
       - name: Download Fortify ScanCentral Client
         uses: fortify/gha-setup-scancentral-client@v1
       - name: Package Code + Dependencies
-        run: scancentral package $PACKAGE_OPTS -o fod.zip
+        run: scancentral package $PACKAGE_OPTS -o $PACKAGE_FILE
         env:
+            PACKAGE_FILE: "package.zip"
             PACKAGE_OPTS: "-bt mvn"
 
       # TEST - Save fod.zip
-      - name: 'Upload Artifact'
-        uses: actions/upload-artifact@v2
-        with:
-          name: fod.zip
-          path: fod.zip
-          retention-days: 5
+      #- name: 'Upload Artifact'
+      #  uses: actions/upload-artifact@v2
+      #  with:
+      #    name: fod.zip
+      #    path: fod.zip
+      #    retention-days: 5
 
       # Start Fortify on Demand SAST scan and wait until results complete. For more information on FoDUploader commands, see https://github.com/fod-dev/fod-uploader-java
       # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
       #   Credentials and release ID should be obtained from your FoD tenant (either Personal Access Token or API Key can be used).
       #   Automated Audit preference should be configured for the release's Static Scan Settings in the Fortify on Demand portal.
       - name: Download Fortify on Demand Universal CI Tool
-        if: ${{ github.event.inputs.skipFoDScan == 'false' }}
         uses: fortify/gha-setup-fod-uploader@v1
       - name: Perform SAST Scan
-        run: java -jar $FOD_UPLOAD_JAR -z fod.zip -aurl $FOD_API_URL -purl $FOD_URL -rid "$FOD_RELEASE_ID" -tc "$FOD_TENANT" -uc "$FOD_USER" "$FOD_PAT" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
+        run: java -jar $FOD_UPLOAD_JAR -z $PACKAGE_FILE -aurl $FOD_API_URL -purl $FOD_URL -rid "$FOD_RELEASE_ID" -tc "$FOD_TENANT" -uc "$FOD_USER" "$FOD_PAT" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
         env:
             FOD_TENANT: ${{ secrets.FOD_TENANT }}
             FOD_USER: ${{ secrets.FOD_USER }}
@@ -420,6 +416,7 @@ jobs:
             FOD_API_URL: "https://api.emea.fortify.com/"
             FOD_UPLOADER_OPTS: "-ep 2 -pp 2 -I 1 -apf"
             FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
+            PACKAGE_FILE: "package.zip"
 
       # Pull SAST issues from Fortify on Demand and generate GitHub-optimized SARIF output
       - name: Export Results
