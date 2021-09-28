@@ -294,7 +294,7 @@ jobs:
     # Use the appropriate runner for building your source code.
     # Use a Windows runner for .NET projects that use msbuild. Additional changes to RUN commands will be required to switch to Windows syntax.
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.useFortifyOnDemand == 'true' }} 
+    if: ${{ (github.event_name == 'push') || (github.event.inputs.useFortifyOnDemand == 'true') }}
 
     steps:
       # Check out source code

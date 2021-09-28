@@ -34,7 +34,7 @@ $.fn.SubscribeNewsletter = function (options) {
     }
 
     async function _saveEmail(email) {
-        return await $.post("/api/v3/site/subscribeUser", { firstName: "", lastName: "", email: email }).then();
+        return await $.post("/api/v3/site/subscribe-user", { firstName: "", lastName: "", email: email }).then();
     }
 
     function _validateEmail(email) {

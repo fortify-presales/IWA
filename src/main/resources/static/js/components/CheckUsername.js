@@ -26,7 +26,7 @@ $.fn.CheckUsername = function (options) {
 
     async function _usernameTaken(username) {
         try {
-            return await $.get(`/api/v3/site/usernameAlreadyExists/${username}`);
+            return await $.get(`/api/v3/site/username-already-exists/${username}`);
         } catch (error) {
             console.log('Error', error.message)
             return false;

@@ -131,7 +131,7 @@ public class ApiSiteController {
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
-    @GetMapping(value = {"/usernameAlreadyExists/{username}"}, produces =  {"application/json"})
+    @GetMapping(value = {"/username-already-exists/{username}"}, produces =  {"application/json"})
     public ResponseEntity<Boolean> usernameIsTaken(
             @Parameter(description = "Username to check. Cannot be empty.", example = "user1", required = true) @PathVariable("username") String username) {
         log.debug("API::Checking for user with username: " + username);
@@ -150,7 +150,7 @@ public class ApiSiteController {
             @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
-    @GetMapping(value = {"/emailAlreadyExists/{email}"}, produces =  {"application/json"})
+    @GetMapping(value = {"/email-already-exists/{email}"}, produces =  {"application/json"})
     public ResponseEntity<Boolean> emailIsTaken(
             @Parameter(description = "Email address to check. Cannot be empty.", example = "user1@localhost.com", required = true) @PathVariable("email") String email) {
         log.debug("API::Checking for user with email: " + email);
@@ -169,7 +169,7 @@ public class ApiSiteController {
             @ApiResponse(responseCode = "409", description = "User Already Exists", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
-    @PostMapping(value = {"/registerUser"}, produces = {"application/json"}, consumes = {"application/json"})
+    @PostMapping(value = {"/register-user"}, produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<RegisterUserResponse> registerUser(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody RegisterUserRequest newUser) {
@@ -184,7 +184,7 @@ public class ApiSiteController {
             @ApiResponse(responseCode = "409", description = "User Already Exists", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
-    @PostMapping(value = {"/subscribeUser"}, produces = {"application/json"}, consumes = {"application/json"})
+    @PostMapping(value = {"/subscribe-user"}, produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<SubscribeUserResponse> subscribeUser(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody SubscribeUserRequest newUser) {
