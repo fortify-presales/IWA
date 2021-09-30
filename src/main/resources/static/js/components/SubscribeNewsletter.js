@@ -34,7 +34,20 @@ $.fn.SubscribeNewsletter = function (options) {
     }
 
     async function _saveEmail(email) {
-        return await $.post("/api/v3/site/subscribe-user", { firstName: "", lastName: "", email: email }).then();
+        let data = JSON.stringify(
+            {
+                firstName: "",
+                lastName: "",
+                email: email
+            }
+        )
+        return await $.ajax({
+            url: '/api/v3/site/subscribe-user',
+            type: 'POST',
+            contentType: 'application/json',
+            data: data
+        }).then();
+        //return await $.post("/api/v3/site/subscribe-user", { firstName: "", lastName: "", email: email }, "json").then();
     }
 
     function _validateEmail(email) {

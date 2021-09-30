@@ -63,6 +63,12 @@ public class ApiStatusResponse {
         this.errors = errors;
     }
 
+    public ApiStatusResponse() {
+        this.success = true;
+        this.timestamp = LocalDateTime.now();
+        this.errors = new ArrayList<>();
+    }
+
     public static final class ApiResponseBuilder {
         private Boolean success;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")

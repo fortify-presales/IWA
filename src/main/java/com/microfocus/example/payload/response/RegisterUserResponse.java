@@ -19,6 +19,7 @@
 
 package com.microfocus.example.payload.response;
 
+import com.microfocus.example.entity.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -43,6 +44,14 @@ public class RegisterUserResponse {
     private String phone;
 
     public RegisterUserResponse() {
+    }
+
+    public RegisterUserResponse(User u) {
+        this.username = u.getUsername();
+        this.firstName = u.getFirstName();
+        this.lastName = u.getLastName();
+        this.email = u.getEmail();
+        this.phone = u.getPhone();
     }
 
     public RegisterUserResponse(String username, String password, String firstName, String lastName,

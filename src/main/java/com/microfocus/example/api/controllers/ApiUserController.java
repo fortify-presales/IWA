@@ -22,6 +22,7 @@ package com.microfocus.example.api.controllers;
 import com.microfocus.example.payload.response.ApiStatusResponse;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.UserNotFoundException;
+import com.microfocus.example.payload.response.UserResponse;
 import com.microfocus.example.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -44,6 +45,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * A RESTFul controller for accessing user information.
@@ -69,17 +71,20 @@ public class ApiUserController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
     @GetMapping(value = {""}, produces = {"application/json"})
-    public ResponseEntity<List<User>> getUsersByKeywords(
+    public ResponseEntity<List<UserResponse>> getUsersByKeywords(
             @Parameter(description = "Keyword(s) search for users to be found.") @RequestParam("keywords") Optional<String> keywords,
             @Parameter(description = "Offset of the starting record. 0 indicates the first record.") @RequestParam("offset") Optional<Integer> offset,
             @Parameter(description = "Maximum records to return. The maximum value allowed is 50.") @RequestParam("limit") Optional<Integer> limit) {
         log.debug("API::Retrieving users by keyword(s)");
         // TODO: implement keywords, offset and limit
-        if (keywords.equals(Optional.empty())) {
-            return ResponseEntity.ok().body(userService.getAllUsers());
-        } else {
-            return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
-        }
+        //if (keywords.equals(Optional.empty())) {
+        //    return ResponseEntity.ok().body(userService.getAllUsers());
+        //} else {
+        return new ResponseEntity<>(
+                userService.getAllUsers().stream()
+                        .map(UserResponse::new)
+                        .collect(Collectors.toList()), HttpStatus.OK);
+        //}
     }
 
     @Operation(summary = "Find user by UUID", description = "Find a specific user by their UUID", tags = {"users"}, security = @SecurityRequirement(name = "JWT Authentication"))
@@ -92,13 +97,13 @@ public class ApiUserController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
     @GetMapping(value = {"/{id}"}, produces =  {"application/json"})
-    public ResponseEntity<User> findUserById(
+    public ResponseEntity<UserResponse> findUserById(
             @Parameter(description = "UUID of the user to be found. Cannot be empty.", example = "db4cfab1-ff1d-4bca-a662-394771841383", required = true) @PathVariable("id") UUID id) {
         log.debug("API::Retrieving user with UUID: " + id);
         if (!userService.userExistsById(id))
             throw new UserNotFoundException("User with UUID: " + id.toString() + " does not exist.");
         Optional<User> user = userService.findUserById(id);
-        return new ResponseEntity<>(user.orElse(null), HttpStatus.OK);
+        return user.map(value -> new ResponseEntity<>(new UserResponse(value), HttpStatus.OK)).orElse(null);
     }
 
     @Operation(summary = "Create a new user", description = "Creates a new user", tags = {"users"}, security = @SecurityRequirement(name = "JWT Authentication"))
@@ -112,11 +117,11 @@ public class ApiUserController {
     })
     @PostMapping(value = {""}, produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<User> createUser(
+    public ResponseEntity<UserResponse> createUser(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody User newUser) {
         //newUser.setId(new UUID()); // set to 0 for sequence id generation
         log.debug("API::Creating new user: " + newUser.toString());
-        return new ResponseEntity<>(userService.saveUser(newUser), HttpStatus.OK);
+        return new ResponseEntity<>(new UserResponse(userService.saveUser(newUser)), HttpStatus.OK);
     }
 
     @Operation(summary = "Update a user", description = "Update an existing user", tags = {"users"}, security = @SecurityRequirement(name = "JWT Authentication"))
@@ -129,11 +134,11 @@ public class ApiUserController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
     })
     @PutMapping(value = {"/{id}"}, produces = {"application/json"}, consumes = {"application/json"})
-    public ResponseEntity<User> updateUser(
+    public ResponseEntity<UserResponse> updateUser(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody User newUser,
             @Parameter(description = "UUID of the user to be updated. Cannot be empty.", example = "db4cfab1-ff1d-4bca-a662-394771841383", required = true) @PathVariable("id") UUID id) {
         log.debug("API::Updating user with UUID: " + id);
-        return new ResponseEntity<>(userService.saveUserFromApi(newUser), HttpStatus.OK);
+        return new ResponseEntity<>(new UserResponse(userService.saveUserFromApi(newUser)), HttpStatus.OK);
     }
 
     @Operation(summary = "Delete a user", description = "Delete an existing user", tags = {"users"}, security = @SecurityRequirement(name = "JWT Authentication"))

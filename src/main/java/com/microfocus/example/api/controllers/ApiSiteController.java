@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2021 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -171,10 +171,13 @@ public class ApiSiteController {
     })
     @PostMapping(value = {"/register-user"}, produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<RegisterUserResponse> registerUser(
+    public ResponseEntity<ApiStatusResponse> registerUser(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody RegisterUserRequest newUser) {
         log.debug("API::Registering new user: " + newUser.toString());
-        return new ResponseEntity<>(userService.registerUser(newUser), HttpStatus.CREATED);
+        RegisterUserResponse user = userService.registerUser(newUser);
+        ApiStatusResponse response = new ApiStatusResponse();
+        if (user.getEmail().equals(newUser.getEmail())) response.setSuccess(true);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @Operation(summary = "Subscribe a new user", description = "Subscribe a new user to the newsletter", tags = {"site"})
@@ -186,10 +189,13 @@ public class ApiSiteController {
     })
     @PostMapping(value = {"/subscribe-user"}, produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<SubscribeUserResponse> subscribeUser(
+    public ResponseEntity<ApiStatusResponse> subscribeUser(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "") @Valid @RequestBody SubscribeUserRequest newUser) {
         log.debug("API::Subscribing a user to the newsletter: " + newUser.toString());
-        return new ResponseEntity<>(userService.subscribeUser(newUser), HttpStatus.OK);
+        SubscribeUserResponse user = userService.subscribeUser(newUser);
+        ApiStatusResponse response = new ApiStatusResponse();
+        if ((user.getEmail().equals(newUser.getEmail())))  response.setSuccess(true);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Operation(summary = "Sign in", description = "Sign in to the system", tags = {"site"})
@@ -202,7 +208,7 @@ public class ApiSiteController {
     })
     @PostMapping(value = {"/sign-in"}, produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> signIn(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<JwtResponse> signIn(@Valid @RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
