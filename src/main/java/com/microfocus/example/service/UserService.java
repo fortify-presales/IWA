@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2021 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,6 +72,17 @@ public class UserService {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Value("${app.data.page-size:25}")
+    private Integer pageSize;
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
     public Optional<User> findUserById(UUID id) {
         return userRepository.findById(id);
     }
@@ -83,6 +95,14 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return (List<User>) userRepository.findAll();
+    }
+
+    public List<User> getAllUsers(Integer offset, String keywords) {
+        if (keywords != null && !keywords.isEmpty()) {
+            return userRepository.findUsersByKeywords(keywords, offset, pageSize);
+        } else {
+            return userRepository.listUsers(offset, pageSize);
+        }
     }
 
     public User getUserById(UUID id) {

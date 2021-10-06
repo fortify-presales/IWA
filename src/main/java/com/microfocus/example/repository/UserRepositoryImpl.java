@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2021 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -159,6 +159,32 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 "SELECT u FROM User u WHERE u.username = :username",
                 User.class);
         q.setParameter("username", username);
+        result = (List<User>)q.getResultList();
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<User> listUsers(int offset, int limit) {
+        List<User> result = new ArrayList<>();
+        Query q = entityManager.createQuery(
+                "SELECT u FROM User u",
+                User.class);
+        q.setFirstResult(offset);
+        q.setMaxResults(limit);
+        result = (List<User>)q.getResultList();
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<User> findUsersByKeywords(String keywords, int offset, int limit) {
+        List<User> result = new ArrayList<>();
+        Query q = entityManager.createQuery(
+                "SELECT u FROM User u WHERE lower(u.firstName) LIKE lower(?1)" +
+                " OR lower(u.lastName) LIKE lower(?1) ",
+                User.class);
+        q.setParameter(1, "%"+keywords+"%");
+        q.setFirstResult(offset);
+        q.setMaxResults(limit);
         result = (List<User>)q.getResultList();
         return result;
     }

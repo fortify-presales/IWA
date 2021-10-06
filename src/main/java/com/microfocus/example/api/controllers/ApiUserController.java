@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2021 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -76,15 +76,15 @@ public class ApiUserController {
             @Parameter(description = "Offset of the starting record. 0 indicates the first record.") @RequestParam("offset") Optional<Integer> offset,
             @Parameter(description = "Maximum records to return. The maximum value allowed is 50.") @RequestParam("limit") Optional<Integer> limit) {
         log.debug("API::Retrieving users by keyword(s)");
-        // TODO: implement keywords, offset and limit
-        //if (keywords.equals(Optional.empty())) {
-        //    return ResponseEntity.ok().body(userService.getAllUsers());
-        //} else {
+        if (limit.isPresent()) {
+            userService.setPageSize(limit.orElse(userService.getPageSize()));
+        }
+        String k = (keywords.orElse(""));
+        Integer o = (offset.orElse(0));
         return new ResponseEntity<>(
-                userService.getAllUsers().stream()
-                        .map(UserResponse::new)
-                        .collect(Collectors.toList()), HttpStatus.OK);
-        //}
+            userService.getAllUsers(o, k).stream()
+                .map(UserResponse::new)
+                .collect(Collectors.toList()), HttpStatus.OK);
     }
 
     @Operation(summary = "Find user by UUID", description = "Find a specific user by their UUID", tags = {"users"}, security = @SecurityRequirement(name = "JWT Authentication"))
