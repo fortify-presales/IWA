@@ -81,7 +81,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                     if (results.next()) {
                         log.debug("Found matching user in database for: " + username);
                         results.beforeFirst();
-                        User utmp = null;
+                        User utmp = new User();
                         Set<Authority> authorities = new HashSet<>();
                         while (results.next()) {
                             if (authorityCount == 0) {

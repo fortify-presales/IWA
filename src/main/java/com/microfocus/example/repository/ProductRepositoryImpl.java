@@ -140,9 +140,10 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 Integer productCount = 0;
                 try {
                     Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                    ResultSet results = stmt.executeQuery("SELECT id, code, name, summary, description, image, price, " +
+                    String query = "SELECT id, code, name, summary, description, image, price, " +
                             "on_sale, sale_price, in_stock, time_to_stock, rating, available FROM products WHERE lower(name) LIKE '%" +
-                            keywords.toLowerCase() + "%' LIMIT " + limit + " OFFSET " + offset);
+                            keywords.toLowerCase() + "%' LIMIT " + limit + " OFFSET " + offset;
+                    ResultSet results = stmt.executeQuery(query);
                     if (results.getStatement() != null) {
                         while (results.next()) {
                             productCount++;

@@ -59,6 +59,11 @@ public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
+    private static final String INVALID_PASSWORD_ERROR = "An invalid password was supplied.";
+    private static final String USER_NOT_FOUND_ERROR = "A user to be changed was not found.";
+    private static final String USERNAME_TAKEN_ERROR = "A username was used that is already taken.";
+    private static final String EMAIL_ADDRESS_TAKEN_ERROR = "An email address was used that is already taken.";
+
     @Autowired
     private UserService userService;
 
@@ -279,11 +284,11 @@ public class UserController {
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
                 return "redirect:/user/profile";
             } catch (InvalidPasswordException ex) {
-                log.error("InvalidPasswordException saving user profile: " + principal.toString());
+                log.error(INVALID_PASSWORD_ERROR);
                 FieldError passwordError = new FieldError("userForm", "password", ex.getMessage());
                 bindingResult.addError(passwordError);
             } catch (UserNotFoundException ex) {
-                log.error("UserNotFoundException saving profile: " + principal.toString());
+                log.error(USER_NOT_FOUND_ERROR);
                 FieldError usernameError = new FieldError("userForm", "username", ex.getMessage());
                 bindingResult.addError(usernameError);
             }
@@ -310,11 +315,11 @@ public class UserController {
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
                 return "redirect:/logout";
             } catch (InvalidPasswordException ex) {
-                log.error("InvalidPasswordException saving user: " + principal.toString());
+                log.error(INVALID_PASSWORD_ERROR);
                 FieldError passwordError = new FieldError("passwordForm", "password", ex.getMessage());
                 bindingResult.addError(passwordError);
             } catch (UserNotFoundException ex) {
-                log.error("UserNotFoundException saving user: " + principal.toString());
+                log.error(USER_NOT_FOUND_ERROR);
                 FieldError usernameError = new FieldError("passwordForm", "username", ex.getMessage());
                 bindingResult.addError(usernameError);
             }
@@ -352,11 +357,11 @@ public class UserController {
                 User utmp = userService.registerUser(registerUserForm);
                 return "redirect:/login?registerSuccess";
             } catch (UsernameTakenException ex) {
-                log.error("UsernameTakenException registering user: " + registerUserForm.getUsername());
+                log.error(USERNAME_TAKEN_ERROR);
                 FieldError usernameError = new FieldError("registerUserForm", "username", ex.getMessage());
                 bindingResult.addError(usernameError);
             } catch (EmailAddressTakenException ex) {
-               log.error("EmailAddressTakenException registering user: " + registerUserForm.getEmail());
+               log.error(EMAIL_ADDRESS_TAKEN_ERROR);
                FieldError emailError = new FieldError("registerUserForm", "email", ex.getMessage());
                bindingResult.addError(emailError);
            }

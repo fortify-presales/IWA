@@ -55,6 +55,8 @@ public class AdminUserController {
 
     private static final Logger log = LoggerFactory.getLogger(AdminUserController.class);
 
+    private static final String INVALID_PASSWORD_ERROR = "An invalid password was supplied";
+
     @Autowired
     private UserService userService;
 
@@ -147,7 +149,7 @@ public class AdminUserController {
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
                 return "redirect:/admin/users/" + userId;
             } catch (InvalidPasswordException ex) {
-                log.error("InvalidPasswordException saving user: " + adminPasswordForm.getUsername());
+                log.error(INVALID_PASSWORD_ERROR);
                 FieldError passwordError = new FieldError("adminPasswordForm", "password", ex.getMessage());
                 bindingResult.addError(passwordError);
             } catch (UserNotFoundException ex) {
