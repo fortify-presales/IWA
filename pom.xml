@@ -42,7 +42,7 @@
         <selenium.version>4.0.0-rc-2</selenium.version>
         <wlp.dir>C:/Tools/wlp</wlp.dir>
         <skip.unit.tests>false</skip.unit.tests>
-        <skip.integration.tests>false</skip.integration.tests>
+        <skip.integration.tests>true</skip.integration.tests>
     </properties>
 
     <!--repositories>
@@ -563,6 +563,7 @@
                     </includes>
                     <excludes>
                         <exclude>**/PasswordConstraintValidatorTest*.java</exclude>
+                        <exclude>**/SeleniumFlowIT.java</exclude>
                         <!--exclude>**/*IT.java</exclude-->
                     </excludes>
                 </configuration>
@@ -581,7 +582,7 @@
                         <exclude>**/*ITCase.java</exclude>
                     </excludes>
                     <includes>
-                        <include>**/SeleniumFlow.java</include>
+                        <include>**/SeleniumFlowIT.java</include>
                     </includes>
                 </configuration>
                 <executions>

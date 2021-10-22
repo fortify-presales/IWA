@@ -15,7 +15,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.*;
 
-public class SeleniumFlow extends BaseSeleniumTest {
+public class SeleniumFlowIT extends BaseSeleniumTest {
 
     private WebDriver driver;
     private Map<String, Object> vars;
