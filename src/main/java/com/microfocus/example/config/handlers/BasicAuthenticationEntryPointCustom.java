@@ -48,7 +48,7 @@ public class BasicAuthenticationEntryPointCustom extends BasicAuthenticationEntr
     @Override
     public void commence(
             HttpServletRequest request, HttpServletResponse response, AuthenticationException ex)
-            throws IOException, ServletException {
+            throws IOException {
         response.addHeader("WWW-Authenticate", "Basic realm='" + getRealmName() + "'");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         ArrayList<String> errors = new ArrayList<>();
@@ -68,8 +68,8 @@ public class BasicAuthenticationEntryPointCustom extends BasicAuthenticationEntr
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         setRealmName(WebSecurityConfiguration.REALM_NAME);
-        super.afterPropertiesSet();
+        //super.afterPropertiesSet();
     }
 }

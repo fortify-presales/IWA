@@ -1,9 +1,9 @@
-drop table authorities if exists;
-drop table users if exists;
-drop table user_authorities if exists;
-drop table products if exists;
-drop table messages if exists;
-drop table orders if exists;
+drop table authorities if exists cascade;
+drop table users if exists cascade;
+drop table user_authorities if exists cascade;
+drop table products if exists cascade;
+drop table messages if exists cascade;
+drop table orders if exists cascade;
 drop sequence if exists hibernate_sequence;
 create sequence hibernate_sequence start with 1 increment by 1;
 

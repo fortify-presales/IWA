@@ -39,7 +39,10 @@
         <axios.version>0.21.1</axios.version>
         <springdoc-openapi.version>1.4.3</springdoc-openapi.version>
         <jwt.version>0.9.1</jwt.version>
+        <selenium.version>4.0.0-rc-2</selenium.version>
         <wlp.dir>C:/Tools/wlp</wlp.dir>
+        <skip.unit.tests>true</skip.unit.tests>
+        <skip.integration.tests>true</skip.integration.tests>
     </properties>
 
     <!--repositories>
@@ -191,11 +194,17 @@
             <version>2.3.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium.version}</version>
+        </dependency>
+
         <!-- Fortify SCA Annotations
         <dependency>
             <groupId>com.microfocus.fortify</groupId>
             <artifactId>FortifyAnnotations</artifactId>
-            <version>2020.05</version>
+            <version>2021.01</version>
         </dependency-->
         
     </dependencies>
@@ -246,7 +255,8 @@
             </dependencies>
         </profile>
 	
-		<!-- Profile for preparing files for Fortify scans -->
+		<!-- Example profile for preparing files for Fortify scans -->
+        <!-- Note: recommended approach now is to use ScanCentral Client Tool for packaging -->
         <profile>
             <id>fortify</id>
             <properties>
@@ -473,6 +483,7 @@
                 </configuration>
             </plugin>
 
+            <!-- Unpack dependencies for potential upload to FOD -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -538,15 +549,60 @@
                 </executions>
             </plugin>
 
+            <!-- Run Unit Tests via surefire plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
+                    <skipTests>${skip.unit.tests}</skipTests>
+                    <includes>
+                        <include>**/Test*.java</include>
+                        <include>**/*Test.java</include>
+                        <include>**/*TestCase.java</include>
+                    </includes>
                     <excludes>
                         <exclude>**/PasswordConstraintValidatorTest*.java</exclude>
+                        <exclude>**/SeleniumFlowIT.java</exclude>
+                        <!--exclude>**/*IT.java</exclude-->
                     </excludes>
                 </configuration>
+            </plugin>
+
+            <!-- Run Selenium Integration Tests via failsafe plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.22.2</version>
+                <configuration>
+                    <skipTests>${skip.integration.tests}</skipTests>
+                    <excludes>
+                        <exclude>**/IT*.java</exclude>
+                        <exclude>**/*IT.java</exclude>
+                        <exclude>**/*ITCase.java</exclude>
+                    </excludes>
+                    <includes>
+                        <include>**/SeleniumFlowIT.java</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <!--configuration>
+                            <excludes>
+                                <exclude>**/*ControllerTest.java</exclude>
+                                <exclude>**/PasswordConstraintValidatorTest*.java</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/*IT.java</include>
+                            </includes>
+                        </configuration-->
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- Generate OpenAPI descriptor during integrate phase -->
@@ -569,60 +625,6 @@
                     <outputFileName>openapi.json</outputFileName>
                     <outputDir>etc</outputDir>
                 </configuration>
-            </plugin>
-            -->
-
-            <!-- Angular build -->
-            <!--
-            <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.11.3</version>
-
-                <configuration>
-                    <nodeVersion>v14.15.0</nodeVersion>
-                    <npmInheritsProxyConfigFromMaven>false</npmInheritsProxyConfigFromMaven>
-                    <npmVersion>6.14.8</npmVersion>
-                </configuration>
-
-                <executions>
-
-                    <execution>
-                        <id>install node and npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                        <phase>generate-resources</phase>
-                        <configuration>
-                            <workingDirectory>src/main/ui</workingDirectory>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>npm install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <phase>generate-resources</phase>
-                        <configuration>
-                            <workingDirectory>src/main/ui</workingDirectory>
-                            <arguments>install</arguments>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>npm build</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <phase>generate-resources</phase>
-                        <configuration>
-                            <workingDirectory>src/main/ui</workingDirectory>
-                            <arguments>run build</arguments>
-                        </configuration>
-                    </execution>
-
-                </executions>
             </plugin>
             -->
 

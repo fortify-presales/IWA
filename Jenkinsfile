@@ -59,7 +59,9 @@ pipeline {
         booleanParam(name: 'FOD_SAST',       	defaultValue: params.FOD_SAST ?: false,
             description: 'Use Fortify on Demand for Static Application Security Testing')
         booleanParam(name: 'FOD_DAST',       	defaultValue: params.FOD_DAST ?: false,
-                description: 'Use Fortify on Demand for Dynamic Application Security Testing')        
+                description: 'Use Fortify on Demand for Dynamic Application Security Testing')
+        booleanParam(name: 'USE_DOCKER', defaultValue: params.USE_DOCKER ?: false,
+                description: 'Package the application into a Dockerfile for running/testing')
         booleanParam(name: 'RELEASE_TO_DOCKERHUB', defaultValue: params.RELEASE_TO_DOCKERHUB ?: false,
                 description: 'Release built and tested image to Docker Hub')
     }
@@ -283,10 +285,14 @@ pipeline {
                     unstash name: "${env.COMPONENT_NAME}_release"
                     if (isUnix()) {
                         // Create docker image using JAR file
-                        dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
+                        if (params.USE_DOCKER) {
+                            dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
+                        }
                     } else {
                         // Create docker image using JAR file
-                        dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
+                        if (params.USE_DOCKER) {
+                            dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
+                        }
                     }
                 }
             }
@@ -304,7 +310,7 @@ pipeline {
             agent {label "docker"}
             steps {
                 script {
-                    if (params.SCANCENTRAL_DAST) {
+                    if (params.SCANCENTRAL_DAST && params.USE_DOCKER) {
                         // check if container is still running and if so stop/remove it
                         if (isUnix()) {
                             sh(script: "docker ps -aq --filter name=iwa-jenkins > container.id")
@@ -386,22 +392,24 @@ pipeline {
         always {
             script {
                 // check if container is still running and if so stop/remove it
-                if (isUnix()) {
-                    sh(script: "docker ps -aq --filter name=iwa-jenkins > container.id")
-                    if (fileExists('container.id')) {
-                        def existingId = readFile('container.id').trim()
-                        if (existingId) {
-                            println "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
-                            sh(script: "docker stop $existingId && docker rm -f $existingId")
+                if (params.USE_DOCKER) {
+                    if (isUnix()) {
+                        sh(script: "docker ps -aq --filter name=iwa-jenkins > container.id")
+                        if (fileExists('container.id')) {
+                            def existingId = readFile('container.id').trim()
+                            if (existingId) {
+                                println "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
+                                sh(script: "docker stop $existingId && docker rm -f $existingId")
+                            }
                         }
-                    }
-                } else {
-                    bat(script: "docker ps -aq --filter name=iwa-jenkins > container.id")
-                    if (fileExists('container.id')) {
-                        def existingId = readFile('container.id').trim()
-                        if (existingId) {
-                            println "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
-                            bat(script: "docker stop ${existingId} && docker rm -f ${existingId}")
+                    } else {
+                        bat(script: "docker ps -aq --filter name=iwa-jenkins > container.id")
+                        if (fileExists('container.id')) {
+                            def existingId = readFile('container.id').trim()
+                            if (existingId) {
+                                println "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
+                                bat(script: "docker stop ${existingId} && docker rm -f ${existingId}")
+                            }
                         }
                     }
                 }

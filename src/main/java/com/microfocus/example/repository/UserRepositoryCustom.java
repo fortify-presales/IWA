@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2021 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -34,7 +34,11 @@ public interface UserRepositoryCustom {
 
     Optional<User> findUserByEmail(String email);
 
+    List<User> listUsers(int offset, int limit);
+
     List<User> findUsersByUsername(String username);
+
+    List<User> findUsersByKeywords(String keywords, int offset, int limit);
 
     List<User> findUsersByEnabledAndUsername(boolean enabled, String username);
 
