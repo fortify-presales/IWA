@@ -2,7 +2,6 @@ package com.microfocus.example.repository;
 
 import com.microfocus.example.BaseIntegrationTest;
 import com.microfocus.example.DataSeeder;
-import com.microfocus.example.entity.Authority;
 import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.User;
 import org.junit.FixMethodOrder;
@@ -10,10 +9,8 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;

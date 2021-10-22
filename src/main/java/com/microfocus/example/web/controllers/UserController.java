@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2021 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Controller;
@@ -59,10 +60,17 @@ public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
-    private static final String INVALID_PASSWORD_ERROR = "An invalid password was supplied.";
-    private static final String USER_NOT_FOUND_ERROR = "A user to be changed was not found.";
-    private static final String USERNAME_TAKEN_ERROR = "A username was used that is already taken.";
-    private static final String EMAIL_ADDRESS_TAKEN_ERROR = "An email address was used that is already taken.";
+    @Value("${INVALID_PASSWORD_ERROR;An invalid password was supplied.")
+    private String INVALID_PASSWORD_ERROR;
+
+    @Value("${USER_NOT_FOUND_ERROR:A user to be changed was not found.}")
+    private String USER_NOT_FOUND_ERROR;
+
+    @Value("${USERNAME_TAKEN_ERROR:A username was used that is already taken.")
+    private String USERNAME_TAKEN_ERROR;
+
+    @Value(("${EMAIL_ADDRESS_TAKEN_ERROR:An email address was used that is already taken.}"))
+    private String EMAIL_ADDRESS_TAKEN_ERROR;
 
     @Autowired
     private UserService userService;

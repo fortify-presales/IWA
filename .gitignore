@@ -3,6 +3,7 @@
 *.iml
 *.fpr
 fod.zip
+FoDPackage.zip
 .fod/
 .fortify/
 /target/
@@ -11,3 +12,5 @@ fod.zip
 /.settings/
 /.env
 /IWA.pdf
+.gradle/
+build/
