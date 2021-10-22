@@ -60,7 +60,7 @@ jobs:
 
     # Build / Test with Maven
     - name: Build with Maven
-      run: mvn -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
+      run: mvn -Dskip.unit.tests=false -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
 
   ScanCentral-SAST-Scan:
     # Use the appropriate runner for building your source code.
