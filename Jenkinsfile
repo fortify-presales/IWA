@@ -47,26 +47,28 @@ pipeline {
     //
     parameters {
         booleanParam(name: 'SCA_LOCAL',       	defaultValue: params.SCA_LOCAL ?: false,
-            description: 'Use (local) Fortify SCA for Static Application Security Testing')
+                description: 'Use (local) Fortify SCA for Static Application Security Testing')
         booleanParam(name: 'SCA_OSS',           defaultValue: params.SCA_OSS ?: false,
-            description: 'Use Fortify SCA with Sonatype Nexus IQ for Open Source Susceptibility Analysis')
+                description: 'Use Fortify SCA with Sonatype Nexus IQ for Open Source Susceptibility Analysis')
         booleanParam(name: 'SCANCENTRAL_SAST', 	defaultValue: params.SCANCENTRAL_SAST ?: false,
-            description: 'Run a remote scan using Scan Central SAST (SCA) for Static Application Security Testing')
+                description: 'Run a remote scan using Scan Central SAST (SCA) for Static Application Security Testing')
         booleanParam(name: 'SCANCENTRAL_DAST', 	defaultValue: params.SCANCENTRAL_DAST ?: false,
-            description: 'Run a remote scan using Scan Central DAST (WebInspect) for Dynamic Application Security Testing')
+                description: 'Run a remote scan using Scan Central DAST (WebInspect) for Dynamic Application Security Testing')
         booleanParam(name: 'UPLOAD_TO_SSC',		defaultValue: params.UPLOAD_TO_SSC ?: false,
-            description: 'Enable upload of scan results to Fortify Software Security Center')             
+                description: 'Enable upload of scan results to Fortify Software Security Center')
         booleanParam(name: 'FOD_SAST',       	defaultValue: params.FOD_SAST ?: false,
-            description: 'Use Fortify on Demand for Static Application Security Testing')
+                description: 'Use Fortify on Demand for Static Application Security Testing')
         booleanParam(name: 'FOD_DAST',       	defaultValue: params.FOD_DAST ?: false,
-                description: 'Use Fortify on Demand for Dynamic Application Security Testing')        
+                description: 'Use Fortify on Demand for Dynamic Application Security Testing')
+        booleanParam(name: 'USE_DOCKER', defaultValue: params.USE_DOCKER ?: false,
+                description: 'Package the application into a Dockerfile for running/testing')
         booleanParam(name: 'RELEASE_TO_DOCKERHUB', defaultValue: params.RELEASE_TO_DOCKERHUB ?: false,
                 description: 'Release built and tested image to Docker Hub')
     }
 
     environment {
         // Application settings
-		APP_NAME = "IWA-Java"                      		    // Application name
+        APP_NAME = "IWA-Java"                      		    // Application name
         APP_VER = "master"                                  // Application release - GitHub master branch
         COMPONENT_NAME = "iwa"                              // Component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
@@ -90,7 +92,7 @@ pipeline {
         FOD_RELEASE_ID = "${params.FOD_RELEASE_ID ?: '6446'}" // Fortify on Demand Release Id
         NEXUS_IQ_URL = "${params.NEXUS_IQ_URL ?: 'https://sonatype.mfdemouk.com'}" // Nexus IQ URL
         DOCKER_ORG = "${params.DOCKER_ORG ?: 'mfdemouk'}" // Docker organisation (in Docker Hub) to push released images to
-	}
+    }
 
     tools {
         // Install the Maven version configured as "M3" and add it to the path.
@@ -121,9 +123,9 @@ pipeline {
 
                     // Run maven to build WAR/JAR application
                     if (isUnix()) {
-                        sh 'mvn -Dmaven.com.failure.ignore=true clean -Dtest=!*PasswordConstraintValidatorTest,!*DefaultControllerTest -P jar,release clean package'
+                        sh 'mvn "-Dskip.unit.tests=false" -Dtest="*Test,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest,!SeleniumFlowIT" -P jar -B clean verify package --file pom.xml'
                     } else {
-                        bat "mvn -Dmaven.com.failure.ignore=true -Dtest=!*PasswordConstraintValidatorTest,!*DefaultControllerTest -P jar,release clean package"
+                        bat "mvn \"-Dskip.unit.tests=false\" Dtest=\"*Test,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest,!SeleniumFlowIT\" -P jar -B clean verify package --file pom.xml"
                     }
                 }
             }
@@ -146,19 +148,19 @@ pipeline {
 
         stage('SAST') {
             when {
-            	beforeAgent true
-            	anyOf {
-            	    expression { params.SCA_LOCAL == true }
-            	    expression { params.SCANCENTRAL_SAST == true }
-            	    expression { params.FOD_SAST == true }
-        	    }
+                beforeAgent true
+                anyOf {
+                    expression { params.SCA_LOCAL == true }
+                    expression { params.SCANCENTRAL_SAST == true }
+                    expression { params.FOD_SAST == true }
+                }
             }
             // Run on an Agent with "fortify" label applied
             agent {label "fortify"}
             steps {
                 script {
                     // Get code from Git repository so we can recompile it
-                	git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
+                    git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
 
                     // Run Maven debug compile, download dependencies (if required) and package up for FOD
                     if (isUnix()) {
@@ -176,43 +178,43 @@ pipeline {
                     if (params.FOD_SAST) {
                         // Upload built application to Fortify on Demand and carry out Static Assessment
                         fodStaticAssessment releaseId: ${env.FOD_RELEASE_ID},
-                            // bsiToken: "${env.FOD_BSI_TOKEN}",
-                            entitlementPreference: 'SubscriptionOnly',
-                            inProgressScanActionType: 'CancelInProgressScan',
-                            remediationScanPreferenceType: 'NonRemediationScanOnly',
-                            srcLocation: "${env.FOD_UPLOAD_DIR}"
+                                // bsiToken: "${env.FOD_BSI_TOKEN}",
+                                entitlementPreference: 'SubscriptionOnly',
+                                inProgressScanActionType: 'CancelInProgressScan',
+                                remediationScanPreferenceType: 'NonRemediationScanOnly',
+                                srcLocation: "${env.FOD_UPLOAD_DIR}"
 
                         // optional: wait for FOD assessment to complete
                         fodPollResults releaseId: ${env.FOD_RELEASE_ID}
-                            //bsiToken: "${env.FOD_BSI_TOKEN}",
-                            //policyFailureBuildResultPreference: 1,
-                            pollingInterval: 5
+                        //bsiToken: "${env.FOD_BSI_TOKEN}",
+                        //policyFailureBuildResultPreference: 1,
+                        pollingInterval: 5
                     } else if (params.SCANCENTRAL_SAST) {
 
                         // set any standard remote translation/scan options
                         fortifyRemoteArguments transOptions: '',
-                              scanOptions: ''
+                                scanOptions: ''
 
                         if (params.UPLOAD_TO_SSC) {
                             // Remote analysis (using Scan Central) and upload to SSC
                             fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
-                                remoteOptionalConfig: [
-                                    customRulepacks: '',
-                                    filterFile: "etc\\sca-filter.txt",
-                                    notifyEmail: "${env.SSC_NOTIFY_EMAIL}",
-                                    sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
-                                ],
-                                uploadSSC: [appName: "${env.APP_NAME}", appVersion: "${env.APP_VER}"]
+                                    remoteOptionalConfig: [
+                                            customRulepacks: '',
+                                            filterFile: "etc\\sca-filter.txt",
+                                            notifyEmail: "${env.SSC_NOTIFY_EMAIL}",
+                                            sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
+                                    ],
+                                    uploadSSC: [appName: "${env.APP_NAME}", appVersion: "${env.APP_VER}"]
 
                         } else {
                             // Remote analysis (using Scan Central)
                             fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
-                                remoteOptionalConfig: [
-                                    customRulepacks: '',
-                                    filterFile: "etc\\sca-filter.txt",
-                                    notifyEmail: "${env.SSC_NOTIFY_EMAIL}",
-                                    sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
-                                ]
+                                    remoteOptionalConfig: [
+                                            customRulepacks: '',
+                                            filterFile: "etc\\sca-filter.txt",
+                                            notifyEmail: "${env.SSC_NOTIFY_EMAIL}",
+                                            sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
+                                    ]
                         }
                     } else if (params.SCA_LOCAL) {
                         // optional: update scan rules
@@ -220,29 +222,29 @@ pipeline {
 
                         // Clean project and scan results from previous run
                         fortifyClean buildID: "${env.COMPONENT_NAME}",
-                            logFile: "${env.COMPONENT_NAME}-clean.log"
+                                logFile: "${env.COMPONENT_NAME}-clean.log"
 
                         // Translate source files
                         fortifyTranslate buildID: "${env.COMPONENT_NAME}",
-                            projectScanType: fortifyJava(javaSrcFiles:
-                                '\""src/main/java/**/*\"" \""src/main/resources/**/*\"" \""Dockerfile*\""',
-                            javaVersion: "${env.JAVA_VERSION}",
-                            javaClasspath: "$classpath"),
-                            addJVMOptions: '',
-                            logFile: "${env.COMPONENT_NAME}-translate.log"
+                                projectScanType: fortifyJava(javaSrcFiles:
+                                        '\""src/main/java/**/*\"" \""src/main/resources/**/*\"" \""Dockerfile*\""',
+                                        javaVersion: "${env.JAVA_VERSION}",
+                                        javaClasspath: "$classpath"),
+                                addJVMOptions: '',
+                                logFile: "${env.COMPONENT_NAME}-translate.log"
 
                         // Scan source files
                         fortifyScan buildID: "${env.COMPONENT_NAME}",
-                            addOptions: '"-filter" "etc\\sca-filter.txt"',
-                            resultsFile: "${env.COMPONENT_NAME}.fpr",
-                            addJVMOptions: '',
-                            logFile: "${env.COMPONENT_NAME}-scan.log"
+                                addOptions: '"-filter" "etc\\sca-filter.txt"',
+                                resultsFile: "${env.COMPONENT_NAME}.fpr",
+                                addJVMOptions: '',
+                                logFile: "${env.COMPONENT_NAME}-scan.log"
 
                         if (params.UPLOAD_TO_SSC) {
                             // Upload to SSC
                             fortifyUpload appName: "${env.APP_NAME}",
-                                appVersion: "${env.APP_VER}",
-                                resultsFile: "${env.COMPONENT_NAME}.fpr"
+                                    appVersion: "${env.APP_VER}",
+                                    resultsFile: "${env.COMPONENT_NAME}.fpr"
                         }
                     } else {
                         println "No Static Application Security Testing (SAST) to do."
@@ -283,10 +285,14 @@ pipeline {
                     unstash name: "${env.COMPONENT_NAME}_release"
                     if (isUnix()) {
                         // Create docker image using JAR file
-                        dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
+                        if (params.USE_DOCKER) {
+                            dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
+                        }
                     } else {
                         // Create docker image using JAR file
-                        dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
+                        if (params.USE_DOCKER) {
+                            dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
+                        }
                     }
                 }
             }
@@ -294,17 +300,17 @@ pipeline {
 
         stage('DAST') {
             when {
-            	beforeAgent true
-            	anyOf {
-            	    expression { params.SCANCENTRAL_DAST == true }
-            	    expression { params.FOD_DAST == true }
-        	    }
+                beforeAgent true
+                anyOf {
+                    expression { params.SCANCENTRAL_DAST == true }
+                    expression { params.FOD_DAST == true }
+                }
             }
             // Run on an Agent with "docker" label applied
             agent {label "docker"}
             steps {
                 script {
-                    if (params.SCANCENTRAL_DAST) {
+                    if (params.SCANCENTRAL_DAST && params.USE_DOCKER) {
                         // check if container is still running and if so stop/remove it
                         if (isUnix()) {
                             sh(script: "docker ps -aq --filter name=iwa-jenkins > container.id")
@@ -341,25 +347,25 @@ pipeline {
                             String scanStatus = edastApi.getScanStatusValue(edastApi.getScanStatusId(scanId))
                             println "ScanCentral DAST scan id: ${scanId} - status: ${scanStatus}"
                         }
-					} else if (params.FOD_DAST) {
-						println "DAST via FOD is not yet implemented."						
+                    } else if (params.FOD_DAST) {
+                        println "DAST via FOD is not yet implemented."
                     } else {
                         println "No Dynamic Application Security Testing (DAST) to do."
                     }
                 }
             }
         }
-        
-		// An example manual release checkpoint
+
+        // An example manual release checkpoint
         stage('Stage') {
-        	agent { label 'master' }
-        	steps {
-            	input id: 'Release', 
-            		message: 'Ready to Release?', 
-            		ok: 'Yes, let\'s go', 
-            		submitter: 'admin', 
-            		submitterParameter: 'approver'
-        	}
+            agent { label 'master' }
+            steps {
+                input id: 'Release',
+                        message: 'Ready to Release?',
+                        ok: 'Yes, let\'s go',
+                        submitter: 'admin',
+                        submitterParameter: 'approver'
+            }
         }
 
         stage('Release') {
@@ -386,22 +392,24 @@ pipeline {
         always {
             script {
                 // check if container is still running and if so stop/remove it
-                if (isUnix()) {
-                    sh(script: "docker ps -aq --filter name=iwa-jenkins > container.id")
-                    if (fileExists('container.id')) {
-                        def existingId = readFile('container.id').trim()
-                        if (existingId) {
-                            println "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
-                            sh(script: "docker stop $existingId && docker rm -f $existingId")
+                if (params.USE_DOCKER) {
+                    if (isUnix()) {
+                        sh(script: "docker ps -aq --filter name=iwa-jenkins > container.id")
+                        if (fileExists('container.id')) {
+                            def existingId = readFile('container.id').trim()
+                            if (existingId) {
+                                println "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
+                                sh(script: "docker stop $existingId && docker rm -f $existingId")
+                            }
                         }
-                    }
-                } else {
-                    bat(script: "docker ps -aq --filter name=iwa-jenkins > container.id")
-                    if (fileExists('container.id')) {
-                        def existingId = readFile('container.id').trim()
-                        if (existingId) {
-                            println "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
-                            bat(script: "docker stop ${existingId} && docker rm -f ${existingId}")
+                    } else {
+                        bat(script: "docker ps -aq --filter name=iwa-jenkins > container.id")
+                        if (fileExists('container.id')) {
+                            def existingId = readFile('container.id').trim()
+                            if (existingId) {
+                                println "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
+                                bat(script: "docker stop ${existingId} && docker rm -f ${existingId}")
+                            }
                         }
                     }
                 }
