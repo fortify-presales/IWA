@@ -176,6 +176,24 @@ pipeline {
                     println "Using classpath: $classpath"
 
                     if (params.FOD_SAST) {
+                        fodStaticAssessment bsiToken: '',
+                                releaseId: ${env.FOD_RELEASE_ID},
+                                entitlementPreference: 'SubscriptionOnly',
+                                inProgressBuildResultType: 'WarnBuild',
+                                inProgressScanActionType: 'Queue',
+                                personalAccessToken: 'fod-emeademo-api-secret',
+                                remediationScanPreferenceType: 'NonRemediationScanOnly',
+                                srcLocation: "${env.FOD_UPLOAD_DIR}",
+                                tenantId: 'emeademo',
+                                username: 'kevin.lee'
+
+                        fodPollResults bsiToken: '',
+                                releaseId: ${env.FOD_RELEASE_ID},
+                                personalAccessToken: 'fod-emeademo-api-secret',
+                                policyFailureBuildResultPreference: 1,
+                                pollingInterval: 5,
+                                tenantId: 'emeademo',
+                                username: 'kevin.lee'
                         /*
                         // Upload built application to Fortify on Demand and carry out Static Assessment
                         fodStaticAssessment releaseId: ${env.FOD_RELEASE_ID},
