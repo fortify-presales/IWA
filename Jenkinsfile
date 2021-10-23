@@ -176,39 +176,26 @@ pipeline {
                     println "Using classpath: $classpath"
 
                     if (params.FOD_SAST) {
+                        // recommended FOD integration is via API Key/Secret but can be by PAT if needed
                         fodStaticAssessment bsiToken: '',
                                 releaseId: "${env.FOD_RELEASE_ID}",
                                 entitlementPreference: 'SubscriptionOnly',
                                 inProgressBuildResultType: 'WarnBuild',
                                 inProgressScanActionType: 'Queue',
-                                personalAccessToken: 'fod-emeademo-api-secret',
                                 remediationScanPreferenceType: 'NonRemediationScanOnly',
-                                srcLocation: "${env.FOD_UPLOAD_DIR}",
-                                tenantId: 'emeademo',
-                                username: 'kevin.lee'
+                                srcLocation: "${env.FOD_UPLOAD_DIR}"
+                                //tenantId: 'tenant',
+                                //username: 'jenkins',
+                                //personalAccessToken: 'fod-jenkins-api-secret'
 
                         fodPollResults bsiToken: '',
                                 releaseId: "${env.FOD_RELEASE_ID}",
-                                personalAccessToken: 'fod-emeademo-api-secret',
                                 policyFailureBuildResultPreference: 1,
-                                pollingInterval: 5,
-                                tenantId: 'emeademo',
-                                username: 'kevin.lee'
-                        /*
-                        // Upload built application to Fortify on Demand and carry out Static Assessment
-                        fodStaticAssessment releaseId: ${env.FOD_RELEASE_ID},
-                                // bsiToken: "${env.FOD_BSI_TOKEN}",
-                                entitlementPreference: 'SubscriptionOnly',
-                                inProgressScanActionType: 'CancelInProgressScan',
-                                remediationScanPreferenceType: 'NonRemediationScanOnly',
-                                srcLocation: "${env.FOD_UPLOAD_DIR}"
+                                pollingInterval: 5
+                                //tenantId: 'tenant',
+                                //username: 'jenkins',
+                                //personalAccessToken: 'fod-jenkins-api-secret'
 
-                        // optional: wait for FOD assessment to complete
-                        fodPollResults releaseId: ${env.FOD_RELEASE_ID}
-                        //bsiToken: "${env.FOD_BSI_TOKEN}",
-                        //policyFailureBuildResultPreference: 1,
-                        pollingInterval: 5
-                        */
                     } else if (params.SCANCENTRAL_SAST) {
 
                         // set any standard remote translation/scan options
