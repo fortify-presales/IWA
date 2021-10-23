@@ -177,7 +177,7 @@ pipeline {
 
                     if (params.FOD_SAST) {
                         fodStaticAssessment bsiToken: '',
-                                releaseId: ""${env.FOD_RELEASE_ID}",
+                                releaseId: "${env.FOD_RELEASE_ID}",
                                 entitlementPreference: 'SubscriptionOnly',
                                 inProgressBuildResultType: 'WarnBuild',
                                 inProgressScanActionType: 'Queue',
@@ -188,7 +188,7 @@ pipeline {
                                 username: 'kevin.lee'
 
                         fodPollResults bsiToken: '',
-                                releaseId: ""${env.FOD_RELEASE_ID}",
+                                releaseId: "${env.FOD_RELEASE_ID}",
                                 personalAccessToken: 'fod-emeademo-api-secret',
                                 policyFailureBuildResultPreference: 1,
                                 pollingInterval: 5,
