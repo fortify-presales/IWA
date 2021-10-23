@@ -176,6 +176,7 @@ pipeline {
                     println "Using classpath: $classpath"
 
                     if (params.FOD_SAST) {
+                        /*
                         // Upload built application to Fortify on Demand and carry out Static Assessment
                         fodStaticAssessment releaseId: ${env.FOD_RELEASE_ID},
                                 // bsiToken: "${env.FOD_BSI_TOKEN}",
@@ -189,6 +190,7 @@ pipeline {
                         //bsiToken: "${env.FOD_BSI_TOKEN}",
                         //policyFailureBuildResultPreference: 1,
                         pollingInterval: 5
+                        */
                     } else if (params.SCANCENTRAL_SAST) {
 
                         // set any standard remote translation/scan options
