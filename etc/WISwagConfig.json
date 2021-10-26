@@ -1,6 +1,6 @@
 {
-  apiDefinition : 'http://localhost:8080/v3/api-docs', /* can also be a local file (ex. C:/myapi.json) */
-  host : 'http://localhost:8080', /* replace the host in every generated request */
+  apiDefinition : 'http://localhost:8888/v3/api-docs', /* can also be a local file (ex. C:/myapi.json) */
+  host : 'http://localhost:8888', /* replace the host in every generated request */
   schemes : ['http'], /* generate output for both of these schemes */
   servicePath : '/', /* specify the base path of the API */
   preferredContentType : 'application/json', /* if given a choice, prefer json */

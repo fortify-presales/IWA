@@ -78,7 +78,7 @@ To run (and test) locally in development mode, execute the following from the co
 mvn spring-boot:run
 ```
 
-Then navigate to the URL: [http://localhost:8080](http://localhost:8080). You can carry out a number of
+Then navigate to the URL: [http://localhost:8888](http://localhost:8888). You can carry out a number of
 actions unauthenticated, but if you want to login you can do so as one of the following users:
 
 - **user1/password**
@@ -108,7 +108,7 @@ docker build -f Dockerfile.win -t iwa .
 This image can then be executed using the following commands:
 
 ```
-docker run -d -p 8080:8080 iwa
+docker run -d -p 8888:8888 iwa
 ```
 
 There is also an example `docker-compose.yml` file that illustrates how to run the application with HTTPS/SSL using
@@ -124,19 +124,19 @@ in the project root directory. This file is not created by default (and should n
 with all of the possible settings for the following scenarios is illustrated below:
 
 ```aidl
-APP_URL=http://localhost:8080
-SSC_URL=http://localhost:9090/ssc
+APP_URL=http://localhost:8888
+SSC_URL=http://localhost:8080/ssc
 SSC_USERNAME=admin
 SSC_PASSWORD=admin
 SSC_AUTH_TOKEN=6b16aa46-35d7-4ea6-98c1-8b780851fb37
 SSC_APP_NAME=IWA
 SSC_APP_VER_NAME=master
-SCANCENTRAL_CTRL_URL=http://localhost:9090/scancentral-ctrl
+SCANCENTRAL_CTRL_URL=http://localhost:8080/scancentral-ctrl
 SCANCENTRAL_CTRL_TOKEN=96846342-1349-4e36-b94f-11ed96b9a1e3
 SCANCENTRAL_POOL_ID=00000000-0000-0000-0000-000000000002
 SCANCENTRAL_EMAIL=info@microfocus.com
-SCANCENTRAL_DAST_API=http://localhost:8088/api/
-NEXUS_IQ_URL=http://localhost:8090
+SCANCENTRAL_DAST_API=http://localhost:8085/api/
+NEXUS_IQ_URL=http://localhost:8070
 NEXUS_IQ_AUTH=gTvvcLQ3:NDZ6bIzhFTRIyT9UtPaQaSEc0HaDsQd3ELvXnkohBGmK
 NEXUS_IQ_APP_ID=IWA
 FOD_API_URL=https://api.emea.fortify.com
@@ -167,7 +167,7 @@ uploads the results to [Fortify Software Security Center](https://www.microfocus
 In order to upload to SSC you will need to have entries in the `.env` similar to the following:
 
 ```aidl
-SSC_URL=http://localhost:9090/ssc
+SSC_URL=http://localhost:8080/ssc
 SSC_AUTH_TOKEN=28145aad-c40d-426d-942b-f6d6aec9c56f
 SSC_APP_NAME=IWA
 SSC_APP_VER_NAME=master
@@ -187,11 +187,11 @@ up the project and initiate a remote scan using Fortify ScanCentral SAST:
 In order to use ScanCentral SAST you will need to have entries in the `.env` similar to the following:
 
 ```aidl
-SSC_URL=http://localhost:9090/ssc
+SSC_URL=http://localhost:8080/ssc
 SSC_AUTH_TOKEN=6b16aa46-35d7-4ea6-98c1-8b780851fb37
 SSC_APP_NAME=IWA
 SSC_APP_VER_NAME=master
-SCANCENTRAL_CTRL_URL=http://localhost:9090/scancentral-ctrl
+SCANCENTRAL_CTRL_URL=http://localhost:8080/scancentral-ctrl
 SCANCENTRAL_CTRL_TOKEN=96846342-1349-4e36-b94f-11ed96b9a1e3
 SCANCENTRAL_POOL_ID=00000000-0000-0000-0000-000000000002
 SCANCENTRAL_EMAIL=test@test.com
@@ -220,11 +220,11 @@ and upload the results to SSC:
 In order to user Nexus IQ Server you will need to have entries in the `.env` similar to the following:
 
 ```aidl
-SSC_URL=http://localhost:9090/ssc
+SSC_URL=http://localhost:8080/ssc
 SSC_AUTH_TOKEN=6b16aa46-35d7-4ea6-98c1-8b780851fb37
 SSC_APP_NAME=IWA
 SSC_APP_VER_NAME=master
-NEXUS_IQ_URL=http://nexus-iq-server:8080
+NEXUS_IQ_URL=http://localhost:8070
 NEXUS_IQ_AUTH=XXX:YYY
 NEXUS_IQ_APP_ID=IWA
 ```
@@ -259,11 +259,11 @@ To carry out a WebInspect scan you should first "run" the application using one 
 Then you can start a scan using the following command line:
 
 ```
-"C:\Program Files\Fortify\Fortify WebInspect\WI.exe" -s ".\etc\IWA-UI-Dev-Settings.xml" -macro ".\etc\IWA-UI-Dev-Login.webmacro" -u "http://localhost:8080" -ep ".\IWA-DAST.fpr" -ps 1008
+"C:\Program Files\Fortify\Fortify WebInspect\WI.exe" -s ".\etc\IWA-UI-Dev-Settings.xml" -macro ".\etc\IWA-UI-Dev-Login.webmacro" -u "http://localhost:8888" -ep ".\IWA-DAST.fpr" -ps 1008
 ```
 
 This will start a scan using the Default Settings and Login Macro files provided in the `etc` directory. It assumes
-the application is running on "localhost:8080". It will run a "Critical and High Priority" scan using the policy with id 1008. 
+the application is running on "localhost:8888". It will run a "Critical and High Priority" scan using the policy with id 1008. 
 Once completed you can open the WebInspect "Desktop Client" and navigate to the scan created for this execution. An FPR file
 called `IWA-DAST.fpr` will also be available - you can open it with `auditworkbench` (or generate a
 PDF report from using `ReportGenerator`). You could also upload it to Fortify SSC or Fortify on Demand.
@@ -299,7 +299,7 @@ For examples on how to achieve this see [here](https://github.com/fortify-commun
 
 The IWA application includes a fully documented [Swagger](https://swagger.io/solutions/getting-started-with-oas/) based 
 API which you can browse to at 
-[http://localhost:8080/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config](http://localhost:8080/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config).
+[http://localhost:8888/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config](http://localhost:8888/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config).
 You can carry out security testing of this API using Fortify WebInspect or ScanCentral DAST. A [Postman](https://www.postman.com/downloads/) 
 collection is provided to help in this. You can exercise the collection using [newman](https://github.com/postmanlabs/newman). For example from a PowerShell
 command prompt on Windows:

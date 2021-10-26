@@ -113,8 +113,8 @@
         <string>Insecure Web App API</string>
       </ArrayOfString>
     </WorkflowMacros>
-    <ScanName>API: http://localhost:8080/iwa/v3/api-docs</ScanName>
-    <ApiDefinitionPath>http://localhost:8080/iwa/v3/api-docs</ApiDefinitionPath>
+    <ScanName>API: http://localhost:8888/iwa/v3/api-docs</ScanName>
+    <ApiDefinitionPath>http://localhost:8888/iwa/v3/api-docs</ApiDefinitionPath>
     <ApiType>Swagger</ApiType>
   </StartParameters>
   <ScanStrategy>ConcurrentCrawlAudit</ScanStrategy>

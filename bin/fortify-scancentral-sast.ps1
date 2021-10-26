@@ -38,5 +38,3 @@ Write-Host "scancentral -url $ScanCentralCtrlUrl -ssctoken $SSCAuthToken start -
 Write-Host
 Write-Host You can check ongoing status with:
 Write-Host " scancentral -url $ScanCentralCtrlUrl status -token [received-token]"
-
-Write-Host Done.

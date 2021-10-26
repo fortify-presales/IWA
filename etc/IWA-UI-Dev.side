@@ -2,7 +2,7 @@
   "id": "6c06cb2f-c88a-4b91-8f65-c472f7fb3b77",
   "version": "2.0",
   "name": "IWA",
-  "url": "http://localhost:8080",
+  "url": "http://localhost:8888",
   "tests": [{
     "id": "07a91eb1-ff46-494e-9734-6815dd4fa109",
     "name": "End-To-End-Shopping",
@@ -347,6 +347,6 @@
     "timeout": 300,
     "tests": ["07a91eb1-ff46-494e-9734-6815dd4fa109"]
   }],
-  "urls": ["http://localhost:8080/"],
+  "urls": ["http://localhost:8888/"],
   "plugins": []
 }

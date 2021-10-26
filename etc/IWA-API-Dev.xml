@@ -216,7 +216,7 @@
   "values": [
     {
       "type": "any",
-      "value": "http://localhost:8080",
+      "value": "http://localhost:8888",
       "key": "base_url"
     },
     {
@@ -946,7 +946,7 @@
           <List version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
             <IgnoreCase>true</IgnoreCase>
             <LookupList>
-              <string>localhost:8080</string>
+              <string>localhost:8888</string>
             </LookupList>
           </List>
           <ListRegularExpressions version="1" type="SPI.Configuration.Data.RegexLookupListData" assembly="SPI.Configuration.Settings" fips="false">
