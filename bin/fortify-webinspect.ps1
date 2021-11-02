@@ -20,6 +20,8 @@ if ([string]::IsNullOrEmpty($AppName)) { throw "Application Name has not been se
 
 # WebInspect policy to use - 1008 = Crtical and High only
 $WIPolicyId = 1008
+# WebInspect custom policy file to use
+$WIPolicyPath = ".\etc\Critical-and-Highs-Custom.policy"
 
 # example path for WebInspect
 $env:Path += ";C:\Program Files\Fortify\Fortify WebInspect\"
@@ -33,14 +35,14 @@ if ((Get-Command "WI.exe" -ErrorAction SilentlyContinue) -eq $null)
 
 Write-Host Executing dynamic scan...
 & wi -s ".\etc\IWA-UI-Dev-Settings.xml" -macro ".\etc\IWA-UI-Dev-Login.webmacro" -u $AppUrl `
-    -ep ".\IWA-DAST.fpr" -ps $WIPolicyId
+    -ep ".\IWA-DAST.fpr" -pc $WIPolicyPath # -ps $WIPolicyId
 
 Write-Host Generating PDF report...
 & ReportGenerator '-Dcom.fortify.sca.ProjectRoot=.fortify' -user "Demo User" -format pdf -f "$($AppName).pdf" -source "$($AppName).fpr"
 
 if (![string]::IsNullOrEmpty($SSCUrl)) {
     Write-Host Uploading results to SSC...
-    & fortifyclient uploadFPR -file "$($AppName).fpr" -url $SSCUrl -authtoken $SSCAuthToken -application $AppName -applicationVersion $AppVersion
+    & fortifyclient uploadFPR -file ".\IWA-DAST.fpr" -url $SSCUrl -authtoken $SSCAuthToken -application $AppName -applicationVersion $AppVersion
 }
 
 Write-Host Done.
