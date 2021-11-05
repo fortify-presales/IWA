@@ -21,10 +21,11 @@
 
             <div class="container">
 
-                <div th:if="${keywords != null && keywords != ''}" class="row pt-2">
+                <div th:if="${not #strings.isEmpty(keywords)}" class="row pt-2">
                     <div class="col-md-12 text-center">
-                        <h2>Search</h2>
-                        <h5>&quot;<span class="bg-light text-dark"><th:block th:utext="${keywords}"/></span>&quot;</h5>
+                        <h2>Searching for:
+                            <span class="bg-light text-dark"><span th:utext="${keywords}"/></span>
+                        </h2>
                     </div>
                 </div>
 
@@ -103,7 +104,8 @@
 
                 <div class="row pt-4">
                     <div class="col-md-12">
-                        <h5>Showing <span th:text="${productCount}"></span> of <span th:text="${productTotal}"></span> products</h5>
+                        <h5 th:if="${#strings.isEmpty(keywords)}" >Showing <span th:text="${productCount}"></span> of <span th:text="${productTotal}"></span> products</h5>
+                        <h5 th:if="${not #strings.isEmpty(keywords)}" >Found <span th:text="${productCount}"></span> products</h5>
                     </div>
                 </div>
 

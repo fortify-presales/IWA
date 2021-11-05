@@ -137,12 +137,15 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 log.info("Running development profile");
                 httpSecurity.csrf().disable();
                 httpSecurity.headers().frameOptions().disable();
+                httpSecurity.cors().disable();
+                httpSecurity.headers().xssProtection().disable();
             }
 
             /*
             http.headers()
            .contentSecurityPolicy("script-src 'self' https://trustedscripts.example.com; object-src https://trustedplugins.example.com; report-uri /csp-report-endpoint/");
              */
+
             httpSecurity.authorizeRequests()
                     .antMatchers("/",
                             "/products/**",
