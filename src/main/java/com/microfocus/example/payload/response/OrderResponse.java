@@ -19,6 +19,7 @@
 
 package com.microfocus.example.payload.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.microfocus.example.entity.Order;
 import com.microfocus.example.entity.User;
 
@@ -33,12 +34,14 @@ import java.util.UUID;
 public class OrderResponse {
 
     private UUID id;
-    private User user;
+    private UserResponse user;
     private String orderNum;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     private Date orderDate;
     private String cart;
     private float amount;
     private Boolean shipped;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     private Date shippedDate;
 
     public OrderResponse() {
@@ -46,7 +49,7 @@ public class OrderResponse {
 
     public OrderResponse(Order order) {
         this.id = order.getId();
-        this.user = order.getUser();
+        this.user = new UserResponse(order.getUser());
         this.orderNum = order.getOrderNum();
         this.orderDate = order.getOrderDate();
         this.cart = order.getCart();
@@ -59,64 +62,32 @@ public class OrderResponse {
         return id;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public User getUser() {
+    public UserResponse getUser() {
         return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public String getOrderNum() {
         return orderNum;
     }
 
-    public void setOrderNum(String orderNum) {
-        this.orderNum = orderNum;
-    }
-
     public Date getOrderDate() {
         return orderDate;
-    }
-
-    public void setOrderDate(Date orderDate) {
-        this.orderDate = orderDate;
     }
 
     public String getCart() {
         return cart;
     }
 
-    public void setCart(String cart) {
-        this.cart = cart;
-    }
-
     public float getAmount() {
         return amount;
-    }
-
-    public void setAmount(float amount) {
-        this.amount = amount;
     }
 
     public Boolean getShipped() {
         return shipped;
     }
 
-    public void setShipped(Boolean shipped) {
-        this.shipped = shipped;
-    }
-
     public Date getShippedDate() {
         return shippedDate;
-    }
-
-    public void setShippedDate(Date shippedDate) {
-        this.shippedDate = shippedDate;
     }
 
     @Override

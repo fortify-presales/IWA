@@ -118,3 +118,13 @@ VALUES ('81550b4f-c660-41ec-a6f3-076b611add9b', '32e7db01-86bc-4687-9ecb-d79b265
 INSERT INTO orders (id, user_id, order_date, order_num, amount, shipped, cart)
 VALUES ('db4cfab1-ff1d-4bca-a662-394771841383', 'db4cfab1-ff1d-4bca-a662-394771841383', CURDATE()-10, 'OID-G320-0051', 25.0, 0,
         '[{"id":"6bbbeb10-6709-4163-a790-f691b09d6aca","name":"Dontax","price":8.50,"quantity":1}]');
+
+INSERT INTO reviews (id, product_id, user_id, review_date, comment, rating, visible)
+VALUES ('822f734a-3d13-4ebc-bff6-9c36d29866a6', 'eec467c8-5de9-4c7c-8541-7b31614d31a0', '32e7db01-86bc-4687-9ecb-d79b265ac14f',
+        CURDATE()-10, 'This is an example review of Solodox 750. It is very good.', 5, 1);
+INSERT INTO reviews (id, product_id, user_id, review_date, comment, rating, visible)
+VALUES ('5f3936db-0a41-4026-8a66-1b9b0c21e203', '74b87e87-0d77-422c-baaa-622498a84328', '32e7db01-86bc-4687-9ecb-d79b265ac14f',
+        CURDATE()-5, 'Arrived on time and works well but the instructions are very limited and not explained well.', 4, 1);
+INSERT INTO reviews (id, product_id, user_id, review_date, comment, rating, visible)
+VALUES ('920292c5-0c9c-46a5-aacb-d8011ae6608a', 'eec467c8-5de9-4c7c-8541-7b31614d31a0', 'db4cfab1-ff1d-4bca-a662-394771841383',
+        CURDATE()-2, 'This is another review of Solodox 750. It does not work as described and not worth the money.', 3, 1);

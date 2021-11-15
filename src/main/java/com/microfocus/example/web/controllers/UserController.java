@@ -23,10 +23,8 @@ import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.Order;
 import com.microfocus.example.entity.User;
-import com.microfocus.example.exception.EmailAddressTakenException;
-import com.microfocus.example.exception.InvalidPasswordException;
-import com.microfocus.example.exception.UserNotFoundException;
-import com.microfocus.example.exception.UsernameTakenException;
+import com.microfocus.example.exception.*;
+import com.microfocus.example.service.StorageService;
 import com.microfocus.example.service.UserService;
 import com.microfocus.example.utils.WebUtils;
 import com.microfocus.example.web.form.*;
@@ -35,6 +33,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Controller;
@@ -42,11 +43,15 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Controller for user pages
@@ -74,6 +79,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private StorageService storageService;
 
     @Value("${app.messages.home}")
     private final String message = "Hello World";
@@ -375,6 +383,50 @@ public class UserController {
            }
         }
         return "user/register";
+    }
+
+    //
+    // File uploads
+    //
+
+    @GetMapping("/uploadFile")
+    public String listUploadedFiles(@Valid @ModelAttribute("uploadForm") UploadForm uploadForm,
+                                    BindingResult bindingResult, Model model,
+                                    RedirectAttributes redirectAttributes,
+                                    Principal principal) throws IOException {
+
+        model.addAttribute("files", storageService.loadAll().map(
+                path -> MvcUriComponentsBuilder.fromMethodName(UserController.class,
+                        "serveFile", path.getFileName().toString()).build().toUri().toString())
+                .collect(Collectors.toList()));
+
+        return "user/upload-file";
+    }
+
+    @GetMapping("/files/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+
+        Resource file = storageService.loadAsResource(filename);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    }
+
+    @PostMapping("/files/upload")
+    public String handleFileUpload(@RequestParam("file") MultipartFile file,
+                                   RedirectAttributes redirectAttributes) {
+
+        storageService.store(file);
+        redirectAttributes.addFlashAttribute("message",
+                "You successfully uploaded " + file.getOriginalFilename() + "!");
+
+        return "redirect:/user/upload-file";
+    }
+
+
+    @ExceptionHandler(StorageFileNotFoundException.class)
+    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
+        return ResponseEntity.notFound().build();
     }
 
     private Model setModelDefaults(Model model, Principal principal, String controllerName, String actionName) {

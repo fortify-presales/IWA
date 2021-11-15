@@ -48,7 +48,7 @@
                                 </tr>
                                 <tr th:each="o : ${orders}">
                                     <td><a th:href="@{/admin/orders/{id}(id=${o.id})}"><span th:text="${o.orderNum}"> Number </span></a></td>
-                                    <td><span th:text="${o.user.email}"> User </span></td>
+                                    <td><span th:text="${o.user.username}"> User </span></td>
                                     <td>
                                         <span th:text="${#dates.format(o.orderDate, 'MM-dd-yyyy')}"> Order Date </span>
                                     </td>

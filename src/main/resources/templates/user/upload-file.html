@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>File Upload</title>
+</head>
+<body>
+    <div layout:fragment="content" th:remove="tag">
+
+        <div class="bg-light py-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 mb-0"><a th:href="@{/user/}">User</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">File Upload</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="site-section">
+
+            <div class="container">
+
+                <div class="row">
+
+                    <div class="col-md-3 mr-auto">
+                        <div th:replace="fragments/user-menu.html :: userMenu('/user/profile')"></div>
+                    </div>
+
+                    <div class="col-md-9">
+
+                        <h5>Fle upload (not yet used)</h5>
+                        <form class="form-horizontal" action="#" th:action="@{/user/files/upload}" th:object="${uploadForm}" enctype="multipart/form-data" method="post">
+						
+                            <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                                <span th:text="${message}">message</span>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="alert alert-danger" th:if="${#fields.hasErrors('global')}">
+                                <p th:each="error : ${#fields.errors('global')}" th:text="${error}">error</p>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('file')}? 'has-error':''">
+                                    <label for="file" class="text-black">File: <span class="text-danger">*</span></label>
+                                    <input type="file" class="form-control" id="file" th:field="*{file}" th:value="${uploadForm.file}">
+                                    <div th:if="${#fields.hasErrors('file')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('file')}" th:errors="*{file}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="text" hidden id="id" th:field="*{id}" th:value="${uploadForm.id}">
+                            <input type="text" hidden id="username" th:field="*{username}" th:value="${uploadForm.username}">
+
+                            <div class="form-group row mt-4">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-space btn-primary">Submit</button>
+                                    <a class="btn btn-info" th:href="@{/user/profile}">Cancel</a>
+                                </div>
+                            </div>
+							
+                        </form>
+
+                        <h5>Uploaded files</h5>
+                        <ul class="list-group">
+                            <li class="list-group-item" th:each="file : ${files}">
+                                <a th:href="${file}" th:text="${file}" />
+                            </li>
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</body>
+</html>

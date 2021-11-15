@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Reviews View</title>
+</head>
+<body>
+    <div layout:fragment="content" th:remove="tag">
+
+        <div class="bg-light py-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 mb-0">
+                        <a th:href="@{/admin/}">Site Admin</a> <span class="mx-2 mb-0">/</span>
+                        <a th:href="@{/admin/reviews}">Reviews</a> <span class="mx-2 mb-0">/</span>
+                        <strong class="text-black">View</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="site-section">
+
+            <div class="container">
+
+                <div class="row">
+
+                    <div class="col-md-3 mr-auto">
+                        <div th:replace="fragments/admin-menu.html :: adminMenu('/admin/reviews')"></div>
+                    </div>
+
+                    <div class="col-md-9">
+
+                        <form class="form-horizontal">
+
+                            <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                                <span th:text="${message}">message</span>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <label for="product" class="text-black">Product </label>
+                                    <input readonly th:value="${adminReviewForm.product.name}" type="text" class="form-control" id="product" name="product">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="user" class="text-black">User </label>
+                                    <input readonly th:value="${adminReviewForm.user.email}" type="text" class="form-control" id="user" name="user">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="commentText" class="col-sm-12 col-form-label">Comment</label>
+                                <div class="col-sm-12">
+                                    <input type="text" readonly class="form-control-plaintext" id="commentText" th:value="${adminReviewForm.comment}">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <label for="reviewDate" class="text-black">Review Date </label>
+                                    <input readonly th:value="${#dates.format(adminReviewForm.reviewDate, 'MM-dd-yyyy')}" type="text" class="form-control" id="reviewDate" name="reviewDate">
+                                </div>
+                            </div>
+
+
+                            <div class="form-check row">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="visible"
+                                           th:field="${adminReviewForm.visible}" disabled>
+                                    <label class="form-check-label" for="visible">Visible </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group row mt-4">
+                                <div class="col-md-12">
+                                    <a class="btn btn-primary" th:href="@{/admin/reviews}"> Back </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</body>
+</html>

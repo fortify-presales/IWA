@@ -11,6 +11,9 @@
                    th:classappend="${#strings.contains(activeItem,'products')} ? active : ''"
                    th:href="@{/admin/products}"><i class="fas fa-box fa-fw"></i> Products </a>
                 <a class="list-group-item list-group-item-action"
+                   th:classappend="${#strings.contains(activeItem,'reviews')} ? active : ''"
+                   th:href="@{/admin/reviews}"><i class="fas fa-comments fa-fw"></i> Reviews </a>
+                <a class="list-group-item list-group-item-action"
                    th:classappend="${#strings.contains(activeItem,'orders')} ? active : ''"
                    th:href="@{/admin/orders}"><i class="fas fa-shopping-cart fa-fw"></i> Orders </a>
                 <a class="list-group-item list-group-item-action"

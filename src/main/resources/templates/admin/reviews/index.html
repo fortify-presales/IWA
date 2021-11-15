@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Reviews</title>
+</head>
+    <body>
+        <div layout:fragment="content" th:remove="tag">
+
+            <div class="bg-light py-3">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 mb-0">
+                            <a th:href="@{/admin/}">Site Admin</a> <span class="mx-2 mb-0">/</span>
+                            <strong class="text-black">Reviews</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="site-section">
+
+                <div class="container">
+
+                    <div class="row">
+
+                        <div class="col-md-3 mr-auto">
+                            <div th:replace="fragments/admin-menu.html :: adminMenu('/admin/reviews')"></div>
+                        </div>
+
+                        <div class="col-md-9">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Product</th>
+                                    <th scope="col">Summary</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Rating</th>
+                                    <th scope="col">Visible</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:if="${reviews.isEmpty()}">
+                                    <td colspan="5"> No Reviews Available </td>
+                                </tr>
+                                <tr th:each="r : ${reviews}">
+                                    <td><span th:text="${r.product.name}"> Product </span></td>
+                                    <td><a th:href="@{/admin/reviews/{id}(id=${r.id})}"><span th:text="${#strings.abbreviate(r.comment,50)}"> Comment </span></a></td>
+                                    <td><span th:text="${#dates.format(r.reviewDate, 'MM-dd-yyyy')}"> Date </span></td>
+                                    <td>
+                                        <span th:each="i : ${#numbers.sequence( 1, r.rating, 1)}">
+                                            <i class="fas fa-star" style="color: cornflowerblue"> </i>
+                                        </span>
+                                        <span th:if="${r.rating != 5}">
+                                            <span th:each="i : ${#numbers.sequence(r.rating, 4, 1)}">
+                                                <i class="fas fa-star" style="color: gray"> </i>
+                                            </span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${r.visible}"> <i class="fas fa-check"></i> </span>
+                                        <span th:unless="${r.visible}"> <i class="fas fa-times"></i> </span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="form-group row mt-4">
+                                <div class="col-md-12">
+                                    <a class="btn btn-primary" th:href="@{/not-yet-implemented}">New Review</a>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </body>
+</html>

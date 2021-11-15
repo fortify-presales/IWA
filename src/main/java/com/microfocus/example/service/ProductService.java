@@ -21,19 +21,23 @@ package com.microfocus.example.service;
 
 import com.microfocus.example.entity.Order;
 import com.microfocus.example.entity.Product;
+import com.microfocus.example.entity.Review;
 import com.microfocus.example.entity.User;
-import com.microfocus.example.exception.MessageNotFoundException;
 import com.microfocus.example.exception.OrderNotFoundException;
 import com.microfocus.example.exception.ProductNotFoundException;
+import com.microfocus.example.exception.ReviewNotFoundException;
 import com.microfocus.example.payload.request.OrderRequest;
 import com.microfocus.example.payload.request.ProductRequest;
+import com.microfocus.example.payload.request.ReviewRequest;
 import com.microfocus.example.repository.OrderRepository;
 import com.microfocus.example.repository.ProductRepository;
+import com.microfocus.example.repository.ReviewRepository;
 import com.microfocus.example.repository.UserRepository;
 import com.microfocus.example.web.form.OrderForm;
 import com.microfocus.example.web.form.admin.AdminNewProductForm;
 import com.microfocus.example.web.form.admin.AdminOrderForm;
 import com.microfocus.example.web.form.admin.AdminProductForm;
+import com.microfocus.example.web.form.admin.AdminReviewForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +60,9 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Autowired
     private OrderRepository orderRepository;
@@ -184,6 +191,95 @@ public class ProductService {
         Product newProduct = productRepository.saveAndFlush(ptmp);
         return newProduct;
     }
+
+    //
+    // Reviews
+    //
+
+    public Optional<Review> findReviewById(UUID id) {
+        return reviewRepository.findById(id);
+    }
+
+    public List<Review> findReviewsByProductId(UUID productId) {
+        return reviewRepository.findProductReviews(productId);
+    }
+
+    public List<Review> findReviewByUserId(UUID userId) {
+        return reviewRepository.findByUserId(userId);
+    }
+
+    public List<Review> getReviews() { return reviewRepository.findAll(); }
+
+    public List<Review> getReviews(Integer offset, String keywords) {
+        if (keywords != null && !keywords.isEmpty()) {
+            return reviewRepository.findReviewsByKeywords(keywords, offset, pageSize);
+        } else {
+            return reviewRepository.findReviews(offset, pageSize);
+        }
+    }
+
+    public List<Review> getProductReviews(UUID pid) {
+        return reviewRepository.findProductReviews(pid);
+    }
+
+    public List<Review> getProductReviews(UUID pid, Integer offset, String keywords) {
+        if (keywords != null && !keywords.isEmpty()) {
+            return reviewRepository.findProductReviewsByKeywords(pid, keywords, offset, pageSize);
+        } else {
+            return reviewRepository.findProductReviews(pid);
+        }
+    }
+
+    public boolean reviewExistsById(UUID id) {
+        return reviewRepository.existsById(id);
+    }
+
+    public void deleteReviewById(UUID id) {
+        reviewRepository.deleteById(id);
+    }
+
+    public Review saveReviewFromAdminReviewForm(AdminReviewForm adminReviewForm) throws ReviewNotFoundException {
+        Optional<Review> optionalReview = reviewRepository.findById(adminReviewForm.getId());
+        if (optionalReview.isPresent()) {
+            Review rtmp = optionalReview.get();
+            rtmp.setComment(adminReviewForm.getComment());
+            rtmp.setRating(adminReviewForm.getRating());
+            rtmp.setVisible(adminReviewForm.getVisible());
+            return rtmp;
+        } else {
+            throw new ReviewNotFoundException("Review not found: " + adminReviewForm.getId());
+        }
+    }
+
+    public Review saveReviewFromApi(UUID reviewId, ReviewRequest review) {
+        Review rtmp = new Review();
+        // are we creating a new review or updating an existing review?
+        if (reviewId == null) {
+            rtmp.setId(null);
+            rtmp.setReviewDate(new Date());
+        } else {
+            rtmp.setId(reviewId);
+            rtmp.setReviewDate(rtmp.getReviewDate());
+            // check it exists
+            if (!reviewExistsById(reviewId))
+                throw new ReviewNotFoundException("Review not found with id: " + reviewId);
+        }
+        Optional<Product> optionalProduct = productRepository.findById(review.getProductId());
+        if (optionalProduct.isPresent()) {
+            rtmp.setProduct(optionalProduct.get());
+        }
+        Optional<User> optionalUser = userRepository.findById(review.getUserId());
+        if (optionalUser.isPresent()) {
+            rtmp.setUser(optionalUser.get());
+        }
+        rtmp.setComment(review.getComment());
+        rtmp.setRating(review.getRating());
+        return reviewRepository.save(rtmp);
+    }
+
+    //
+    // Orders
+    //
 
     public Order newOrderFromOrderForm(OrderForm orderForm) {
         Order otmp = new Order();

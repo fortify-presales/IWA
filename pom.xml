@@ -41,7 +41,7 @@
         <jwt.version>0.9.1</jwt.version>
         <selenium.version>4.0.0-rc-2</selenium.version>
         <wlp.dir>C:/Tools/wlp</wlp.dir>
-        <skip.unit.tests>true</skip.unit.tests>
+        <skip.unit.tests>false</skip.unit.tests>
         <skip.integration.tests>true</skip.integration.tests>
     </properties>
 
@@ -563,7 +563,6 @@
                     </includes>
                     <excludes>
                         <exclude>**/PasswordConstraintValidatorTest*.java</exclude>
-                        <exclude>**/SeleniumFlowIT.java</exclude>
                         <!--exclude>**/*IT.java</exclude-->
                     </excludes>
                 </configuration>

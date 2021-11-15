@@ -19,15 +19,17 @@ if ([string]::IsNullOrEmpty($AppName)) { throw "Application Name has not been se
 
 # Run the translation and scan
 
-Write-Host Cleaning up workspace...
-& sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' -b "$AppName" -clean
-
-# Compile the application
-Write-Host Re-compiling application in debug mode...
-& mvn -P release,jar -DskipTests '-Dmaven.compiler.debuglevel="lines,vars,source"' verify package
-# write dependencies to file we can use later in sourceanalyzer command
-& mvn dependency:build-classpath '-Dmdep.outputFile=.\target\cp.txt'
-$ClassPath = Get-Content -Path .\target\cp.txt
+# Compile the application if bot already built
+$DependenciesFile = Join-Path -Path (Get-Location) -ChildPath target\cp.txt
+if (-not (Test-Path -PathType Leaf -Path $DependenciesFile)) {
+    Write-Host Cleaning up workspace...
+    & sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' -b "$AppName" -clean
+    Write-Host Re-compiling application in debug mode...
+    & mvn -P release, jar -DskipTests '-Dmaven.compiler.debuglevel="lines,vars,source"' verify package
+    # write dependencies to file we can use later in sourceanalyzer command
+    & mvn dependency: build-classpath '-Dmdep.outputFile=.\target\cp.txt'
+}
+$ClassPath = Get-Content -Path $DependenciesFile
 
 Write-Host Running translation...
 & sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' $ScanSwitches -b "$AppName" `

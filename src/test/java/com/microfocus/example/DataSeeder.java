@@ -66,6 +66,13 @@ public class DataSeeder {
     public static final UUID TEST_ORDER1_USERID = UUID.fromString("bd5b9e2f-ac55-4e34-a76d-599b7e5b3308");
     public static final String TEST_ORDER1_ORDER_NUM = "TEST-O000-0001";
 
+    // Test Review:
+    // Review 1 - stored in database on startup
+    public static final UUID TEST_REVIEW1_ID = UUID.fromString("8ab3eb7c-42f6-11ec-81d3-0242ac130003");
+    public static final UUID TEST_REVIEW1_PRODUCTID = UUID.fromString("38400000-8cf0-11bd-b23e-10b96e4ef00d");
+    public static final UUID TEST_REVIEW1_USERID = UUID.fromString("bd5b9e2f-ac55-4e34-a76d-599b7e5b3308");
+    public static final String TEST_REVIEW1_COMMENT = "This is an example review of Test Product 1. It is very good";
+
     public static User generateUser() {
         User user = new User();
         user.setUsername(TEST_USER2_USERNAME);

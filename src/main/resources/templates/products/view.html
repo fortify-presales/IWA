@@ -32,11 +32,31 @@
                                     <img th:src="@{/img/awaiting-image.png}" alt="Awaiting Image" class="img-fluid p-5">
                             </span>
                         </div>
+                        <div class="mt-4">
+                            <h5>Product Information</h5>
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <th scope="row">Code:</th>
+                                    <td><span th:text="${product.code}"> Code </span</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Manufacturer:</th>
+                                    <td>Unknown</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Contents:</th>
+                                    <td>Unspecified</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Date First Available:</th>
+                                    <td><span th:text="${#dates.format(#dates.createNow(), 'dd MMM yyyy')}"></span></td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                     <div class="col-md-6 item-entry">
                         <h2 class="text-black"><span th:text="${product.name}"> </span></h2>
-                        <h5><span th:text="${product.code}"> Code </span></h5>
-                        <span class="product-rating mb-4">
+                        <span class="product-rating">
                             <span th:each="i : ${#numbers.sequence( 1, product.rating, 1)}">
                                 <i class="fas fa-star" style="color: cornflowerblue"> </i>
                             </span>
@@ -45,10 +65,10 @@
                                     <i class="fas fa-star" style="color: gray"> </i>
                                 </span>
                             </span>
-                            <span class="product-reviews pl-2"><a href="#">Customer Reviews</a></span>
+                            <span class="product-reviews pl-2"><a href="#reviews-start">Customer Reviews</a>&nbsp(<span id="review-count">0</span>)</span>
                         </span>
 
-                        <h6>Summary</h6>
+                        <h6 class="mt-2">Summary</h6>
                         <p><span th:text="${product.summary}"> Summary </span></p>
                         <h6>Description</h6>
                         <p><span th:text="${product.description}"> Description </span></p>
@@ -59,13 +79,13 @@
                             <span th:if="${product.onSale == false}" th:text="${currencySymbol + #strings.replace(#numbers.formatDecimal(product.price, 0, 2), '.00', '')}"> Price </span>
                             <span th:if="${product.onSale == true}"> &mdash; </span>
                             <span th:if="${product.onSale == true}" th:text="${currencySymbol + #strings.replace(#numbers.formatDecimal(product.salePrice, 0, 2), '.00', '')}"> Sale Price </span>
-                            <span th:if="${product.inStock}" class="alert alert-success">In Stock</span>
+                            <span th:if="${product.inStock}" class="alert alert-success alert">In Stock</span>
                             <span th:unless="${product.inStock}" class="alert alert-danger">Out of Stock</span>
                             <span th:unless="${product.inStock}" th:text="|In stock in ${product.timeToStock} days|" class="alert alert-light text-dark"> </span>
                         </h4>
 
                         <div class="cart-add">
-                            <div class="mb-5">
+                            <div class="mb-4">
                                 <div class="input-group mb-3" style="max-width: 180px;">
                                     <div class="input-group-prepend">
                                         <button id="quantity-minus" class="btn btn-outline-primary js-btn-minus" type="button">&minus;</button>
@@ -108,6 +128,12 @@
 
                 </div>
 
+                <span id="reviews-start"></span>
+                <div class="product-reviews rows">
+                    <h4>Customer Reviews</h4>
+                    <div class="review-data"></div>
+                </div>
+
             </div>
 
         </div>
@@ -118,9 +144,11 @@
 
     <th:block layout:fragment="script">
         <script type="text/javascript" th:src="@{/js/components/CartAdd.js}"></script>
+        <script type="text/javascript" th:src="@{/js/components/ProductReviews.js}"></script>
         <script type="text/javascript" th:inline="javascript">
             (function ($) {
                 $('.cart-add').CartAdd({ pid: /*[[${product.id}]]*/ 'unknown' });
+                $('.product-reviews').ProductReviews({ pid: /*[[${product.id}]]*/ 'unknown' });
             })(jQuery);
         </script>
     </th:block>
