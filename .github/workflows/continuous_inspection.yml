@@ -60,7 +60,7 @@ jobs:
 
     # Build / Test with Maven
     - name: Build with Maven
-      run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
+      run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dskip.unit.tests=false -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
 
   ScanCentral-SAST-Scan:
     # Use the appropriate runner for building your source code.
@@ -310,8 +310,8 @@ jobs:
 
       # Build / Test with Maven (debug)
       # "mvn -P fortify package" produces an fod.zip file with source code and dependencies
-      - name: Build with Maven
-        run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P fortify,jar -B clean verify package --file pom.xml
+      #- name: Build with Maven
+      #  run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -P fortify,jar -B clean package --file pom.xml
 
       # Package up the source code and pom so that it can be uploaded to FOD
       #- name: Zip up source code
