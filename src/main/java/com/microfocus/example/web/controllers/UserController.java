@@ -65,8 +65,8 @@ public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
-    @Value("${INVALID_PASSWORD_ERROR;An invalid password was supplied.")
-    private String INVALID_PASSWORD_ERROR;
+    @Value("${AUTHENTICATION_ERROR;Invalid authentication credentials were supplied.")
+    private String AUTHENTICATION_ERROR;
 
     @Value("${USER_NOT_FOUND_ERROR:A user to be changed was not found.}")
     private String USER_NOT_FOUND_ERROR;
@@ -300,7 +300,7 @@ public class UserController {
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
                 return "redirect:/user/profile";
             } catch (InvalidPasswordException ex) {
-                log.error(INVALID_PASSWORD_ERROR);
+                log.error(AUTHENTICATION_ERROR);
                 FieldError passwordError = new FieldError("userForm", "password", ex.getMessage());
                 bindingResult.addError(passwordError);
             } catch (UserNotFoundException ex) {
@@ -331,7 +331,7 @@ public class UserController {
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
                 return "redirect:/logout";
             } catch (InvalidPasswordException ex) {
-                log.error(INVALID_PASSWORD_ERROR);
+                log.error(AUTHENTICATION_ERROR);
                 FieldError passwordError = new FieldError("passwordForm", "password", ex.getMessage());
                 bindingResult.addError(passwordError);
             } catch (UserNotFoundException ex) {

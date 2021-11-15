@@ -31,6 +31,7 @@ import com.microfocus.example.web.form.UserForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -55,7 +56,8 @@ public class AdminUserController {
 
     private static final Logger log = LoggerFactory.getLogger(AdminUserController.class);
 
-    private static final String INVALID_PASSWORD_ERROR = "An invalid password was supplied";
+    @Value("${AUTHENTICATION_ERROR;Invalid authentication credentials were supplied.")
+    private String AUTHENTICATION_ERROR;
 
     @Autowired
     private UserService userService;
@@ -149,7 +151,7 @@ public class AdminUserController {
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
                 return "redirect:/admin/users/" + userId;
             } catch (InvalidPasswordException ex) {
-                log.error(INVALID_PASSWORD_ERROR);
+                log.error(AUTHENTICATION_ERROR);
                 FieldError passwordError = new FieldError("adminPasswordForm", "password", ex.getMessage());
                 bindingResult.addError(passwordError);
             } catch (UserNotFoundException ex) {
