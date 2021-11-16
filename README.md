@@ -18,6 +18,7 @@
     * [DAST using Fortify on Demand](#dynamic-analysis-using-fortify-on-demand)
     * [API Security Testing using Fortify WebInspect and Postman](#api-security-testing-using-fortify-webinspect-and-postman)
     * [API Security Testing using ScanCentral DAST](#api-security-testing-using-scancentral-dast-and-postman)
+    * [FAST Using ScanCentral DAST and FAST proxy](#fast-using-scancentral-dast-and-fast-proxy)
 *   [Build and Pipeline Integrations](#build-and-pipeline-integrations)
     * [Jenkins Pipeline](#jenkins-pipeline)
     * [GitHub Actions](#github-actions)
@@ -319,6 +320,26 @@ In order to use this collection with WebInspect you will need to make sure newma
 
 You can also import the Postman collections into ScanCentral DAST and run the resultant setup using the [fortify-scancentral-dast.ps1](bin\fortify-scancentral-dast.ps1)
 script and the relevant CICD Identifier.
+
+
+### FAST Using ScanCentral DAST and FAST proxy
+
+There is an example Python Selenium script provided (`.\bin\selenium-iwa.py`) that can be used to capture functional test
+executions and invoke security tests on them automatically. In order to use this script you will need to have entries in
+the `.env` file similar to the following:
+
+```aidl
+APP_URL=http://localhost:8888
+SSC_AUTH_TOKEN=f305c068-646d-4a5b-8d31-40981552fbd6
+SSCANCENTRAL_DAST_API=http://localhost:5001/api/
+SCANCENTRAL_DAST_CICD_TOKEN=c3c3df60-de68-45b8-89c0-4c07b53392e7
+FAST_EXE=C:\\Program Files\\Fortify\\Fortify WebInspect\\fast.exe
+FAST_PORT=8087
+FAST_PROXY=127.0.0.1:8087
+CHROME_WEBDRIVER_PATH=C:/tools/webdriver/bin/chromedriver.exe
+```
+
+Make sure the application is running and then execute the Python script from your IDE or command line.
 
 ## Build and Pipeline Integrations
 

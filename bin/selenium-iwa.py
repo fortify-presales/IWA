@@ -23,6 +23,7 @@ SCANCENTRAL_DAST_CICD_TOKEN = os.getenv('SCANCENTRAL_DAST_CICD_TOKEN')
 FAST_EXE = os.getenv('FAST_EXE')
 FAST_PORT = os.getenv('FAST_PORT')
 FAST_PROXY = os.getenv('FAST_PROXY')
+CHROME_WEBDRIVER_PATH = os.getenv('CHROME_WEBDRIVER_PATH')
 
 # start FAST proxy
 print('Starting FAST proxy')
@@ -50,7 +51,7 @@ capabilities = webdriver.DesiredCapabilities.CHROME
 prox.add_to_capabilities(capabilities)
 options = webdriver.ChromeOptions()
 options.add_argument('ignore-certificate-errors')
-browser = webdriver.Chrome(executable_path='C:/tools/webdriver/bin/chromedriver.exe',desired_capabilities=capabilities,chrome_options=options)
+browser = webdriver.Chrome(executable_path='%s'%CHROME_WEBDRIVER_PATH,desired_capabilities=capabilities,chrome_options=options)
 
 # Navigate to zero
 print('Navigating to IWA Website: %s'%APP_URL)
@@ -84,6 +85,8 @@ time.sleep(5)
 
 # shutdown proxy
 print('Shutting down proxy')
+# note this is the default install location
 subprocess.Popen(['C:\\Program Files\\Fortify\\Fortify WebInspect\\fast.exe', '-p', FAST_PORT, '-s'])
 
+# temp hack to make sure FAST exe shuts down
 input('Press enter to continue...')

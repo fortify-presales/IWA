@@ -25,9 +25,9 @@ if (-not (Test-Path -PathType Leaf -Path $DependenciesFile)) {
     Write-Host Cleaning up workspace...
     & sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' -b "$AppName" -clean
     Write-Host Re-compiling application in debug mode...
-    & mvn -P release, jar -DskipTests '-Dmaven.compiler.debuglevel="lines,vars,source"' verify package
+    & mvn -P release,jar -DskipTests '-Dmaven.compiler.debuglevel="lines,vars,source"' verify package
     # write dependencies to file we can use later in sourceanalyzer command
-    & mvn dependency: build-classpath '-Dmdep.outputFile=.\target\cp.txt'
+    & mvn dependency:build-classpath '-Dmdep.outputFile=.\target\cp.txt'
 }
 $ClassPath = Get-Content -Path $DependenciesFile
 

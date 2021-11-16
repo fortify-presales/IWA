@@ -26,6 +26,9 @@ param (
     [switch]$Raw
 )
 begin {
+    # Remove any training slash from ApiUri
+    $ApiUri = $ApiUri.TrimEnd('/')
+
     # Fortify Security Token
     $FortifyToken = ""
 
