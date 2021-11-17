@@ -42,6 +42,7 @@ public class UserUtils {
 
     public static final String USER_INFO_FILE = "user_info.json";
     public static final String NEWSLETTER_USER_FILE = "newsletter_registration.json";
+    public static final String DEFAULT_ROLE = "guest";
 
     public static void writeUser(String username, String password) throws IOException {
         JsonFactory jsonFactory = new JsonFactory();
@@ -98,6 +99,8 @@ public class UserUtils {
                 jGenerator.writeRawValue("\"" + (String) person.get("lastName") + "\"");
                 jGenerator.writeFieldName("email");
                 jGenerator.writeRawValue("\"" + (String) person.get("email") + "\"");
+                jGenerator.writeFieldName("role");
+                jGenerator.writeRawValue("\"" + (String) person.get("role") + "\"");
                 jGenerator.writeEndObject();
 
             }
@@ -110,6 +113,8 @@ public class UserUtils {
             jGenerator.writeRawValue("\"" + lastName + "\"");
             jGenerator.writeFieldName("email");
             jGenerator.writeRawValue("\"" + email + "\"");
+            jGenerator.writeFieldName("role");
+            jGenerator.writeRawValue("\"" + DEFAULT_ROLE + "\"");
             jGenerator.writeEndObject();
 
             jGenerator.writeEndArray();
