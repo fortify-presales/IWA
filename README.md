@@ -1,4 +1,4 @@
-![Continuous Inspection](https://github.com/mfdemo/IWA/workflows/Continuous%20Inspection/badge.svg)
+![Continuous Inspection](https://github.com/mfdemo/IWAPharmacyDirect/workflows/Continuous%20Inspection/badge.svg)
 
 # IWA (Insecure Web App) Pharmacy Direct
 
@@ -42,6 +42,8 @@ and requesting Services (prescriptions, health checks etc). It has a modern-ish 
 *Please note: the application should not be used in a production environment!*
 
 ![Screenshot](media/screenshot.png)
+
+An up-to-date version of the running application can be found at [https://iwapharmacydirect.herokuapp.com](https://iwapharmacydirect.herokuapp.com).
 
 ## Forking the Repository
 
@@ -370,11 +372,7 @@ you will need to do for a successful invocation.
 This repository includes a [GitHub Actions](https://github.com/features/actions) example
 [workflow](.github/workflows/continuous_inspection.yml) that
 automates the build of the application and scans the code using either
-[Fortify on Demand](https://www.microfocus.com/en-us/products/application-security-testing) or ScanCentral.
-By default the scans do not run on every code push and will need to be invoked manually from the GitHub UI.
-
-There are also additional user-initiated workflows than can be run ad-hoc for executing individual static or
-dynamic scans.
+[Fortify on Demand](https://www.microfocus.com/en-us/products/application-security-testing) or [Fortify ScanCentral](https://www.microfocus.com/en-us/cyberres/application-security/static-code-analyzer) for SAST.
 
 ### GitLab CI/CD
 
@@ -392,7 +390,7 @@ For a fully working Azure DevOps pipeline see the sister project [IWA.NET](https
 
 Please see the [Contribution Guide](CONTRIBUTING.md) for information on how to develop and contribute.
 
-If you have any problems, please consult [GitHub Issues](https://github.com/mfdemo/iwa/issues) to see if has already been discussed.
+If you have any problems, please consult [GitHub Issues](https://github.com/mfdemo/IWAPharmacyDirect/issues) to see if has already been discussed.
 
 ## Licensing
 
