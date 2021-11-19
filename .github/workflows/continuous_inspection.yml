@@ -371,7 +371,7 @@ jobs:
           FOD_TENANT: ${{ secrets.FOD_TENANT }}
           FOD_USER: ${{ secrets.FOD_USER }}
           FOD_PAT: ${{ secrets.FOD_PAT }}
-          FOD_APPLICATION_NAME: "IWA"
+          FOD_APPLICATION_NAME: "IWA (Java)"
           FOD_PARENT_RELEASE_ID: ${{ secrets.FOD_PARENT_RELEASE_ID }}
           FOD_URL: "https://emea.fortify.com/"
           FOD_API_URI: "https://api.emea.fortify.com/"
@@ -478,7 +478,7 @@ jobs:
           FOD_TENANT: ${{ secrets.FOD_TENANT }}
           FOD_USER: ${{ secrets.FOD_USER }}
           FOD_PAT: ${{ secrets.FOD_PAT }}
-          FOD_APPLICATION_NAME: "IWA"
+          FOD_APPLICATION_NAME: "IWA (Java)"
           FOD_RELEASE_ID: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
           FOD_URL: "https://emea.fortify.com/"
           FOD_API_URI: "https://api.emea.fortify.com/"
