@@ -30,7 +30,7 @@
             "parameter":
             {
               "source": "payload",
-              "name": "repository/full_name"
+              "name": "repository.full_name"
             }
           }
         },
