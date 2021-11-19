@@ -25,12 +25,12 @@
         {
           "match":
           {
-            "type": "payload-hmac-sha1",
-            "secret": "demo",
+            "type": "value",
+            "value": "mfdemo/IWAPharmacyDirect",
             "parameter":
             {
-              "source": "header",
-              "name": "X-Hub-Signature"
+              "source": "payload",
+              "name": "repository/full_name"
             }
           }
         },
