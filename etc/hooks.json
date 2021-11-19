@@ -1,6 +1,6 @@
 [
   {
-    "id": "webhook",
+    "id": "redeploy-webhook",
     "execute-command": "/home/ubuntu/IWAPharmacyDirect/bin/redeploy.sh",
     "command-working-directory": "/home/ubuntu/IWAPharmacyDirect",
     "pass-arguments-to-command":
