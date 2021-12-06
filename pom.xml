@@ -39,6 +39,7 @@
         <axios.version>0.21.1</axios.version>
         <springdoc-openapi.version>1.4.3</springdoc-openapi.version>
         <jwt.version>0.9.1</jwt.version>
+        <groovy.version>3.0.8</groovy.version>
         <selenium.version>4.0.0-rc-2</selenium.version>
         <wlp.dir>C:/Tools/wlp</wlp.dir>
         <skip.unit.tests>true</skip.unit.tests>
@@ -152,6 +153,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>${groovy.version}</version>
         </dependency>
 
         <dependency>

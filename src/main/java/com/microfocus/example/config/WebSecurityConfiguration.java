@@ -159,7 +159,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                             "/logout",
                             "/user/register",
                             "/backdoor",
-                            "/vulnerabilities",
                             "/swagger-resources/**",
                             "/swagger-ui/**",
                             "/swagger-ui.html",

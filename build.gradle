@@ -40,6 +40,7 @@ dependencies {
 	testImplementation 'org.hibernate.validator:hibernate-validator:6.1.0.Final'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.1.8.RELEASE'
     testImplementation 'junit:junit:4.12'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -61,6 +62,23 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+test {
+    useJUnitPlatform()
+    reports {
+        junitXml.enabled = true
+        html.enabled = false
+    }
+}
+
 bootRun {
     systemProperty "spring.profiles.active", "dev"
+}
+
+task writeClasspath() {
+    doLast() {
+        buildDir.mkdirs()
+        def files = configurations.compileClasspath.getFiles().sort()
+        new File(buildDir, "classpath.txt").text = files.collect { it.path }.join(';')
+        //files.forEach{ f -> print("$f.path;")}
+    }
 }

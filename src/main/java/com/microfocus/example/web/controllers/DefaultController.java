@@ -107,11 +107,6 @@ public class DefaultController {
         return "admin/backdoor";
     }
 
-    @GetMapping("/vulnerabilities")
-    public String vulnerabilities(Model model, Principal principal) {
-        return "/vulnerabilities.html";
-    }
-
     @GetMapping("/not-yet-implemented")
     public String notYetImplemented(Model model, Principal principal) {
         return "/error/not-implemented.html";
