@@ -326,13 +326,13 @@ script and the relevant CICD Identifier.
 
 ### FAST Using ScanCentral DAST and FAST proxy
 
-There is an example Python Selenium script provided (`.\bin\selenium-iwa.py`) that can be used to capture functional test
-executions and invoke security tests on them automatically. In order to use this script you will need to have entries in
-the `.env` file similar to the following:
+There is an example Python [Selenium](https://www.selenium.dev/) test script provided (`.\bin\selenium-iwa.py`) that can be used to execute a simple functional test
+and then invoke a ScanCentral DAST security test on the captured workflow using the WebInspect FAST proxy. In order to use this script you will
+need to have entries in the `.env` file similar to the following:
 
 ```aidl
 APP_URL=http://localhost:8888
-SSC_AUTH_TOKEN=f305c068-646d-4a5b-8d31-40981552fbd6
+SSC_AUTH_TOKEN_BASE64=MmYyMTA5MzYtN2Q5Ny00NmM1LWI5NTUtYThkZWI2YmJlMDUy
 SSCANCENTRAL_DAST_API=http://localhost:5001/api/
 SCANCENTRAL_DAST_CICD_TOKEN=c3c3df60-de68-45b8-89c0-4c07b53392e7
 FAST_EXE=C:\\Program Files\\Fortify\\Fortify WebInspect\\fast.exe
@@ -341,8 +341,10 @@ FAST_PROXY=127.0.0.1:8087
 CHROME_WEBDRIVER_PATH=C:/tools/webdriver/bin/chromedriver.exe
 ```
 
-Make sure the application is running and then execute the Python script from your IDE or command line.
+The `SSC_AUTH_TOKEN_BASE64` is the (first) encoded token shown in SSC not the (second) decoded token. The `CHROME_WEBDRIVER_PATH`
+should be set to a compatible version for your Chrome browser as downloaded from [here](https://chromedriver.chromium.org/downloads).
 
+Make sure the application is running and then execute the Python script from your IDE or command line.
 ## Build and Pipeline Integrations
 
 ### Jenkins

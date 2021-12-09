@@ -11,7 +11,9 @@ import time
 from subprocess import PIPE
 
 directory_path = os.getcwd()
+#parent_dir = os.path.abspath(os.path.join(directory_path, os.pardir))
 env_file = str(directory_path)+os.sep+'.env'
+
 print("Using environment file: " + env_file)
 
 load_dotenv(env_file)
@@ -26,12 +28,12 @@ FAST_PROXY = os.getenv('FAST_PROXY')
 CHROME_WEBDRIVER_PATH = os.getenv('CHROME_WEBDRIVER_PATH')
 
 # start FAST proxy
-print('Starting FAST proxy')
+print('Starting FAST proxy ')
 fast_proxy = subprocess.Popen(['%s'%FAST_EXE,
                                '-CIToken', '%s'%SSC_AUTH_TOKEN,
                                '-CICDToken', '%s'%SCANCENTRAL_DAST_CICD_TOKEN,
                                '-u', '%s'%SCANCENTRAL_DAST_API,
-                               '-p', FAST_PORT, '-k', '-n', 'Fast-Demo'])
+                               '-p', FAST_PORT, '-k', '-n', 'FAST-Demo'])
 
 
 
@@ -86,7 +88,7 @@ time.sleep(5)
 # shutdown proxy
 print('Shutting down proxy')
 # note this is the default install location
-subprocess.Popen(['C:\\Program Files\\Fortify\\Fortify WebInspect\\fast.exe', '-p', FAST_PORT, '-s'])
+subprocess.Popen(['%s'%FAST_EXE, '-p', FAST_PORT, '-s'])
 
 # temp hack to make sure FAST exe shuts down
-input('Press enter to continue...')
+#input('Press enter to continue...')
