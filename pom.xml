@@ -15,7 +15,7 @@
     <version>1.0-SNAPSHOT</version>
     <name>${project.artifactId}</name>
     <packaging>${packaging.type}</packaging>
-    <description>Insecure Web App (IWA)</description>
+    <description>Insecure Web App (IWA) Pharmacy Direct</description>
 
     <licenses>
         <license>
@@ -66,6 +66,16 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
         <dependency>
@@ -93,6 +103,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
 
         <dependency>
@@ -211,7 +226,7 @@
         <dependency>
             <groupId>com.microfocus.fortify</groupId>
             <artifactId>FortifyAnnotations</artifactId>
-            <version>2021.01</version>
+            <version>21.2.0</version>
         </dependency-->
         
     </dependencies>
