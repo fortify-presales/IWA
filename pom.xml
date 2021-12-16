@@ -35,10 +35,11 @@
         <bootstrap.version>4.5.3</bootstrap.version>
         <jquery.version>3.5.1</jquery.version>
         <font-awesome.version>5.15.2</font-awesome.version>
-        <chartjs.version>2.9.3</chartjs.version>
+        <chartjs.version>2.9.4</chartjs.version>
         <axios.version>0.21.1</axios.version>
         <springdoc-openapi.version>1.4.3</springdoc-openapi.version>
         <jwt.version>0.9.1</jwt.version>
+        <jackson-bom.version>2.13.0</jackson-bom.version>
         <groovy.version>3.0.8</groovy.version>
         <selenium.version>4.0.0-rc-2</selenium.version>
         <wlp.dir>C:/Tools/wlp</wlp.dir>
