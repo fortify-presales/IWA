@@ -55,7 +55,8 @@ apply plugin: 'io.spring.dependency-management'
 group = 'com.microfocus.example'
 version = '1.0-SNAPSHOT'
 description = 'iwa'
-java.sourceCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = '1.11'
+targetCompatibility = '1.11'
 
 publishing {
     publications {

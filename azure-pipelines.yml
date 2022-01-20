@@ -1,0 +1,438 @@
+# Example Continuous Delivery Pipeline with Fortify on Premise (SCA/SSC) and/or Fortify on Demand (FOD) support
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+    - features/*
+    - releases/*
+    exclude:
+    - experimental/*
+  paths:
+    exclude:
+    - .github/workflows/*
+    - Jenkinsfile
+    - .gitlab-ci.yml
+    - README.md
+    - LICENSE.md
+    - bin/*
+    - lib/*
+    - data/*
+    - etc/*
+    - media/*
+
+pr:
+  branches:
+    include:
+    - master
+  paths:
+    exclude:
+      - .github/workflows/*
+      - Jenkinsfile
+      - .gitlab-ci.yml
+      - README.md
+      - LICENSE.md
+      - bin/*
+      - lib/*
+      - data/*
+      - etc/*
+      - media/*
+  
+variables:
+  #
+  # In order for the Pipeline to execute successfully you should create the following variables in the Pipeline UI (or uncomment and hard-code here)
+  # 
+  # ADOBaseURL: 'Your Azure DevOps Base URL'
+  # ADOPAT: 'Your Azure DevOps Personal Access Token'
+  # ADOProject: 'IWA.NET'
+  # AppUrl: 'URL of deployed application'
+  # AzureDBServer: 'Hostname of database server'
+  # AzureDBName: 'Database Name'
+  # AzureDBUser: 'Database User Login'
+  # AzureDBPassword: ' Database Password'
+  # FoDApplcationName: 'IWA.NET'
+  # FoDBaseUrl: 'https://api.emea.fortify.com'
+  # FoDBugTrackerVersion: '4.2'
+  # FoDClientId: 'Your FoD API Client Id'
+  # FoDClientSecret: 'You FoD API Client Secret'
+  # FoDParentRelease: 'master'
+  # FoDUsername: 'You FoD username'
+  # FoDTenant: 'Your FoD tenant'
+  # ScanCentralCtrlUrl: 'Your ScanCentral Controller URL'
+  # ScanCentralClientToken: 'Your ScanCentral Client Token'
+  # ScanCentralNotificationEmail: 'Your Email Address'
+  # ScanCentralDASTApiUrl: 'Your ScanCentral DAST API URL'
+  # ScanCentralDASTCICDAuthToken: 'Your ScanCentral DAST CICD Authentication Token'
+  # ScanCentralDASTCICDIdentifier: 'Your ScanCentral DAST CICD Identifier'
+  # SSCUrl: 'Your SSC URL'
+  # SSCApplicationName: 'IWA.NET'
+  # SSCAuthToken: 'Your SSC CI Authentication Token'
+
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  vsDevCmd: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat' # location of visual studio VsDevCmd batch file on Agent
+  buildConfiguration: 'Debug'
+  publishProfile: 'iwanet - Web Deploy'
+  fortifyUploadDir: 'fod' # directory to be created containing all dependencies uploaded to FOD for static analysis
+  FoDConnection: 'FODAzureDevOps' # the name of Fortify on Demand service connection configured in Project Settings
+  SSCConnection: 'SSCAzureDevOps' # the name of the Fortify SSC "generic" connection configured in Project Settings
+
+  # get the source branch name
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/features/') }}:
+    branchName: $[ replace(variables['Build.SourceBranch'], 'refs/heads/', '') ]
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/releases/') }}:
+    branchName: $[ replace(variables['Build.SourceBranch'], 'refs/heads/', '') ]
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/pull/') }}:
+    branchName: $[ replace(variables['System.PullRequest.TargetBranch'], 'refs/heads/', '') ]
+  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
+    branchName: 'master'
+  isPR: $[startsWith(variables['Build.SourceBranch'], 'refs/pull/')]
+  isMaster: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
+
+stages:
+
+  #
+  # Build and Unit Test the application components
+  #
+- stage: BuildAndUnitTest
+  displayName: 'Build and Unit Test'
+  pool:
+    # use Azure DevOps provided agent
+    vmImage: 'windows-2019'
+  jobs:
+    # Build web application component
+  - job: Web
+    steps:
+      # Maven
+      # Build, test, and deploy with Apache Maven
+      - task: Maven@3
+        inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'clean package'
+        #options: # Optional
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml' # Required when publishJUnitResults == True
+        #testRunTitle: # Optional
+        #allowBrokenSymlink: false # Optional. Has effect only when publishJUnitResults == True
+        #codeCoverageToolOption: 'None' # Optional. Options: none, cobertura, jaCoCo. Enabling code coverage inserts the `clean` goal into the Maven goals list when Maven runs.
+        #codeCoverageClassFilter: # Optional. Comma-separated list of filters to include or exclude classes from collecting code coverage. For example: +:com.*,+:org.*,-:my.app*.*
+        #codeCoverageClassFilesDirectories: # Optional
+        #codeCoverageSourceDirectories: # Optional
+        #codeCoverageFailIfEmpty: false # Optional
+        #javaHomeOption: 'JDKVersion' # Options: jDKVersion, path
+        jdkVersionOption: '1.11' # Optional. Options: default, 1.14, 1.13, 1.12, 1.11, 1.10, 1.9, 1.8, 1.7, 1.6
+        #jdkDirectory: # Required when javaHomeOption == Path
+        #jdkArchitectureOption: 'x64' # Optional. Options: x86, x64
+        #mavenVersionOption: 'Default' # Options: default, path
+        #mavenDirectory: # Required when mavenVersionOption == Path
+        #mavenSetM2Home: false # Required when mavenVersionOption == Path
+        #mavenOptions: '-Xmx1024m' # Optional
+        #mavenAuthenticateFeed: false
+        #effectivePomSkip: false
+        #sonarQubeRunAnalysis: false
+        #sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
+        #checkStyleRunAnalysis: false # Optional
+        #pmdRunAnalysis: false # Optional
+        #findBugsRunAnalysis: false # Optional
+
+#
+# Static Application Security Testing with ScanCentral SAST (on premise)
+#
+- stage: ScanCentral_SAST
+  displayName: 'ScanCentral SAST'
+  condition: eq(variables['UseScanCentralSAST'], 'true')
+  dependsOn: BuildAndUnitTest
+  pool:
+    # use Azure DevOps provided agent
+    vmImage: 'windows-2019'
+    # or uncomment to use a local Agent pool named 'Fortify' with Fortify software installed
+    # name: Fortify
+  jobs:
+  - job: UploadAndScan
+    displayName: 'Upload and Scan'
+    steps:
+    - task: BatchScript@1
+      displayName: 'Set Visual Studio environment'
+      inputs:
+        filename: "$(vsDevCmd)"
+        modifyEnvironment: true
+    - task: NuGetToolInstaller@1
+      displayName: 'Update NuGet'
+      inputs:
+        checkLatest: true
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '$(solution)'
+    - task: VSBuild@1
+      inputs:
+        solution: '$(solution)'
+        #msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:PublishProfile="$(publishProfile)" /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+        platform: '$(buildPlatform)'
+    - task: FortifyScanCentralSAST@7
+      inputs:
+        scanCentralCtrlUrl: '$(ScanCentralCtrlUrl)'
+        scanCentralClientToken: '$(ScanCentralClientToken)'
+        sscUrl: '$(SSCUrl)'
+        sscCiToken: '$(SSCAuthToken)'
+        uploadToSSC: true
+        applicationName: '$(SSCApplicationName)'
+        applicationVersion: '$(SSCApplicationVersion)'
+        buildTool: 'msbuild'
+        buildFile: 'IWA.NET.sln'
+        email: '$(ScanCentralNotificationEmail)'
+        block: true
+        outputFile: 'IWA.NET.fpr'
+        logFile: 'IWA.NET.log'
+        overwrite: true
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Build.SourcesDirectory)/IWA.NET.fpr'
+        artifact: 'Fortify Results (FPR)'
+        publishLocation: 'pipeline'
+
+#
+# Static Application Security Testing with Fortify on Demand
+#
+- stage: FoD_SAST
+  displayName: 'FoD SAST'
+  condition: eq(variables['UseFoD'], 'true') 
+  dependsOn: BuildAndUnitTest
+  pool:
+    # use Azure DevOps provided agent
+    vmImage: 'windows-2019'
+    # or uncomment to use a local Agent pool named 'Fortify'
+    #name: Fortify
+  jobs:
+  - job: UploadAndScan
+    displayName: "Upload and Scan"
+    steps:
+    - task: BatchScript@1
+      displayName: 'Set Visual Studio environment'
+      inputs:
+        filename: "$(vsDevCmd)"
+        modifyEnvironment: true
+    - task: NuGetToolInstaller@1
+      displayName: 'Update NuGet'
+      inputs:
+        checkLatest: true
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '$(solution)'   
+
+    - task: PowerShell@2
+      name: InstallPowerShellForFOD
+      displayName: Install PowerShellForFOD Module
+      # Install the PowerShellForFOD Module (see: https://github.com/fortify-community-plugins/PowerShellForFOD)
+      # Update variables for your environment - this example uses ClientCredentials. 
+      inputs:
+        targetType: 'inline'
+        script: |
+          Write-Output "Installing PowerShellForFOD module ..."
+          Install-Module PowerShellForFOD -Scope CurrentUser -Force -Repository PSGallery
+          Write-Output "Configuring FOD API $env:FOD_API_URI ..."
+          $PWord = ConvertTo-SecureString -String "$env:FOD_CLIENT_SECRET" -AsPlainText -Force
+          $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$env:FOD_CLIENT_ID", $PWord
+          Set-FODConfig -ApiUri $env:FOD_API_URI -GrantType ClientCredentials -Scope api-tenant
+          Get-FODToken -Credential $Credential
+      env:
+        FOD_API_URI: $(FoDBaseUrl)
+        FOD_CLIENT_ID: $(FoDClientId)
+        FOD_CLIENT_SECRET: $(FoDClientSecret)
+    - task: PowerShell@2
+      name: verifyFodRelease
+      displayName: Verify FOD Release
+      # Verify if FoD release with name matching branch name exists and if not create it
+      #   FOD_PARENT_RELEASE_ID is the FoD release id corresponding to the parent branch of any newly created branch, this is typically "master" or "main"
+      inputs:
+        targetType: 'inline'
+        script: |
+          $ReleaseName = $env:GIT_BRANCH_NAME
+          if ($env:IS_PR -eq $True) {
+              $ReleaseName = 'pr-' + $env:GIT_BRANCH_NAME
+              Write-Output "Checking for existence of pull request release $ReleaseName in application $env:FOD_APPLICATION_NAME"
+          } else {
+              Write-Output "Checking for existence of $ReleaseName release in application $env:FOD_APPLICATION_NAME"
+          }
+          if (-not (Test-FODRelease -ApplicationName $env:FOD_APPLICATION_NAME -ReleaseName $ReleaseName)) { 
+            Write-Output "Release does not exist, creating it from parent release $env:FOD_PARENT_RELEASE ..."
+            $AppId = Get-FODApplicationId -ApplicationName $env:FOD_APPLICATION_NAME
+            $ParentReleaseId = Get-FODReleaseId -ApplicationName "$env:FOD_APPLICATION_NAME" -ReleaseName "$env:FOD_PARENT_RELEASE"
+            $NewReleaseObj = New-FODReleaseObject -ApplicationId $AppId -Name $ReleaseName -Description "Created automatically from Azure DevOps" -CopyState -CopyReleaseId $ParentReleaseId -SDLCStatus Development
+            $RelResponse = Add-FODRelease -Release $NewReleaseObj
+            $ReleaseId = $RelResponse.releaseId
+            Write-Output "Created new release id: $ReleaseId"
+            Write-Output "##vso[task.setvariable variable=fodReleaseId;isOutput=true]$ReleaseId"
+            Start-Sleep -Seconds 30 # Brief pause to make sure release has been created!
+          } else {
+            $ReleaseId = Get-FODReleaseId -ApplicationName "$env:FOD_APPLICATION_NAME" -ReleaseName "$ReleaseName"
+            Write-Output "Release exists as id: $ReleaseId"
+            Write-Output "##vso[task.setvariable variable=fodReleaseId;isOutput=true]$ReleaseId"
+          }  
+      env:      
+        FOD_APPLICATION_NAME: $(FoDApplicationName)
+        FOD_PARENT_RELEASE: $(FoDParentRelease)
+        GIT_BRANCH_NAME: $(branchName)
+        IS_PR: $(isPR)
+   # - task: CopyFiles@2
+   #   # Copy built files into a single directory for upload to FOD
+   #   inputs: 
+   #     SourceFolder: '$(Build.SourcesDirectory)/InsecureWebApp'
+   #     Contents: |
+   #       wwwroot/**/*
+   #       Areas/**/*
+   #       Data/**/*
+   #       Pages/**/*
+   #       Utils/**/*
+   #       obj/Debug/**/*
+   #       bin/Debug/**/*
+   #     TargetFolder: '$(fortifyUploadDir)'
+   #     CleanTargetFolder: true
+   #     OverWrite: true
+    - task: FortifyOnDemandStatic@8
+      # Carry out a Fortify on Demand static assessment
+      inputs:
+        FortifyProjects: '.'
+        FodConnection: '$(FoDConnection)'
+        ReleaseOptions: '0'
+        ReleaseId: $(verifyFodRelease.fodReleaseId)
+        EntitlementSelection: '1'
+        EntitlementPreference: '1'
+        OverrideScanSettings: '2'
+        InProgressScanActionType: '2'
+        RemediationScanPreference: '2'
+        BuildType: 'msbuild'
+        BuildFile: '.\IWA.NET.sln'
+        PolicyFailAction: '0'
+    - task: PublishBuildArtifacts@1
+      displayName: "Publish ScanCentral logs"
+      condition: always()
+      inputs:
+        PathtoPublish: 'C:\Users\VssAdministrator\AppData\Local\Fortify\scancentral-21.1.2\log'
+        ArtifactName: 'ScanCentralLogs'
+        publishLocation: 'Container'
+    - task: PowerShell@2
+      displayName: Get FOD Release Details
+      # An example task that gets the FOD Release using PowerShellForFOD commands
+      # You could use this information to determin success/failure of the build.
+      inputs:
+        targetType: 'inline'
+        script: |
+          Write-Output "FOD Release Details:"
+          Get-FODRelease -Id $(verifyFodRelease.fodReleaseId)    
+    - task: PowerShell@2
+      condition: eq(variables['SyncIssues'], 'true') 
+      displayName: Replace Tokens in File
+      # Replace all of the placeholders in ./etc/FoDToADO.xml configuration file with Pipeline variables
+      inputs:
+       targetType: 'inline'
+       script: |
+         (Get-Content './etc/FoDToADO.xml') | ForEach-Object {
+            $_.replace('__FoDBaseUrl__', '$(FoDBaseUrl)').
+            replace('__FoDClientId__', '$(FoDClientId)').
+            replace('__FoDClientSecret__', '$(FoDClientSecret)').
+            replace('__FoDTenant__', '$(FoDTenant)').
+            replace('__FoDUsername__', '$(FoDUsername)').
+            replace('__FoDReleaseId__', '$(verifyFodRelease.fodReleaseId)').
+            replace('__ADOBaseUrl__', '$(ADOBaseUrl)').
+            replace('__ADOProject__', '$(ADOProject)').
+            replace('__ADOPAT__', '$(ADOPAT)') 
+          } | Out-File './etc/FoDToADO-CI.xml'
+          (Get-Content './etc/FoDToADO-CI.xml') | ? {$_.trim() -ne "" } | set-content './etc/FoDToADO-CI.xml'
+    - task: PowerShell@2
+      condition: eq(variables['SyncIssues'], 'true') 
+      displayName: Sync FoD to ADO
+      # Synchronize vulnerabilities from Fortify on Demand to ADO Work Items (bugs)
+      inputs:
+        targetType: 'inline'
+        script: |
+          $JarFile = ".\lib\FortifyBugTrackerUtility-${env:FOD_BUG_TRACKER_VER}.jar"
+          $LogFile = '.\FoDToADO-sync.log'
+          Write-Output "##[debug]Running FortifyBugTrackerUtility: ${JarFile} on .\etc\FoDToADO-CI.xml"
+          & java -DlogFile=$LogFile -jar $JarFile -configFile .\etc\FoDToADO-CI.xml
+          if (Test-Path -Path $LogFile -PathType Leaf) {
+            Write-Output "##vso[build.uploadlog].\FoDToADO-sync.log"
+          }  
+      env:
+        FOD_BUG_TRACKER_VER: $(FoDBugTrackerVersion)
+    - task: PowerShell@2
+      #condition: eq(variables['ExportIssues'], 'true') 
+      displayName: Export FoD Vulnerabilties
+      # Export FoD Vulnerabilities as SARIF file
+      inputs:
+        targetType: 'inline'
+        script: |
+          $JarFile = ".\lib\FortifyVulnerabilityExporter.jar"
+          Write-Output "##[debug]Running FortifyVulnerabilityExporter: ${JarFile} on .\etc\FoDToGitHub.yml"
+          Write-Host java -DpluginDir=".\lib\plugins\" -jar $JarFile --export.config=.\etc\FoDToGitHub.yml --fod.baseUrl=$env:FOD_BASE_URL --fod.tenant=$env:FOD_TENANT --fod.user=$env:FOD_USERNAME --fod.password=$env:FOD_USERNAME --fod.release.id=$env:FOD_RELEASE_ID 
+          & java -DpluginDir=".\lib\plugins\" -jar $JarFile --export.config=.\etc\FoDToGitHub.yml --fod.baseUrl=$env:FOD_BASE_URL--fod.tenant=$env:FOD_TENANT --fod.user=$env:FOD_USERNAME --fod.password=$env:FOD_USERNAME --fod.release.id=$env:FOD_RELEASE_ID 
+          & dir
+      env:
+        FOD_BASE_URL: $(FoDBaseUrl)
+        FOD_TENANT: $(FoDTenant)
+        FOD_USERNAME: $(FoDUsername)
+        FOD_PASSWORD: $(FoDPAT)
+        FOD_RELEASE_ID: $(verifyFodRelease.fodReleaseId)     
+    - task: PublishBuildArtifacts@1
+      displayName: "Publish analysis logs"
+      inputs:
+        PathtoPublish: "./CodeAnalysisLogs"
+        ArtifactName: "CodeAnalysisLogs"
+        publishLocation: "Container"     
+
+# 
+# Deploy the application
+#
+
+
+#
+# Dynamic Application Security Testing with ScanCentral DAST (on-premise)
+#        
+- stage: ScanCentral_DAST
+  displayName: 'ScanCentral DAST'
+  condition: eq(variables['UseScanCentralDAST'], 'true')
+  dependsOn: DeployToAzure
+  pool:
+    # use Azure DevOps provided agent
+    vmImage: 'windows-2019'
+    # use local Agent pool named 'Fortify'
+    #name: Fortify
+  jobs:
+  - job: RunScan
+    displayName: 'Run Scan'
+    steps:   
+    - task: FortifyScanCentralDAST@7
+      inputs:
+        scanCentralDastApiUrl: '$(ScanCentralDASTApiUrl)'
+        scanCentralCiCdToken: '$(ScanCentralDASTCICDIdentifier)'
+        sscCiToken: '$(ScanCentralDASTCICDAuthToken)'
+
+#        
+# Dynamic Application Security Testing with Fortify on Demand
+#        
+- stage: FoD_DAST
+  displayName: 'FoD DAST'
+  # renamed from UseFOD because we have not tested FOD DAST currently
+  condition: eq(variables['UseFODXXX'], 'true')
+  dependsOn: DeployToAzure
+  pool:
+    # use Azure DevOps provided agent
+    vmImage: 'windows-2019'
+    # use local Agent pool named 'Fortify'
+    #name: Fortify
+  jobs:
+  - job: RunScan
+    displayName: 'Run Scan'
+    steps:   
+    - task: FortifyOnDemandDynamic@7
+      # renamed from UseFOD because we have not tested FOD DAST currently
+      condition: eq(variables['UseFODXXX'], 'true')
+      inputs:
+        APIUrl: '${FoDBaseUrl}'
+        ReleaseId: '${branchName}'
+        APIAuthenticationType: '1'
+        APIKey: '${FoDClientId}'
+        APISecret: '${FoDClientSecret}'
+        EntitlementPreference: '2'
+        PurchaseEntitlements: false
+        PreferRemediation: false
