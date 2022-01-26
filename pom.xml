@@ -45,6 +45,8 @@
         <wlp.dir>C:/Tools/wlp</wlp.dir>
         <skip.unit.tests>true</skip.unit.tests>
         <skip.integration.tests>true</skip.integration.tests>
+        <sonar.organization>mfdemo</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <!--repositories>
