@@ -1,3 +1,6 @@
+"""
+    Example script to start FAST proxy, run selenium tests, then ScanCentral DAST scan
+"""
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
@@ -11,8 +14,8 @@ import time
 from subprocess import PIPE
 
 directory_path = os.getcwd()
-#parent_dir = os.path.abspath(os.path.join(directory_path, os.pardir))
-env_file = str(directory_path)+os.sep+'.env'
+# parent_dir = os.path.abspath(os.path.join(directory_path, os.pardir))
+env_file = str(directory_path) + os.sep + '.env'
 
 print("Using environment file: " + env_file)
 
@@ -28,14 +31,12 @@ FAST_PROXY = os.getenv('FAST_PROXY')
 CHROME_WEBDRIVER_PATH = os.getenv('CHROME_WEBDRIVER_PATH')
 
 # start FAST proxy
-print('Starting FAST proxy ')
-fast_proxy = subprocess.Popen(['%s'%FAST_EXE,
-                               '-CIToken', '%s'%SSC_AUTH_TOKEN,
-                               '-CICDToken', '%s'%SCANCENTRAL_DAST_CICD_TOKEN,
-                               '-u', '%s'%SCANCENTRAL_DAST_API,
+print('Starting FAST proxy %s' % FAST_EXE)
+fast_proxy = subprocess.Popen(['%s' % FAST_EXE,
+                               '-CIToken', '%s' % SSC_AUTH_TOKEN,
+                               '-CICDToken', '%s' % SCANCENTRAL_DAST_CICD_TOKEN,
+                               '-u', '%s' % SCANCENTRAL_DAST_API,
                                '-p', FAST_PORT, '-k', '-n', 'FAST-Demo'])
-
-
 
 # make sure the proxy is up and listening
 print('Making sure the proxy is up and listening, please wait...')
@@ -53,10 +54,11 @@ capabilities = webdriver.DesiredCapabilities.CHROME
 prox.add_to_capabilities(capabilities)
 options = webdriver.ChromeOptions()
 options.add_argument('ignore-certificate-errors')
-browser = webdriver.Chrome(executable_path='%s'%CHROME_WEBDRIVER_PATH,desired_capabilities=capabilities,chrome_options=options)
+browser = webdriver.Chrome(executable_path='%s' % CHROME_WEBDRIVER_PATH, desired_capabilities=capabilities,
+                           chrome_options=options)
 
 # Navigate to zero
-print('Navigating to IWA Website: %s'%APP_URL)
+print('Navigating to IWA Website: %s' % APP_URL)
 browser.get(APP_URL)
 
 shop_now_button = WebDriverWait(browser, 10).until(lambda x: x.find_element(By.LINK_TEXT, "SHOP NOW"))
@@ -67,7 +69,8 @@ search_input.click()
 search_input.send_keys('alphadex')
 search_input.send_keys(Keys.ENTER)
 
-search_results = WebDriverWait(browser, 10).until(lambda x: x.find_element(By.CSS_SELECTOR, "a:nth-child(1) .img-thumbnail"))
+search_results = WebDriverWait(browser, 10).until(
+    lambda x: x.find_element(By.CSS_SELECTOR, "a:nth-child(1) .img-thumbnail"))
 search_results.click()
 add_to_cart_button = WebDriverWait(browser, 10).until(lambda x: x.find_element(By.ID, "add-to-cart"))
 add_to_cart_button.click()
@@ -88,7 +91,7 @@ time.sleep(5)
 # shutdown proxy
 print('Shutting down proxy')
 # note this is the default install location
-subprocess.Popen(['%s'%FAST_EXE, '-p', FAST_PORT, '-s'])
+subprocess.Popen(['%s' % FAST_EXE, '-p', FAST_PORT, '-s'])
 
 # temp hack to make sure FAST exe shuts down
-#input('Press enter to continue...')
+# input('Press enter to continue...')

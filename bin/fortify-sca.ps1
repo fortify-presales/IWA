@@ -42,6 +42,9 @@ Write-Host Running scan...
     -cp $ClassPath  -java-build-dir "target/classes" -verbose `
    -build-project "$AppName" -build-version "$AppVersion" -build-label "SNAPSHOT" -scan -f "$($AppName).fpr"
 
+# summarise issue count by analyzer
+& fprutility -information -analyzerIssueCounts -project "$($AppName).fpr"
+
 Write-Host Generating PDF report...
 & ReportGenerator '-Dcom.fortify.sca.ProjectRoot=.fortify' -user "Demo User" -format pdf -f "$($AppName).pdf" -source "$($AppName).fpr"
 
