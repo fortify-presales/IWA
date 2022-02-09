@@ -93,19 +93,19 @@ There is also an administrative user:
 
 ### Release (Docker Image)
 
-The JAR file can be built into a [Docker](https://www.docker.com/) image using the provided `Dockerfile` and the
+The JAR file can be built into a [Docker](https://www.docker.com/) image using the provided `Dockerfile` in `src/main/configs` and the
 following commands:
 
 ```
 mvn -Pjar clean package
-docker build -t iwa .
+docker build -t iwa -f src/main/configs/Dockerfile .
 ```
 
 or on Windows:
 
 ```
 mvn -Pjar clean package
-docker build -f Dockerfile.win -t iwa .
+docker build -t iwa -f src\main\configs\Dockerfile.win .
 ```
 
 This image can then be executed using the following commands:
@@ -114,7 +114,7 @@ This image can then be executed using the following commands:
 docker run -d -p 8888:8888 iwa
 ```
 
-There is also an example `docker-compose.yml` file that illustrates how to run the application with HTTPS/SSL using
+There is also an example `docker-compose.yml` file in `src/main/configs` that illustrates how to run the application with HTTPS/SSL using
 [nginx](https://www.nginx.com/) and [certbot](https://certbot.eff.org/) - please note this is for reference only as it 
 uses a "hard-coded" domain name.
 

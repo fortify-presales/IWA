@@ -234,7 +234,7 @@ pipeline {
                         // Translate source files
                         fortifyTranslate buildID: "${env.COMPONENT_NAME}",
                                 projectScanType: fortifyJava(javaSrcFiles:
-                                        '\""src/main/java/**/*\"" \""src/main/resources/**/*\"" \""Dockerfile*\""',
+                                        '\""src/main/java/**/*\"" \""src/main/resources/**/*\"" \""src/main/configs/**/*\""',
                                         javaVersion: "${env.JAVA_VERSION}",
                                         javaClasspath: "$classpath"),
                                 addJVMOptions: '',
@@ -303,12 +303,12 @@ pipeline {
                     if (isUnix()) {
                         // Create docker image using JAR file
                         if (params.USE_DOCKER) {
-                            dockerImage = docker.build "${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}"
+                            dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f src/main/configs/Dockerfile .")
                         }
                     } else {
                         // Create docker image using JAR file
                         if (params.USE_DOCKER) {
-                            dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
+                            dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f src\\main\\configs\\Dockerfile.win .")
                         }
                     }
                 }

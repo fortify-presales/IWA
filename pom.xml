@@ -470,6 +470,23 @@
     </profiles>
 
     <build>
+
+        <resources>
+            <resource>
+                <directory>src/main/configs</directory>
+            </resource>
+            <resource>
+                <filtering>false</filtering>
+                <directory>src/main/configs</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+        </resources>
+
         <plugins>
         
             <!-- Display active profile in compile phase -->

@@ -58,6 +58,14 @@ description = 'iwa'
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
 
+sourceSets {
+    main {
+        resources {
+            srcDirs "src/main/resources", "src/main/configs"
+        }
+    }
+}
+
 publishing {
     publications {
         maven(MavenPublication) {
