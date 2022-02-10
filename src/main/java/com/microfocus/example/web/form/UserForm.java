@@ -34,7 +34,7 @@ import java.util.UUID;
  */
 public class UserForm {
 
-    @Bean
+    @Bean("UserFormPasswordEncoder")
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

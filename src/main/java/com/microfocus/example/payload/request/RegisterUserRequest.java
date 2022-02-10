@@ -37,7 +37,7 @@ import java.util.UUID;
  */
 public class RegisterUserRequest {
 
-    @Bean
+    @Bean("RegisterUserPasswordEncoder")
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

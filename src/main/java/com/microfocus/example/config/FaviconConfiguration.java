@@ -45,7 +45,7 @@ public class FaviconConfiguration {
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
-    @Bean
+    @Bean("CustomFaviconHandlerMapping")
     public SimpleUrlHandlerMapping faviconHandlerMapping() {
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
         mapping.setOrder(Integer.MIN_VALUE);
@@ -54,7 +54,7 @@ public class FaviconConfiguration {
         return mapping;
     }
 
-    @Bean
+    @Bean("CustomerFaviconRequestHandler")
     protected ResourceHttpRequestHandler faviconRequestHandler() {
         ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
         requestHandler.setLocations(Arrays

@@ -29,5 +29,6 @@ public enum  AuthorityType {
     ROLE_API,
     ROLE_GUEST,
     ROLE_CUSTOMER,
-    ROLE_SUPERVISOR
+    ROLE_SUPERVISOR,
+    ROLE_TEST
 }

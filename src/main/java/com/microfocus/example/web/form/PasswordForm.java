@@ -33,7 +33,7 @@ import com.microfocus.example.web.validation.ValidPassword;
  */
 public class PasswordForm {
 
-    @Bean
+    @Bean("UserFormPasswordEncoder")
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

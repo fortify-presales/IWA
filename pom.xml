@@ -288,6 +288,21 @@
                 <packaging.type>war</packaging.type>
             </properties>
             <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/configs</directory>
+                    </resource>
+                    <resource>
+                        <filtering>false</filtering>
+                        <directory>src/main/configs</directory>
+                        <includes>
+                            <include>**/*.*</include>
+                        </includes>
+                        <excludes>
+                            <exclude>**/*.java</exclude>
+                        </excludes>
+                    </resource>
+                </resources>
                 <plugins>
                     <!-- Download and copy all dependencies on "verify" phase for Fortify On Demand -->
                     <plugin>
@@ -470,22 +485,6 @@
     </profiles>
 
     <build>
-
-        <resources>
-            <resource>
-                <directory>src/main/configs</directory>
-            </resource>
-            <resource>
-                <filtering>false</filtering>
-                <directory>src/main/configs</directory>
-                <includes>
-                    <include>**/*.*</include>
-                </includes>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
-            </resource>
-        </resources>
 
         <plugins>
         

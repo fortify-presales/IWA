@@ -46,7 +46,7 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-	@Bean
+	@Bean("UserPasswordEncoder")
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

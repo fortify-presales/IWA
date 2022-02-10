@@ -82,7 +82,7 @@ public class ApiSiteController {
     @Autowired
     RoleRepository roleRepository;
 
-    @Bean
+    @Bean("ApiSiteControllerPasswordEncoder")
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

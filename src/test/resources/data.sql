@@ -1,3 +1,5 @@
+INSERT INTO authorities (name, id)
+values ('ROLE_TEST', '92f90350-e795-4019-812a-afd23300343f');
 INSERT INTO users (id, username, password, first_name, last_name, email, phone, address, city, state, zip, country, enabled, date_created)
 VALUES ('bd5b9e2f-ac55-4e34-a76d-599b7e5b3308', 'test1', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32',
         'Test', 'User 1',
@@ -6,7 +8,7 @@ VALUES ('bd5b9e2f-ac55-4e34-a76d-599b7e5b3308', 'test1', '$2a$10$YFhTnHpCL.Z0Ev0
         '1 Somewhere Street', 'London', 'Greater London', 'SW1', 'United Kingdom',
         1, CURDATE());
 INSERT INTO user_authorities (authority_id, user_id)
-VALUES ('6bdd6188-d659-4390-8d37-8f090d2ed69a', 'bd5b9e2f-ac55-4e34-a76d-599b7e5b3308');
+VALUES ('92f90350-e795-4019-812a-afd23300343f', 'bd5b9e2f-ac55-4e34-a76d-599b7e5b3308');
 INSERT INTO products (id, code, name, rating, summary, description, image, price, in_stock,
                       time_to_stock, available)
 VALUES ('38400000-8cf0-11bd-b23e-10b96e4ef00d', 'TEST-A000-00001', 'Test Product 1', 5,
