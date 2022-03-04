@@ -42,24 +42,11 @@
         <jackson-bom.version>2.13.0</jackson-bom.version>
         <groovy.version>3.0.8</groovy.version>
         <selenium.version>4.0.0-rc-2</selenium.version>
-        <wlp.dir>C:/Tools/wlp</wlp.dir>
+        <junit.version>4.12</junit.version>
+        <fortify.version>21.2.3</fortify.version>
         <skip.unit.tests>true</skip.unit.tests>
         <skip.integration.tests>true</skip.integration.tests>
-        <sonar.organization>mfdemo</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
-
-    <!--repositories>
-        <repository>
-            <id>jcenter-snapshots</id>
-            <name>jcenter</name>
-            <url>https://jcenter.bintray.com/</url>
-        </repository>
-        <repository>
-            <id>local-repository</id>
-            <url>file://./lib</url>
-        </repository>
-    </repositories-->
 	
 	<dependencies>
 
@@ -204,6 +191,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -229,7 +217,7 @@
         <dependency>
             <groupId>com.microfocus.fortify</groupId>
             <artifactId>FortifyAnnotations</artifactId>
-            <version>21.2.0</version>
+            <version>${fortify.version}}</version>
         </dependency-->
         
     </dependencies>
@@ -252,6 +240,7 @@
 
 		<profile>
 			<id>release</id>
+            <!-- TBD -->
 		</profile>
 
         <!-- Profile for creating executable JAR file -->
@@ -403,85 +392,7 @@
                 </plugins>
             </build>
         </profile>
-        
-        <!-- Profile for preparing/deploying application to (downloaded) WebSphere Liberty Integration instance -->
-        <profile>
-        	<id>wlp.int</id>
- 	        <properties>
-                <packaging.type>war</packaging.type>
-            </properties>
-            <dependencies>
-            </dependencies>
-             <build>
-                <plugins>
-		            <plugin>
-		                <groupId>io.openliberty.tools</groupId>
-		                <artifactId>liberty-maven-plugin</artifactId>
-		                <version>3.2.1</version>
-		                <executions>
-		                	<execution></execution>
-		                </executions>
-		                <configuration>
-		                	<install>
-		                		<!-- Liberty will be downloaded from Internet by default -->
-		                		<!-- runtimeUrl>...path to zip...</runtimeUrl-->
-		                	</install>
-		                	<serverXmlFile>${project.basedir}/etc/server.xml</serverXmlFile>
-		                	<stripVersion>true</stripVersion>
-		                	<looseApplication>false</looseApplication>
-		                	<clean>false</clean>
-		                	<serverName>integration</serverName>
-		                	<template>webProfile8</template>
-		                	<applications>iwa</applications>
-		                	<timeout>180</timeout>
-		                	<verifyTimeout>180</verifyTimeout>
-		            	    <features>
-		            	    	<feature>webProfile-8.0</feature>
-		                   		<acceptLicense>true</acceptLicense>
-		               		</features>
-		                </configuration>
-		            </plugin>
-                </plugins>
-            </build>                
-        </profile>
-        
-         <!-- Profile for deploying application to (existing) WebSphere Liberty Production instance -->
-        <profile>
-        	<id>wlp.prod</id>
- 	        <properties>
-                <packaging.type>war</packaging.type>
-            </properties>
-            <dependencies>
-            </dependencies>
-             <build>
-                <plugins>
-		            <plugin>
-		                <groupId>io.openliberty.tools</groupId>
-		                <artifactId>liberty-maven-plugin</artifactId>
-		                <version>3.2.1</version>
-		                <executions>
-		                	<execution></execution>
-		                </executions>
-		                <configuration>
-							<installDirectory>${wlp.dir}</installDirectory>
-		                	<serverXmlFile>${wlp.dir}/usr/servers/production/etc/server.xml</serverXmlFile>
-		                	<stripVersion>true</stripVersion>
-		                	<looseApplication>false</looseApplication>
-		                	<clean>false</clean>
-		                	<serverName>production</serverName>
-		                	<template>webProfile8</template>
-		                	<applications>iwa</applications>
-		                	<timeout>180</timeout>
-		                	<verifyTimeout>180</verifyTimeout>
-		            	    <features>
-		            	    	<feature>webProfile-8.0</feature>
-		                   		<acceptLicense>true</acceptLicense>
-		               		</features>
-		                </configuration>
-		            </plugin>
-                </plugins>
-            </build>                
-        </profile>
+
     </profiles>
 
     <build>
