@@ -60,7 +60,8 @@ public class DefaultController {
     @GetMapping("/")
     public String index(Model model, Principal principal) {
         Locale currentLocale = Locale.getDefault();
-        Currency currency = Currency.getInstance(currentLocale != null ? currentLocale : Locale.US);
+        if (currentLocale == null) currentLocale = Locale.US;
+        Currency currency = Currency.getInstance(currentLocale);
         model.addAttribute("currencySymbol", currency.getSymbol());
         model.addAttribute("message", message);
         return "index";

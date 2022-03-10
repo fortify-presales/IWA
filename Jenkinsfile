@@ -68,11 +68,11 @@ pipeline {
 
     environment {
         // Application settings
-        APP_NAME = "IWA"                      		        // Application name
+        APP_NAME = "IWAPharmacyDirect"         		        // Application name
         APP_VER = "master"                                  // Application release - GitHub master branch
         COMPONENT_NAME = "iwa"                              // Component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
-        JAVA_VERSION = 8                                    // Java version to compile as
+        JAVA_VERSION = 11                                   // Java version to compile as
         ISSUE_IDS = ""                                      // List of issues found from commit
         FOD_UPLOAD_DIR = 'fod'                              // Directory where FOD upload Zip is constructed
 
@@ -83,14 +83,15 @@ pipeline {
         NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-token-id')
 
         // The following are defaulted and can be overriden by creating a "Build parameter" of the same name
-        SSC_URL = "${params.SSC_URL ?: 'http://localhost:8080'}" // URL of Fortify Software Security Center
-        SSC_APP_VERSION_ID = "${params.SSC_APP_VERSION_ID ?: '10002'}" // Id of Application in SSC to upload results to
+        SSC_URL = "${params.SSC_URL ?: 'http://localhost'}" // URL of Fortify Software Security Center
+        SSC_APP_VERSION_ID = "${params.SSC_APP_VERSION_ID ?: '10001'}" // Id of Application in SSC to upload results to
         SSC_NOTIFY_EMAIL = "${params.SSC_NOTIFY_EMAIL ?: 'do-not-reply@microfocus.com'}" // User to notify with SSC/ScanCentral information
         SSC_SENSOR_POOL_UUID = "${params.SSC_SENSOR_POOL_UUID ?: '00000000-0000-0000-0000-000000000002'}" // UUID of Scan Central Sensor Pool to use - leave for Default Pool
-        EDAST_URL = "${params.EDAST_URL ?: 'http://localhost:8085/api'}" // ScanCentral DAST API URI
+        EDAST_URL = "${params.EDAST_URL ?: 'http://localhost:64814/'}" // ScanCentral DAST API URI
         EDAST_CICD = "${params.EDAST_CICD ?: 'bd286bd2-632c-434c-99ef-a8ce879434ec'}" // ScanCentral DAST CICD identifier
         FOD_RELEASE_ID = "${params.FOD_RELEASE_ID ?: '6446'}" // Fortify on Demand Release Id
         NEXUS_IQ_URL = "${params.NEXUS_IQ_URL ?: 'http://localhost:8070'}" // Sonatype Nexus IQ URL
+        NEXUS_IQ_APP_ID = "${params.NEXUS_IQ_APP_ID ?: 'IWAPharmacyDirect'}" // Sonatype Nexus IQ App Id
         DOCKER_ORG = "${params.DOCKER_ORG ?: 'mfdemouk'}" // Docker organisation (in Docker Hub) to push released images to
     }
 
@@ -285,7 +286,7 @@ pipeline {
                     if (isUnix()) {
                         sh 'sourceandlibscanner -auto -bt mvn -bf pom.xml -bc "dependency:unpack-dependencies -Dclassifier=sources -DexcludeTransitive -DskipTests package" -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}'
                     } else {
-                        def stdout = powershell(returnStdout: true, script: ".\\bin\\fortify-sourceandlibscanner.ps1 -NexusIQUrl ${env.NEXUS_IQ_URL} -NexusIQAuth ${env.NEXUS_IQ_AUTH_TOKEN} -NexusIQAppId IWA -SSCURL ${env.SSC_URL} -SSCAuthToken ${env.SSC_AUTH_TOKEN} -SSCAppVersionId ${env.SSC_APP_VERSION_ID}")
+                        def stdout = powershell(returnStdout: true, script: ".\\bin\\fortify-sourceandlibscanner.ps1 -NexusIQUrl ${env.NEXUS_IQ_URL} -NexusIQAuth ${env.NEXUS_IQ_AUTH_TOKEN} -NexusIQAppId ${env.NEXUS_IQ_APP_ID} -SSCURL ${env.SSC_URL} -SSCAuthToken ${env.SSC_AUTH_TOKEN} -SSCAppVersionId ${env.SSC_APP_VERSION_ID}")
                         println stdout
                         //bat(/sourceandlibscanner -auto -bt mvn -bf pom.xml -bc "dependency:unpack-dependencies -Dclassifier=sources -DexcludeTransitive -DskipTests package" -scan -sonatype -iqurl ${env.NEXUS_IQ_URL} -nexusauth ${env.NEXUS_IQ_AUTH_TOKEN} -iqappid IWA -stage build -r iqReport.json -upload -ssc ${env.SSC_URL} -ssctoken ${env.SSC_AUTH_TOKEN} -versionid ${env.SSC_APP_VERSION_ID}/)
                     }
