@@ -23,12 +23,14 @@ import java.security.Principal;
 import java.util.Currency;
 import java.util.Locale;
 
+import com.microfocus.example.config.LocaleConfiguration;
 import com.microfocus.example.entity.Order;
 import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.web.form.OrderForm;
 import com.microfocus.example.web.form.RegisterUserForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -57,10 +59,12 @@ public class DefaultController {
     @Value("${app.messages.home}")
     private String message = "Hello World";
 
+    @Autowired
+    LocaleConfiguration localeConfiguration;
+
     @GetMapping("/")
     public String index(Model model, Principal principal) {
-        Locale currentLocale = Locale.getDefault();
-        if (currentLocale == null) currentLocale = Locale.US;
+        Locale currentLocale = localeConfiguration.getLocale();
         Currency currency = Currency.getInstance(currentLocale);
         model.addAttribute("currencySymbol", currency.getSymbol());
         model.addAttribute("message", message);

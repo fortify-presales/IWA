@@ -19,6 +19,7 @@
 
 package com.microfocus.example.web.controllers;
 
+import com.microfocus.example.config.LocaleConfiguration;
 import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.Order;
@@ -88,6 +89,9 @@ public class UserController {
 
     @Autowired
     private SessionRegistry sessionRegistry;
+
+    @Autowired
+    LocaleConfiguration localeConfiguration;
 
     @GetMapping(value = {"", "/"})
     public String userHome(Model model, Principal principal) {
@@ -430,7 +434,7 @@ public class UserController {
     }
 
     private Model setModelDefaults(Model model, Principal principal, String controllerName, String actionName) {
-        Locale currentLocale = Locale.getDefault();
+        Locale currentLocale = localeConfiguration.getLocale();
         Currency currency = Currency.getInstance(currentLocale);
         model.addAttribute("currencySymbol", currency.getSymbol());
         model.addAttribute("user", WebUtils.getLoggedInUser(principal));

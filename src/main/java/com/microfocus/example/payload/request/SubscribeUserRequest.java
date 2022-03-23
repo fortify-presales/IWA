@@ -35,11 +35,20 @@ import javax.validation.constraints.Size;
  */
 public class SubscribeUserRequest {
 
+    private Integer id;
     private String firstName;
     private String lastName;
     private String email;
 
     public SubscribeUserRequest() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -69,9 +78,10 @@ public class SubscribeUserRequest {
     @Override
     public String toString() {
         return "SubscribeUserRequest{" +
-                ", firstname='" + firstName + '\'' +
-                ", lastname='" + lastName + '\'' +
-                ", email =" + email +
+                "id='" + id + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email=" + email +
                 '}';
     }
 }

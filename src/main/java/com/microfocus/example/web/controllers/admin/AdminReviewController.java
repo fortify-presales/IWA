@@ -19,6 +19,7 @@
 
 package com.microfocus.example.web.controllers.admin;
 
+import com.microfocus.example.config.LocaleConfiguration;
 import com.microfocus.example.entity.Review;
 import com.microfocus.example.exception.ReviewNotFoundException;
 import com.microfocus.example.service.ProductService;
@@ -51,6 +52,9 @@ public class AdminReviewController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    LocaleConfiguration localeConfiguration;
 
     @GetMapping(value = {"", "/"})
     public String listReviews(Model model, Principal principal) {
@@ -145,7 +149,7 @@ public class AdminReviewController {
     }
 
     private Model setModelDefaults(Model model, Principal principal, String controllerName, String actionName) {
-        Locale currentLocale = Locale.getDefault();
+        Locale currentLocale = localeConfiguration.getLocale();
         Currency currency = Currency.getInstance(currentLocale);
         model.addAttribute("currencySymbol", currency.getSymbol());
         model.addAttribute("user", WebUtils.getLoggedInUser(principal));

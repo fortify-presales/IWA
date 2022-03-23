@@ -19,6 +19,7 @@
 
 package com.microfocus.example.web.controllers;
 
+import com.microfocus.example.config.LocaleConfiguration;
 import com.microfocus.example.entity.Product;
 import com.microfocus.example.service.ProductService;
 import com.microfocus.example.utils.WebUtils;
@@ -54,6 +55,9 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    LocaleConfiguration localeConfiguration;
+
     @GetMapping(value = {"", "/"})
     public String index(Model model, @Param("keywords") String keywords, @Param("limit") Integer limit, Principal principal) {
         log.debug("keywords="+keywords);
@@ -84,7 +88,7 @@ public class ProductController {
     }
 
     private Model setModelDefaults(Model model, Principal principal, String controllerName, String actionName) {
-        Locale currentLocale = Locale.getDefault();
+        Locale currentLocale = localeConfiguration.getLocale();
         Currency currency = Currency.getInstance(currentLocale);
         model.addAttribute("currencySymbol", currency.getSymbol());
         model.addAttribute("user", WebUtils.getLoggedInUser(principal));

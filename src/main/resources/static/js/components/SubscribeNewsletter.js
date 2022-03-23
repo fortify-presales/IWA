@@ -1,4 +1,7 @@
 $.fn.SubscribeNewsletter = function (options) {
+    const MIN_SUBSCRIBER_ID = 1000000
+    const MAX_SUBSCRIBER_ID = 9999999;
+
     return this.each(function (index, el) {
 
         var settings = $.extend({
@@ -11,22 +14,30 @@ $.fn.SubscribeNewsletter = function (options) {
             if (_validateEmail($email.val())) {
                 _saveEmail($email.val()).then(response => {
                     if (response.success) {
-                        _showConfirmationText("Thankyou your email address '" + $email.val() + "' has been registered.", "text-success");
+                        _showConfirmationText("Thank you your email address has been registered.", $email.val(), "text-success");
                     } else {
-                        _showConfirmationText("There was an error registering your email address.", "text-danger");
+                        _showConfirmationText("Error registering address:", $email.val(), "text-danger");
                     }
                 }).catch(error => {
-                    _showConfirmationText("There was an error registering your email address.", "text-danger");
+                    _showConfirmationText("Error registering address:", $email.val(), "text-danger");
                 });
             } else {
-                _showConfirmationText("Please supply a valid email address.", "text-danger");
+                _showConfirmationText("Invalid address:", $email.val(), "text-danger");
             }
         });
     });
 
-    function _showConfirmationText(text, cssClass) {
-        var confirmationH5 = document.createElement("h5"); confirmationH5.classList.add(cssClass); confirmationH5.innerHTML = text;
-        var confirmationDiv = document.createElement("div"); confirmationDiv.classList.add("m-4", "text-center");
+    function _showConfirmationText(text, email, cssClass) {
+        const confirmationH5 = document.createElement("h4");
+        confirmationH5.classList.add(cssClass);
+        if (cssClass === 'text-danger') {
+            confirmationH5.innerHTML = text + "<br/><br/><h5>" + email + "</h5><br/>Please supply a valid email address";
+        } else {
+            confirmationH5.innerHTML = text
+            console.error("ERROR: Failed to register email = " + email);
+        }
+        const confirmationDiv = document.createElement("div");
+        confirmationDiv.classList.add("m-4", "text-center");
         confirmationDiv.appendChild(confirmationH5);
         $('#confirmation-modal').find('#confirmation-modal-body').empty().append(confirmationDiv);
         $('#confirmation-modal').modal('toggle');
@@ -34,8 +45,10 @@ $.fn.SubscribeNewsletter = function (options) {
     }
 
     async function _saveEmail(email) {
+        let subscriberId = Math.random() * (MAX_SUBSCRIBER_ID - MIN_SUBSCRIBER_ID) + MIN_SUBSCRIBER_ID;
         let data = JSON.stringify(
             {
+                id: subscriberId,
                 firstName: "",
                 lastName: "",
                 email: email

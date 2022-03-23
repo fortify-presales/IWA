@@ -179,7 +179,7 @@ public class UserService {
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
-        SubscribeUserResponse subscribedUser = new SubscribeUserResponse(null, null, newUser.getEmail());
+        SubscribeUserResponse subscribedUser = new SubscribeUserResponse(newUser.getId(), null, null, newUser.getEmail());
         return subscribedUser;
     }
 
