@@ -391,7 +391,7 @@ jobs:
         run: scancentral package $PACKAGE_OPTS -o $PACKAGE_FILE
         env:
             PACKAGE_FILE: "package.zip"
-            PACKAGE_OPTS: "-bt mvn"
+            PACKAGE_OPTS: "-bt mvn -bf pom.xml -bc 'clean verify --settings $GITHUB_WORKSPACE/settings.xml'"
 
       # TEST - Save fod.zip
       #- name: 'Upload Artifact'
