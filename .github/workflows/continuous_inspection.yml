@@ -388,7 +388,7 @@ jobs:
       - name: Download Fortify ScanCentral Client
         uses: fortify/gha-setup-scancentral-client@v1
       - name: Package Code + Dependencies
-        run: scancentral package $PACKAGE_OPTS -o $PACKAGE_FILE
+        run: scancentral package -bt mvn -bf pom.xml -bc "package --settings $GITHUB_WORKSPACE/settings.xml" -o $PACKAGE_FILE
         env:
             PACKAGE_FILE: "package.zip"
             PACKAGE_OPTS: '-bt mvn -bf pom.xml -bc "package --settings $GITHUB_WORKSPACE/settings.xml"'
