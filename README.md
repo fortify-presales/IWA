@@ -326,25 +326,52 @@ script and the relevant CICD Identifier.
 
 ### FAST Using ScanCentral DAST and FAST proxy
 
-There is an example Python [Selenium](https://www.selenium.dev/) test script provided (`.\bin\selenium-iwa.py`) that can be used to execute a simple functional test
-and then invoke a ScanCentral DAST security test on the captured workflow using the WebInspect FAST proxy. In order to use this script you will
-need to have entries in the `.env` file similar to the following:
+_The Fortify FAST Proxy allows you to capture traffic from an automated test run and then use the traffic
+as a workflow for a ScanCentral DAST execution. In order to carry out the example here you will need
+to have installed `WIRCServerSetup64-ProxyOnly.msi` which is available in the `Dynamic_Addons.zip` of the
+ScanCentral DAST installation media._
+
+There is an example [Selenium](https://www.selenium.dev/) Python test script provided (`.\src\test\python\test_add_to_cart.py`) that can be used to execute a simple 
+functional test of the running application. There are also a couple of PowerShell scripts (`.\bin\start_fast_proxy.ps1`) and (`.\bin\stop_fast_proxy.ps1`) that can
+be used to start/stop the FAST Proxy. In order to use these scripts you will need to have entries in the `.env` file similar to the following:
 
 ```aidl
-APP_URL=http://localhost:8888
+APP_URL=https://iwa.mfdemouk.com
 SSC_AUTH_TOKEN_BASE64=MmYyMTA5MzYtN2Q5Ny00NmM1LWI5NTUtYThkZWI2YmJlMDUy
 SSCANCENTRAL_DAST_API=http://localhost:5001/api/
-SCANCENTRAL_DAST_CICD_TOKEN=c3c3df60-de68-45b8-89c0-4c07b53392e7
-FAST_EXE=C:\\Program Files\\Fortify\\Fortify WebInspect\\fast.exe
+SCANCENTRAL_DAST_CICD_IDENTIFIER=c3c3df60-de68-45b8-89c0-4c07b53392e7
+FAST_EXE=C:\\Program Files\\Micro Focus WIRC Server\\Fast.exe
 FAST_PORT=8087
 FAST_PROXY=127.0.0.1:8087
-CHROME_WEBDRIVER_PATH=C:/tools/webdriver/bin/chromedriver.exe
+CHROME_WEBDRIVER_PATH=C:/Tools/selenium/chromedriver.exe
 ```
 
 The `SSC_AUTH_TOKEN_BASE64` is the (first) encoded token shown in SSC not the (second) decoded token. The `CHROME_WEBDRIVER_PATH`
 should be set to a compatible version for your Chrome browser as downloaded from [here](https://chromedriver.chromium.org/downloads).
 
-Make sure the application is running and then execute the Python script from your IDE or command line.
+You will also need to have installed the `Selenium`, `PyTest` and `python-dotenv` Python modules:
+
+```
+pip install selenium
+pip install pytest
+pip install python-dotenv
+```
+Make sure the application is running and then execute the following in a terminal window:
+
+```aidl
+powershell bin\start_fast_proxy.ps1
+```
+
+Then in another terminal window execute the following:
+
+```aidl
+pytest
+powershell bin\stop_fast_proxy.ps1
+```
+
+The FAST executable from the first terminal should terminate and then a scan execute in your
+ScanCentral DAST environment.
+
 ## Build and Pipeline Integrations
 
 ### Jenkins
