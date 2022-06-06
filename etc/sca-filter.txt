@@ -8,7 +8,7 @@ Poor Logging Practice
 # Poor Error Handling: Overly Broad Throws
 572EA1F6-FC86-443E-B1A9-A227D5AD17CC
 # Cross-Site Request Forgery
-78E0700E-56FE-45A2-A11B-6A560F730576
+# 78E0700E-56FE-45A2-A11B-6A560F730576
 # J2EE Bad Practices: Leftover Debug Code
 625EEE1F-464F-42DC-85D6-269A637EF747
 

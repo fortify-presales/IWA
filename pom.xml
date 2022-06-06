@@ -39,7 +39,7 @@
         <axios.version>0.21.1</axios.version>
         <springdoc-openapi.version>1.4.3</springdoc-openapi.version>
         <jwt.version>0.9.1</jwt.version>
-        <jackson-bom.version>2.13.0</jackson-bom.version>
+        <jackson.version>2.13.0</jackson.version>
         <groovy.version>3.0.8</groovy.version>
         <selenium.version>4.0.0-rc-2</selenium.version>
         <junit.version>4.12</junit.version>
@@ -154,10 +154,22 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-parameter-names</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
 
         <dependency>

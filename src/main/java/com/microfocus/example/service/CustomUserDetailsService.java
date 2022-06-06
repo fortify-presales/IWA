@@ -53,7 +53,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         try {
             user = userRepository.findUserByUsername(username);
             if (!user.isPresent()) {
-                throw new UsernameNotFoundException("User not found.");
+                user = userRepository.findUserByEmail(username);
+            }
+            log.debug(String.valueOf(user));
+            if (!user.isPresent()) {
+                throw new UsernameNotFoundException("User with email: " + username + " not found.");
             }
         } catch (UserLockedOutException ignored) {
             // Do something here

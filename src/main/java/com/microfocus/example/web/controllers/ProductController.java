@@ -27,14 +27,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Principal;
 import java.util.*;
 
@@ -52,11 +65,13 @@ public class ProductController {
     @Value("${app.data.page-size:25}")
     private Integer defaultPageSize;
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
+    private final LocaleConfiguration localeConfiguration;
 
-    @Autowired
-    LocaleConfiguration localeConfiguration;
+    public ProductController(ProductService productService, LocaleConfiguration localeConfiguration) {
+        this.productService = productService;
+        this.localeConfiguration = localeConfiguration;
+    }
 
     @GetMapping(value = {"", "/"})
     public String index(Model model, @Param("keywords") String keywords, @Param("limit") Integer limit, Principal principal) {
@@ -85,6 +100,46 @@ public class ProductController {
         }
         this.setModelDefaults(model, principal, "Product", "view");
         return "products/view";
+    }
+
+    @GetMapping("/{id}/download/{fileName:.+}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable(value = "id") UUID productId,
+                                                 @PathVariable String fileName, HttpServletRequest request) {
+        Resource resource;
+        File dataDir = null;
+        try {
+            dataDir = ResourceUtils.getFile("classpath:data");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+
+        log.debug("Using data directory: " + dataDir.getAbsolutePath());
+        String fileBasePath = dataDir.getAbsolutePath() + File.separatorChar + productId.toString() + File.separatorChar;
+        Path path = Paths.get(fileBasePath + fileName);
+        try {
+            resource = new UrlResource(path.toUri());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+
+        // Try to determine file's content type
+        String contentType = null;
+        try {
+            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+        } catch (IOException ex) {
+            log.debug("Could not determine file type.");
+        }
+
+        // Fallback to the default content type if type could not be determined
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
+
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 
     private Model setModelDefaults(Model model, Principal principal, String controllerName, String actionName) {

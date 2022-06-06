@@ -31,7 +31,8 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-ui:1.4.3'
     implementation 'org.springdoc:springdoc-openapi-security:1.4.3'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.0'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatypes-collections:2.13.0'
+    implementation 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.13.0'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.13.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'org.apache.maven.wagon:wagon-http:3.4.1'
@@ -63,6 +64,27 @@ sourceSets {
         resources {
             srcDirs "src/main/resources", "src/main/configs"
         }
+    }
+}
+
+azurewebapp {
+    subscription = props.getProperty("AZURE_SUBSCRIPTION_ID") // e.g. '17d2722b-256e-47e5-84b8-5b01f509a42c'
+    resourceGroup = props.getProperty("AZURE_RESOURCE_GROUP") // e.g. 'fortify-iwa-rg'
+    appName = props.getProperty("AZURE_APP_NAME") // e.g. 'fortify-iwa-app'
+    pricingTier = 'B1'
+    region = props.getProperty("AZURE_REGION") // e.g. 'eastus'
+    runtime {
+        //os = 'Windows'
+        os = 'Linux'
+        webContainer = 'Tomcat 9.0'
+        //webContainer = 'Java SE'
+        javaVersion = 'Java 1.8'
+    }
+    appSettings {
+        key1=value1
+    }
+    auth {
+        type = 'azure_cli' // support azure_cli, oauth2, device_code and service_principal
     }
 }
 

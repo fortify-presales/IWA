@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -21,7 +21,9 @@ package com.microfocus.example.payload.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,12 +47,13 @@ public class ApiStatusResponse {
         this.success = success;
     }
 
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }

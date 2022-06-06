@@ -183,7 +183,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .successHandler(CustomAuthenticationSuccessHandler())
                     .loginPage("/login")
                     .failureUrl("/login?error=true")
-                    .usernameParameter("username")
+                    .usernameParameter("email")
                     .passwordParameter("password")
                     .permitAll();
 

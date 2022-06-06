@@ -31,7 +31,7 @@
 
 _IWA (Insecure Web App) Pharmacy Direct_ is an example Java/Spring Web Application for use in **DevSecOps** scenarios and demonstrations.
 It includes some examples of bad and insecure code - which can be found using static and dynamic application
-security testing tools such as [Micro Focus Fortify](https://www.microfocus.com/en-us/cyberres/application-security).
+security testing tools such as those provided by [Micro Focus Fortify](https://www.microfocus.com/en-us/cyberres/application-security).
 
 One of the main aims of this project is to illustrate how security can be embedded early ("Shift-Left") and continuously ("CI/CD") in
 the development lifecycle. Therefore, a number of examples of "integrations" to common CI/CD pipeline tools are provided.
@@ -43,7 +43,7 @@ and requesting Services (prescriptions, health checks etc). It has a modern-ish 
 
 ![Screenshot](media/screenshot.png)
 
-An up-to-date version of the running application can be found at [https://iwapharmacydirect.herokuapp.com](https://iwapharmacydirect.herokuapp.com).
+An up-to-date version of the running application can be found at [https://iwa.mfdemouk.com](https://iwa.mfdemouk.com).
 
 ## Forking the Repository
 
@@ -84,12 +84,12 @@ mvn spring-boot:run
 Then navigate to the URL: [http://localhost:8888](http://localhost:8888). You can carry out a number of
 actions unauthenticated, but if you want to login you can do so as one of the following users:
 
-- **user1/password**
-- **user2/password**
+- **user1@localhost.com/password**
+- **user2@localhost.com/password**
   
 There is also an administrative user:
 
-- **admin/password**
+- **admin@localhost.com/password**
 
 ### Release (Docker Image)
 
@@ -127,25 +127,41 @@ in the project root directory. This file is not created by default (and should n
 with all of the possible settings for the following scenarios is illustrated below:
 
 ```aidl
+# Application URL (locally)
 APP_URL=http://localhost:8888
-SSC_URL=http://localhost:8080/ssc
+# Software Security Center
+SSC_URL=http://[YOUR-SSC-SERVER]
 SSC_USERNAME=admin
-SSC_PASSWORD=admin
-SSC_AUTH_TOKEN=6b16aa46-35d7-4ea6-98c1-8b780851fb37
-SSC_APP_NAME=IWA
+SSC_PASSWORD=password
+SSC_AUTH_TOKEN=XXX
+SSC_APP_NAME=IWAPharmacyDirect
 SSC_APP_VER_NAME=master
-SCANCENTRAL_CTRL_URL=http://localhost:8080/scancentral-ctrl
-SCANCENTRAL_CTRL_TOKEN=96846342-1349-4e36-b94f-11ed96b9a1e3
+# ScanCentral SAST/DAST
+SCANCENTRAL_CTRL_URL=http://[YOUR-SCANCENTRAL-SERVER]/scancentral-ctrl
+SCANCENTRAL_CTRL_TOKEN=XXX
 SCANCENTRAL_POOL_ID=00000000-0000-0000-0000-000000000002
 SCANCENTRAL_EMAIL=info@microfocus.com
-SCANCENTRAL_DAST_API=http://localhost:8085/api/
-NEXUS_IQ_URL=http://localhost:8070
-NEXUS_IQ_AUTH=gTvvcLQ3:NDZ6bIzhFTRIyT9UtPaQaSEc0HaDsQd3ELvXnkohBGmK
-NEXUS_IQ_APP_ID=IWA
-FOD_API_URL=https://api.emea.fortify.com
-FOD_API_KEY=89795c5f-798c-48d5-8c4a-de999692cdd4
-FOD_API_SECRET=XXXXX
-DisableSSLSecurity=true
+SCANCENTRAL_DAST_API=http://[YOUR-SCANCENTRAL-DAST-SERVER]/api/
+# ScanCentral FAST
+FAST_EXE=C:\\Program Files\\Micro Focus WIRC Server\\Fast.exe
+FAST_PORT=8087
+FAST_PROXY=127.0.0.1:8087
+# Nexus IQ Lifecycle
+NEXUS_IQ_URL=http://[YOUR-NEXUS-IQ-SERVER]
+NEXUS_IQ_AUTH=XXX
+NEXUS_IQ_APP_ID=IWAPharmacyDirect
+# Fortify on Demand
+FOD_API_URL=https://api.ams.fortify.com
+FOD_API_KEY=XXXX
+FOD_API_SECRET=YYYY
+FOD_TENANT=[YOUR-TENANT]
+FOD_USER=[YOUR-USERNAME]
+FOD_PAT=XXXX
+# Azure (Resource Manager)
+AZURE_SUBSCRIPTION_ID=[YOUR-SUBSCRIPTION-ID]
+AZURE_RESOURCE_GROUP=[YOUR-NAME]-iwa-rg
+AZURE_APP_NAME=[YOUR-NAME]-iwa-app
+AZURE_REGION=eastus
 ```
 
 ### SAST using Fortify SCA command line
@@ -161,10 +177,10 @@ This script runs a "sourceanalyzer" translation and scan on the project's source
 which you can open using the Fortify `auditworkbench` tool:
 
 ```aidl
-auditworkbench.cmd .\IWA.fpr
+auditworkbench.cmd .\IWAPharmacyDirect.fpr
 ```
 
-It also creates a PDF report called `IWA.pdf` and optionally
+It also creates a PDF report called `IWAPharmacyDirect.pdf` and optionally
 uploads the results to [Fortify Software Security Center](https://www.microfocus.com/en-us/products/software-security-assurance-sdlc/overview) (SSC).
 
 In order to upload to SSC you will need to have entries in the `.env` similar to the following:
@@ -172,7 +188,7 @@ In order to upload to SSC you will need to have entries in the `.env` similar to
 ```aidl
 SSC_URL=http://localhost:8080/ssc
 SSC_AUTH_TOKEN=28145aad-c40d-426d-942b-f6d6aec9c56f
-SSC_APP_NAME=IWA
+SSC_APP_NAME=IWAPharmacyDirect
 SSC_APP_VER_NAME=master
 ```
 
@@ -244,7 +260,7 @@ you can use the `scancentral` command utility as following:
 scancentral package -bt mvn -bf pom.xml --output fod.zip
 ```
 
-You can then upload this manually using the Fortify on Demand UI or you can use the PowerShell script file [fortify-fod.ps1](bin/fortify-fod.ps1) 
+You can then upload this manually using the Fortify on Demand UI or you can use the PowerShell script [fortify-fod.ps1](bin/fortify-fod.ps1) 
 provided to upload the file and start a Fortify on Demand static scan as follows:
 
 ```PowerShell
@@ -331,8 +347,8 @@ as a workflow for a ScanCentral DAST execution. In order to carry out the exampl
 to have installed `WIRCServerSetup64-ProxyOnly.msi` which is available in the `Dynamic_Addons.zip` of the
 ScanCentral DAST installation media._
 
-There is an example [Selenium](https://www.selenium.dev/) Python test script provided (`.\src\test\python\test_add_to_cart.py`) that can be used to execute a simple 
-functional test of the running application. There are also a couple of PowerShell scripts (`.\bin\start_fast_proxy.ps1`) and (`.\bin\stop_fast_proxy.ps1`) that can
+There is an example [Selenium](https://www.selenium.dev/) Python test script provided [test_add_to_cart.py](`.\src\test\python\test_add_to_cart.py`) that can be used to execute a simple 
+functional test of the running application. There are also a couple of PowerShell scripts [start_fast_proxy.ps1](`.\bin\start_fast_proxy.ps1`) and [stop_fast_proxy.ps1](`.\bin\stop_fast_proxy.ps1`) that can
 be used to start/stop the FAST Proxy. In order to use these scripts you will need to have entries in the `.env` file similar to the following:
 
 ```aidl

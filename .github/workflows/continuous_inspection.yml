@@ -139,7 +139,7 @@ jobs:
         env:
           SSC_USER: ${{ secrets.SSC_USER }}
           SSC_PASSWORD: ${{ secrets.SSC_PASSWORD }}
-          SSC_APPLICATION_NAME: "IWA"
+          SSC_APPLICATION_NAME: "IWAPharmacyDirect"
           SSC_PARENT_VERSION: ${{ secrets.SSC_PARENT_VERSION }}
           SSC_URL: "${{ secrets.SSC_URL }}"
           GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
@@ -169,7 +169,7 @@ jobs:
           SC_CONTROLLER_URL: ${{ secrets.SC_CONTROLLER_URL }}
           SC_EMAIL: ${{ secrets.SC_EMAIL }}
           SSC_UPLOAD_TOKEN: ${{ secrets.SSC_UPLOAD_TOKEN }}
-          SSC_APPLICATION: "IWA"
+          SSC_APPLICATION: "IWAPharmacyDirect"
           SSC_VERSION: ${{ steps.extract_branch.outputs.branch }}
 
       # Poll ScanCentral status
@@ -197,7 +197,7 @@ jobs:
           SC_CONTROLLER_URL: ${{ secrets.SC_CONTROLLER_URL }}
           SC_TOKEN: ${{ steps.start_scancentral_scan.outputs.SC_TOKEN }}
           SC_POLL_INTERVAL: 10
-          SSC_APPLICATION: "IWA"
+          SSC_APPLICATION: "IWAPharmacyDirect"
 
       # Automatically Approve any SSC artifacts
       # An example of how to automatically approve the upload of results to SSC
@@ -224,7 +224,7 @@ jobs:
         env:
           SSC_USER: ${{ secrets.SSC_USER }}
           SSC_PASSWORD: ${{ secrets.SSC_PASSWORD }}
-          SSC_APPLICATION_NAME: "IWA"
+          SSC_APPLICATION_NAME: "IWAPharmacyDirect"
           SSC_URL: "${{ secrets.SSC_URL }}"
           GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
           SC_TOKEN: ${{ steps.start_scancentral_scan.outputs.SC_TOKEN }} 
@@ -286,7 +286,7 @@ jobs:
         env:
           SSC_USER: ${{ secrets.SSC_USER }}
           SSC_PASSWORD: ${{ secrets.SSC_PASSWORD }}
-          SSC_APPLICATION_NAME: "IWA"
+          SSC_APPLICATION_NAME: "IWAPharmacyDirect"
           SSC_URL: "${{ secrets.SSC_URL }}"
           SSC_APP_VER_ID: ${{ steps.verify_ssc_release.outputs.SSC_APP_VER_ID }}
           GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
@@ -372,7 +372,7 @@ jobs:
           FOD_TENANT: ${{ secrets.FOD_TENANT }}
           FOD_USER: ${{ secrets.FOD_USER }}
           FOD_PAT: ${{ secrets.FOD_PAT }}
-          FOD_APPLICATION_NAME: "IWA (Java)"
+          FOD_APPLICATION_NAME: "IWAPharmacyDirect"
           FOD_PARENT_RELEASE_ID: ${{ secrets.FOD_PARENT_RELEASE_ID }}
           FOD_URL: "https://emea.fortify.com/"
           FOD_API_URI: "https://api.emea.fortify.com/"
@@ -479,7 +479,7 @@ jobs:
           FOD_TENANT: ${{ secrets.FOD_TENANT }}
           FOD_USER: ${{ secrets.FOD_USER }}
           FOD_PAT: ${{ secrets.FOD_PAT }}
-          FOD_APPLICATION_NAME: "IWA (Java)"
+          FOD_APPLICATION_NAME: "IWAPharmacyDirect"
           FOD_RELEASE_ID: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
           FOD_URL: "https://emea.fortify.com/"
           FOD_API_URI: "https://api.emea.fortify.com/"

@@ -21,11 +21,14 @@ $AppName = $EnvSettings['SSC_APP_NAME']
 $AppVersion = $EnvSettings['SSC_APP_VER_NAME']
 $SSCUrl = $EnvSettings['SSC_URL']
 $SSCAuthToken = $EnvSettings['SSC_AUTH_TOKEN'] # CIToken
-$ScanSwitches = "-Dcom.fortify.sca.Phase0HigherOrder.Languages=javascript,typescript -Dcom.fortify.sca.EnableDOMModeling=true -Dcom.fortify.sca.follow.imports=true -Dcom.fortify.sca.exclude.unimported.node.modules=true"
+$ScanSwitches = "-Dcom.fortify.sca.rules.enable_wi_correlation=true `
+-Dcom.fortify.sca.Phase0HigherOrder.Languages=javascript,typescript `
+-Dcom.fortify.sca.EnableDOMModeling=true -Dcom.fortify.sca.follow.imports=true `
+-Dcom.fortify.sca.exclude.unimported.node.modules=true"
 if ($QuickScan) {
     $PrecisionLevel = 1
 } else {
-    $PrecisionLevel = 3
+    $PrecisionLevel = 3 # or 4 for full scan
 }
 
 # Test we have Fortify installed successfully

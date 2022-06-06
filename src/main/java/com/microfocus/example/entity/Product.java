@@ -38,6 +38,7 @@ import java.util.UUID;
 public class Product implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    public static final String TABLE_NAME = "products";
 
     @Id
     @GeneratedValue(generator = "UUID")

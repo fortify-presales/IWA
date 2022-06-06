@@ -20,10 +20,13 @@
 package com.microfocus.example.repository;
 
 import com.microfocus.example.entity.Product;
+import com.microfocus.example.repository.mapper.ProductMapper;
 import org.hibernate.Session;
 import org.hibernate.jdbc.ReturningWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -45,15 +48,18 @@ import java.util.UUID;
 @Transactional
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
+
     private static final Logger log = LoggerFactory.getLogger(ProductRepositoryImpl.class);
 
     private final ProductRepositoryBasic productRepositoryBasic;
+    private final JdbcTemplate jdbcTemplate;
 
     @PersistenceContext
     EntityManager entityManager;
 
-    public ProductRepositoryImpl(ProductRepositoryBasic productRepositoryBasic) {
+    public ProductRepositoryImpl(ProductRepositoryBasic productRepositoryBasic, JdbcTemplate jdbcTemplate) {
         this.productRepositoryBasic = productRepositoryBasic;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @SuppressWarnings("unchecked")
@@ -108,72 +114,19 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return result;
     }
 
-
-// MORE SECURE EXAMPLE:
-
-// Uncomment the following for more secure method:
-
-    /*
     @SuppressWarnings("unchecked")
     public List<Product> findAvailableProductsByKeywords(String keywords, int offset, int limit) {
-        List<Product> result = new ArrayList<>();
-        Query q = entityManager.createQuery(
-                "SELECT p FROM Product p WHERE p.available = true AND lower(p.name) LIKE lower(?1)",
-                Product.class);
-        q.setParameter(1, "%"+keywords+"%");
-        q.setFirstResult(offset);
-        q.setMaxResults(limit);
-        result = (List<Product>)q.getResultList();
-        return result;
+        String query = keywords.toLowerCase();
+        String sqlQuery = "SELECT * FROM " + getTableName() +
+                " WHERE lower(name) LIKE '%" + query + "%' " +
+                " OR lower(summary) LIKE '%" + query + "%'" +
+                " OR lower(description) LIKE '%" + query + "%'" +
+                " LIMIT " + limit + " OFFSET " + offset;
+        return jdbcTemplate.query(sqlQuery, new ProductMapper());
     }
-    */
 
-    @SuppressWarnings("unchecked")
-    public List<Product> findAvailableProductsByKeywords(String keywords, int offset, int limit) {
-        List<Product> products = new ArrayList<>();
-
-       Session session = entityManager.unwrap(Session.class);
-        Integer productCount = session.doReturningWork(new ReturningWork<Integer>() {
-
-            @Override
-            public Integer execute(Connection con) throws SQLException {
-                Integer productCount = 0;
-                try {
-                    Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                    String query = "SELECT id, code, name, summary, description, image, price, " +
-                            "on_sale, sale_price, in_stock, time_to_stock, rating, available FROM products WHERE lower(name) LIKE '%" +
-                            keywords.toLowerCase() + "%' LIMIT " + limit + " OFFSET " + offset;
-                    ResultSet results = stmt.executeQuery(query);
-                    if (results.getStatement() != null) {
-                        while (results.next()) {
-                            productCount++;
-                            products.add(new Product(results.getObject("id", UUID.class),
-                                    results.getString("code"),
-                                    results.getString("name"),
-                                    results.getString("summary"),
-                                    results.getString("description"),
-                                    results.getString("image"),
-                                    results.getFloat("price"),
-                                    results.getBoolean("on_sale"),
-                                    results.getFloat("sale_price"),
-                                    results.getBoolean("in_stock"),
-                                    results.getInt("time_to_stock"),
-                                    results.getInt("rating"),
-                                    results.getBoolean("available")
-                            ));
-                        }
-                    } else {
-                        log.debug("No products found");
-                    }
-                } catch (SQLException ex) {
-                    log.error(ex.getLocalizedMessage());
-                }
-                return productCount;
-            }
-        });
-        log.debug("Found " + productCount + " products.");
-
-        return products;
+    String getTableName() {
+        return Product.TABLE_NAME;
     }
 
 }

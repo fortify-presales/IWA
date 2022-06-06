@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.microfocus.example.payload.response.ApiStatusResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +63,7 @@ public class AuthenticationEntryPointJwt implements AuthenticationEntryPoint {
         ResponseEntity<ApiStatusResponse> apiError = new ResponseEntity<ApiStatusResponse>(apiStatusResponse, HttpStatus.UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         String jsonString = mapper.writeValueAsString(apiError.getBody());
         PrintWriter writer = response.getWriter();
         writer.println(jsonString);

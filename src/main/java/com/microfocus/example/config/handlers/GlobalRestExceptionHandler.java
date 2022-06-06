@@ -61,7 +61,7 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(ProductRepositoryImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(GlobalRestExceptionHandler.class);
 
     // Custom exception handlers
 
@@ -330,7 +330,8 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> handleAll(final Exception ex, final WebRequest request) {
-        log.error("error", ex);
+        log.debug("GlobalRestExceptionHandler::handleAll");
+        log.error("error:" + ex.toString());
         ArrayList<String> errors = new ArrayList<>();
         errors.add(ex.getLocalizedMessage());
         final ApiStatusResponse apiStatusResponse = new ApiStatusResponse

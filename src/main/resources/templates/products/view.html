@@ -51,6 +51,13 @@
                                     <th scope="row">Date First Available:</th>
                                     <td><span th:text="${#dates.format(#dates.createNow(), 'dd MMM yyyy')}"></span></td>
                                 </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <a th:href="@{'/products/' + ${product.id} + '/download/datasheet.pdf'}">
+                                            <i class="fas fa-download fa-fw"></i> Download Datasheet
+                                        </a>
+                                    </td>
+                                </tr>
                             </table>
                         </div>
                     </div>
@@ -72,17 +79,17 @@
                         <p><span th:text="${product.summary}"> Summary </span></p>
                         <h6>Description</h6>
                         <p><span th:text="${product.description}"> Description </span></p>
-                        <h4 class="price pt-2 pb-4 item-price">
+                        <h5 class="price pt-2 pb-4 item-price">
                             <del th:if="${product.onSale == true}">
                                 <span th:text="${currencySymbol + #strings.replace(#numbers.formatDecimal(product.price, 0, 2), '.00', '')}"> Price </span>
                             </del>
                             <span th:if="${product.onSale == false}" th:text="${currencySymbol + #strings.replace(#numbers.formatDecimal(product.price, 0, 2), '.00', '')}"> Price </span>
-                            <span th:if="${product.onSale == true}"> &mdash; </span>
+                            <span th:if="${product.onSale == true}"> &ndash; </span>
                             <span th:if="${product.onSale == true}" th:text="${currencySymbol + #strings.replace(#numbers.formatDecimal(product.salePrice, 0, 2), '.00', '')}"> Sale Price </span>
-                            <span th:if="${product.inStock}" class="alert alert-success alert">In Stock</span>
-                            <span th:unless="${product.inStock}" class="alert alert-danger">Out of Stock</span>
-                            <span th:unless="${product.inStock}" th:text="|In stock in ${product.timeToStock} days|" class="alert alert-light text-dark"> </span>
-                        </h4>
+                            <span th:if="${product.inStock}" class="badge badge-success">In Stock</span>
+                            <span th:unless="${product.inStock}" class="badge badge-danger">Out of Stock</span>
+                            <span th:unless="${product.inStock}" th:text="In stock in ${product.timeToStock} days" class="badge badge-light text-dark"> </span>
+                        </h5>
 
                         <div class="cart-add">
                             <div class="mb-4">

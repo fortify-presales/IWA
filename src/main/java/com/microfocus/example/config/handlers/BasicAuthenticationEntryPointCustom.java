@@ -20,6 +20,7 @@
 package com.microfocus.example.config.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.microfocus.example.config.WebSecurityConfiguration;
 import com.microfocus.example.payload.response.ApiStatusResponse;
 import org.slf4j.Logger;
@@ -62,6 +63,7 @@ public class BasicAuthenticationEntryPointCustom extends BasicAuthenticationEntr
         ResponseEntity<ApiStatusResponse> apiError = new ResponseEntity<ApiStatusResponse>(apiStatusResponse, HttpStatus.UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         String jsonString = mapper.writeValueAsString(apiError.getBody());
         PrintWriter writer = response.getWriter();
         writer.println(jsonString);

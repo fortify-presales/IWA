@@ -49,7 +49,7 @@ public class FaviconConfiguration {
     public SimpleUrlHandlerMapping faviconHandlerMapping() {
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
         mapping.setOrder(Integer.MIN_VALUE);
-        mapping.setUrlMap(Collections.singletonMap(contextPath + "/img/favicons/favicon.ico",
+        mapping.setUrlMap(Collections.singletonMap(contextPath + "/img/favicons/favicon.png",
                 faviconRequestHandler()));
         return mapping;
     }
