@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -49,9 +49,10 @@ import java.util.*;
  */
 @RequestMapping("/cart")
 @Controller
-public class CartController {
+public class CartController extends AbstractBaseController {
 
-    private static final Logger log = LoggerFactory.getLogger(CartController.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final String CONTROLLER_NAME = getClass().getName();
 
     @Autowired
     private ProductService productService;
@@ -62,9 +63,19 @@ public class CartController {
     @Autowired
     LocaleConfiguration localeConfiguration;
 
+    @Override
+    LocaleConfiguration GetLocaleConfiguration() {
+        return localeConfiguration;
+    }
+
+    @Override
+    String GetControllerName() {
+        return CONTROLLER_NAME;
+    }
+
     @GetMapping(value = {"", "/"})
     public String index(Model model, Principal principal) {
-        setModelDefaults(model, principal, "CartController", "index");
+        this.setModelDefaults(model, principal, "index");
         return "cart/index";
     }
 
@@ -81,9 +92,10 @@ public class CartController {
         } else {
             model.addAttribute("message", "Internal error accessing user!");
             model.addAttribute("alertClass", "alert-danger");
+            this.setModelDefaults(model, principal, "not-found");
             return "user/not-found";
         }
-        this.setModelDefaults(model, principal, "Cart", "checkout");
+        this.setModelDefaults(model, principal, "checkout");
         return "cart/checkout";
     }
 
@@ -93,6 +105,7 @@ public class CartController {
                                   RedirectAttributes redirectAttributes,
                                   Principal principal) {
         if (bindingResult.hasErrors()) {
+            this.setModelDefaults(model, principal, "confirm");
             return "cart/confirm";
         } else {
             try {
@@ -100,6 +113,7 @@ public class CartController {
                 Order otmp = productService.newOrderFromOrderForm(orderForm);
                 redirectAttributes.addFlashAttribute("orderNum", otmp.getOrderNum());
                 redirectAttributes.addFlashAttribute("orderId", otmp.getId());
+                this.setModelDefaults(model, principal, "confirm");
                 return "redirect:/cart/confirm";
             } catch (UserNotFoundException ex) {
                 log.error("UserNotFoundException saving profile: " + principal.toString());
@@ -107,24 +121,14 @@ public class CartController {
                 //bindingResult.addError(usernameError);
             }
         }
+        this.setModelDefaults(model, principal, "confirm");
         return "cart/confirm";
     }
 
     @GetMapping("/confirm")
     public String order(Model model, Principal principal) {
-        setModelDefaults(model, principal, "CartController", "confirm");
+        this.setModelDefaults(model, principal, "confirm");
         return "cart/confirm";
-    }
-
-    private Model setModelDefaults(Model model, Principal principal, String controllerName, String actionName) {
-        Locale currentLocale = localeConfiguration.getLocale();
-        Currency currency = Currency.getInstance(currentLocale);
-        model.addAttribute("currencySymbol", currency.getSymbol());
-        model.addAttribute("user", WebUtils.getLoggedInUser(principal));
-        model.addAttribute("messageCount", "0");
-        model.addAttribute("controllerName", controllerName);
-        model.addAttribute("actionName", actionName);
-        return model;
     }
 
 }

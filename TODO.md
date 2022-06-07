@@ -9,7 +9,8 @@
 - [X] Product search filter - presentation
 - [ ] Product search filter - implementation
 - [X] Allow login by email address instead of username
-- [ ] Fix the following:
+- [ ] Complete registration process with email validation  
+- [X] Fix the following:
 ```aidl
 com.fasterxml.jackson.databind.exc.InvalidDefinitionException: Java 8 date/time type `java.time.LocalDateTime` not supported by default: add Module "com.fasterxml.jackson.datatype:jackson-datatype-jsr310" to enable handling (through reference chain: com.microfocus.example.payload.response.ApiStatusResponse["timestamp"])
 ```

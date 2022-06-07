@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2021 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +50,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -62,9 +63,10 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 @Controller
 @SessionAttributes("user")
-public class UserController {
+public class UserController extends AbstractBaseController {
 
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final String CONTROLLER_NAME = getClass().getName();
 
     @Value("${AUTHENTICATION_ERROR;Invalid authentication credentials were supplied.")
     private String AUTHENTICATION_ERROR;
@@ -93,6 +95,16 @@ public class UserController {
     @Autowired
     LocaleConfiguration localeConfiguration;
 
+    @Override
+    LocaleConfiguration GetLocaleConfiguration() {
+        return localeConfiguration;
+    }
+
+    @Override
+    String GetControllerName() {
+        return CONTROLLER_NAME;
+    }
+
     @GetMapping(value = {"", "/"})
     public String userHome(Model model, Principal principal) {
         CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
@@ -107,9 +119,10 @@ public class UserController {
         } else {
             model.addAttribute("message", "Internal error accessing user!");
             model.addAttribute("alertClass", "alert-danger");
+            this.setModelDefaults(model, principal, "not-found");
             return "user/not-found";
         }
-        this.setModelDefaults(model, principal, "User", "home");
+        this.setModelDefaults(model, principal, "home");
         return "user/home";
     }
 
@@ -125,9 +138,10 @@ public class UserController {
         } else {
             model.addAttribute("message", "Internal error accessing user!");
             model.addAttribute("alertClass", "alert-danger");
+            this.setModelDefaults(model, principal, "not-found");
             return "user/not-found";
         }
-        this.setModelDefaults(model, principal, "User", "profile");
+        this.setModelDefaults(model, principal, "profile");
         return "user/profile";
     }
 
@@ -142,9 +156,10 @@ public class UserController {
         } else {
             model.addAttribute("message", "Internal error accessing user!");
             model.addAttribute("alertClass", "alert-danger");
+            this.setModelDefaults(model, principal, "not-found");
             return "user/not-found";
         }
-        this.setModelDefaults(model, principal, "User", "editProfile");
+        this.setModelDefaults(model, principal, "edit-profile");
         return "user/edit-profile";
     }
 
@@ -159,9 +174,10 @@ public class UserController {
         } else {
             model.addAttribute("message", "Internal error accessing user!");
             model.addAttribute("alertClass", "alert-danger");
+            this.setModelDefaults(model, principal, "not-found");
             return "user/not-found";
         }
-        this.setModelDefaults(model, principal, "User", "changePassword");
+        this.setModelDefaults(model, principal, "change-password");
         return "user/change-password";
     }
 
@@ -176,7 +192,7 @@ public class UserController {
         model.addAttribute("messages", messages);
         model.addAttribute("unreadMessageCount", userService.getUserUnreadMessageCount(user.getId()));
         model.addAttribute("totalMessageCount", messages.size());
-        this.setModelDefaults(model, principal, "User", "messages");
+        this.setModelDefaults(model, principal, "index");
         return "user/messages/index";
     }
 
@@ -203,6 +219,7 @@ public class UserController {
             CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
             loggedInUserId = loggedInUser.getId();
         } else {
+            this.setModelDefaults(model, principal, "not-found");
             return "user/not-found";
         }
         Optional<Message> optionalMessage = userService.findMessageById(messageId);
@@ -211,6 +228,7 @@ public class UserController {
             UUID messageUserId = optionalMessage.get().getUser().getId();
             if (!messageUserId.equals(loggedInUserId)) {
                 log.debug("User id: " + loggedInUserId + " trying to access message for: " + messageUserId);
+                this.setModelDefaults(model, principal, "access-denied");
                 return "user/messages/access-denied";
             }
             MessageForm messageForm = new MessageForm(optionalMessage.get());
@@ -220,9 +238,10 @@ public class UserController {
         } else {
             model.addAttribute("message", "Internal error accessing message!");
             model.addAttribute("alertClass", "alert-danger");
+            this.setModelDefaults(model, principal, "not-found");
             return "user/messages/not-found";
         }
-        this.setModelDefaults(model, principal, "User", "viewMessage");
+        this.setModelDefaults(model, principal, "view");
         return "user/messages/view";
     }
 
@@ -237,7 +256,7 @@ public class UserController {
         model.addAttribute("orders", orders);
         model.addAttribute("unshippedOrderCount", userService.getUserUnshippedOrderCount(user.getId()));
         model.addAttribute("totalOrderCount", orders.size());
-        this.setModelDefaults(model, principal, "User", "orders");
+        this.setModelDefaults(model, principal, "index");
         return "user/orders/index";
     }
 
@@ -261,6 +280,7 @@ public class UserController {
             CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
             loggedInUserId = loggedInUser.getId();
         } else {
+            this.setModelDefaults(model, principal, "not-found");
             return "user/not-found";
         }
         Optional<Order> optionalOrder = userService.findOrderById(orderId);
@@ -269,20 +289,18 @@ public class UserController {
             UUID orderUserId = optionalOrder.get().getUser().getId();
             if (!orderUserId.equals(loggedInUserId)) {
                 log.debug("User id: " + loggedInUserId + " trying to access order for: " + orderUserId);
+                this.setModelDefaults(model, principal, "access-denied");
                 return "user/orders/access-denied";
             }
             OrderForm orderForm = new OrderForm(optionalOrder.get());
             model.addAttribute("orderForm", orderForm);
-            Locale currentLocale = Locale.getDefault();
-            Currency currency = Currency.getInstance(currentLocale);
-            model.addAttribute("locale", currentLocale);
-            model.addAttribute("currencySymbol", currency.getSymbol());
         } else {
             model.addAttribute("message", "Internal error accessing order!");
             model.addAttribute("alertClass", "alert-danger");
+            this.setModelDefaults(model, principal, "not-found");
             return "user/orders/not-found";
         }
-        this.setModelDefaults(model, principal, "User", "viewOrder");
+        this.setModelDefaults(model, principal, "view");
         return "user/orders/view";
     }
 
@@ -296,12 +314,14 @@ public class UserController {
                                   RedirectAttributes redirectAttributes,
                                   Principal principal) {
         if (bindingResult.hasErrors()) {
+            this.setModelDefaults(model, principal, "edit-profile");
             return "user/edit-profile";
         } else {
             try {
                 userService.saveUserFromUserForm(userForm);
                 redirectAttributes.addFlashAttribute("message", "Profile updated successfully.");
                 redirectAttributes.addFlashAttribute("alertClass", "alert-success");
+                this.setModelDefaults(model, principal, "profile");
                 return "redirect:/user/profile";
             } catch (InvalidPasswordException ex) {
                 log.error(AUTHENTICATION_ERROR);
@@ -313,7 +333,7 @@ public class UserController {
                 bindingResult.addError(usernameError);
             }
         }
-        this.setModelDefaults(model, principal, "User", "saveProfile");
+        this.setModelDefaults(model, principal, "profile");
         return "user/profile";
     }
 
@@ -323,6 +343,7 @@ public class UserController {
                                    RedirectAttributes redirectAttributes,
                                    Principal principal) {
         if (bindingResult.hasErrors()) {
+            this.setModelDefaults(model, principal, "change-password");
             return "user/change-password";
         } else {
             try {
@@ -344,7 +365,7 @@ public class UserController {
                 bindingResult.addError(usernameError);
             }
         }
-        this.setModelDefaults(model, principal, "User", "savePassword");
+        this.setModelDefaults(model, principal, "home");
         return "user/home";
     }
 
@@ -361,7 +382,7 @@ public class UserController {
     public String registerUser(Model model, Principal principal) {
         RegisterUserForm registerUserForm = new RegisterUserForm();
         model.addAttribute("registerUserForm", registerUserForm);
-        this.setModelDefaults(model, principal, "User", "register");
+        this.setModelDefaults(model, principal, "register");
         return "user/register";
     }
 
@@ -371,6 +392,7 @@ public class UserController {
                                RedirectAttributes redirectAttributes,
                                Principal principal) {
         if (bindingResult.hasErrors()) {
+            this.setModelDefaults(model, principal, "register");
             return "user/register";
         } else {
            try {
@@ -386,6 +408,7 @@ public class UserController {
                bindingResult.addError(emailError);
            }
         }
+        this.setModelDefaults(model, principal, "register");
         return "user/register";
     }
 
@@ -427,20 +450,9 @@ public class UserController {
         return "redirect:/user/upload-file";
     }
 
-
     @ExceptionHandler(StorageFileNotFoundException.class)
     public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
         return ResponseEntity.notFound().build();
-    }
-
-    private Model setModelDefaults(Model model, Principal principal, String controllerName, String actionName) {
-        Locale currentLocale = localeConfiguration.getLocale();
-        Currency currency = Currency.getInstance(currentLocale);
-        model.addAttribute("currencySymbol", currency.getSymbol());
-        model.addAttribute("user", WebUtils.getLoggedInUser(principal));
-        model.addAttribute("controllerName", controllerName);
-        model.addAttribute("actionName", actionName);
-        return model;
     }
 
 }

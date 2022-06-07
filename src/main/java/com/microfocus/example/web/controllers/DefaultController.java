@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -19,15 +19,9 @@
 
 package com.microfocus.example.web.controllers;
 
-import java.security.Principal;
-import java.util.Currency;
-import java.util.Locale;
-
 import com.microfocus.example.config.LocaleConfiguration;
-import com.microfocus.example.entity.Order;
-import com.microfocus.example.exception.UserNotFoundException;
-import com.microfocus.example.web.form.OrderForm;
-import com.microfocus.example.web.form.RegisterUserForm;
+import com.microfocus.example.entity.CustomUserDetails;
+import com.microfocus.example.utils.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,15 +29,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import com.microfocus.example.entity.CustomUserDetails;
-import com.microfocus.example.utils.WebUtils;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import java.security.Principal;
 
 /**
  * Default (root) controllers
@@ -52,9 +43,10 @@ import javax.validation.Valid;
  */
 @SessionAttributes({"currentUser", "currentUserId"})
 @Controller
-public class DefaultController {
+public class DefaultController extends AbstractBaseController{
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultController.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final String CONTROLLER_NAME = getClass().getName();
 
     @Value("${app.messages.home}")
     private String message = "Hello World";
@@ -62,12 +54,20 @@ public class DefaultController {
     @Autowired
     LocaleConfiguration localeConfiguration;
 
+    @Override
+    LocaleConfiguration GetLocaleConfiguration() {
+        return localeConfiguration;
+    }
+
+    @Override
+    String GetControllerName() {
+        return CONTROLLER_NAME;
+    }
+
     @GetMapping("/")
     public String index(Model model, Principal principal) {
-        Locale currentLocale = localeConfiguration.getLocale();
-        Currency currency = Currency.getInstance(currentLocale);
-        model.addAttribute("currencySymbol", currency.getSymbol());
         model.addAttribute("message", message);
+        this.setModelDefaults(model, principal, "index");
         return "index";
     }
 
@@ -75,21 +75,25 @@ public class DefaultController {
     public String login(HttpServletRequest request, Model model, Principal principal) {
         String referer = request.getHeader("Referer");
         model.addAttribute("referer", referer);
+        this.setModelDefaults(model, principal, "login");
         return "login";
     }
 
     @GetMapping("/services")
     public String services(Model model, Principal principal) {
+        this.setModelDefaults(model, principal, "services");
         return "services";
     }
 
     @GetMapping("/prescriptions")
     public String prescriptions(Model model, Principal principal) {
+        this.setModelDefaults(model, principal, "prescriptions");
         return "prescriptions";
     }
 
     @GetMapping("/advice")
     public String advice(Model model, Principal principal) {
+        this.setModelDefaults(model, principal, "advice");
         return "advice";
     }
 
@@ -103,18 +107,21 @@ public class DefaultController {
                     + "you do not have permission to access this page.";
             model.addAttribute("message", message);
         }
+        this.setModelDefaults(model, principal, "403-access-denied");
         return "error/403-access-denied";
     }
 
     @GetMapping("/backdoor")
     public String backdoor(Model model, Principal principal) {
         log.debug("Oops! Someone has found the backdoor!");
+        this.setModelDefaults(model, principal, "backdoor");
         return "admin/backdoor";
     }
 
     @GetMapping("/not-yet-implemented")
     public String notYetImplemented(Model model, Principal principal) {
-        return "/error/not-implemented.html";
+        this.setModelDefaults(model, principal, "not-implemented");
+        return "error/not-implemented";
     }
 
     @GetMapping("/site-message")

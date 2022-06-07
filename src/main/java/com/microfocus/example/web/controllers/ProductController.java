@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ package com.microfocus.example.web.controllers;
 import com.microfocus.example.config.LocaleConfiguration;
 import com.microfocus.example.entity.Product;
 import com.microfocus.example.service.ProductService;
-import com.microfocus.example.utils.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ResourceUtils;
@@ -58,47 +56,55 @@ import java.util.*;
  */
 @RequestMapping("/products")
 @Controller
-public class ProductController {
+public class ProductController extends AbstractBaseController {
 
-    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final String CONTROLLER_NAME = getClass().getName();
 
     @Value("${app.data.page-size:25}")
     private Integer defaultPageSize;
 
-    private final ProductService productService;
-    private final LocaleConfiguration localeConfiguration;
+    @Autowired
+    ProductService productService;
 
-    public ProductController(ProductService productService, LocaleConfiguration localeConfiguration) {
-        this.productService = productService;
-        this.localeConfiguration = localeConfiguration;
+    @Autowired
+    LocaleConfiguration localeConfiguration;
+
+    @Override
+    LocaleConfiguration GetLocaleConfiguration() {
+        return localeConfiguration;
+    }
+
+    @Override
+    String GetControllerName() {
+        return CONTROLLER_NAME;
     }
 
     @GetMapping(value = {"", "/"})
     public String index(Model model, @Param("keywords") String keywords, @Param("limit") Integer limit, Principal principal) {
-        log.debug("keywords="+keywords);
-        this.setModelDefaults(model, principal, "Product", "index");
-        if (limit == null) limit = defaultPageSize;
-        productService.setPageSize(limit);
+        log.debug("Searching for products using keywords: " + ((keywords == null || keywords.isEmpty()) ? "none" : keywords));
+        productService.setPageSize((limit == null ? defaultPageSize : limit));
         List<Product> products = productService.getAllActiveProducts(0, keywords);
         model.addAttribute("keywords", keywords);
         model.addAttribute("products", products);
         model.addAttribute("productCount", products.size());
         model.addAttribute("productTotal", productService.count());
+        this.setModelDefaults(model, principal, "index");
         return "products/index";
     }
 
     @GetMapping("/{id}")
-    public String viewProduct(@PathVariable("id") UUID productId,
-                              Model model, Principal principal) {
+    public String viewProduct(@PathVariable("id") UUID productId, Model model, Principal principal) {
         Optional<Product> optionalProduct = productService.findProductById(productId);
         if (optionalProduct.isPresent()) {
             model.addAttribute("product", optionalProduct.get());
         } else {
             model.addAttribute("message", "Internal error accessing product!");
             model.addAttribute("alertClass", "alert-danger");
+            this.setModelDefaults(model, principal, "not-found");
             return "products/not-found";
         }
-        this.setModelDefaults(model, principal, "Product", "view");
+        this.setModelDefaults(model, principal, "view");
         return "products/view";
     }
 
@@ -106,7 +112,7 @@ public class ProductController {
     public ResponseEntity<Resource> downloadFile(@PathVariable(value = "id") UUID productId,
                                                  @PathVariable String fileName, HttpServletRequest request) {
         Resource resource;
-        File dataDir = null;
+        File dataDir;
         try {
             dataDir = ResourceUtils.getFile("classpath:data");
         } catch (FileNotFoundException e) {
@@ -140,17 +146,6 @@ public class ProductController {
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
-    }
-
-    private Model setModelDefaults(Model model, Principal principal, String controllerName, String actionName) {
-        Locale currentLocale = localeConfiguration.getLocale();
-        Currency currency = Currency.getInstance(currentLocale);
-        model.addAttribute("currencySymbol", currency.getSymbol());
-        model.addAttribute("user", WebUtils.getLoggedInUser(principal));
-        model.addAttribute("messageCount", "0");
-        model.addAttribute("controllerName", controllerName);
-        model.addAttribute("actionName", actionName);
-        return model;
     }
 
 }

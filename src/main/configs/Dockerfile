@@ -26,6 +26,6 @@ ENV JAVA_OPTS="-Xmx512m -Xss256k"
 # Run the jar file
 # Uncomment if not using WebInspect Agent
 #ENTRYPOINT ["java","-jar","/app.jar"]
-# Comment out if using WebInspect Agent
+# Comment out if not using WebInspect Agent
 ENTRYPOINT ["java","-javaagent:/wirtagent/lib/FortifyAgent.jar","-jar","/app.jar"]
 
