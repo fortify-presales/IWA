@@ -1,8 +1,10 @@
 
 plugins {
     id 'java'
+    id 'war'
     id 'maven-publish'
     id "org.springframework.boot" version "2.1.8.RELEASE"
+    id "com.microsoft.azure.azurewebapp" version "1.2.0"
 }
 
 repositories {
@@ -34,6 +36,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.13.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.13.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0'
+    implementation 'com.vonage:client:6.1.0'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'org.apache.maven.wagon:wagon-http:3.4.1'
     implementation 'com.github.cliftonlabs:json-simple:2.3.1'
@@ -53,9 +56,12 @@ dependencies {
 
 apply plugin: 'io.spring.dependency-management'
 
+def props = new Properties()
+file(".env").withInputStream { props.load(it) }
+project.archivesBaseName = 'iwa'
 group = 'com.microfocus.example'
-version = '1.0-SNAPSHOT'
-description = 'iwa'
+version = ''
+description = 'IWAPharmacyDirect'
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
 
@@ -69,7 +75,7 @@ sourceSets {
 
 azurewebapp {
     subscription = props.getProperty("AZURE_SUBSCRIPTION_ID") // e.g. '17d2722b-256e-47e5-84b8-5b01f509a42c'
-    resourceGroup = props.getProperty("AZURE_RESOURCE_GROUP") // e.g. 'fortify-iwa-rg'
+    resourceGroup = props.getProperty("AZURE_RESOURCE_GROUP") // e.g. 'iwa-fortify-rg'
     appName = props.getProperty("AZURE_APP_NAME") // e.g. 'fortify-iwa-app'
     pricingTier = 'B1'
     region = props.getProperty("AZURE_REGION") // e.g. 'eastus'

@@ -9,6 +9,7 @@
 drop table authorities if exists cascade;
 drop table users if exists cascade;
 drop table user_authorities if exists cascade;
+drop table verifications if exists cascade;
 drop table products if exists cascade;
 drop table messages if exists cascade;
 drop table orders if exists cascade;
@@ -45,6 +46,13 @@ create table user_authorities
     user_id      UUID not null,
     authority_id UUID not null,
     primary key (user_id, authority_id)
+);
+create table verifications
+(
+    phone       varchar(255)    not null,
+    request_id  varchar(255)    not null,
+    expiry_date datetime        default null,
+    primary key (phone)
 );
 create table products
 (

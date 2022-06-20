@@ -1,42 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RulePack xmlns="xmlns://www.fortifysoftware.com/schema/rules"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="RulePack">
-    <RulePackID>Rules Training</RulePackID>
-    <SKU>NA</SKU>
-    <Name><![CDATA[Configuration Rulepack]]></Name>
-    <Activated>true</Activated>
-    <Version>3.0</Version>
+    <RulePackID>C913491A-A936-4B1A-9B4E-9BFDAEB58F1D</RulePackID>
+    <SKU>some SKU</SKU>
+    <Name><![CDATA[]]></Name>
+    <Version>1.0</Version>
     <Description><![CDATA[]]></Description>
     <Rules version="3.2">
-        <Notes><![CDATA[]]></Notes>
         <RuleDefinitions>
-            <ConfigurationRule formatVersion="3.2">
-                <RuleID>4a05481a-e146-4a31-ac85-289c273228f0</RuleID>
-                <Notes><![CDATA[This rule issues a warning when either "scott" or "tiger" is defined to be a username in any properties file.]]></Notes>
-                <VulnCategory>J2EE Misconfiguration</VulnCategory>
-                <DefaultSeverity>2.0</DefaultSeverity>
-                <Description>
-                    <Abstract append="false"/>
-                    <Explanation append="false"/>
-                    <Recommendations append="false"/>
-                    <Tips>
-                        <Tip append="false"/>
-                    </Tips>
-                </Description>
-                <ConfigFile type="properties">
-                    <Pattern caseInsensitive="false" multiline="false" inStringMatch="false">.*</Pattern>
-                </ConfigFile>
-                <PropertyMatch>
-                    <NameMatch>
-                        <Pattern caseInsensitive="false"
-                                 multiline="false" inStringMatch="false">(.*)uname|(.*)username|(.*)usrname</Pattern>
-                    </NameMatch>
-                    <ValueMatch>
-                        <Pattern caseInsensitive="false"
-                                 multiline="false" inStringMatch="false">scott|tiger</Pattern>
-                    </ValueMatch>
-                </PropertyMatch>
-            </ConfigurationRule>
+
         </RuleDefinitions>
+        <ScriptDefinitions>
+            <ScriptDefinition formatVersion="21.2" type="lib" name="extra_logging"><![CDATA[
+                function dbg(msg){
+                    alert(msg)
+                }
+                ]]></ScriptDefinition>
+        </ScriptDefinitions>
     </Rules>
 </RulePack>

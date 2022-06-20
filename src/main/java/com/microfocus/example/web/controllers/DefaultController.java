@@ -20,20 +20,23 @@
 package com.microfocus.example.web.controllers;
 
 import com.microfocus.example.config.LocaleConfiguration;
+import com.microfocus.example.config.handlers.CustomAuthenticationSuccessHandler;
 import com.microfocus.example.entity.CustomUserDetails;
+import com.microfocus.example.utils.JwtUtils;
 import com.microfocus.example.utils.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.security.Principal;
 
 /**
@@ -43,6 +46,7 @@ import java.security.Principal;
  */
 @SessionAttributes({"currentUser", "currentUserId"})
 @Controller
+@Scope("session")
 public class DefaultController extends AbstractBaseController{
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -50,6 +54,9 @@ public class DefaultController extends AbstractBaseController{
 
     @Value("${app.messages.home}")
     private String message = "Hello World";
+
+    @Autowired
+    private JwtUtils jwtUtils;
 
     @Autowired
     LocaleConfiguration localeConfiguration;
@@ -73,10 +80,25 @@ public class DefaultController extends AbstractBaseController{
 
     @GetMapping("/login")
     public String login(HttpServletRequest request, Model model, Principal principal) {
-        String referer = request.getHeader("Referer");
-        model.addAttribute("referer", referer);
+        HttpSession session = request.getSession(false);
+        String referer = (String) request.getHeader("referer");
+        session.setAttribute("loginReferer", referer);
         this.setModelDefaults(model, principal, "login");
         return "login";
+    }
+
+    @GetMapping("/verify")
+    public String verify(HttpServletRequest request, Model model, Principal principal) {
+        return "verify";
+    }
+
+    @PostMapping("/verify")
+    public String verify(HttpServletRequest request, HttpServletResponse response,
+                         @RequestParam("otp") String otp, Model model, Principal principal) {
+        Authentication authentication = (Authentication) principal;
+        String jwtToken = jwtUtils.generateAndSetSession(request, response, authentication);
+        String targetUrl = CustomAuthenticationSuccessHandler.getTargetUrl(request, response, authentication);
+        return "redirect:"+targetUrl;
     }
 
     @GetMapping("/services")

@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ package com.microfocus.example.utils;
 import java.util.Date;
 
 import com.microfocus.example.entity.CustomUserDetails;
+import com.microfocus.example.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,9 +31,13 @@ import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 @Component
 public class JwtUtils {
-    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(JwtUtils.class);
 
     @Value("${app.jwt.secret}")
     private String jwtSecret;
@@ -44,7 +49,9 @@ public class JwtUtils {
     private int jwtRefreshMs;
 
     public String generateJwtToken(Authentication authentication) {
+
         CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
+        log.debug("generateJwtToken for: " + userPrincipal.getUsername());
 
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))
@@ -78,17 +85,31 @@ public class JwtUtils {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException e) {
-            logger.error("Invalid JWT signature: {}", e.getMessage());
+            log.error("Invalid JWT signature: {}", e.getMessage());
         } catch (MalformedJwtException e) {
-            logger.error("Invalid JWT token: {}", e.getMessage());
+            log.error("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
-            logger.error("JWT token is expired: {}", e.getMessage());
+            log.error("JWT token is expired: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
-            logger.error("JWT token is unsupported: {}", e.getMessage());
+            log.error("JWT token is unsupported: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            logger.error("JWT claims string is empty: {}", e.getMessage());
+            log.error("JWT claims string is empty: {}", e.getMessage());
         }
 
         return false;
+    }
+
+    public String generateAndSetSession(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication) {
+        HttpSession session = request.getSession(false);
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        User user = customUserDetails.getUserDetails();
+        String jwtToken = generateJwtToken(authentication);
+        log.debug("Generated jwtToken: " + jwtToken);
+        session.setAttribute("userId", user.getId());
+        session.setAttribute("username", user.getUsername());
+        session.setAttribute("authorities", authentication.getAuthorities());
+        session.setAttribute("jwtToken", jwtToken);
+        return jwtToken;
     }
 }

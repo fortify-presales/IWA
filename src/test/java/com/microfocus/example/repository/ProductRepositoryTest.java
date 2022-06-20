@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ProductRepositoryTest extends BaseIntegrationTest {
@@ -32,15 +32,15 @@ public class ProductRepositoryTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void b_productRepository_listProductsPageable() {
-        List<Product> products = productRepository.listProducts(1,1);
+    public void b_productRepository_findAll() {
+        List<Product> products = productRepository.findAll(1,1);
         assertThat(products.size()).isEqualTo(1);
     }
 
     @Test
     public void c_productRepository_new() {
         Product p1 = DataSeeder.generateProduct();
-        productRepository.save(p1);
+        p1 = productRepository.save(p1);
         if (!productRepository.existsById(p1.getId())) fail("Test Product 2 does not exist");
         Optional<Product> p2 = productRepository.findByCode(DataSeeder.TEST_PRODUCT2_CODE);
         if (p2.isPresent())
@@ -73,14 +73,25 @@ public class ProductRepositoryTest extends BaseIntegrationTest {
 
     @Test
     public void e_productRepository_findProductsByKeywords() {
-        List<Product> products = productRepository.findProductsByKeywords(PRODUCT_SEARCH_KEYWORDS, 1,1);
+        List<Product> products = productRepository.findByKeywords(PRODUCT_SEARCH_KEYWORDS, 1,1);
         assertThat(products.size()).isEqualTo(1);
     }
 
     @Test
-    public void f_productRepository_findAvailableProductsByKeywords() {
-        List<Product> products = productRepository.findProductsByKeywords(PRODUCT_SEARCH_KEYWORDS, 1,1);
+    public void f_productRepository_findAvailableByKeywords() {
+        List<Product> products = productRepository.findByKeywords(PRODUCT_SEARCH_KEYWORDS, 1,1);
         assertThat(products.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void g_productRepository_delete() {
+        Optional<Product> optionalProduct = productRepository.findByCode(DataSeeder.TEST_PRODUCT2_CODE);
+        if (optionalProduct.isPresent()) {
+            UUID uuid = optionalProduct.get().getId();
+            assertThat(productRepository.existsById(uuid)).isTrue();
+            productRepository.deleteById(uuid);
+            assertThat(productRepository.existsById(uuid)).isFalse();
+        }
     }
 
 }

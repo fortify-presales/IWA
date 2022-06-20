@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@ import com.microfocus.example.exception.MessageNotFoundException;
 import com.microfocus.example.exception.ProductNotFoundException;
 import com.microfocus.example.exception.RoleNotFoundException;
 import com.microfocus.example.exception.UserNotFoundException;
-import com.microfocus.example.repository.ProductRepositoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;

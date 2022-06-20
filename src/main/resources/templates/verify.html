@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Login</title>
+    <style>
+        .background {
+            background-image: url("/img/pexels-background-1.jpg") !important;
+        }
+    </style>
+</head>
+<body class="background">
+<div layout:fragment="content" th:remove="tag">
+
+    <div class="site-section">
+        <div class="container h-100">
+
+            <div class="row align-items-center">
+                <img th:src="@{/img/login_logo.png}" class="rounded mx-auto d-block" style="padding-top:20px;" alt="IWA Pharmacy Direct">
+            </div>
+
+            <div class="row justify-content-center align-items-center">
+
+                <form th:action="@{/verify}" method="post" class="form-login">
+                    <h1 class="h3 mb-3 font-weight-normal">Two-Step Verification</h1>
+
+                    <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                        <span th:text="${message}">message</span>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <p>
+                        For added security, please enter the One Time Passcode (OTP)
+                        that has been sent to a phone number ending <span th:text="${session.mobileDigits}">XX</span>
+                    </p>
+
+                    <div class="form-group">
+                        <input type="text" id="otp" name="otp" class="form-control"
+                               autofocus="autofocus" placeholder="Enter OTP">
+                    </div>
+
+                    <div th:if="${param.error}" class="pb-2">
+                        <div th:if="${#session!= null and #session.getAttribute('SPRING_SECURITY_LAST_EXCEPTION') != null }" class="text-danger">
+                            <strong th:if="${#session!= null and #session.getAttribute('SPRING_SECURITY_LAST_EXCEPTION') != null}"
+                                    th:utext="${#session.getAttribute('SPRING_SECURITY_LAST_EXCEPTION').message}">
+                                Static summary
+                            </strong>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-lg btn-primary btn-block" name="login-submit" id="login-submit" type="submit">Verify</button>
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>

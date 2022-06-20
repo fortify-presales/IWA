@@ -91,6 +91,9 @@ There is also an administrative user:
 
 - **admin@localhost.com/password**
 
+Upon login, you will be subsequently asked for a Multi-Factor Authentication (MFA) code. This functionality
+is not yet enabled and you can enter any digit number sequence, e.g. `12345`.
+
 ### Release (Docker Image)
 
 The JAR file can be built into a [Docker](https://www.docker.com/) image using the provided `Dockerfile` in `src/main/configs` and the
@@ -117,6 +120,33 @@ docker run -d -p 8888:8888 iwa
 There is also an example `docker-compose.yml` file in `src/main/configs` that illustrates how to run the application with HTTPS/SSL using
 [nginx](https://www.nginx.com/) and [certbot](https://certbot.eff.org/) - please note this is for reference only as it 
 uses a "hard-coded" domain name.
+
+Deploy Application (Azure)
+--------------------------
+
+If you want to run the application in the cloud (so you can run a WebInspect span for example) you can deploy the application to Microsoft Azure along with its required infrastructure
+by using the following (from a PowerShell command prompt):
+
+```
+Connect-AzAccount
+New-AzResourceGroup -Name iwa-[YOUR_INITIALS]-rg -Location eastus
+gradlew azureWebAppDeploy
+```
+
+Replace `eastus` with your own desired region and make sure in the `.env` file you have
+set `AZURE_APP_NAME` to a unique value.
+
+You can navigate to your [Azure portal](https://portal.azure.com/#home) to see the built infrastructure and to
+the deployed web application using the URL output shown from the `azureWebAppDeploy task`.
+
+Remove Application and Infrastructure
+-------------------------------------
+
+To clean up all the resources you can execute the following (from a PowerShell console):
+
+```
+Remove-AzResourceGroup -Name iwa-[YOUR_INITIALS]-rg
+```
 
 ## Application Security Testing Integrations
 

@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(info = @Info(
         title = "Insecure Web App (IWA) API",
-        description = "This is the REST API for Insecure Web App (IWA). You can select a development or production server to test the API. " +
+        description = "This is the REST API for Insecure Web App (IWA) Pharmacy Direct. You can select a development or production server to test the API. " +
                 "Most operations require authentication via a user specific JWT token. To retrieve a JWT token for a user you can use the " +
                 " '/authentication/sign-in' operation below and then copy the value of the 'accessToken' field. This value can then be " +
                 "entered when you click on the 'Authorize' button or lock icons.",
@@ -45,8 +45,8 @@ import org.springframework.context.annotation.Configuration;
                             defaultValue = "https"),
                     @ServerVariable(
                             name = "environment",
-                            allowableValues = {"localhost:8888", "iwa.mfdemouk.com"},
-                            defaultValue = "iwa.mfdemouk.com"
+                            allowableValues = {"localhost:8888", "iwa.onfortify.com"},
+                            defaultValue = "iwa.onfortify.com"
                     )
                 }
         )
