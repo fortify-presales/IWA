@@ -1,4 +1,4 @@
-![Continuous Inspection](https://github.com/mfdemo/IWAPharmacyDirect/workflows/Continuous%20Inspection/badge.svg)
+![Continuous Inspection](https://github.com/fortify-presales/IWAPharmacyDirect/workflows/Continuous%20Inspection/badge.svg)
 
 # IWA (Insecure Web App) Pharmacy Direct
 
@@ -43,11 +43,11 @@ and requesting Services (prescriptions, health checks etc). It has a modern-ish 
 
 ![Screenshot](media/screenshot.png)
 
-An up-to-date version of the running application can be found at [https://iwa.mfdemouk.com](https://iwa.mfdemouk.com).
+An up-to-date version of the running application can be found at [https://iwa.onfortify.com](https://iwa.onfortify.com).
 
 ## Forking the Repository
 
-In order to execute example scenarios for yourself it is recommended that you "fork" a copy of this repository into
+In order to execute example scenarios for yourself, it is recommended that you "fork" a copy of this repository into
 your own GitHub account. The process of "forking" is described in detail in the [GitHub documentation](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) - you can start the process by clicking on the "Fork" button at the top right.
 
 ## Building the Application
@@ -124,7 +124,7 @@ uses a "hard-coded" domain name.
 Deploy Application (Azure)
 --------------------------
 
-If you want to run the application in the cloud (so you can run a WebInspect span for example) you can deploy the application to Microsoft Azure along with its required infrastructure
+If you want to run the application in the cloud (so you can run a WebInspect scan for example) you can deploy the application to Microsoft Azure along with its required infrastructure
 by using the following (from a PowerShell command prompt):
 
 ```
@@ -382,7 +382,7 @@ functional test of the running application. There are also a couple of PowerShel
 be used to start/stop the FAST Proxy. In order to use these scripts you will need to have entries in the `.env` file similar to the following:
 
 ```aidl
-APP_URL=https://iwa.mfdemouk.com
+APP_URL=https://iwa.onfortify.com
 SSC_AUTH_TOKEN_BASE64=MmYyMTA5MzYtN2Q5Ny00NmM1LWI5NTUtYThkZWI2YmJlMDUy
 SSCANCENTRAL_DAST_API=http://localhost:5001/api/
 SCANCENTRAL_DAST_CICD_IDENTIFIER=c3c3df60-de68-45b8-89c0-4c07b53392e7
@@ -465,7 +465,7 @@ For a fully working Azure DevOps pipeline see the sister project [IWA.NET](https
 
 Please see the [Contribution Guide](CONTRIBUTING.md) for information on how to develop and contribute.
 
-If you have any problems, please consult [GitHub Issues](https://github.com/mfdemo/IWAPharmacyDirect/issues) to see if has already been discussed.
+If you have any problems, please consult [GitHub Issues](https://github.com/fortify-presales/IWAPharmacyDirect/issues) to see if has already been discussed.
 
 ## Licensing
 
