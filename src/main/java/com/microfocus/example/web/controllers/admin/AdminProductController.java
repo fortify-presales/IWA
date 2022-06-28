@@ -164,7 +164,7 @@ public class AdminProductController {
                               Principal principal) {
         if (!bindingResult.hasErrors()) {
             Product p = productService.newProductFormAdminNewProductForm(adminNewProductForm);
-            redirectAttributes.addFlashAttribute("message", "Product " + adminNewProductForm.getName() + " added successfully.");
+            redirectAttributes.addFlashAttribute("message", "Product '" + adminNewProductForm.getCode() + "' added successfully.");
             redirectAttributes.addFlashAttribute("alertClass", "alert-success");
             return "redirect:/admin/products/" + p.getId();
         }

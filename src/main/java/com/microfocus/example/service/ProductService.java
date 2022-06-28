@@ -169,25 +169,25 @@ public class ProductService {
             ptmp.setTimeToStock(adminProductForm.getTimeToStock());
             ptmp.setRating(adminProductForm.getRating());
             ptmp.setAvailable(adminProductForm.getAvailable());
-            return ptmp;
+            return productRepository.save(ptmp);
         } else {
             throw new ProductNotFoundException("Product not found: " + adminProductForm.getCode());
         }
     }
 
-    public Product newProductFormAdminNewProductForm(AdminNewProductForm adminNewProductForm) {
+    public Product newProductFormAdminNewProductForm(AdminNewProductForm productForm) {
         Product ptmp = new Product();
-        ptmp.setCode(adminNewProductForm.getCode());
-        ptmp.setName(adminNewProductForm.getName());
-        ptmp.setSummary(adminNewProductForm.getSummary());
-        ptmp.setDescription(adminNewProductForm.getDescription());
-        ptmp.setPrice(adminNewProductForm.getPrice());
-        ptmp.setOnSale(adminNewProductForm.getOnSale());
-        ptmp.setSalePrice(adminNewProductForm.getSalePrice());
-        ptmp.setInStock(adminNewProductForm.getInStock());
-        ptmp.setTimeToStock(adminNewProductForm.getTimeToStock());
-        ptmp.setImage(adminNewProductForm.getImage());
-        ptmp.setAvailable(adminNewProductForm.getAvailable());
+        ptmp.setCode(productForm.getCode());
+        ptmp.setName(productForm.getName());
+        ptmp.setSummary(productForm.getSummary());
+        ptmp.setDescription(productForm.getDescription());
+        ptmp.setPrice(productForm.getPrice());
+        ptmp.setOnSale(productForm.getOnSale() != null ? productForm.getOnSale() : false);
+        ptmp.setSalePrice(productForm.getSalePrice());
+        ptmp.setInStock(productForm.getInStock() != null ? productForm.getInStock() : false);
+        ptmp.setTimeToStock(productForm.getTimeToStock());
+        ptmp.setImage(productForm.getImage());
+        ptmp.setAvailable(productForm.getAvailable() != null ? productForm.getAvailable() : false);
         Product newProduct = productRepository.save(ptmp);
         return newProduct;
     }

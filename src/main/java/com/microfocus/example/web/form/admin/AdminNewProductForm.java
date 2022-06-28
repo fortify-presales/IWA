@@ -64,8 +64,8 @@ public class AdminNewProductForm {
 
     private Boolean inStock;
 
-    @Min(value = 1, message = "{product.time_to_stock.invalidValue}")
-    @Max(value = 365, message = "{product.time_to_stock.invalidValue}")
+    @Min(value = 0, message = "{product.timeToStock.invalidValue}")
+    @Max(value = 365, message = "{product.timeToStock.invalidValue}")
     private int timeToStock;
 
     @Min(value = 1, message = "{product.rating.invalidValue}")

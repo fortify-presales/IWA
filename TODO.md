@@ -17,7 +17,7 @@ com.fasterxml.jackson.databind.exc.InvalidDefinitionException: Java 8 date/time 
   
 #### Configuration
 
-- [ ] Work out why SQL Injection(s) are not listed as CRITICAL
+- [X] Work out why SQL Injection(s) are not listed as CRITICAL
 - [ ] Tidy up Maven pom.xml
 - [ ] Work out cause of following error in Static Scan:
 ```aidl
