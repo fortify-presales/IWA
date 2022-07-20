@@ -396,8 +396,10 @@ public class UserController extends AbstractBaseController {
             return "user/register";
         } else {
            try {
-                User utmp = userService.registerUser(registerUserForm);
-                return "redirect:/login?registerSuccess";
+                User u = userService.registerUser(registerUserForm);
+                log.debug("Created user '" + u.getEmail() + "' with validation token: " + u.getVerifyCode());
+                this.setModelDefaults(model, null, "validate");
+                return "redirect:/user/validate?email="+u.getEmail()+"&status=new";
             } catch (UsernameTakenException ex) {
                 log.error(USERNAME_TAKEN_ERROR);
                 FieldError usernameError = new FieldError("registerUserForm", "username", ex.getMessage());
@@ -410,6 +412,56 @@ public class UserController extends AbstractBaseController {
         }
         this.setModelDefaults(model, principal, "register");
         return "user/register";
+    }
+
+    @GetMapping("/validate")
+    public String validateUser(@RequestParam("email") Optional<String> usersEmail,
+                               @RequestParam("code") Optional<String> validationCode,
+                               @RequestParam("status") Optional<String> statusCode,
+                               RedirectAttributes redirectAttributes,
+                               Model model) {
+
+        String email = Optional.of(usersEmail).get().orElse(null);
+        String code = Optional.of(validationCode).get().orElse(null);
+        String status = Optional.of(statusCode).get().orElse(null);
+
+        if (status != null && status.equals("new")) {
+            model.addAttribute("message", "Your registration details have been stored. Please check your email to validate your details.");
+            model.addAttribute("alertClass", "alert-success");
+            ValidateUserForm validateUserForm = new ValidateUserForm(usersEmail, validationCode);
+            model.addAttribute("validateUserForm", validateUserForm);
+            this.setModelDefaults(model, null, "validate");
+            return "user/validate";
+        } else if ((email == null || email.isEmpty()) || (code == null || code.isEmpty())) {
+            log.error("insufficient parameters");
+            model.addAttribute("message", "You need to supply both an email address and validation code.");
+            model.addAttribute("alertClass", "alert-danger");
+            ValidateUserForm validateUserForm = new ValidateUserForm(usersEmail, validationCode);
+            model.addAttribute("validateUserForm", validateUserForm);
+            this.setModelDefaults(model, null, "validate");
+            return "user/validate";
+        } else {
+
+            try {
+                User u = userService.validateUserRegistration(email, code);
+                if (u != null) {
+                    log.debug("Successfully validated user '" + email + "'");
+                    redirectAttributes.addFlashAttribute("message", "Your account has been successfully validated. Please login.");
+                    redirectAttributes.addFlashAttribute("alertClass", "alert-success");
+                } else {
+                    log.error("Unknown error validating user!");
+                    redirectAttributes.addFlashAttribute("message", "There was an error validating your account, please contact support!");
+                    redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                }
+            } catch (UserNotFoundException ex) {
+                log.error("Could not find user '" + email + "' to validate: " + ex.getLocalizedMessage());
+                redirectAttributes.addFlashAttribute("message", "The account being validated does not exist. Please try registering again or contact support.");
+                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+            }
+
+            return "redirect:/login";
+        }
+
     }
 
     //

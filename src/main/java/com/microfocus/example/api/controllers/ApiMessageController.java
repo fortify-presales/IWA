@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2021 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -79,15 +80,15 @@ public class ApiMessageController {
         log.debug("API::Retrieving messages by keyword(s)");
         // TODO: implement keywords, offset and limit
         if (keywords.equals(Optional.empty())) {
-            return ResponseEntity.ok().body(
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(
                 userService.getAllMessages().stream()
                     .map(MessageResponse::new)
                     .collect(Collectors.toList()));
         } else {
-            return new ResponseEntity<>(
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(
                 userService.getAllMessages().stream()
                     .map(MessageResponse::new)
-                    .collect(Collectors.toList()), HttpStatus.OK);
+                    .collect(Collectors.toList()));
         }
     }
 

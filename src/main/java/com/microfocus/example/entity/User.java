@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -89,7 +89,7 @@ public class User implements Serializable {
     private String email;
 
     @NotEmpty(message = "{user.phone.notEmpty}")
-    @Pattern(regexp = "(^(?!0+$)[0-9]{7,12}$)", message = "{user.phone.invalidFormat}")
+    @Pattern(regexp = "(^$|[0-9]{7,14})", message = "{user.phone.invalidFormat}")
     @Column(unique = true)
     private String phone;
 
@@ -102,6 +102,10 @@ public class User implements Serializable {
     @JsonProperty(access =  JsonProperty.Access.WRITE_ONLY)
     @Column(name = "date_created")
     private Date dateCreated;
+
+    @JsonProperty(access =  JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "verify_code")
+    private String verifyCode;
 
     @JsonProperty("enabled")
     private boolean enabled;
@@ -245,6 +249,14 @@ public class User implements Serializable {
 
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    public String getVerifyCode() {
+        return verifyCode;
+    }
+
+    public void setVerifyCode(String verifyCode) {
+        this.verifyCode = verifyCode;
     }
 
     public boolean getEnabled() {

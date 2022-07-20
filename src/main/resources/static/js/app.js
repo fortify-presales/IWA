@@ -100,8 +100,11 @@ jQuery(document).ready(function($) {
     // animate out any auto dismiss alerts
     var autoDismiss = function() {
         $(".auto-dismiss").each(function (i, obj) {
-            $(this).fadeTo(2000, 500).slideUp(500, function () {
-                $(this).slideUp(500);
+            let self = this;
+            setTimeout(function() {
+                $(self).fadeTo(2000, 500).slideUp(500, function () {
+                    $(self).slideUp(500);
+                })
             });
         });
     }

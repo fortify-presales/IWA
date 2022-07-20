@@ -82,6 +82,13 @@ logging:
     org.springframework.web: INFO
     org.springframework.security: INFO
 
+email:
+  server: smtp.sendgrid.net
+  port: 587
+  username: apikey
+  password: # Enter your SendGrid password here
+  from: info@iwa.onfortify.com
+
 app:
   name: IWA Pharmacy Direct
   version: 1.0
