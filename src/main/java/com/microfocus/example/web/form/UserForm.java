@@ -79,6 +79,8 @@ public class UserForm {
 
     private Boolean enabled;
 
+    private Boolean mfa;
+
     public UserForm() {
     }
 
@@ -96,6 +98,7 @@ public class UserForm {
         this.zip = user.getZip();
         this.country = user.getCountry();
         this.enabled = user.getEnabled();
+        this.mfa = user.getMfa();
     }
 
     public UUID getId() {
@@ -208,6 +211,14 @@ public class UserForm {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Boolean getMfa() {
+        return mfa;
+    }
+
+    public void setMfa(Boolean mfa) {
+        this.mfa = mfa;
     }
 
     @Override

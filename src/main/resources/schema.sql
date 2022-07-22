@@ -40,6 +40,7 @@ create table users
     country      varchar(255) default null,
     verify_code  varchar(255) default null,
     enabled      bit(1)       not null,
+    mfa          bit(1)       default 0,
     primary key (id)
 );
 create table user_authorities
@@ -51,6 +52,7 @@ create table user_authorities
 create table verifications
 (
     phone       varchar(255)    not null,
+    email       varchar(255)    not null,
     request_id  varchar(255)    not null,
     expiry_date datetime        default null,
     primary key (phone)

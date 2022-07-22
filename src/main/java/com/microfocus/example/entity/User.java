@@ -110,6 +110,9 @@ public class User implements Serializable {
     @JsonProperty("enabled")
     private boolean enabled;
 
+    @JsonProperty("mfa")
+    private boolean mfa;
+
     //@JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     @JoinTable(name = "user_authorities",
@@ -121,7 +124,7 @@ public class User implements Serializable {
     }
 
     public User(UUID id, String username, String password, String firstName, String lastName, String email, String phone,
-                String address, String city, String state, String zip, String country, boolean enabled) {
+                String address, String city, String state, String zip, String country, boolean enabled, boolean mfa) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -135,6 +138,7 @@ public class User implements Serializable {
         this.zip = zip;
         this.country = country;
         this.enabled = enabled;
+        this.mfa = mfa;
     }
 
     public UUID getId() {
@@ -265,6 +269,14 @@ public class User implements Serializable {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean getMfa() {
+        return mfa;
+    }
+
+    public void setMfa(boolean mfa) {
+        this.mfa = mfa;
     }
 
     public Set<Authority> getAuthorities() {

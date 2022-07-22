@@ -42,7 +42,6 @@ import com.microfocus.example.web.form.admin.AdminNewUserForm;
 import com.microfocus.example.web.form.admin.AdminPasswordForm;
 import com.microfocus.example.web.form.admin.AdminUserForm;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.mail.EmailException;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -198,7 +197,6 @@ public class UserService {
                     "You have created a new account on IWAPharmacy direct please click on the following link " +
                             "to complete your registration: " + validationUrl
             );
-            log.debug("EmailRequest: " + request.toString());
             request.setBounce("bounce@iwa.onfortify.com");
             if (activeProfile.equals("dev")) {
                 request.setDebug(true);
@@ -245,6 +243,7 @@ public class UserService {
             user.setState(apiUser.getState());
             user.setZip(apiUser.getZip());
             user.setCountry(apiUser.getCountry());
+            user.setMfa(apiUser.getMfa());
             return userRepository.saveAndFlush(user);
         } else {
             throw new UserNotFoundException("Username not found: " + apiUser.getUsername());
@@ -262,11 +261,12 @@ public class UserService {
             user.setLastName(userForm.getLastName());
             user.setEmail(userForm.getEmail());
             user.setPhone(userForm.getPhone());
-            user.setAddress(user.getAddress());
-            user.setCity(user.getCity());
-            user.setState(user.getState());
-            user.setZip(user.getZip());
-            user.setCountry(user.getCountry());
+            user.setAddress(userForm.getAddress());
+            user.setCity(userForm.getCity());
+            user.setState(userForm.getState());
+            user.setZip(userForm.getZip());
+            user.setCountry(userForm.getCountry());
+            user.setMfa(userForm.getMfa());
             return userRepository.saveAndFlush(user);
         } else {
             throw new UserNotFoundException("Username not found: " + userForm.getUsername());
@@ -289,6 +289,7 @@ public class UserService {
             user.setZip(adminUserForm.getZip());
             user.setCountry(adminUserForm.getCountry());
             user.setEnabled(adminUserForm.getEnabled());
+            user.setMfa(adminUserForm.getMfa());
             return userRepository.saveAndFlush(user);
         } else {
             throw new UserNotFoundException("Username not found: " + adminUserForm.getUsername());
@@ -341,6 +342,7 @@ public class UserService {
         utmp.setZip(adminNewUserForm.getZip());
         utmp.setCountry(adminNewUserForm.getCountry());
         utmp.setEnabled(adminNewUserForm.getEnabled());
+        utmp.setMfa(adminNewUserForm.getMfa());
         utmp.setDateCreated(new Date());
         utmp.setAuthorities(authorities);
         return userRepository.saveAndFlush(utmp);

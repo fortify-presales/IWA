@@ -1,14 +1,18 @@
 /*
         Insecure Web App (IWA)
+
         Copyright (C) 2020-2022 Micro Focus or one of its affiliates
+
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
         the Free Software Foundation, either version 3 of the License, or
         (at your option) any later version.
+
         This program is distributed in the hope that it will be useful,
         but WITHOUT ANY WARRANTY; without even the implied warranty of
         MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
         GNU General Public License for more details.
+
         You should have received a copy of the GNU General Public License
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
@@ -59,17 +63,18 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         HttpSession session = request.getSession(false);
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        Boolean mfa = customUserDetails.getMfa();
         String mobile = customUserDetails.getMobile();
         boolean isAdmin = customUserDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
         if (isAdmin) {
-            log.debug("User is ADMIN, bypassing verification");
+            log.debug("User is ADMIN, bypassing verification...");
             bypassVerification(request, response, authentication);
-        } else if (mobile.isEmpty() || !requestAndRegisterVerification(mobile)) {
-            log.debug("No mobile phone provided, bypassing verification");
+        } else if (!mfa || mobile.isEmpty()) {
+            log.debug("Two factor authentication is not enabled or no mobile phone provided, bypassing verification...");
             bypassVerification(request, response, authentication);
-        } else if (!mobile.isEmpty() && requestAndRegisterVerification(mobile)) {
-            log.debug("Using users mobile number for verification: " + mobile);
+        } else if (requestAndRegisterVerification(mobile)) {
+            log.debug("Using users mobile number '" + mobile + "' for verification...");
             session.setAttribute("mobileDigits",
                     mobile.length() > 2 ? mobile.substring(mobile.length() - 2) : mobile);
             redirectStrategy.sendRedirect(request, response, VERIFICATION_URL);

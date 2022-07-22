@@ -55,7 +55,6 @@ public class CustomUserDetailsService implements UserDetailsService {
             if (!user.isPresent()) {
                 user = userRepository.findUserByEmail(username);
             }
-            log.debug(String.valueOf(user));
             if (!user.isPresent()) {
                 throw new UsernameNotFoundException("User with email: " + username + " not found.");
             }

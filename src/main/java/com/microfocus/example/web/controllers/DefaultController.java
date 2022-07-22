@@ -89,6 +89,9 @@ public class DefaultController extends AbstractBaseController{
 
     @GetMapping("/verify")
     public String verify(HttpServletRequest request, Model model, Principal principal) {
+        CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        log.debug("Verifying user with id: " + loggedInUser.getEmail());
+
         return "verify";
     }
 

@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -63,6 +63,8 @@ public class AdminUserForm {
 
     private Boolean enabled;
 
+    private Boolean mfa;
+
     public AdminUserForm() {
     }
 
@@ -79,6 +81,7 @@ public class AdminUserForm {
         this.zip = user.getZip();
         this.country = user.getCountry();
         this.enabled = user.getEnabled();
+        this.mfa = user.getMfa();
     }
 
     public UUID getId() {
@@ -175,6 +178,14 @@ public class AdminUserForm {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Boolean getMfa() {
+        return mfa;
+    }
+
+    public void setMfa(Boolean mfa) {
+        this.mfa = mfa;
     }
 
     @Override

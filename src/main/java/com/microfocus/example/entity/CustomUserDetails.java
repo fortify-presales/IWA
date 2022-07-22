@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -85,6 +85,8 @@ public class CustomUserDetails implements UserDetails {
     public String getMobile() {
         return user.getPhone();
     }
+
+    public Boolean getMfa() { return user.getMfa(); }
 
     public boolean isEnabled() { return user.getEnabled(); }
 
