@@ -30,7 +30,7 @@ import java.util.Optional;
  *
  * @author Kevin A. Lee
  */
-public class ValidateUserForm {
+public class VerifyUserForm {
 
     @NotEmpty(message = "{user.email.notEmpty}")
     @Email(message = "{user.email.invalidFormat")
@@ -39,14 +39,14 @@ public class ValidateUserForm {
     @NotEmpty(message = "{user.verifyCode.notEmpty}")
     private String code;
 
-    public ValidateUserForm() {
+    public VerifyUserForm() {
    }
 
-    public ValidateUserForm(User user) {
+    public VerifyUserForm(User user) {
         this.email = user.getEmail();
     }
 
-    public ValidateUserForm(Optional<String> email, Optional<String> code) {
+    public VerifyUserForm(Optional<String> email, Optional<String> code) {
        this.email = (email.isPresent() ? email.get() : null);
        this.code = (code.isPresent() ? code.get() : null);
     }

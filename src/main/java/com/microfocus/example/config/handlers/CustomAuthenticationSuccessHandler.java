@@ -20,6 +20,8 @@
 package com.microfocus.example.config.handlers;
 
 import com.microfocus.example.entity.CustomUserDetails;
+import com.microfocus.example.exception.VerificationRequestFailedException;
+import com.microfocus.example.service.VerificationService;
 import com.microfocus.example.utils.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +38,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.UUID;
 
 /**
  * Custom Url Authentication Success Handler
@@ -45,13 +48,16 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     private static final Logger log = LoggerFactory.getLogger(CustomAuthenticationSuccessHandler.class);
 
-    private static final String VERIFICATION_URL = "/verify";
+    private static final String MFA_URL = "/login_mfa";
     private static final String USER_HOME_URL = "/user";
     private static final String ADMIN_HOME_URL = "/admin";
     private static final String INDEX_URL = "/";
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    VerificationService verificationService;
 
     private static RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
@@ -64,6 +70,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         Boolean mfa = customUserDetails.getMfa();
+        UUID userId = customUserDetails.getId();
         String mobile = customUserDetails.getMobile();
         boolean isAdmin = customUserDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
@@ -71,19 +78,20 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             log.debug("User is ADMIN, bypassing verification...");
             bypassVerification(request, response, authentication);
         } else if (!mfa || mobile.isEmpty()) {
-            log.debug("Two factor authentication is not enabled or no mobile phone provided, bypassing verification...");
+            log.debug("Two factor authentication is not enabled or no phone number provided, bypassing verification...");
             bypassVerification(request, response, authentication);
-        } else if (requestAndRegisterVerification(mobile)) {
-            log.debug("Using users mobile number '" + mobile + "' for verification...");
+        } else {
+            log.debug("Using users phone number '" + mobile + "' for verification...");
             session.setAttribute("mobileDigits",
                     mobile.length() > 2 ? mobile.substring(mobile.length() - 2) : mobile);
-            redirectStrategy.sendRedirect(request, response, VERIFICATION_URL);
-        } else {
+            redirectStrategy.sendRedirect(request, response, MFA_URL);
+        }
+        /*else {
             String targetUrl = getTargetUrl(request, response, authentication);
             log.debug("Redirecting to: " + targetUrl);
             redirectStrategy.sendRedirect(request, response, targetUrl);
             clearAuthenticationAttributes(request);
-        }
+        }*/
     }
 
     public static String getTargetUrl(HttpServletRequest request, HttpServletResponse response,
@@ -115,6 +123,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                     targetUrl = targetUrl.replace("/cart", "/cart/checkout");
                 } else if (targetPath.endsWith("/login")) {
                     targetUrl = targetUrl.replace("/login", "/user");
+                } else if (targetPath.endsWith("/verify")) {
+                    targetUrl = targetUrl.replace("/verify", "");
                 } else if (targetPath.endsWith("/register")) {
                     targetUrl = targetUrl.replace("/register", "/");
                 } else if (targetPath.equals("/")) {
@@ -134,13 +144,15 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
     }
 
-    private boolean requestAndRegisterVerification(String mobile) {
-        /*try {
-            return verificationService.requestVerification(mobile) != null;
-        } catch (VerificationRequestFailedException e) {
+    private boolean requestAndRegisterVerification(UUID userId) {
+        try {
+            int otp = verificationService.generateOTP(userId.toString());
+            log.debug("Generated OTP '" + String.valueOf(otp) + "' for user id: " + userId.toString());
+            return (otp != 0);
+        } catch (VerificationRequestFailedException ex) {
+            log.error(ex.getLocalizedMessage());
             return false;
-        }*/
-        return true;
+        }
     }
 
     private void bypassVerification(HttpServletRequest request, HttpServletResponse response,

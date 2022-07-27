@@ -65,7 +65,7 @@ public class AdminNewUserForm {
     private String email;
 
     @NotEmpty(message = "{user.phone.notEmpty}")
-    @Pattern(regexp = "(^$|[0-9]{10})", message = "{user.phone.invalidFormat}")
+    @Pattern(regexp = "(^$|[0-9]{7,12})", message = "{user.phone.invalidFormat}")
     @Column(unique = true)
     private String phone;
 

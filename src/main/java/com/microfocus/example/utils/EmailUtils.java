@@ -33,55 +33,56 @@ public class EmailUtils {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    @Value("${email.server}")
+    @Value("${spring.mail.host}")
     private String emailServer;
 
     private static String EMAIL_SERVER;
 
-    @Value("${email.server}")
+    @Value("${spring.mail.host}")
     public void setEmailServer(String emailServer) {
         log.debug("setting EMAIL_SERVER to: " + emailServer);
         EmailUtils.EMAIL_SERVER = emailServer;
     }
 
-    @Value("${email.port}")
+    @Value("${spring.mail.port}")
     private int emailPort;
 
     private static int EMAIL_PORT;
 
-    @Value("${email.port}")
+    @Value("${spring.mail.port}")
     public void setEmailPort(int emailPort) {
         EmailUtils.EMAIL_PORT = emailPort;
     }
 
-    @Value("${email.username}")
+    @Value("${spring.mail.username}")
     private String emailUsername;
 
     private static String EMAIL_USERNAME;
 
-    @Value("${email.username}")
+    @Value("${spring.mail.username}")
     public void setEmailUsername(String emailUsername) {
         EmailUtils.EMAIL_USERNAME = emailUsername;
     }
 
-    @Value("${email.password}")
+    @Value("${spring.mail.password}")
     private String emailPassword;
 
     private static String EMAIL_PASSWORD;
 
-    @Value("${email.password}")
+    @Value("${spring.mail.password}")
     public void setEmailPassword(String emailPassword) {
         EmailUtils.EMAIL_PASSWORD = emailPassword;
     }
 
     public static void sendEmail(EmailRequest request) throws Exception {
 
-        String ENDL = System.getProperty("line.separator");
-
         Email server = new SimpleEmail();
         server.setHostName(EMAIL_SERVER);
         server.setSmtpPort(EMAIL_PORT);
-        server.setAuthenticator(new DefaultAuthenticator(EMAIL_USERNAME, EMAIL_PASSWORD));
+        String passwordFromEnv = System.getenv("SPRING_MAIL_PASSWORD");
+        String password = ((passwordFromEnv == null || passwordFromEnv.isEmpty()) ?
+                EMAIL_PASSWORD : passwordFromEnv);
+        server.setAuthenticator(new DefaultAuthenticator(EMAIL_USERNAME, password));
         server.setSSLOnConnect(true);
         if (request.getDebug()) {
             server.setDebug(true);

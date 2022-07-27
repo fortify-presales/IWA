@@ -17,23 +17,13 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.repository;
+package com.microfocus.example.exception;
 
-import com.microfocus.example.entity.Verification;
+public class VerificationRequestFailedException extends RuntimeException {
 
-import java.util.Date;
-import java.util.Optional;
+    private static final long serialVersionUID = 1L;
 
-/**
- * Interface for MFA Verification Repository
- * @author Kevin A. Lee
- */
-public interface VerificationRepositoryCustom {
-
-    Optional<Verification> findByEmail(String email);
-
-    Optional<Verification> findByPhone(String phone);
-
-    void deleteByExpirationDateBefore(Date date);
-
+    public VerificationRequestFailedException(String message) {
+        super(message);
+    }
 }

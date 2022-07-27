@@ -22,6 +22,10 @@ package com.microfocus.example.web.controllers;
 import com.microfocus.example.config.LocaleConfiguration;
 import com.microfocus.example.config.handlers.CustomAuthenticationSuccessHandler;
 import com.microfocus.example.entity.CustomUserDetails;
+import com.microfocus.example.entity.Mail;
+import com.microfocus.example.exception.VerificationRequestFailedException;
+import com.microfocus.example.service.EmailSenderService;
+import com.microfocus.example.service.VerificationService;
 import com.microfocus.example.utils.JwtUtils;
 import com.microfocus.example.utils.WebUtils;
 import org.slf4j.Logger;
@@ -38,6 +42,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Default (root) controllers
@@ -55,11 +61,23 @@ public class DefaultController extends AbstractBaseController{
     @Value("${app.messages.home}")
     private String message = "Hello World";
 
+    @Value("${app.mail.from-name}")
+    private String emailFromName;
+
+    @Value("${app.mail.from-address}")
+    private String emailFromAddress;
+
     @Autowired
     private JwtUtils jwtUtils;
 
     @Autowired
     LocaleConfiguration localeConfiguration;
+
+    @Autowired
+    VerificationService verificationService;
+
+    @Autowired
+    EmailSenderService emailSenderService;
 
     @Override
     LocaleConfiguration GetLocaleConfiguration() {
@@ -87,18 +105,72 @@ public class DefaultController extends AbstractBaseController{
         return "login";
     }
 
-    @GetMapping("/verify")
-    public String verify(HttpServletRequest request, Model model, Principal principal) {
+    @GetMapping("/login_mfa")
+    public String otpLogin(HttpServletRequest request, Model model, Principal principal) {
         CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        log.debug("Verifying user with id: " + loggedInUser.getEmail());
+        String userId = loggedInUser.getId().toString();
+        String email = loggedInUser.getEmail();
+        log.debug("Verifying user with id: " + userId);
+        if (model.containsAttribute("otp")) {
+            log.debug("OTP already set, revalidating");
+        } else {
+            // create an otp
+            try {
+                // generate OTP "one-time-password" for user
+                int otp = verificationService.generateOTP(userId);
+                log.debug("Generated OTP '" + String.valueOf(otp) + "' for user id: " + userId);
+                Mail mail = new Mail();
+                mail.setMailTo(email);
+                mail.setFrom(emailFromAddress);
+                mail.setReplyTo(emailFromAddress);
+                mail.setSubject("[IWA Pharmacy Direct] Security Code");
 
-        return "verify";
+                Map<String, Object> props = new HashMap<String, Object>();
+                props.put("to", loggedInUser.getName());
+                props.put("message", "Your IWA Pharmacy Direct security code is " + String.valueOf(otp));
+                props.put("from", emailFromName);
+                mail.setProps(props);
+
+                try {
+                    emailSenderService.sendEmail(mail, "email/default");
+                } catch (Exception ex) {
+                    log.error(ex.getLocalizedMessage());
+                }
+            } catch (VerificationRequestFailedException ex) {
+                log.error(ex.getLocalizedMessage());
+                // TODO: handle
+            }
+        }
+        return "login_mfa";
     }
 
-    @PostMapping("/verify")
-    public String verify(HttpServletRequest request, HttpServletResponse response,
-                         @RequestParam("otp") String otp, Model model, Principal principal) {
+    @PostMapping("/login_mfa")
+    public String otpLogin(HttpServletRequest request, HttpServletResponse response,
+                           @RequestParam("otp") String otp, Model model, Principal principal) {
         Authentication authentication = (Authentication) principal;
+        CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        String userId = loggedInUser.getId().toString();
+        int otpNum = Integer.valueOf(otp).intValue();
+        // validate OTP "one-time-password" for user
+        if (otpNum > 0) {
+            log.debug("Verifying otp '" + otp + "' of user with id: " + userId);
+            int serverOtp = verificationService.getOtp(userId);
+            if (serverOtp > 0) {
+                if (otpNum == serverOtp) {
+                    log.debug("User '" + userId + "' verified OTP successfully");
+                    verificationService.clearOTP(userId);
+                } else {
+                    log.debug("User '" + userId + "' failed OTP verification");
+                    model.addAttribute("message", "Your OTP is incorrect, please try-again!");
+                    model.addAttribute("alertClass", "alert-danger");
+                    return "login_mfa";
+                }
+            } else {
+                // TODO: fail
+            }
+        } else {
+            // TODO: fail
+        }
         String jwtToken = jwtUtils.generateAndSetSession(request, response, authentication);
         String targetUrl = CustomAuthenticationSuccessHandler.getTargetUrl(request, response, authentication);
         return "redirect:"+targetUrl;

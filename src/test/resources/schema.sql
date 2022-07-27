@@ -41,14 +41,6 @@ create table user_authorities
     authority_id UUID not null,
     primary key (user_id, authority_id)
 );
-create table verifications
-(
-    phone       varchar(255)    not null,
-    email       varchar(255)    not null,
-    request_id  varchar(255)    not null,
-    expiry_date datetime        default null,
-    primary key (phone)
-);
 create table products
 (
     id             UUID         not null,

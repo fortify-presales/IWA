@@ -24,7 +24,6 @@ import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.Order;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.*;
-import com.microfocus.example.payload.request.EmailRequest;
 import com.microfocus.example.payload.request.MessageRequest;
 import com.microfocus.example.payload.request.RegisterUserRequest;
 import com.microfocus.example.payload.request.SubscribeUserRequest;
@@ -34,7 +33,6 @@ import com.microfocus.example.repository.MessageRepository;
 import com.microfocus.example.repository.OrderRepository;
 import com.microfocus.example.repository.RoleRepository;
 import com.microfocus.example.repository.UserRepository;
-import com.microfocus.example.utils.EmailUtils;
 import com.microfocus.example.utils.EncryptedPasswordUtils;
 import com.microfocus.example.utils.UserUtils;
 import com.microfocus.example.web.form.*;
@@ -54,7 +52,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * User Service to hide business logs / database persistence
+ * User Service to hide business logic / database persistence
  * @author Kevin A. Lee
  */
 @Service
@@ -78,9 +76,6 @@ public class UserService {
 
     @Value("${spring.profiles.active:Unknown}")
     private String activeProfile;
-
-    @Value("${email.from}")
-    private String emailFrom;
 
     @Value("${app.data.page-size:25}")
     private Integer pageSize;
@@ -147,11 +142,11 @@ public class UserService {
         return registeredUser;
     }
 
-    public User validateUserRegistration(String usersEmail, String validationCode) throws UserNotFoundException {
+    public User verifyUserRegistration(String usersEmail, String verificationCode) throws UserNotFoundException {
         Optional<User> optionalUser = findUserByEmail(usersEmail);
         if (optionalUser.isPresent()) {
             User u = optionalUser.get();
-            if (u.getVerifyCode().equals(validationCode)) {
+            if (u.getVerifyCode().equals(verificationCode)) {
                 u.setEnabled(true);
                 return userRepository.save(u);
             }
@@ -183,32 +178,7 @@ public class UserService {
         utmp.setEnabled(false);
         utmp.setDateCreated(new Date());
         utmp.setAuthorities(authorities);
-        User u = userRepository.saveAndFlush(utmp);
-
-        // send email to complete validation
-        String validationUrl = "https://iwa.onfortify.com/user/validate?email=" + u.getEmail() +
-                "&code=" + u.getVerifyCode();
-        try {
-
-            EmailRequest request = new EmailRequest(
-                    emailFrom,
-                    u.getEmail(),
-                    "IWAPharmacyDirect registration",
-                    "You have created a new account on IWAPharmacy direct please click on the following link " +
-                            "to complete your registration: " + validationUrl
-            );
-            request.setBounce("bounce@iwa.onfortify.com");
-            if (activeProfile.equals("dev")) {
-                request.setDebug(true);
-            }
-            EmailUtils.sendEmail(request);
-
-        } catch (Exception ex) {
-            log.error("An error was found whilst sending validation email:" + ex.getLocalizedMessage());
-            ex.printStackTrace();
-        }
-
-        return u;
+        return userRepository.saveAndFlush(utmp);
     }
 
     public SubscribeUserResponse subscribeUser(SubscribeUserRequest newUser) {

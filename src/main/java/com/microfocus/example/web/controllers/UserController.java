@@ -20,11 +20,9 @@
 package com.microfocus.example.web.controllers;
 
 import com.microfocus.example.config.LocaleConfiguration;
-import com.microfocus.example.entity.CustomUserDetails;
-import com.microfocus.example.entity.Message;
-import com.microfocus.example.entity.Order;
-import com.microfocus.example.entity.User;
+import com.microfocus.example.entity.*;
 import com.microfocus.example.exception.*;
+import com.microfocus.example.service.EmailSenderService;
 import com.microfocus.example.service.StorageService;
 import com.microfocus.example.service.UserService;
 import com.microfocus.example.utils.WebUtils;
@@ -50,9 +48,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -86,8 +82,17 @@ public class UserController extends AbstractBaseController {
     @Autowired
     private StorageService storageService;
 
+    @Value("${app.mail.from-name}")
+    private String emailFromName;
+
+    @Value("${app.mail.from-address}")
+    private String emailFromAddress;
+
     @Value("${app.messages.home}")
     private final String message = "Hello World";
+
+    @Autowired
+    EmailSenderService emailSenderService;
 
     @Autowired
     private SessionRegistry sessionRegistry;
@@ -395,11 +400,31 @@ public class UserController extends AbstractBaseController {
             this.setModelDefaults(model, principal, "register");
             return "user/register";
         } else {
-           try {
+            try {
                 User u = userService.registerUser(registerUserForm);
-                log.debug("Created user '" + u.getEmail() + "' with validation token: " + u.getVerifyCode());
-                this.setModelDefaults(model, null, "validate");
-                return "redirect:/user/validate?email="+u.getEmail()+"&status=new";
+                log.debug("Created user '" + u.getEmail() + "' with verification token: " + u.getVerifyCode());
+                String targetUrl = "http://iwa.onfortify.com/user/verify?email=" + u.getEmail() + "&code=" + u.getVerifyCode();
+
+                Mail mail = new Mail();
+                mail.setMailTo(u.getEmail());
+                mail.setFrom(emailFromAddress);
+                mail.setReplyTo(emailFromAddress);
+                mail.setSubject("[IWA Pharmacy Direct] Verify your account");
+
+                Map<String, Object> props = new HashMap<String, Object>();
+                props.put("to", u.getFirstName() + " " + u.getLastName());
+                props.put("message", "Please verify your account by clicking on the following link: " + targetUrl);
+                props.put("from", emailFromName);
+                mail.setProps(props);
+
+                try {
+                   emailSenderService.sendEmail(mail, "email/default");
+                } catch (Exception ex) {
+                   log.error(ex.getLocalizedMessage());
+                }
+
+                this.setModelDefaults(model, null, "verify");
+                return "redirect:/user/verify?email="+u.getEmail()+"&status=new";
             } catch (UsernameTakenException ex) {
                 log.error(USERNAME_TAKEN_ERROR);
                 FieldError usernameError = new FieldError("registerUserForm", "username", ex.getMessage());
@@ -414,48 +439,48 @@ public class UserController extends AbstractBaseController {
         return "user/register";
     }
 
-    @GetMapping("/validate")
-    public String validateUser(@RequestParam("email") Optional<String> usersEmail,
-                               @RequestParam("code") Optional<String> validationCode,
-                               @RequestParam("status") Optional<String> statusCode,
-                               RedirectAttributes redirectAttributes,
-                               Model model) {
+    @GetMapping("/verify")
+    public String verifyUser(@RequestParam("email") Optional<String> usersEmail,
+                             @RequestParam("code") Optional<String> verificationCode,
+                             @RequestParam("status") Optional<String> statusCode,
+                             RedirectAttributes redirectAttributes,
+                             Model model) {
 
         String email = Optional.of(usersEmail).get().orElse(null);
-        String code = Optional.of(validationCode).get().orElse(null);
+        String code = Optional.of(verificationCode).get().orElse(null);
         String status = Optional.of(statusCode).get().orElse(null);
 
         if (status != null && status.equals("new")) {
-            model.addAttribute("message", "Your registration details have been stored. Please check your email to validate your details.");
+            model.addAttribute("message", "Your registration details have been stored. Please check your email to verify your details.");
             model.addAttribute("alertClass", "alert-success");
-            ValidateUserForm validateUserForm = new ValidateUserForm(usersEmail, validationCode);
-            model.addAttribute("validateUserForm", validateUserForm);
-            this.setModelDefaults(model, null, "validate");
-            return "user/validate";
+            VerifyUserForm verifyUserForm = new VerifyUserForm(usersEmail, verificationCode);
+            model.addAttribute("verifyUserForm", verifyUserForm);
+            this.setModelDefaults(model, null, "verify");
+            return "user/verify";
         } else if ((email == null || email.isEmpty()) || (code == null || code.isEmpty())) {
             log.error("insufficient parameters");
-            model.addAttribute("message", "You need to supply both an email address and validation code.");
+            model.addAttribute("message", "You need to supply both an email address and verification code.");
             model.addAttribute("alertClass", "alert-danger");
-            ValidateUserForm validateUserForm = new ValidateUserForm(usersEmail, validationCode);
-            model.addAttribute("validateUserForm", validateUserForm);
-            this.setModelDefaults(model, null, "validate");
-            return "user/validate";
+            VerifyUserForm verifyUserForm = new VerifyUserForm(usersEmail, verificationCode);
+            model.addAttribute("verifyUserForm", verifyUserForm);
+            this.setModelDefaults(model, null, "verify");
+            return "user/verify";
         } else {
 
             try {
-                User u = userService.validateUserRegistration(email, code);
+                User u = userService.verifyUserRegistration(email, code);
                 if (u != null) {
-                    log.debug("Successfully validated user '" + email + "'");
-                    redirectAttributes.addFlashAttribute("message", "Your account has been successfully validated. Please login.");
+                    log.debug("Successfully verified user '" + email + "'");
+                    redirectAttributes.addFlashAttribute("message", "Your account has been successfully verified. Please login.");
                     redirectAttributes.addFlashAttribute("alertClass", "alert-success");
                 } else {
-                    log.error("Unknown error validating user!");
-                    redirectAttributes.addFlashAttribute("message", "There was an error validating your account, please contact support!");
+                    log.error("Unknown error verifying user!");
+                    redirectAttributes.addFlashAttribute("message", "There was an error verifying your account, please contact support!");
                     redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                 }
             } catch (UserNotFoundException ex) {
-                log.error("Could not find user '" + email + "' to validate: " + ex.getLocalizedMessage());
-                redirectAttributes.addFlashAttribute("message", "The account being validated does not exist. Please try registering again or contact support.");
+                log.error("Could not find user '" + email + "' to verify: " + ex.getLocalizedMessage());
+                redirectAttributes.addFlashAttribute("message", "The account being verified does not exist. Please try registering again or contact support.");
                 redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
             }
 
