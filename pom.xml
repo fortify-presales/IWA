@@ -189,9 +189,14 @@
         </dependency>
 
         <dependency>
-            <groupId>com.vonage</groupId>
-            <artifactId>client</artifactId>
-            <version>6.1.0</version>
+            <groupId>com.twilio.sdk</groupId>
+            <artifactId>twilio</artifactId>
+            <version>8.17.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.12</version>
         </dependency>
 
         <dependency>

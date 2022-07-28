@@ -78,7 +78,7 @@
 
                             <div class="form-group row">
                                 <div class="col-md-12" th:classappend="${#fields.hasErrors('address')}? 'has-error':''">
-                                    <label for="address" class="text-black">Address <span class="text-danger">*</span></label>
+                                    <label for="address" class="text-black">Address <span class="text-danger"></span></label>
                                     <input type="text" class="form-control" id="address" th:field="*{address}" th:value="${userForm.address}">
                                     <div th:if="${#fields.hasErrors('address')}">
                                         <p class="alert alert-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></p>
@@ -88,14 +88,14 @@
 
                             <div class="form-group row">
                                 <div class="col-md-6" th:classappend="${#fields.hasErrors('state')}? 'has-error':''">
-                                    <label for="state" class="text-black">State / Region <span class="text-danger">*</span></label>
+                                    <label for="state" class="text-black">State / Region <span class="text-danger"></span></label>
                                     <input type="text" class="form-control" id="state" th:field="*{state}" th:value="${userForm.state}">
                                     <div th:if="${#fields.hasErrors('state')}">
                                         <p class="alert alert-danger" th:if="${#fields.hasErrors('state')}" th:errors="*{state}"></p>
                                     </div>
                                 </div>
                                 <div class="col-md-6" th:classappend="${#fields.hasErrors('zip')}? 'has-error':''">
-                                    <label for="zip" class="text-black">Postal / Zip <span class="text-danger">*</span></label>
+                                    <label for="zip" class="text-black">Postal / Zip <span class="text-danger"></span></label>
                                     <input type="text" class="form-control" id="zip" th:field="*{zip}" th:value="${userForm.zip}">
                                     <div th:if="${#fields.hasErrors('zip')}">
                                         <p class="alert alert-danger" th:if="${#fields.hasErrors('zip')}" th:errors="*{zip}"></p>
@@ -105,15 +105,16 @@
 
                             <div class="form-group row">
                                 <div class="col-md-6" th:classappend="${#fields.hasErrors('state')}? 'has-error':''">
-                                    <label for="city" class="text-black">City <span class="text-danger">*</span></label>
+                                    <label for="city" class="text-black">City <span class="text-danger"></span></label>
                                     <input type="text" class="form-control" id="city" th:field="*{city}" th:value="${userForm.city}">
                                     <div th:if="${#fields.hasErrors('city')}">
                                         <p class="alert alert-danger" th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></p>
                                     </div>
                                 </div>
                                 <div class="col-md-6" th:classappend="${#fields.hasErrors('country')}? 'has-error':''">
-                                    <label for="country" class="text-black">Country <span class="text-danger">*</span></label>
+                                    <label for="country" class="text-black">Country <span class="text-danger"></span></label>
                                     <select id="country" th:field="*{country}" class="form-control">
+                                        <option value=""></option>
                                         <option th:selected="${userForm.country}=='Afghanistan'" value="Afghanistan">Afghanistan</option>
                                         <option th:selected="${userForm.country}=='Åland Islands'" value="Åland Islands">Åland Islands</option>
                                         <option th:selected="${userForm.country}=='Albania'" value="Albania">Albania</option>

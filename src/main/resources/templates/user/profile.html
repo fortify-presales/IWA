@@ -56,7 +56,7 @@
                             <div class="form-group row">
                                 <div class="col-md-12">
                                     <label for="address" class="text-black">Address </label>
-                                    <input readonly th:value="${userForm.address}" type="text" class="form-control" id="address" name="address" placeholder="Street address">
+                                    <input readonly th:value="${userForm.address}" type="text" class="form-control" id="address" name="address" >
                                 </div>
                             </div>
 
@@ -74,7 +74,7 @@
                             <div class="form-group row">
                                 <div class="col-md-6">
                                     <label for="city" class="text-black">City </label>
-                                    <input readonly th:value="${userForm.city}" type="text" class="form-control" id="city" name="city" placeholder="city">
+                                    <input readonly th:value="${userForm.city}" type="text" class="form-control" id="city" name="city" >
                                 </div>
                                 <div class="col-md-6">
                                     <div readonly th:replace="fragments/country-selector.html :: countrySelector(${userForm.country}, false, true)"></div>

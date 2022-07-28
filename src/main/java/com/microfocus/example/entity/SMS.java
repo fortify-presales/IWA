@@ -19,24 +19,22 @@
 
 package com.microfocus.example.entity;
 
-import java.util.List;
 import java.util.Map;
 
-public class Mail {
+public class SMS {
 
     private String from;
-    private String replyTo;
-    private String mailTo;
+    private String to;
     private String subject;
-    private List<Object> attachments;
+    private String message;
     private Map<String, Object> props;
 
-    public Mail() {}
+    public SMS() {}
 
-    public Mail(String from, String mailTo, String subject) {
+    public SMS(String from, String to, String message) {
         this.from = from;
-        this.mailTo = mailTo;
-        this.subject = subject;
+        this.to = to;
+        this.message = message;
     }
 
     public String getFrom() {
@@ -47,20 +45,12 @@ public class Mail {
         this.from = from;
     }
 
-    public String getReplyTo() {
-        return replyTo;
+    public String getTo() {
+        return to;
     }
 
-    public void setReplyTo(String replyTo) {
-        this.replyTo = replyTo;
-    }
-
-    public String getMailTo() {
-        return mailTo;
-    }
-
-    public void setMailTo(String mailTo) {
-        this.mailTo = mailTo;
+    public void setTo(String to) {
+        this.to = to;
     }
 
     public String getSubject() {
@@ -71,12 +61,12 @@ public class Mail {
         this.subject = subject;
     }
 
-    public List<Object> getAttachments() {
-        return attachments;
+    public String getMessage() {
+        return message;
     }
 
-    public void setAttachments(List<Object> attachments) {
-        this.attachments = attachments;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public Map<String, Object> getProps() {
@@ -89,11 +79,11 @@ public class Mail {
 
     @Override
     public String toString() {
-        return "Mail{" +
+        return "SMS{" +
                 "from='" + from + '\'' +
-                ", replyTo='" + replyTo + '\'' +
-                ", mailTo='" + mailTo + '\'' +
+                ", to='" + to + '\'' +
                 ", subject='" + subject + '\'' +
+                ", message='" + message + '\'' +
                 '}';
     }
 }
