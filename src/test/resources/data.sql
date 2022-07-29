@@ -4,7 +4,7 @@ INSERT INTO users (id, username, password, first_name, last_name, email, phone, 
 VALUES ('bd5b9e2f-ac55-4e34-a76d-599b7e5b3308', 'test1', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32',
         'Test', 'User 1',
         'test1@localhost',
-        '0123456789',
+        '+44808123456',
         '1 Somewhere Street', 'London', 'Greater London', 'SW1', 'United Kingdom',
         1, CURDATE());
 INSERT INTO user_authorities (authority_id, user_id)

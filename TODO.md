@@ -3,13 +3,13 @@
 #### Code
 
 - [ ] Static/Dynamic correlation source code changes
-- [ ] Multi Factor Authentication source code changes
+- [X] Multi Factor Authentication source code changes
 - [X] Checkout workflow for Selenium scripts 
 - [ ] Login workflow for Selenium scripts
 - [X] Product search filter - presentation
 - [ ] Product search filter - implementation
 - [X] Allow login by email address instead of username
-- [ ] Complete registration process with email validation  
+- [X] Complete registration process with email validation  
 - [X] Fix the following:
 ```aidl
 com.fasterxml.jackson.databind.exc.InvalidDefinitionException: Java 8 date/time type `java.time.LocalDateTime` not supported by default: add Module "com.fasterxml.jackson.datatype:jackson-datatype-jsr310" to enable handling (through reference chain: com.microfocus.example.payload.response.ApiStatusResponse["timestamp"])

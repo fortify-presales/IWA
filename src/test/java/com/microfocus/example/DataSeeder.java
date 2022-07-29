@@ -20,14 +20,14 @@ public class DataSeeder {
     public static final String TEST_USER1_LAST_NAME = "User 1";
     public static final String TEST_USER1_PASSWORD = "0n3L0ngPa55w0rd";
     public static final String TEST_USER1_EMAIL = "test1@localhost";
-    public static final String TEST_USER1_PHONE = "0123456789";
+    public static final String TEST_USER1_PHONE = "+44808123456";
     // User 2 - created in tests
     public static final String TEST_USER2_USERNAME = "test2";
     public static final String TEST_USER2_FIRST_NAME = "Test";
     public static final String TEST_USER2_LAST_NAME = "User 2";
     public static final String TEST_USER2_PASSWORD = "0n3L0ngPa55w0rd";
     public static final String TEST_USER2_EMAIL = "test2@localhost";
-    public static final String TEST_USER2_PHONE = "0123456789";
+    public static final String TEST_USER2_PHONE = "+44808123456";
 
     // Test Products:
     // Product 1 - stored in database on startup
