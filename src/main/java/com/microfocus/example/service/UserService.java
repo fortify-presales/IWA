@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2021 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ import com.microfocus.example.web.form.*;
 import com.microfocus.example.web.form.admin.AdminNewUserForm;
 import com.microfocus.example.web.form.admin.AdminPasswordForm;
 import com.microfocus.example.web.form.admin.AdminUserForm;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,14 +52,15 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * User Service to hide business logs / database persistence
+ * User Service to hide business logic / database persistence
  * @author Kevin A. Lee
  */
 @Service
 @Transactional
 public class UserService {
 
-    private static final Logger log = LoggerFactory.getLogger(UserService.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final String SERVICE_NAME = getClass().getName();
 
     @Autowired
     private UserRepository userRepository;
@@ -71,6 +73,9 @@ public class UserService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Value("${spring.profiles.active:Unknown}")
+    private String activeProfile;
 
     @Value("${app.data.page-size:25}")
     private Integer pageSize;
@@ -126,51 +131,54 @@ public class UserService {
     }
 
     public User registerUser(RegisterUserForm newUser) throws UsernameTakenException, EmailAddressTakenException {
-        if (findUserByUsername(newUser.getUsername()).isPresent()) {
-            throw new UsernameTakenException(newUser.getUsername());
-        }
-        if (findUserByEmail(newUser.getEmail()).isPresent()) {
-            throw new EmailAddressTakenException(newUser.getEmail());
-        }
-        Set<Authority> authorities = new HashSet<Authority>();
-        authorities.add(roleRepository.findByName("ROLE_USER").get());
-        User utmp = new User();
-        utmp.setUsername(newUser.getUsername());
-        utmp.setFirstName(newUser.getFirstName());
-        utmp.setLastName(newUser.getLastName());
-        utmp.setPassword(EncryptedPasswordUtils.encryptPassword(newUser.getPassword()));
-        utmp.setEmail(newUser.getEmail());
-        utmp.setPhone(newUser.getPhone());
-        utmp.setEnabled(true);
-        utmp.setDateCreated(new Date());
-        utmp.setAuthorities(authorities);
-        userRepository.saveAndFlush(utmp);
-        return utmp;
+        User u = _registerUser(newUser.getUsername(), newUser.getEmail(), newUser.getFirstName(), newUser.getLastName(), newUser.getPassword(), newUser.getPhone());
+        return u;
     }
 
     public RegisterUserResponse registerUser(RegisterUserRequest newUser) throws UsernameTakenException, EmailAddressTakenException {
-        if (findUserByUsername(newUser.getUsername()).isPresent()) {
-            throw new UsernameTakenException(newUser.getUsername());
+        User u = _registerUser(newUser.getUsername(), newUser.getEmail(), newUser.getFirstName(), newUser.getLastName(), newUser.getPassword(), newUser.getPhone());
+        RegisterUserResponse registeredUser = new RegisterUserResponse(u.getUsername(), u.getPassword(),
+                newUser.getFirstName(), u.getLastName(), u.getEmail(), u.getPhone());
+        return registeredUser;
+    }
+
+    public User verifyUserRegistration(String usersEmail, String verificationCode) throws UserNotFoundException {
+        Optional<User> optionalUser = findUserByEmail(usersEmail);
+        if (optionalUser.isPresent()) {
+            User u = optionalUser.get();
+            if (u.getVerifyCode().equals(verificationCode)) {
+                u.setEnabled(true);
+                return userRepository.save(u);
+            }
+        } else {
+            throw new UserNotFoundException("User with the email specified cannot be found: " + usersEmail);
         }
-        if (findUserByEmail(newUser.getEmail()).isPresent()) {
-            throw new EmailAddressTakenException(newUser.getEmail());
+        return null;
+    }
+
+    private User _registerUser(String username, String email, String firstName, String lastName, String password, String phone) {
+        if (findUserByUsername(username).isPresent()) {
+            throw new UsernameTakenException(username);
         }
+        if (findUserByEmail(email).isPresent()) {
+            throw new EmailAddressTakenException(email);
+        }
+
+        // create new user in database
         Set<Authority> authorities = new HashSet<Authority>();
         authorities.add(roleRepository.findByName("ROLE_USER").get());
         User utmp = new User();
-        utmp.setUsername(newUser.getUsername());
-        utmp.setFirstName(newUser.getFirstName());
-        utmp.setLastName(newUser.getLastName());
-        utmp.setPassword(EncryptedPasswordUtils.encryptPassword(newUser.getPassword()));
-        utmp.setEmail(newUser.getEmail());
-        utmp.setPhone(newUser.getPhone());
-        utmp.setEnabled(true);
+        utmp.setUsername(username);
+        utmp.setFirstName(firstName);
+        utmp.setLastName(lastName);
+        utmp.setPassword(EncryptedPasswordUtils.encryptPassword(password));
+        utmp.setEmail(email);
+        utmp.setPhone(phone);
+        utmp.setVerifyCode(RandomStringUtils.randomAlphabetic(32));
+        utmp.setEnabled(false);
         utmp.setDateCreated(new Date());
         utmp.setAuthorities(authorities);
-        userRepository.saveAndFlush(utmp);
-        RegisterUserResponse registeredUser = new RegisterUserResponse(utmp.getUsername(), utmp.getPassword(),
-                newUser.getFirstName(), utmp.getLastName(), utmp.getEmail(), utmp.getPhone());
-        return registeredUser;
+        return userRepository.saveAndFlush(utmp);
     }
 
     public SubscribeUserResponse subscribeUser(SubscribeUserRequest newUser) {
@@ -205,6 +213,7 @@ public class UserService {
             user.setState(apiUser.getState());
             user.setZip(apiUser.getZip());
             user.setCountry(apiUser.getCountry());
+            user.setMfa(apiUser.getMfa());
             return userRepository.saveAndFlush(user);
         } else {
             throw new UserNotFoundException("Username not found: " + apiUser.getUsername());
@@ -222,11 +231,12 @@ public class UserService {
             user.setLastName(userForm.getLastName());
             user.setEmail(userForm.getEmail());
             user.setPhone(userForm.getPhone());
-            user.setAddress(user.getAddress());
-            user.setCity(user.getCity());
-            user.setState(user.getState());
-            user.setZip(user.getZip());
-            user.setCountry(user.getCountry());
+            user.setAddress(userForm.getAddress());
+            user.setCity(userForm.getCity());
+            user.setState(userForm.getState());
+            user.setZip(userForm.getZip());
+            user.setCountry(userForm.getCountry());
+            user.setMfa(userForm.getMfa());
             return userRepository.saveAndFlush(user);
         } else {
             throw new UserNotFoundException("Username not found: " + userForm.getUsername());
@@ -249,6 +259,7 @@ public class UserService {
             user.setZip(adminUserForm.getZip());
             user.setCountry(adminUserForm.getCountry());
             user.setEnabled(adminUserForm.getEnabled());
+            user.setMfa(adminUserForm.getMfa());
             return userRepository.saveAndFlush(user);
         } else {
             throw new UserNotFoundException("Username not found: " + adminUserForm.getUsername());
@@ -301,7 +312,7 @@ public class UserService {
         utmp.setZip(adminNewUserForm.getZip());
         utmp.setCountry(adminNewUserForm.getCountry());
         utmp.setEnabled(adminNewUserForm.getEnabled());
-        utmp.setEnabled(adminNewUserForm.getEnabled());
+        utmp.setMfa(adminNewUserForm.getMfa());
         utmp.setDateCreated(new Date());
         utmp.setAuthorities(authorities);
         return userRepository.saveAndFlush(utmp);

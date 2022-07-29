@@ -92,14 +92,14 @@ public class UserRepositoryTest extends BaseIntegrationTest {
             assertThat(u.getUsername()).isEqualTo(DataSeeder.TEST_USER2_USERNAME);
             u.setFirstName("Test Updated");
             u.setEmail("test2@updated.com");
-            u.setPhone("0987654321");
+            u.setPhone("+44808654321");
             userRepository.saveAndFlush(u);
             users = userRepository.findUsersByUsername(DataSeeder.TEST_USER2_USERNAME);
             if (users.size() > 0) {
                 u = users.get(0);
                 assertThat(u.getFirstName()).isEqualTo("Test Updated");
                 assertThat(u.getEmail()).isEqualTo("test2@updated.com");
-                assertThat(u.getPhone()).isEqualTo("0987654321");
+                assertThat(u.getPhone()).isEqualTo("+44808654321");
             }
         } else
             fail("Test User 2 not found");

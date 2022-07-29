@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -24,7 +24,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.Column;
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.UUID;
 
 /**
@@ -64,7 +67,7 @@ public class UserForm {
     private String email;
 
     @NotEmpty(message = "{user.phone.notEmpty}")
-    @Pattern(regexp = "(^$|[0-9]{10})", message = "{user.phone.invalidFormat}")
+    @Pattern(regexp = "(^\\+((?:9[679]|8[035789]|6[789]|5[90]|42|3[578]|2[1-689])|9[0-58]|8[1246]|6[0-6]|5[1-8]|4[013-9]|3[0-469]|2[70]|7|1)(?:\\W*\\d){0,13}\\d$)", message = "{user.phone.invalidFormat}")
     @Column(unique = true)
     private String phone;
 
@@ -75,6 +78,8 @@ public class UserForm {
     private String country;
 
     private Boolean enabled;
+
+    private Boolean mfa;
 
     public UserForm() {
     }
@@ -93,6 +98,7 @@ public class UserForm {
         this.zip = user.getZip();
         this.country = user.getCountry();
         this.enabled = user.getEnabled();
+        this.mfa = user.getMfa();
     }
 
     public UUID getId() {
@@ -205,6 +211,14 @@ public class UserForm {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Boolean getMfa() {
+        return mfa;
+    }
+
+    public void setMfa(Boolean mfa) {
+        this.mfa = mfa;
     }
 
     @Override

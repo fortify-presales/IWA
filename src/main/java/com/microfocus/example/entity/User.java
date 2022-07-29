@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -89,7 +89,7 @@ public class User implements Serializable {
     private String email;
 
     @NotEmpty(message = "{user.phone.notEmpty}")
-    @Pattern(regexp = "(^(?!0+$)[0-9]{7,12}$)", message = "{user.phone.invalidFormat}")
+    @Pattern(regexp = "(^\\+((?:9[679]|8[035789]|6[789]|5[90]|42|3[578]|2[1-689])|9[0-58]|8[1246]|6[0-6]|5[1-8]|4[013-9]|3[0-469]|2[70]|7|1)(?:\\W*\\d){0,13}\\d$)", message = "{user.phone.invalidFormat}")
     @Column(unique = true)
     private String phone;
 
@@ -103,8 +103,15 @@ public class User implements Serializable {
     @Column(name = "date_created")
     private Date dateCreated;
 
+    @JsonProperty(access =  JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "verify_code")
+    private String verifyCode;
+
     @JsonProperty("enabled")
     private boolean enabled;
+
+    @JsonProperty("mfa")
+    private boolean mfa;
 
     //@JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
@@ -117,7 +124,7 @@ public class User implements Serializable {
     }
 
     public User(UUID id, String username, String password, String firstName, String lastName, String email, String phone,
-                String address, String city, String state, String zip, String country, boolean enabled) {
+                String address, String city, String state, String zip, String country, boolean enabled, boolean mfa) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -131,6 +138,7 @@ public class User implements Serializable {
         this.zip = zip;
         this.country = country;
         this.enabled = enabled;
+        this.mfa = mfa;
     }
 
     public UUID getId() {
@@ -247,12 +255,28 @@ public class User implements Serializable {
         this.dateCreated = dateCreated;
     }
 
+    public String getVerifyCode() {
+        return verifyCode;
+    }
+
+    public void setVerifyCode(String verifyCode) {
+        this.verifyCode = verifyCode;
+    }
+
     public boolean getEnabled() {
         return enabled;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean getMfa() {
+        return mfa;
+    }
+
+    public void setMfa(boolean mfa) {
+        this.mfa = mfa;
     }
 
     public Set<Authority> getAuthorities() {

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+    <head>
+        <title>Register</title>
+    </head>
+    <body>
+        <div layout:fragment="content" th:remove="tag">
+
+            <div class="bg-light py-3">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 mb-0"><a th:href="@{/user/verify}">Verify</a> </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="site-section">
+
+                <div class="container">
+
+                    <form th:action="@{/user/verify}" th:object="${verifyUserForm}" class="form-horizontal needs-validation form-register" autocomplete="off" method="get">
+
+                        <h1 class="h3 mb-3 font-weight-normal">Enter your verification details</h1>
+
+                        <div th:if="${message}" th:class="${'mx-auto alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                            <span th:text="${message}">message</span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <div th:object="${verifyUserForm}" th:remove="tag">
+                            <div class="alert alert-danger" th:if="${#fields.hasErrors('global')}">
+                                <p th:each="error : ${#fields.errors('global')}" th:text="${error}">error</p>
+                            </div>
+                        </div>
+
+                           <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="email" class="text-black">Email <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="email" name="email" th:field="*{email}" th:value="${verifyUserForm.email}">
+                                <div th:if="${#fields.hasErrors('email')}">
+                                    <p class="alert alert-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="code" class="text-black">Code <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="code" name="code" th:field="*{code}" th:value="${verifyUserForm.code}">
+                                <div th:if="${#fields.hasErrors('code')}">
+                                    <p class="alert alert-danger" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mt-4">
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary">Verify</button>
+                                <button type="button" class="btn btn-secondary">Request New Code</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </body>
+</html>

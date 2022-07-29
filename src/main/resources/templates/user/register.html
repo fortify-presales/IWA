@@ -20,7 +20,7 @@
 
                 <div class="container">
 
-                    <form th:action="@{/user/register}" th:object="${registerUserForm}" class="form-horizontal needs-validation form-register" autocomplete="off" method="post">
+                    <form id="register-form" th:action="@{/user/register}" th:object="${registerUserForm}" class="form-horizontal needs-validation form-register" autocomplete="off" method="post">
 
                         <h1 class="h3 mb-3 font-weight-normal">Enter your registration details</h1>
 
@@ -46,7 +46,7 @@
                                     </div>
                                 </div>
                                 <small id="usernameHelpBlock" class="form-text text-muted">
-                                    Bust be 6-20 characters long, containing letters and numbers, and not spaces, special characters, or emojis.
+                                    Must be 4-20 characters long, containing letters and numbers, and not spaces, special characters, or emojis.
                                 </small>
                             </div>
                             <div class="col-md-12">
@@ -94,7 +94,7 @@
                                 <label for="phone" class="text-black">Phone <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="phone" name="phone" th:field="*{phone}" th:value="${registerUserForm.phone}" aria-describedby="phoneHelpBlock">
                                 <small id="phoneHelpBlock" class="form-text text-muted">
-                                    Must be 7-12 digits long.
+                                    Mobile phone number including country code, e.g. +1707123456.
                                 </small>
                                 <div th:if="${#fields.hasErrors('phone')}">
                                     <p class="alert alert-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></p>
@@ -105,7 +105,7 @@
                         <div class="form-group row">
                             <div class="col-md-6">
                                 <label for="password" class="text-black">Password <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="password" name="password" th:field="*{password}" th:value="${registerUserForm.password}" aria-describedby="passwordHelpBlock">
+                                <input type="password" class="form-control" id="password" name="password" th:field="*{password}" th:value="${registerUserForm.password}" aria-describedby="passwordHelpBlock">
                                 <small id="passwordHelpBlock" class="form-text text-muted">
                                     Must be 8-20 characters long, containing letters, numbers and special characters.
                                 </small>
@@ -115,7 +115,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="confirmPassword" class="text-black">Confirm Password <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="confirmPassword" name="confirmPassword" th:field="*{confirmPassword}" th:value="${registerUserForm.confirmPassword}" aria-describedby="confirmPasswordHelpBlock">
+                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" th:field="*{confirmPassword}" th:value="${registerUserForm.confirmPassword}" aria-describedby="confirmPasswordHelpBlock">
                                 <small id="confirmPasswordHelpBlock" class="form-text text-muted">
                                     Confirm your password.
                                 </small>
@@ -127,7 +127,7 @@
 
                         <div class="form-group row mt-4">
                             <div class="col-md-12">
-                                <button type="submit" class="btn btn-primary">Register</button>
+                                <button id="register-btn" type="submit" class="btn btn-primary">Register</button>
                             </div>
                         </div>
                     </form>
@@ -144,6 +144,9 @@
                 (function ($) {
                     $(document).ready(function () {
                         $('#check-username').CheckUsername();
+                        $('#register-form').submit(function(e) {
+                            $('#register-btn').attr("disabled", true)
+                        });
                     });
                 })(jQuery);
             </script>

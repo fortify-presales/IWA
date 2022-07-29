@@ -51,7 +51,6 @@ public class JwtUtils {
     public String generateJwtToken(Authentication authentication) {
 
         CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
-        log.debug("generateJwtToken for: " + userPrincipal.getUsername());
 
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))
