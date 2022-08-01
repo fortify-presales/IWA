@@ -99,7 +99,8 @@ logging:
 
 app:
   name: IWA Pharmacy Direct
-  version: 1.0
+  url: https://iwa.onfortify.com
+  version: 1.1
   currency: GBP
   invalidPasswordList: "/invalid-password-list.txt"
   data:
@@ -114,6 +115,6 @@ app:
     from-address: no-reply@iwa.onfortify.com
     from-name: IWAPharmacyDirect
   twilio:
-    phone-number:
-    sid:
-    auth-token:
+    phone-number: # Enter Twilio phone number
+    sid: # Enter Twilio account SID
+    auth-token: # Enter Twilio authentication token

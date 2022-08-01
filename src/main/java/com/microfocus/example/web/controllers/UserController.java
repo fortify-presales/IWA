@@ -88,6 +88,9 @@ public class UserController extends AbstractBaseController {
     @Value("${app.mail.from-address}")
     private String emailFromAddress;
 
+    @Value("${app.url}")
+    private String appUrl;
+
     @Value("${app.messages.home}")
     private final String message = "Hello World";
 
@@ -403,7 +406,7 @@ public class UserController extends AbstractBaseController {
             try {
                 User u = userService.registerUser(registerUserForm);
                 log.debug("Created user '" + u.getEmail() + "' with verification token: " + u.getVerifyCode());
-                String targetUrl = "http://iwa.onfortify.com/user/verify?email=" + u.getEmail() + "&code=" + u.getVerifyCode();
+                String targetUrl = appUrl + "/user/verify?email=" + u.getEmail() + "&code=" + u.getVerifyCode();
 
                 Mail mail = new Mail();
                 mail.setMailTo(u.getEmail());
