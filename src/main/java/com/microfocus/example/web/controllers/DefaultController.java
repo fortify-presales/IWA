@@ -46,6 +46,7 @@ import javax.servlet.http.HttpSession;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Default (root) controllers
@@ -136,11 +137,22 @@ public class DefaultController extends AbstractBaseController{
 
     @PostMapping("/login_mfa")
     public String otpLogin(HttpServletRequest request, HttpServletResponse response,
-                           @RequestParam("otp") String otp, Model model, Principal principal) {
+                           @RequestParam("otp") Optional<String> otp,
+                           Model model, Principal principal) {
         Authentication authentication = (Authentication) principal;
         CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         String userId = loggedInUser.getId().toString();
-        int otpNum = Integer.valueOf(otp).intValue();
+        String optStr = Optional.of(otp).get().orElse(null);
+
+        if (optStr == null || optStr.isEmpty()) {
+            log.error("insufficient parameters");
+            model.addAttribute("message", "Please supply a One Time Passcode (OTP).");
+            model.addAttribute("alertClass", "alert-danger");
+            this.setModelDefaults(model, null, "optLogin");
+            return "login_mfa";
+        }
+
+        int otpNum = Integer.valueOf(optStr).intValue();
         // validate OTP "one-time-password" for user
         if (otpNum > 0) {
             log.debug("Verifying otp '" + otp + "' of user with id: " + userId);

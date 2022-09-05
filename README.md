@@ -82,10 +82,9 @@ mvn spring-boot:run
 ```
 
 Then navigate to the URL: [http://localhost:8888](http://localhost:8888). You can carry out a number of
-actions unauthenticated, but if you want to login you can do so as one of the following users:
+actions unauthenticated, but if you want to login you can do so as the following user:
 
 - **user1@localhost.com/password**
-- **user2@localhost.com/password**
   
 There is also an administrative user:
 

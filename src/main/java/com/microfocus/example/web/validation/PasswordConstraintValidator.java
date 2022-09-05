@@ -55,6 +55,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 
     private DictionaryRule dictionaryRule;
 
+/*
     @Value("${app.invalidPasswordList}")
     private String invalidPasswordList = "/invalid-password-list.txt";
 
@@ -90,6 +91,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
             }
         }
     }
+*/
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext context) {
@@ -114,10 +116,10 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
                 new CharacterRule(EnglishCharacterData.Special, 1),
 
                 // no whitespace
-                new WhitespaceRule(),
+                new WhitespaceRule()
 
                 // no common passwords
-                dictionaryRule
+                //dictionaryRule
         ));
 
         RuleResult result = validator.validate(new PasswordData(password));
