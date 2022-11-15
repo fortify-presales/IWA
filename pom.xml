@@ -252,6 +252,17 @@
             <version>${selenium.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>1.18</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20201115</version>
+        </dependency>
+
         <!-- Fortify SCA Annotations
         <dependency>
             <groupId>com.microfocus.fortify</groupId>

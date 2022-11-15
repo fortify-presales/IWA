@@ -47,6 +47,8 @@ dependencies {
     implementation 'org.seleniumhq.selenium:selenium-java:4.0.0-rc-2'
     implementation 'org.springframework.boot:spring-boot-devtools:2.1.8.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+    implementation 'org.apache.tika:tika-core:1.18'
+    implementation 'org.json:json:20201115'
     modules {
         module("org.springframework.boot:spring-boot-starter-logging") {
             replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")

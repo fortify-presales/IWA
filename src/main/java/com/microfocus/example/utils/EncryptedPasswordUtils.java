@@ -19,23 +19,57 @@
 
 package com.microfocus.example.utils;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Encrypted Password Utilities using BCryptPasswordEncoder
  *
  * @author Kevin A. Lee
  */
+@SuppressWarnings("deprecation")
 public class EncryptedPasswordUtils {
 
+	private static final byte[] iv = { 22, 33, 11, 44, 55, 99, 66, 77 };
+	private static final SecretKey keySpec = new SecretKeySpec(iv, "DES");
+	
     public static String encryptPassword(String password) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.encode(password);
+    	byte[] encrypted = null;
+    	try {
+			Cipher desCipher = Cipher.getInstance("DES");
+			desCipher.init(Cipher.ENCRYPT_MODE, keySpec);
+			encrypted = desCipher.doFinal(password.getBytes()); 	
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+    	
+        return new String(encrypted);
     }
 
     public static boolean matches(String password1, String password2) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.matches(password1, password2);
+    	byte[] encrypted = null;
+    	String encPassword1 = "";
+    	try {
+			Cipher desCipher = Cipher.getInstance("DES");
+			desCipher.init(Cipher.ENCRYPT_MODE, keySpec);
+			encrypted = desCipher.doFinal(password1.getBytes());
+			encPassword1 = new String(encrypted); 
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+    	
+        return encPassword1.equals(password2);
     }
 
 }

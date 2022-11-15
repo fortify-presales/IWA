@@ -48,11 +48,32 @@
 ## A04:2021-Insecure Design
 
 ---
-## A05:2021-Security Misconfiguration
+## A05:2021-Security Misconfiguration: XML External Entity (XXE)
+### /user/files/upload-xml -  File Content textarea (below Steps to validate this vulnerability)
+	1. Go to Home Page.
+    2. Login as "user1@localhost.com", password as "password".
+	3. Click "Upload XML Files" menu from the user home page.
+	4. Upload any xml file by clicking on "Choose File" and "Submit".
+	5. Once you uploaded the file successfully, you will be able to see the file "name" and its "content`.
+	6. In the Content box change some of the data and click on Save to show that the data can be changed.
+	7. Now replace the content with the following (make sure there are no leading spaces):
 
+        <?xml version="1.0" encoding="utf-8"?><!DOCTYPE order[  <!ENTITY myExternalEntity SYSTEM "file:///C:/Windows/System32/drivers/etc/hosts">]><order>&myExternalEntity;</order>
+
+    8. Click on Save.
+	9. Now the server hosts file will be shown as the content of updated XML file.
 ---
-## A06:2021-Vulnerable and Outdated Components
+## A06:2021-Vulnerable and Outdated Components: Composition only
+### /user/command-shell -  Command text field (below Steps to validate this vulnerability)
+	1. Go to Home Page.
+    2. Login as "user1@localhost.com", password as "password".
+	3. Click "Command Shell" menu fitem rom the user home page.
+	5. Enter the following in the 'Windows Command to Execute" field:
 
+        cmd /c echo "calc.exe" > C:\\a06-vul-java.bat & C:\\a06-vul-java.bat
+
+    6. Click on Submit.
+	6. The file "a06-vul-java.bat" will now exist and the Windows Calc application will be opened.  
 ---
 ## A07:2021-Identification and Authentication Failures
 

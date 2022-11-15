@@ -7,12 +7,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.microfocus.example.config.StorageProperties;
 import com.microfocus.example.exception.StorageException;
 import com.microfocus.example.exception.StorageFileNotFoundException;
-import com.microfocus.example.web.controllers.UserController;
+import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +67,63 @@ public class FileSystemStorageService implements StorageService {
         catch (IOException e) {
             throw new StorageException("Failed to store file.", e);
         }
+    }
+
+	@Override
+	public void store(Path path, String dstFileName) {
+        try {
+            if (Objects.isNull(path) || path.toFile().length() < 1L) {
+                throw new StorageException("Failed to store empty file.");
+            }
+
+            Path destinationFile = Paths.get(dstFileName)
+                    .normalize().toAbsolutePath();
+
+            if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
+                // This is a security check
+                throw new StorageException(
+                        "Cannot store file outside current directory.");
+            }
+                        
+            try (InputStream inputStream = Files.newInputStream(path)) {
+                Files.copy(inputStream, destinationFile,
+                        StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+        catch (IOException e) {
+            throw new StorageException("Failed to store file.", e);
+        }		
+	}
+
+    private boolean checkMimeType(Path p, List<String> mimeTypeList) {
+    	Tika tika = new Tika();
+    	String fileMimeType = "";
+		try {
+			fileMimeType = tika.detect(p.toFile());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	if (mimeTypeList.contains(fileMimeType)) 
+    		return true;
+    	
+    	return false;
+    	
+    }
+    
+    
+    @Override
+    public Stream<Path> loadAll(List<String> mimeTypeList) {
+        try {
+            return Files.walk(this.rootLocation, 1)
+                    .filter(path -> !path.equals(this.rootLocation))
+                    .filter(path -> checkMimeType(path, mimeTypeList))
+                    .map(this.rootLocation::relativize);
+        }
+        catch (IOException e) {
+            throw new StorageException("Failed to read stored files", e);
+        }
+
     }
 
     @Override
