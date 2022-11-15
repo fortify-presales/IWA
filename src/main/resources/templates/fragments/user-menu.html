@@ -18,6 +18,12 @@
                    th:href="@{/user/messages}"><i class="fas fa-envelope fa-fw"></i> Messages <span id="unread-message-count" class="badge badge-pill badge-info">0</span>
                     <span class="sr-only">unread messages</span>
                 </a>
+                <a class="list-group-item list-group-item-action"
+                   th:classappend="${#strings.contains(activeItem,'download-file')} ? active : ''"
+                   th:href="@{/user/download-file}"><i class="fas fa-download fa-fw"></i> Download Files </a>
+                <a class="list-group-item list-group-item-action"
+                   th:classappend="${#strings.contains(activeItem,'log')} ? active : ''"
+                   th:href="@{/user/log}"><i class="fas fa-file-signature fa-fw"></i> Log Entry </a>
             </div>
         </div>
     </div>

@@ -38,6 +38,7 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -79,7 +80,29 @@ public class ProductController extends AbstractBaseController {
     String GetControllerName() {
         return CONTROLLER_NAME;
     }
+    
+    @GetMapping("/xss")
+    @ResponseBody
+    public ResponseEntity<String> getKeywordsContent(@Param("keywords") String keywords) {
 
+    	String retContent = "Product search using: " + keywords;
+    	
+        return ResponseEntity.ok().body(retContent);
+    }
+
+    @GetMapping("/firstaid")
+    public String firstaid(Model model, @Param("keywords") String keywords, @Param("limit") Integer limit, Principal principal) {
+        log.debug("Searching for products using keywords: " + ((keywords == null || keywords.isEmpty()) ? "none" : keywords));
+        productService.setPageSize((limit == null ? defaultPageSize : limit));
+        List<Product> products = productService.getAllActiveProducts(0, keywords);
+        model.addAttribute("keywords", keywords);
+        model.addAttribute("products", products);
+        model.addAttribute("productCount", products.size());
+        model.addAttribute("productTotal", productService.count());
+        this.setModelDefaults(model, principal, "index");
+        return "products/firstaid";
+    }
+    
     @GetMapping(value = {"", "/"})
     public String index(Model model, @Param("keywords") String keywords, @Param("limit") Integer limit, Principal principal) {
         log.debug("Searching for products using keywords: " + ((keywords == null || keywords.isEmpty()) ? "none" : keywords));

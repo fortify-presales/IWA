@@ -41,6 +41,8 @@ import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.firewall.DefaultHttpFirewall;
+import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
@@ -158,7 +160,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                             "/login",
                             "/logout",
                             "/user/register",
-                            "/user/verify/**",
+                            "/user/files/download/unverified",
                             "/backdoor",
                             "/swagger-resources/**",
                             "/swagger-ui/**",
@@ -222,6 +224,11 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         @Bean
         public SessionRegistry sessionRegistry() {
             return new SessionRegistryImpl();
+        }
+        
+        @Bean
+        public HttpFirewall getHttpFirewall() {
+            return new DefaultHttpFirewall();
         }
 
     }

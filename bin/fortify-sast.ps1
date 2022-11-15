@@ -36,7 +36,7 @@ if ([string]::IsNullOrEmpty($AppName)) { throw "Application Name has not been se
 
 # Run the translation and scan
 
-# Compile the application if bot already built
+# Compile the application if not already built
 $DependenciesFile = Join-Path -Path (Get-Location) -ChildPath target\cp.txt
 if (-not (Test-Path -PathType Leaf -Path $DependenciesFile)) {
     Write-Host Cleaning up workspace...

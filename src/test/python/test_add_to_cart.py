@@ -22,7 +22,7 @@ FAST_PROXY = os.getenv('FAST_PROXY')
 
 capabilities = webdriver.DesiredCapabilities.CHROME
 chrome_options = webdriver.ChromeOptions()
-# comment out below in not using FAST proxy
+# comment out below if not using FAST proxy
 chrome_options.add_argument('--proxy-server=%s' % FAST_PROXY)
 chrome_options.add_argument('ignore-certificate-errors')
 

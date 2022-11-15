@@ -109,6 +109,13 @@ public class ProductRepository {
                 " LIMIT " + limit + " OFFSET " + offset;
         return jdbcTemplate.query(sqlQuery, new ProductMapper());
     }
+    
+    public List<Product> findByKeywordsFromProductName(String keywords) {
+    	String query = keywords.toLowerCase();
+    	String sqlQuery = "SELECT * FROM " + getTableName() + 
+    			" WHERE lower(name) LIKE '%" + query + "%' ";
+    	return jdbcTemplate.query(sqlQuery, new ProductMapper());
+    }
 
     public List<Product> findAvailableByKeywords(String keywords, int offset, int limit) {
         String query = keywords.toLowerCase();
@@ -121,6 +128,13 @@ public class ProductRepository {
         return jdbcTemplate.query(sqlQuery, new ProductMapper());
     }
 
+    public List<Product> findAvailableByKeywordsFromProductName(String keywords) {
+    	String query = keywords.toLowerCase();
+    	String sqlQuery = "SELECT * FROM " + getTableName() +
+    			" WHERE available = true AND lower(name) LIKE '%" + query + "%' ";
+    	return jdbcTemplate.query(sqlQuery, new ProductMapper());
+    }
+    
     public Product save(Product p) {
         UUID uuid = (p.getId() != null ? p.getId() : UUID.randomUUID());
         Product pRet = null;

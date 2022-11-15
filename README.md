@@ -32,6 +32,7 @@
 _IWA (Insecure Web App) Pharmacy Direct_ is an example Java/Spring Web Application for use in **DevSecOps** scenarios and demonstrations.
 It includes some examples of bad and insecure code - which can be found using static and dynamic application
 security testing tools such as those provided by [Micro Focus Fortify](https://www.microfocus.com/en-us/cyberres/application-security).
+See the file [VULNERABILITIES.md](VULNERABILITIES.md) for a documented list of [OWASP Top Ten](https://owasp.org/www-project-top-ten/) examples.
 
 One of the main aims of this project is to illustrate how security can be embedded early ("Shift-Left") and continuously ("CI/CD") in
 the development lifecycle. Therefore, a number of examples of "integrations" to common CI/CD pipeline tools are provided.
@@ -195,11 +196,11 @@ AZURE_REGION=eastus
 
 ### SAST using Fortify SCA command line
 
-There is an example PowerShell script [fortify-sca.ps1](bin/fortify-sca.ps1) that you can use to execute static application security testing
+There is an example PowerShell script [fortify-sast.ps1](bin/fortify-sast.ps1) that you can use to execute static application security testing
 via [Fortify SCA](https://www.microfocus.com/en-us/products/static-code-analysis-sast/overview).
 
 ```aidl
-.\bin\fortify-sca.ps1
+.\bin\fortify-sast.ps1
 ```
 
 This script runs a "sourceanalyzer" translation and scan on the project's source code. It creates a Fortify Project Results file called `IWA.fpr`

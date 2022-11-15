@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Log Value</title>
+</head>
+<body>
+    <div layout:fragment="content" th:remove="tag">
+
+        <div class="bg-light py-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 mb-0"><a th:href="@{/user/}">User</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Log Value</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="site-section">
+
+            <div class="container">
+
+                <div class="row">
+
+                    <div class="col-md-3 mr-auto">
+                        <div th:replace="fragments/user-menu.html :: userMenu('/user/log')"></div>
+                    </div>
+
+                    <div class="col-md-9">
+
+                        <h5>Log Value</h5>
+                        <form class="form-horizontal" th:action="@{/user/log}" method="get">
+
+                            <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                                <span th:text="${message}">message</span>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <label for="val" class="text-black">Enter a positive integer value to Log: <span class="text-danger">*</span></label>
+                                    <textarea th:id="val" rows="5" cols="35" th:name="val" th:text="${val}"></textarea>
+                                    <!-- <input type="text" class="form-control" id="val" name="val" th:value="${val}"> -->
+                                </div>
+                            </div>
+
+                            <div class="form-group row mt-4">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-space btn-primary">Submit</button>
+                                    <a class="btn btn-info" th:href="@{/user/profile}">Cancel</a>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <div th:if="${not #strings.isEmpty(intval)}" class="row pt-2">
+	                        <h5>Logged value is:</h5>
+	                        <input type = text th:id="intval" th:name="intval" th:value="${intval}" />
+	                    </div>
+                        
+                        <h5>Actual log written: </h5>
+                        <textarea th:id="logwritten" rows="10" cols="75" th:name="logwritten" th:text="${logwritten}"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

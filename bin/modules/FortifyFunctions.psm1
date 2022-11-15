@@ -25,3 +25,23 @@ function Test-Environment {
 
     Write-Host "OK."
 }
+
+function Test-ThirdPartyEnvironment {
+    Write-Host "Validating Third Party Installation..." -NoNewline
+
+    # Check Maven is on the path
+    if ((Get-Command "mvn" -ErrorAction SilentlyContinue) -eq $null)
+    {
+        Write-Host
+        throw "Unable to find mvn in your PATH"
+    }
+
+    # Check Sonatype is installed
+    if ((Get-Command "nexus-iq-cli.exe" -ErrorAction SilentlyContinue) -eq $null)
+    {
+        Write-Host
+        throw "Unable to find nexus-iq-cli.exe is not in your PATH"
+    }
+
+    Write-Host "OK."
+}
