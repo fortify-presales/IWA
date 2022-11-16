@@ -16,7 +16,19 @@
                                 <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
                             </span>
                             <h2 class="display-3 text-black">Internal Error</h2>
-                            <p class="lead mb-5">We're sorry there has been an internal error!</p>
+                            <p class="lead">We're sorry there has been an internal error!</p>
+                            <p>
+                                <a class="btn btn-outline-danger" data-toggle="collapse" href="#errorDetails" role="button" aria-expanded="false">Show Details</a>
+                            </p>
+                            <div class="row mb-5">
+                                <div class="col">
+                                    <div class="collapse multi-collapse" id="errorDetails">
+                                        <div class="card card-body">
+                                            <span th:align="left" th:text="${exception}">message</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <p><a th:href="@{/products}" class="btn btn-md height-auto px-4 py-3 btn-primary">Back to Shop</a></p>
                         </div>
                     </div>

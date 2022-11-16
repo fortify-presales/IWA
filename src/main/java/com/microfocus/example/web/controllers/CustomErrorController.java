@@ -32,18 +32,16 @@ public class CustomErrorController implements ErrorController {
 
     @RequestMapping("/error")
     public ModelAndView handleError(HttpServletResponse response) {
-        ModelAndView modelAndView = new ModelAndView();
+        ModelAndView modelAndView = new ModelAndView("error/default");
+        modelAndView.addObject("alertClass", "alert-danger");
 
-        if(response.getStatus() == HttpStatus.NOT_FOUND.value()) {
+        if (response.getStatus() == HttpStatus.NOT_FOUND.value()) {
             modelAndView.setViewName("error/404-not-found");
-        }
-        else if(response.getStatus() == HttpStatus.FORBIDDEN.value()) {
+        } else if (response.getStatus() == HttpStatus.FORBIDDEN.value()) {
             modelAndView.setViewName("error/403-access-denied");
-        }
-        else if(response.getStatus() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+        } else if (response.getStatus() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
             modelAndView.setViewName("error/500-internal-error");
-        }
-        else {
+        } else {
             modelAndView.setViewName("error/default");
         }
 
