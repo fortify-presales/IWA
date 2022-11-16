@@ -32,7 +32,7 @@
 _IWA (Insecure Web App) Pharmacy Direct_ is an example Java/Spring Web Application for use in **DevSecOps** scenarios and demonstrations.
 It includes some examples of bad and insecure code - which can be found using static and dynamic application
 security testing tools such as those provided by [Micro Focus Fortify](https://www.microfocus.com/en-us/cyberres/application-security).
-See the file [VULNERABILITIES.md](VULNERABILITIES.md) for a documented list of [OWASP Top Ten](https://owasp.org/www-project-top-ten/) examples.
+See the file [DEMO.md](DEMO.md) for a documented demonstration scenario of some of the applications vulnerabilities.
 
 One of the main aims of this project is to illustrate how security can be embedded early ("Shift-Left") and continuously ("CI/CD") in
 the development lifecycle. Therefore, a number of examples of "integrations" to common CI/CD pipeline tools are provided.
