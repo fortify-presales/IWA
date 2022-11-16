@@ -294,7 +294,7 @@ public class User implements Serializable {
         }
         User utmp = new User();
         utmp.setUsername(user.getUsername());
-        utmp.setPassword(user.getPassword());
+        //utmp.setPassword(user.getPassword());
         utmp.setAuthorities(authorities);
         utmp.setEnabled(user.isEnabled());
         return utmp;
