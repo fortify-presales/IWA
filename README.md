@@ -246,15 +246,7 @@ SCANCENTRAL_POOL_ID=00000000-0000-0000-0000-000000000002
 SCANCENTRAL_EMAIL=test@test.com
 ```
 
-The `SCANCENTRAL_CTRL_TOKEN` entry should be set to the value of a 'ScanCentralCtrlToken ' created in SSC _"Administration->Token Management"_.
-
-Once the scan has been initiated you can check its status from the SSC User Interface or using the command:
-
-```aidl
- scancentral -url [your-controller-url] status -token [returned-token]
-```
-
-where `[returned-token]` is the value of the token displayed after the scan request has been submitted.
+The `SSC_AUTH_TOKEN` entry should be set to the value of a 'CIToken' created in SSC _"Administration->Token Management"_.
 
 ### Open Source Software Composition Analysis using Sonatype Nexus
 
