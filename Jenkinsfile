@@ -166,7 +166,7 @@ pipeline {
                     //def classpath = readFile "${env.WORKSPACE}/cp.txt"
                     //echo "Using classpath: $classpath"
 
-                    if (params.USE_SCANCENTRAL_SAST) {
+                    if (params.SCANCENTRAL_SAST) {
 
                         // Set Remote Analysis options
                         fortifyRemoteArguments scanOptions: '"-scan-precision 1"',
