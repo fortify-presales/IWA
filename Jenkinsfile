@@ -99,7 +99,6 @@ pipeline {
 
                 // Get Git commit details
                 script {
-                    echo "inside build script"
                     if (isUnix()) {
                         sh 'git rev-parse HEAD > .git/commit-id'
                     } else {
@@ -152,7 +151,7 @@ pipeline {
             steps {
                 script {
                     // Get code from Git repository so we can recompile it
-                    git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
+                    //git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
 
                     // Run Maven debug compile, download dependencies (if required) and package up for FOD
                     if (isUnix()) {
@@ -164,10 +163,14 @@ pipeline {
                     }
 
                     // read contents of classpath file
-                    def classpath = readFile "${env.WORKSPACE}/cp.txt"
-                    echo "Using classpath: $classpath"
+                    //def classpath = readFile "${env.WORKSPACE}/cp.txt"
+                    //echo "Using classpath: $classpath"
 
                     if (params.USE_SCANCENTRAL_SAST) {
+
+                        // Set Remote Analysis options
+                        fortifyRemoteArguments scanOptions: '"-scan-precision 1"',
+                            transOptions: ''
 
                         // Remote analysis (using Scan Central)
                         fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
@@ -177,8 +180,6 @@ pipeline {
                                         notifyEmail: "${env.SSC_NOTIFY_EMAIL}",
                                         sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
                                 ]
-
-                        // TODO: use fcli and/or wait for scan results
 
                     } else {
                         echo "No Static Application Security Testing (SAST) to do."
