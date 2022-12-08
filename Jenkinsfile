@@ -171,7 +171,7 @@ pipeline {
                     if (params.SCANCENTRAL_SAST) {
 
                         // Set Remote Analysis options
-                        fortifyRemoteArguments scanOptions: '"-scan-precision 2"',
+                        fortifyRemoteArguments scanOptions: '"-scan-precision 1" "-rules ./etc/sca-custom-rules.xml" "-filter ./etc/sca-filter.txt"',
                             transOptions: ''
 
                         if (params.UPLOAD_TO_SSC) {
