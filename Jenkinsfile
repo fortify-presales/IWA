@@ -101,6 +101,7 @@ pipeline {
 
                 // Get Git commit details
                 script {
+                    echo "inside build script"
                     if (isUnix()) {
                         sh 'git rev-parse HEAD > .git/commit-id'
                     } else {
@@ -110,8 +111,8 @@ pipeline {
                     env.GIT_COMMIT_ID = readFile('.git/commit-id').trim()
                     //env.GIT_COMMIT_AUTHOR = readFile('.git/commit-author').trim()
 
-                    println "Git commit id: ${env.GIT_COMMIT_ID}"
-                    //println "Git commit author: ${env.GIT_COMMIT_AUTHOR}"
+                    echo "Git commit id: ${env.GIT_COMMIT_ID}"
+                    //echo "Git commit author: ${env.GIT_COMMIT_AUTHOR}"
 
                     // Run maven to build WAR/JAR application
                     if (isUnix()) {
@@ -132,8 +133,9 @@ pipeline {
                     stash includes: "target/${env.COMPONENT_NAME}.jar,target/${env.COMPONENT_NAME}.war", name: "${env.COMPONENT_NAME}_release"
                 }
                 failure {
-                    // Record the test results (failures)
-                    junit "**/target/surefire-reports/TEST-*.xml"
+                    if (fileExists('target/surefire-reports') {
+                        junit "**/target/surefire-reports/TEST-*.xml"
+                    }
                 }
             }
         }
@@ -163,7 +165,7 @@ pipeline {
 
                     // read contents of classpath file
                     def classpath = readFile "${env.WORKSPACE}/cp.txt"
-                    println "Using classpath: $classpath"
+                    echo "Using classpath: $classpath"
 
                     if (params.USE_SCANCENTRAL_SAST) {
 
@@ -179,7 +181,7 @@ pipeline {
                         // TODO: use fcli and/or wait for scan results
 
                     } else {
-                        println "No Static Application Security Testing (SAST) to do."
+                        echo "No Static Application Security Testing (SAST) to do."
                     }
                 }
             }
@@ -207,7 +209,7 @@ pipeline {
                                 iqStage: 'develop',
                                 jobCredentialsId: ''
                     } else {
-                        println "No Software Composition Analysis to do."
+                        echo "No Software Composition Analysis to do."
                     }
 
                 }
@@ -254,7 +256,7 @@ pipeline {
                             if (fileExists('container.id')) {
                                 def existingId = readFile('container.id').trim()
                                 if (existingId) {
-                                    println "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
+                                    echo "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
                                     sh(script: "docker stop $existingId && docker rm -f $existingId")
                                 }
                             }
@@ -263,18 +265,18 @@ pipeline {
                             if (fileExists('container.id')) {
                                 def existingId = readFile('container.id').trim()
                                 if (existingId) {
-                                    println "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
+                                    echo "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
                                     bat(script: "docker stop ${existingId} && docker rm -f ${existingId}")
                                 }
                             }
                         }
 
                         // start docker container
-                        println "Starting docker container ${dockerContainerName}"
+                        echo "Starting docker container ${dockerContainerName}"
                         dockerContainer = dockerImage.run("--name ${dockerContainerName} -p 9090:8080")
 
                         // run ScanCentral DAST scan using groovy script
-                        println "Running ScanCentral DAST scan, please wait ..."
+                        echo "Running ScanCentral DAST scan, please wait ..."
                         withCredentials([usernamePassword(credentialsId: 'iwa-SCANCENTRAL_DAST-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                             SCANCENTRAL_DASTApi = load 'bin/fortify-scancentral-dast.groovy'
                             SCANCENTRAL_DASTApi.setApiUri("${env.SCANCENTRAL_DAST_URL}")
@@ -282,12 +284,12 @@ pipeline {
                             SCANCENTRAL_DASTApi.authenticate("${USERNAME}", "${PASSWORD}")
                             Integer scanId = SCANCENTRAL_DASTApi.startScanAndWait("Jenkins initiated scan", "${env.SCANCENTRAL_DAST_CICD}", 5)
                             String scanStatus = SCANCENTRAL_DASTApi.getScanStatusValue(SCANCENTRAL_DASTApi.getScanStatusId(scanId))
-                            println "ScanCentral DAST scan id: ${scanId} - status: ${scanStatus}"
+                            echo "ScanCentral DAST scan id: ${scanId} - status: ${scanStatus}"
                         }
 
                         // TODO: Use fcli instead
                     } else {
-                        println "No Dynamic Application Security Testing (DAST) to do."
+                        echo "No Dynamic Application Security Testing (DAST) to do."
                     }
                 }
             }
@@ -317,7 +319,7 @@ pipeline {
                             dockerImage.push("latest")
                         }
                     } else {
-                        println "No releasing to do."
+                        echo "No releasing to do."
                     }
                 }
             }
@@ -335,7 +337,7 @@ pipeline {
                         if (fileExists('container.id')) {
                             def existingId = readFile('container.id').trim()
                             if (existingId) {
-                                println "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
+                                echo "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
                                 sh(script: "docker stop $existingId && docker rm -f $existingId")
                             }
                         }
@@ -344,7 +346,7 @@ pipeline {
                         if (fileExists('container.id')) {
                             def existingId = readFile('container.id').trim()
                             if (existingId) {
-                                println "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
+                                echo "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
                                 bat(script: "docker stop ${existingId} && docker rm -f ${existingId}")
                             }
                         }
