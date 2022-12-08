@@ -415,11 +415,8 @@ ScanCentral DAST environment.
 ### Jenkins
 
 If you are using [Jenkins](https://jenkins.io/), a comprehensive `Jenkinsfile` is provided to automate all of the typical
-steps of a DevSecOps Continuous Delivery (CD) process. For application security testing it can make use of
-[Fortify SCA](https://www.microfocus.com/en-us/products/static-code-analysis-sast/),
-[Fortify WebInspect](https://www.microfocus.com/en-us/products/webinspect-dynamic-analysis-dast/),
-[Fortify SSC](https://www.microfocus.com/en-us/products/software-security-assurance-sdlc/)
-and/or [Fortify on Demand](https://www.microfocus.com/en-us/products/application-security-testing/).
+steps of a DevSecOps Continuous Delivery (CD) process. The example makes use of Fortify ScanCentral SAST/DAST and
+Sonatype Nexus IQ for Software Composition Analysis.
 
 To make use of the `Jenkinsfile` create a new Jenkins *Pipeline* Job and in the *Pipeline*
 section select `Pipeline script from SCM` and enter the details of a forked version of this GitHub repository.
@@ -428,8 +425,7 @@ The first run of the pipeline should be treated as a "setup" step as it will
 create some *Job Parameters* which you can then select to determine which features
 you want to enable in the pipeline.
 
-You will need to have installed and configured the [Fortify SCA](https://plugins.jenkins.io/fortify/)
-and/or the [Fortify on Demand Uploader](https://plugins.jenkins.io/fortify-on-demand-uploader/) Jenkins plugins.
+You will need to have installed and configured the [Fortify](https://plugins.jenkins.io/fortify/) Jenkins plugins.
 
 There is lots of documentation in the `Jenkinsfile` itself so please examine it to see what else
 you will need to do for a successful invocation.
