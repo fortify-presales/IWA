@@ -176,7 +176,7 @@ pipeline {
 
                         if (params.UPLOAD_TO_SSC) {
                             // Remote analysis (using Scan Central) with upload to SSC
-                            fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
+                            fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml', skipBuild: true),
                                     remoteOptionalConfig: [
                                             customRulepacks: "${env.WORKSPACE}" + "/etc/sca-custom-rules.xml",
                                             filterFile     : "${env.WORKSPACE}" + "/etc/sca-filter.txt",
@@ -189,7 +189,7 @@ pipeline {
                                     ]
                         } else {
                             // Remote analysis (using Scan Central)
-                            fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
+                            fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml', skipBuild: true),
                                     remoteOptionalConfig: [
                                             customRulepacks: "${env.WORKSPACE}" + "/etc/sca-custom-rules.xml",
                                             filterFile     : "${env.WORKSPACE}" + "/etc/sca-filter.txt",
