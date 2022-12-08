@@ -156,13 +156,13 @@ pipeline {
                     //git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
 
                     // Run Maven debug compile, download dependencies (if required) and package up for FOD
-                    if (isUnix()) {
-                        sh "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify"
-                        sh "mvn dependency:build-classpath -Dmdep.regenerateFile=true -Dmdep.outputFile=${env.WORKSPACE}/cp.txt"
-                    } else {
-                        bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify"
-                        bat "mvn dependency:build-classpath -Dmdep.regenerateFile=true -Dmdep.outputFile=${env.WORKSPACE}/cp.txt"
-                    }
+                    //if (isUnix()) {
+                    //    sh "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify"
+                    //    sh "mvn dependency:build-classpath -Dmdep.regenerateFile=true -Dmdep.outputFile=${env.WORKSPACE}/cp.txt"
+                    //} else {
+                    //    bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify"
+                    //    bat "mvn dependency:build-classpath -Dmdep.regenerateFile=true -Dmdep.outputFile=${env.WORKSPACE}/cp.txt"
+                    //}
 
                     // read contents of classpath file
                     //def classpath = readFile "${env.WORKSPACE}/cp.txt"
@@ -178,10 +178,10 @@ pipeline {
                             // Remote analysis (using Scan Central) with upload to SSC
                             fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
                                     remoteOptionalConfig: [
-                                            customRulepacks: 'etc\\sca-custom-rules.xml',
-                                            filterFile     : "etc\\sca-filter.txt",
-                                            notifyEmail    : "${env.SSC_NOTIFY_EMAIL}"
-                                            //sensorPoolUUID : "${env.SSC_SENSOR_POOL_UUID}"
+                                            customRulepacks: "${env.WORKSPACE}" + "/etc/sca-custom-rules.xml",
+                                            filterFile     : "${env.WORKSPACE}" + "/etc/sca-filter.txt",
+                                            notifyEmail    : "${env.SSC_NOTIFY_EMAIL}",
+                                            sensorPoolUUID : "${env.SSC_SENSOR_POOL_UUID}"
                                     ],
                                     uploadSSC: [
                                             appName: "${env.SSC_APP_NAME}",
@@ -191,10 +191,10 @@ pipeline {
                             // Remote analysis (using Scan Central)
                             fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
                                     remoteOptionalConfig: [
-                                            customRulepacks: 'etc\\sca-custom-rules.xml',
-                                            filterFile     : "etc\\sca-filter.txt",
-                                            notifyEmail    : "${env.SSC_NOTIFY_EMAIL}"
-                                            //sensorPoolUUID : "${env.SSC_SENSOR_POOL_UUID}"
+                                            customRulepacks: "${env.WORKSPACE}" + "/etc/sca-custom-rules.xml",
+                                            filterFile     : "${env.WORKSPACE}" + "/etc/sca-filter.txt",
+                                            notifyEmail    : "${env.SSC_NOTIFY_EMAIL}",
+                                            sensorPoolUUID : "${env.SSC_SENSOR_POOL_UUID}"
                                     ]
                         }
 
