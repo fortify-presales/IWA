@@ -62,6 +62,7 @@ pipeline {
         // Application settings
         APP_NAME = "IWAPharmacyDirect"         		        // Application name
         APP_VER = "main"                                    // Application release - GitHub main branch
+        COMPONENT_NAME = "iwa"                              // Shortform component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         JAVA_VERSION = 11                                   // Java version to compile as
         ISSUE_IDS = ""                                      // List of issues found from commit
