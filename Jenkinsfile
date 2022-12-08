@@ -172,14 +172,18 @@ pipeline {
                         fortifyRemoteArguments scanOptions: '"-scan-precision 1"',
                             transOptions: ''
 
-                        // Remote analysis (using Scan Central)
-                        fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
-                                remoteOptionalConfig: [
-                                        customRulepacks: '',
-                                        filterFile: "etc\\sca-filter.txt",
-                                        notifyEmail: "${env.SSC_NOTIFY_EMAIL}",
-                                        sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
-                                ]
+                        if (params.UPLOAD_TO_SSC) {
+
+                        } else {
+                            // Remote analysis (using Scan Central)
+                            fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
+                                    remoteOptionalConfig: [
+                                            customRulepacks: 'etc\\sca-custom-rules.xml',
+                                            filterFile     : "etc\\sca-filter.txt",
+                                            notifyEmail    : "${env.SSC_NOTIFY_EMAIL}",
+                                            sensorPoolUUID : "${env.SSC_SENSOR_POOL_UUID}"
+                                    ]
+                        }
 
                     } else {
                         echo "No Static Application Security Testing (SAST) to do."
