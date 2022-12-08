@@ -16,7 +16,6 @@
 // - create a new Jenkins agent for this machine
 // - Apply the label "fortify" to the agent.
 // - Set the environment variable "FORTIFY_HOME" on the agent point to the location of the Fortify ScanCentral Client installation
-// Also ensure the label "master" has been applied to your Jenkins master.
 //
 // Credentials setup:
 // Create the following "Secret text" credentials in Jenkins and enter values as follows:
@@ -93,11 +92,10 @@ pipeline {
 
     stages {
         stage('Build') {
-            // Run on "master" node
-            agent { label 'master' }
+            agent { any }
             steps {
                 // Get some code from a GitHub repository
-                git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
+                //git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
 
                 // Get Git commit details
                 script {
@@ -219,8 +217,7 @@ pipeline {
         }
 
         stage('Deploy') {
-            // Run on "master" node
-            agent { label 'master' }
+            agent { any }
             steps {
                 script {
                     // unstash the built files
@@ -299,7 +296,7 @@ pipeline {
 
         // An example manual release checkpoint
         stage('Stage') {
-            agent { label 'master' }
+            agent { any }
             steps {
                 input id: 'Release',
                         message: 'Ready to Release?',
@@ -310,7 +307,7 @@ pipeline {
         }
 
         stage('Release') {
-            agent { label 'master' }
+            agent { any }
             steps {
                 script {
                     // Example publish to Docker Hub
