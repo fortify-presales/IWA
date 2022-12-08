@@ -180,8 +180,8 @@ pipeline {
                                     remoteOptionalConfig: [
                                             customRulepacks: 'etc\\sca-custom-rules.xml',
                                             filterFile     : "etc\\sca-filter.txt",
-                                            notifyEmail    : "${env.SSC_NOTIFY_EMAIL}",
-                                            sensorPoolUUID : "${env.SSC_SENSOR_POOL_UUID}"
+                                            notifyEmail    : "${env.SSC_NOTIFY_EMAIL}"
+                                            //sensorPoolUUID : "${env.SSC_SENSOR_POOL_UUID}"
                                     ],
                                     uploadSSC: [
                                             appName: "${env.SSC_APP_NAME}",
@@ -193,8 +193,8 @@ pipeline {
                                     remoteOptionalConfig: [
                                             customRulepacks: 'etc\\sca-custom-rules.xml',
                                             filterFile     : "etc\\sca-filter.txt",
-                                            notifyEmail    : "${env.SSC_NOTIFY_EMAIL}",
-                                            sensorPoolUUID : "${env.SSC_SENSOR_POOL_UUID}"
+                                            notifyEmail    : "${env.SSC_NOTIFY_EMAIL}"
+                                            //sensorPoolUUID : "${env.SSC_SENSOR_POOL_UUID}"
                                     ]
                         }
 
