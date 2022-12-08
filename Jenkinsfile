@@ -92,7 +92,7 @@ pipeline {
 
     stages {
         stage('Build') {
-            agent { any }
+            agent any
             steps {
                 // Get some code from a GitHub repository
                 //git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
@@ -217,7 +217,7 @@ pipeline {
         }
 
         stage('Deploy') {
-            agent { any }
+            agent any
             steps {
                 script {
                     // unstash the built files
@@ -296,7 +296,7 @@ pipeline {
 
         // An example manual release checkpoint
         stage('Stage') {
-            agent { any }
+            agent any
             steps {
                 input id: 'Release',
                         message: 'Ready to Release?',
@@ -307,7 +307,7 @@ pipeline {
         }
 
         stage('Release') {
-            agent { any }
+            agent any
             steps {
                 script {
                     // Example publish to Docker Hub
