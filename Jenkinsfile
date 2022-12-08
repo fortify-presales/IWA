@@ -133,7 +133,7 @@ pipeline {
                     stash includes: "target/${env.COMPONENT_NAME}.jar,target/${env.COMPONENT_NAME}.war", name: "${env.COMPONENT_NAME}_release"
                 }
                 failure {
-                    if (fileExists('target/surefire-reports') {
+                    if (fileExists('target/surefire-reports')) {
                         junit "**/target/surefire-reports/TEST-*.xml"
                     }
                 }
