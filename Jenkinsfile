@@ -62,7 +62,6 @@ pipeline {
         // Application settings
         APP_NAME = "IWAPharmacyDirect"         		        // Application name
         APP_VER = "main"                                    // Application release - GitHub main branch
-        COMPONENT_NAME = "iwa"                              // Component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         JAVA_VERSION = 11                                   // Java version to compile as
         ISSUE_IDS = ""                                      // List of issues found from commit
@@ -75,9 +74,11 @@ pipeline {
 
         // The following are defaulted and can be overriden by creating a "Build parameter" of the same name
         SSC_URL = "${params.SSC_URL ?: 'http://localhost'}" // URL of Fortify Software Security Center
-        SSC_APP_VERSION_ID = "${params.SSC_APP_VERSION_ID ?: '10001'}" // Id of Application in SSC to upload results to
+        SSC_APP_NAME = "${params.SSC_APP_NAME ?: 'IWAPharmacyDirect'}" // Name of Application in SSC to upload results to
+        SSC_APP_VERSION = "${params.SSC_APP_VERSION ?: 'build'}" // Name of Application Version in SSC to upload results to
         SSC_NOTIFY_EMAIL = "${params.SSC_NOTIFY_EMAIL ?: 'do-not-reply@microfocus.com'}" // User to notify with SSC/ScanCentral information
         SSC_SENSOR_POOL_UUID = "${params.SSC_SENSOR_POOL_UUID ?: '00000000-0000-0000-0000-000000000002'}" // UUID of Scan Central Sensor Pool to use - leave for Default Pool
+        SCAN_PRECISION_LEVEL = "${params.SCAN_PRECISION_LEVEL ?: 2}"  // Precision level of Fortify scan (see documentation for details)
         SCANCENTRAL_DAST_URL = "${params.SCANCENTRAL_DAST_URL ?: 'http://localhost:64814/'}" // ScanCentral DAST API URI
         SCANCENTRAL_DAST_CICD = "${params.SCANCENTRAL_DAST_CICD ?: 'bd286bd2-632c-434c-99ef-a8ce879434ec'}" // ScanCentral DAST CICD identifier
         NEXUS_IQ_URL = "${params.NEXUS_IQ_URL ?: 'http://localhost:8070'}" // Sonatype Nexus IQ URL
@@ -169,11 +170,22 @@ pipeline {
                     if (params.SCANCENTRAL_SAST) {
 
                         // Set Remote Analysis options
-                        fortifyRemoteArguments scanOptions: '"-scan-precision 1"',
+                        fortifyRemoteArguments scanOptions: '"-scan-precision 2"',
                             transOptions: ''
 
                         if (params.UPLOAD_TO_SSC) {
-
+                            // Remote analysis (using Scan Central) with upload to SSC
+                            fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
+                                    remoteOptionalConfig: [
+                                            customRulepacks: 'etc\\sca-custom-rules.xml',
+                                            filterFile     : "etc\\sca-filter.txt",
+                                            notifyEmail    : "${env.SSC_NOTIFY_EMAIL}",
+                                            sensorPoolUUID : "${env.SSC_SENSOR_POOL_UUID}"
+                                    ],
+                                    uploadSSC: [
+                                            appName: "${env.SSC_APP_NAME}",
+                                            appVersion: "${env.SSC_APP_VERSION}"
+                                    ]
                         } else {
                             // Remote analysis (using Scan Central)
                             fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml'),
