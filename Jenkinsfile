@@ -178,8 +178,8 @@ pipeline {
                             // Remote analysis (using Scan Central) with upload to SSC
                             fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml', skipBuild: true),
                                     remoteOptionalConfig: [
-                                            customRulepacks: "${env.WORKSPACE}" + "/etc/sca-custom-rules.xml",
-                                            filterFile     : "${env.WORKSPACE}" + "/etc/sca-filter.txt",
+                                            //customRulepacks: "${env.WORKSPACE}" + "/etc/sca-custom-rules.xml",
+                                            //filterFile     : "${env.WORKSPACE}" + "/etc/sca-filter.txt",
                                             notifyEmail    : "${env.SSC_NOTIFY_EMAIL}",
                                             sensorPoolUUID : "${env.SSC_SENSOR_POOL_UUID}"
                                     ],
