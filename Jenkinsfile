@@ -45,12 +45,12 @@ pipeline {
     // Note: the pipeline needs to be executed at least once for the parameters to be available
     //
     parameters {
-        booleanParam(name: 'SCA_OSS',           defaultValue: params.SCA_OSS ?: false,
-                description: 'Use Sonatype Nexus IQ for Open Source Susceptibility Analysis')
         booleanParam(name: 'SCANCENTRAL_SAST', 	defaultValue: params.SCANCENTRAL_SAST ?: false,
                 description: 'Run a remote scan using Scan Central SAST (SCA) for Static Application Security Testing')
         booleanParam(name: 'SCANCENTRAL_DAST', 	defaultValue: params.SCANCENTRAL_DAST ?: false,
                 description: 'Run a remote scan using Scan Central DAST (WebInspect) for Dynamic Application Security Testing')
+        booleanParam(name: 'SONATYPE_SCA',      defaultValue: params.SONATYPE_SCA ?: false,
+                description: 'Use Sonatype Nexus IQ for Open Source Software Composition Analysis')
         booleanParam(name: 'UPLOAD_TO_SSC',		defaultValue: params.UPLOAD_TO_SSC ?: false,
                 description: 'Enable upload of scan results to Fortify Software Security Center')
         booleanParam(name: 'USE_DOCKER', defaultValue: params.USE_DOCKER ?: false,
@@ -189,7 +189,7 @@ pipeline {
             when {
                 beforeAgent true
                 anyOf {
-                    expression { params.SCA_OSS == true }
+                    expression { params.SONATYPE_SCA == true }
                 }
             }
             // Run on an Agent with "fortify" label applied
@@ -197,7 +197,7 @@ pipeline {
             steps {
                 script {
 
-                    if (params.SCA_OSS) {
+                    if (params.SONATYPE_SCA) {
                         nexusPolicyEvaluation advancedProperties: '',
                                 enableDebugLogging: false,
                                 failBuildOnNetworkError: true,
