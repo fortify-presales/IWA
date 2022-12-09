@@ -172,17 +172,18 @@ pipeline {
 
                         // Set Remote Analysis options
                         def transOptions = '"-exclude \"**/Test/*.java\""'
-                        def scanOptions = '"-scan-precision 1" "-rules ' +
-                                "${env.WORKSPACE}" + '/etc/sca-custom-rules.xml" ' +
-                                '"-filter ' + "${env.WORKSPACE}" + '/etc/sca-filter.txt"'
+                        def scanOptions = '"-scan-precision 1"'
+                        //def scanOptions = '"-scan-precision 1" "-rules ' +
+                        //        "${env.WORKSPACE}" + '/etc/sca-custom-rules.xml" ' +
+                        //        '"-filter ' + "${env.WORKSPACE}" + '/etc/sca-filter.txt"'
                         fortifyRemoteArguments transOptions: "${transOptions}", scanOptions: "${scanOptions}"
 
                         if (params.UPLOAD_TO_SSC) {
                             // Remote analysis (using Scan Central) with upload to SSC
                             fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml', skipBuild: true),
                                     remoteOptionalConfig: [
-                                            //customRulepacks: "${env.WORKSPACE}" + "/etc/sca-custom-rules.xml",
-                                            //filterFile     : "${env.WORKSPACE}" + "/etc/sca-filter.txt",
+                                            customRulepacks: "${env.WORKSPACE}" + "/etc/sca-custom-rules.xml",
+                                            filterFile     : "${env.WORKSPACE}" + "/etc/sca-filter.txt",
                                             notifyEmail    : "${env.SSC_NOTIFY_EMAIL}",
                                             sensorPoolUUID : "${env.SSC_SENSOR_POOL_UUID}"
                                     ],
