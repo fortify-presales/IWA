@@ -12,7 +12,8 @@
 // - [Optional] Sonatype Nexus IQ server has been installed for OSS SCA vulnerabilities
 //
 // Typical node setup:
-// - Install Fortify ScanCentral Client on the agent machine
+// - Install Fortify ScanCentral Client on the agent machine (and add its bin directory to path)
+// - Install Fortify CLI tool on the agent machine (and add to path)
 // - create a new Jenkins agent for this machine
 // - Apply the label "fortify" to the agent.
 // - Set the environment variable "FORTIFY_HOME" on the agent point to the location of the Fortify ScanCentral Client installation
@@ -44,6 +45,8 @@ pipeline {
     // Note: the pipeline needs to be executed at least once for the parameters to be available
     //
     parameters {
+        booleanParam(name: 'USE_FCLI', 	    defaultValue: params.USE_FCLI ?: false,
+                description: 'Use the Fortify CLI tool rather than Fortify Jenkins Plugin')
         booleanParam(name: 'SCANCENTRAL_SAST', 	defaultValue: params.SCANCENTRAL_SAST ?: false,
                 description: 'Run a remote scan using Scan Central SAST (SCA) for Static Application Security Testing')
         booleanParam(name: 'SCANCENTRAL_DAST', 	defaultValue: params.SCANCENTRAL_DAST ?: false,
@@ -170,36 +173,40 @@ pipeline {
 
                     if (params.SCANCENTRAL_SAST) {
 
-                        // Set Remote Analysis options
-                        def transOptions = '"-exclude \"**/Test/*.java\""'
-                        def scanOptions = '"-scan-precision 1"'
-                        //def scanOptions = '"-scan-precision 1" "-rules ' +
-                        //        "${env.WORKSPACE}" + '/etc/sca-custom-rules.xml" ' +
-                        //        '"-filter ' + "${env.WORKSPACE}" + '/etc/sca-filter.txt"'
-                        fortifyRemoteArguments transOptions: "${transOptions}", scanOptions: "${scanOptions}"
-
-                        if (params.UPLOAD_TO_SSC) {
-                            // Remote analysis (using Scan Central) with upload to SSC
-                            fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml', skipBuild: true),
-                                    remoteOptionalConfig: [
-                                            customRulepacks: "${env.WORKSPACE}" + "/etc/sca-custom-rules.xml",
-                                            filterFile     : "${env.WORKSPACE}" + "/etc/sca-filter.txt",
-                                            notifyEmail    : "${env.SSC_NOTIFY_EMAIL}",
-                                            sensorPoolUUID : "${env.SSC_SENSOR_POOL_UUID}"
-                                    ],
-                                    uploadSSC: [
-                                            appName: "${env.SSC_APP_NAME}",
-                                            appVersion: "${env.SSC_APP_VERSION}"
-                                    ]
+                        if (params.USE_FCLI) {
+                            echo "not yet implemented"
                         } else {
-                            // Remote analysis (using Scan Central)
-                            fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml', skipBuild: true),
-                                    remoteOptionalConfig: [
-                                            //customRulepacks: "${env.WORKSPACE}" + "/etc/sca-custom-rules.xml",
-                                            //filterFile     : "${env.WORKSPACE}" + "/etc/sca-filter.txt",
-                                            notifyEmail    : "${env.SSC_NOTIFY_EMAIL}",
-                                            sensorPoolUUID : "${env.SSC_SENSOR_POOL_UUID}"
-                                    ]
+                            // Set Remote Analysis options
+                            def transOptions = '"-exclude \"**/Test/*.java\""'
+                            //def scanOptions = '"-scan-precision 1"'
+                            def scanOptions = '"-scan-precision 1" "-rules sca-custom-rules.xml" "-filter sca-filter.txt"'
+                            //        "${env.WORKSPACE}" + '/etc/sca-custom-rules.xml" ' +
+                            //        '"-filter ' + "${env.WORKSPACE}" + '/etc/sca-filter.txt"'
+                            fortifyRemoteArguments transOptions: "${transOptions}", scanOptions: "${scanOptions}"
+
+                            if (params.UPLOAD_TO_SSC) {
+                                // Remote analysis (using Scan Central) with upload to SSC
+                                fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml', skipBuild: true),
+                                        remoteOptionalConfig: [
+                                                customRulepacks: "${env.WORKSPACE}" + "/etc/sca-custom-rules.xml",
+                                                filterFile     : "${env.WORKSPACE}" + "/etc/sca-filter.txt",
+                                                notifyEmail    : "${env.SSC_NOTIFY_EMAIL}",
+                                                sensorPoolUUID : "${env.SSC_SENSOR_POOL_UUID}"
+                                        ],
+                                        uploadSSC: [
+                                                appName   : "${env.SSC_APP_NAME}",
+                                                appVersion: "${env.SSC_APP_VERSION}"
+                                        ]
+                            } else {
+                                // Remote analysis (using Scan Central)
+                                fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml', skipBuild: true),
+                                        remoteOptionalConfig: [
+                                                //customRulepacks: "${env.WORKSPACE}" + "/etc/sca-custom-rules.xml",
+                                                //filterFile     : "${env.WORKSPACE}" + "/etc/sca-filter.txt",
+                                                notifyEmail   : "${env.SSC_NOTIFY_EMAIL}",
+                                                sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
+                                        ]
+                            }
                         }
 
                     } else {
