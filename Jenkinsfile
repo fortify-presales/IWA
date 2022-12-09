@@ -26,8 +26,13 @@
 //      iwa-nexus-iq-token-id       - Sonatype Nexus IQ user token in form of "user code:pass code"
 //      iwa-dockerhub-creds-id      - DockerHub login as Jenkins "Username with Password" credential
 // All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
-// For Fortify on Demand (FOD) Global Authentication is used rather than Personal Access Tokens.
 //
+// If using Fortify CLI (fcli) then ensure the following environment variables are set:
+//  FCLI_DEFAULT_SSC_URL
+//  FCLI_DEFAULT_SSC_USER
+//  FCLI_DEFAULT_SSC_PASSWORD
+//  FCLI_DEFAULT_SSC_CI_TOKEN
+//  FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN
 //****************************************************************************************************
 
 // The instances of Docker image and container that are created
@@ -83,6 +88,7 @@ pipeline {
         SSC_NOTIFY_EMAIL = "${params.SSC_NOTIFY_EMAIL ?: 'do-not-reply@microfocus.com'}" // User to notify with SSC/ScanCentral information
         SSC_SENSOR_POOL_UUID = "${params.SSC_SENSOR_POOL_UUID ?: '00000000-0000-0000-0000-000000000002'}" // UUID of Scan Central Sensor Pool to use - leave for Default Pool
         SCAN_PRECISION_LEVEL = "${params.SCAN_PRECISION_LEVEL ?: 2}"  // Precision level of Fortify scan (see documentation for details)
+        SCANCENTRAL_SAST_SENSOR_VERSION = "${parms.SCANCENTRAL_SAST_SENSOR_VERSION ?: '22.2'}" //ScanCentral SAST Sensor Version
         SCANCENTRAL_DAST_URL = "${params.SCANCENTRAL_DAST_URL ?: 'http://localhost:64814/'}" // ScanCentral DAST API URI
         SCANCENTRAL_DAST_CICD = "${params.SCANCENTRAL_DAST_CICD ?: 'bd286bd2-632c-434c-99ef-a8ce879434ec'}" // ScanCentral DAST CICD identifier
         NEXUS_IQ_URL = "${params.NEXUS_IQ_URL ?: 'http://localhost:8070'}" // Sonatype Nexus IQ URL
@@ -155,38 +161,39 @@ pipeline {
             agent {label "fortify"}
             steps {
                 script {
-                    // Get code from Git repository so we can recompile it
-                    //git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
-
-                    // Run Maven debug compile, download dependencies (if required) and package up for FOD
-                    //if (isUnix()) {
-                    //    sh "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify"
-                    //    sh "mvn dependency:build-classpath -Dmdep.regenerateFile=true -Dmdep.outputFile=${env.WORKSPACE}/cp.txt"
-                    //} else {
-                    //    bat "mvn -Dmaven.compiler.debuglevel=lines,vars,source -DskipTests -P fortify clean verify"
-                    //    bat "mvn dependency:build-classpath -Dmdep.regenerateFile=true -Dmdep.outputFile=${env.WORKSPACE}/cp.txt"
-                    //}
-
-                    // read contents of classpath file
-                    //def classpath = readFile "${env.WORKSPACE}/cp.txt"
-                    //echo "Using classpath: $classpath"
-
                     if (params.SCANCENTRAL_SAST) {
 
                         if (params.USE_FCLI) {
-                            echo "not yet implemented"
+                            if (isUnix()) {
+                                sh"""
+                                    fcli sc-sast session login --ssc-ci-token ${env.FCLI_DEFAULT_SSC_CI_TOKEN}
+                                    scancentral package -bt mvn -bf pom.xml -o Package.zip
+                                    fcli sc-sast scan start --sensor-version ${env.SCANCENTRAL_SAST_SENSOR_VERSION} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --store ?
+                                    fcli sc-sast scan wait-for ?
+                                    fcli ssc appversion-vuln count 
+                                    fcli ssc session logout
+                                """
+                            } else {
+                                bat"""
+                                    fcli sc-sast session login --ssc-ci-token ${env.FCLI_DEFAULT_SSC_CI_TOKEN}
+                                    scancentral package -bt mvn -bf pom.xml -o Package.zip
+                                    fcli sc-sast scan start --sensor-version ${env.SCANCENTRAL_SAST_SENSOR_VERSION} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --store ?
+                                    fcli sc-sast scan wait-for ?
+                                    fcli ssc appversion-vuln count 
+                                    fcli ssc session logout
+                                """
+                            }
                         } else {
                             // Set Remote Analysis options
                             def transOptions = '"-exclude \"**/Test/*.java\""'
                             //def scanOptions = '"-scan-precision 1"'
-                            def scanOptions = '"-scan-precision 1" "-rules sca-custom-rules.xml" "-filter sca-filter.txt"'
-                            //        "${env.WORKSPACE}" + '/etc/sca-custom-rules.xml" ' +
-                            //        '"-filter ' + "${env.WORKSPACE}" + '/etc/sca-filter.txt"'
+                            def scanOptions = '"-scan-precision 1" "-rules sca-custom-rules.xml" ' +
+                                    '"-filter sca-filter.txt"'
                             fortifyRemoteArguments transOptions: "${transOptions}", scanOptions: "${scanOptions}"
 
                             if (params.UPLOAD_TO_SSC) {
                                 // Remote analysis (using Scan Central) with upload to SSC
-                                fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml', skipBuild: true),
+                                fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml', skipBuild: false),
                                         remoteOptionalConfig: [
                                                 customRulepacks: "${env.WORKSPACE}" + "/etc/sca-custom-rules.xml",
                                                 filterFile     : "${env.WORKSPACE}" + "/etc/sca-filter.txt",
@@ -199,10 +206,10 @@ pipeline {
                                         ]
                             } else {
                                 // Remote analysis (using Scan Central)
-                                fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml', skipBuild: true),
+                                fortifyRemoteAnalysis remoteAnalysisProjectType: fortifyMaven(buildFile: 'pom.xml', skipBuild: false),
                                         remoteOptionalConfig: [
-                                                //customRulepacks: "${env.WORKSPACE}" + "/etc/sca-custom-rules.xml",
-                                                //filterFile     : "${env.WORKSPACE}" + "/etc/sca-filter.txt",
+                                                customRulepacks: "${env.WORKSPACE}" + "/etc/sca-custom-rules.xml",
+                                                filterFile     : "${env.WORKSPACE}" + "/etc/sca-filter.txt",
                                                 notifyEmail   : "${env.SSC_NOTIFY_EMAIL}",
                                                 sensorPoolUUID: "${env.SSC_SENSOR_POOL_UUID}"
                                         ]
