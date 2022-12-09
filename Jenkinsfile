@@ -175,7 +175,7 @@ pipeline {
                         def scanOptions = '"-scan-precision 1" "-rules' +
                                 "${env.WORKSPACE}" + '/etc/sca-custom-rules.xml"' +
                                 '"-filter ' + "${env.WORKSPACE}" + '/etc/sca-filter.txt"'
-                        fortifyRemoteArguments transOptions: "${transOptions}", scanOptions: "${scanOptions}",
+                        fortifyRemoteArguments transOptions: "${transOptions}", scanOptions: "${scanOptions}"
 
                         if (params.UPLOAD_TO_SSC) {
                             // Remote analysis (using Scan Central) with upload to SSC

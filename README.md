@@ -415,7 +415,7 @@ ScanCentral DAST environment.
 ### Jenkins
 
 If you are using [Jenkins](https://jenkins.io/), a comprehensive `Jenkinsfile` is provided to automate all of the typical
-steps of a DevSecOps Continuous Delivery (CD) process. The example makes use of Fortify ScanCentral SAST/DAST and
+steps of a typical DevSecOps Continuous Delivery (CD) process. The example makes use of Fortify ScanCentral SAST/DAST and
 Sonatype Nexus IQ for Software Composition Analysis.
 
 To make use of the `Jenkinsfile` create a new Jenkins *Pipeline* Job and in the *Pipeline*
