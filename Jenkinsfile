@@ -172,7 +172,7 @@ pipeline {
 
                         // Set Remote Analysis options
                         def transOptions = '"-exclude \"**/Test/*.java\""'
-                        def scanOptions = '"-scan-precision 1" "-rules' +
+                        def scanOptions = '"-scan-precision 1" "-rules ' +
                                 "${env.WORKSPACE}" + '/etc/sca-custom-rules.xml"' +
                                 '"-filter ' + "${env.WORKSPACE}" + '/etc/sca-filter.txt"'
                         fortifyRemoteArguments transOptions: "${transOptions}", scanOptions: "${scanOptions}"
