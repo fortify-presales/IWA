@@ -21,18 +21,13 @@
 // Credentials setup:
 // Create the following "Secret text" credentials in Jenkins and enter values as follows:
 //		iwa-git-creds-id		    - Git login as Jenkins "Username with Password" credential
+//      iwa-ssc-auth-id             - Fortify Software Security Center user password as "Jenkins Username with Password" credential
 //      iwa-ssc-ci-token-id         - Fortify Software Security Center "CIToken" authentication token as Jenkins Secret credential
 //      iwa-edast-auth-id           - Fortify Scan Central DAST authentication as "Jenkins Username with Password" credential
 //      iwa-nexus-iq-token-id       - Sonatype Nexus IQ user token in form of "user code:pass code"
 //      iwa-dockerhub-creds-id      - DockerHub login as Jenkins "Username with Password" credential
 // All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
 //
-// If using Fortify CLI (fcli) then ensure the following environment variables are set:
-//  FCLI_DEFAULT_SSC_URL
-//  FCLI_DEFAULT_SSC_USER
-//  FCLI_DEFAULT_SSC_PASSWORD
-//  FCLI_DEFAULT_SSC_CI_TOKEN
-//  FCLI_DEFAULT_SC_SAST_CLIENT_AUTH_TOKEN
 //****************************************************************************************************
 
 // The instances of Docker image and container that are created
@@ -77,7 +72,7 @@ pipeline {
 
         // Credential references
         GIT_CREDS = credentials('iwa-git-creds-id')
-        SSC_AUTH_TOKEN = credentials('iwa-ssc-ci-token-id')
+        SSC_CI_TOKEN = credentials('iwa-ssc-ci-token-id')
         SCANCENTRAL_DAST_AUTH = credentials('iwa-edast-auth-id')
         NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-token-id')
 
@@ -86,10 +81,10 @@ pipeline {
         SSC_APP_NAME = "${params.SSC_APP_NAME ?: 'IWAPharmacyDirect'}" // Name of Application in SSC to upload results to
         SSC_APP_VERSION = "${params.SSC_APP_VERSION ?: 'build'}" // Name of Application Version in SSC to upload results to
         SSC_NOTIFY_EMAIL = "${params.SSC_NOTIFY_EMAIL ?: 'do-not-reply@microfocus.com'}" // User to notify with SSC/ScanCentral information
-        SSC_CI_TOKEN = "${params.SSC_CI_TOKEN ?: 'b1000683-58a4-4033-85b0-990a143fa155'}" // SSC CiToken to use
         SSC_SENSOR_POOL_UUID = "${params.SSC_SENSOR_POOL_UUID ?: '00000000-0000-0000-0000-000000000002'}" // UUID of Scan Central SAST Sensor Pool to use - leave for Default Pool
         SSC_SENSOR_VER = "${params.SSC_SENSOR_VER ?: '22.2'}" // ScanCentral SAST Sensor version
         SCAN_PRECISION_LEVEL = "${params.SCAN_PRECISION_LEVEL ?: 2}"  // Precision level of Fortify scan (see documentation for details)
+        SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN = "${params.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN ?: 'FortifyDemo'}" // ScanCentral SAST Client Authentication Token
         SCANCENTRAL_DAST_URL = "${params.SCANCENTRAL_DAST_URL ?: 'http://localhost:64814/'}" // ScanCentral DAST API URI
         SCANCENTRAL_DAST_CICD = "${params.SCANCENTRAL_DAST_CICD ?: '56dde3cd-d15d-4d45-ab44-adedf0bc6a42'}" // ScanCentral DAST CICD identifier
         NEXUS_IQ_URL = "${params.NEXUS_IQ_URL ?: 'http://localhost:8070'}" // Sonatype Nexus IQ URL
@@ -166,23 +161,27 @@ pipeline {
 
                         if (params.USE_FCLI) {
                             if (isUnix()) {
-                                sh"""
-                                    fcli sc-sast session login --ssc-ci-token ${env.SSC_CI_TOKEN}
-                                    scancentral package -bt mvn -bf pom.xml -o Package.zip
-                                    fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --store ?
-                                    fcli sc-sast scan wait-for ?
-                                    fcli ssc appversion-vuln count 
-                                    fcli ssc session logout
-                                """
+                                withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                    sh """
+                                        fcli sc-sast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}" --ssc-ci-token "${env.SSC_CI_TOKEN}" --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
+                                        scancentral package -bt mvn -bf pom.xml -o Package.zip
+                                        fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --store ?
+                                        fcli sc-sast scan wait-for ?
+                                        fcli ssc appversion-vuln count 
+                                        fcli ssc session logout
+                                    """
+                                }
                             } else {
-                                bat"""
-                                    fcli sc-sast session login --ssc-ci-token ${env.SSC_CI_TOKEN}
-                                    scancentral package -bt mvn -bf pom.xml -o Package.zip
-                                    fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --store ?
-                                    fcli sc-sast scan wait-for ?
-                                    fcli ssc appversion-vuln count 
-                                    fcli ssc session logout
-                                """
+                                withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                    bat """
+                                        fcli sc-sast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}" --ssc-ci-token "${env.SSC_CI_TOKEN}" --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
+                                        scancentral package -bt mvn -bf pom.xml -o Package.zip
+                                        fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --store ?
+                                        fcli sc-sast scan wait-for ?
+                                        fcli ssc appversion-vuln count 
+                                        fcli ssc session logout
+                                    """
+                                }
                             }
                         } else {
                             // Set Remote Analysis options
