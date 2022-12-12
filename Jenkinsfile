@@ -163,29 +163,21 @@ pipeline {
                             if (isUnix()) {
                                 withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                     sh """
-                                        fcli ssc session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}"
                                         fcli sc-sast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}" --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
-                                        scancentral arguments -o -sargs "-scan-precision 1"
-                                        scancentral package -bt mvn -bf pom.xml -o Package.zip
+                                        scancentral package -bt mvn -bf pom.xml -sargs "-scan-precision ${env.SCAN_PRECISION_LEVEL}" -o Package.zip
                                         fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --ssc-ci-token ${SSC_CI_TOKEN} --store ?
                                         fcli sc-sast scan wait-for ?
-                                        fcli ssc appversion-vuln count --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION}
                                         fcli sc-sast session logout
-                                        fcli ssc session logout
                                     """
                                 }
                             } else {
                                 withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                     bat """
-                                        fcli ssc session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}"
                                         fcli sc-sast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}" --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
-                                        scancentral arguments -o -sargs "-scan-precision 1"
-                                        scancentral package -bt mvn -bf pom.xml -o Package.zip
+                                        scancentral package -bt mvn -bf pom.xml -sargs "-scan-precision ${env.SCAN_PRECISION_LEVEL}" -o Package.zip
                                         fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --ssc-ci-token ${SSC_CI_TOKEN} --store ?
                                         fcli sc-sast scan wait-for ?
-                                        fcli ssc appversion-vuln count --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION}
                                         fcli sc-sast session logout
-                                        fcli ssc session logout
                                     """
                                 }
                             }
