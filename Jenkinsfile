@@ -167,7 +167,7 @@ pipeline {
                                         scancentral package -bt mvn -bf pom.xml -sargs "-scan-precision ${env.SCAN_PRECISION_LEVEL}" -o Package.zip
                                         fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --ssc-ci-token ${SSC_CI_TOKEN} --store ?
                                         fcli sc-sast scan wait-for ?
-                                        fcli sc-sast session logout
+                                        fcli sc-sast session logout -u ${USERNAME} -p "${PASSWORD}"
                                     """
                                 }
                             } else {
@@ -177,7 +177,7 @@ pipeline {
                                         scancentral package -bt mvn -bf pom.xml -sargs "-scan-precision ${env.SCAN_PRECISION_LEVEL}" -o Package.zip
                                         fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --ssc-ci-token ${SSC_CI_TOKEN} --store ?
                                         fcli sc-sast scan wait-for ?
-                                        fcli sc-sast session logout
+                                        fcli sc-sast session logout -u ${USERNAME} -p "${PASSWORD}"
                                     """
                                 }
                             }
