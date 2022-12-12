@@ -163,7 +163,7 @@ pipeline {
                             if (isUnix()) {
                                 withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                     sh """
-                                        fcli sc-sast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}" --ssc-ci-token "${env.SSC_CI_TOKEN}" --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
+                                        fcli sc-sast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}" --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
                                         scancentral package -bt mvn -bf pom.xml -o Package.zip
                                         fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --store ?
                                         fcli sc-sast scan wait-for ?
@@ -174,7 +174,7 @@ pipeline {
                             } else {
                                 withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                     bat """
-                                        fcli sc-sast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}" --ssc-ci-token "${env.SSC_CI_TOKEN}" --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
+                                        fcli sc-sast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}" --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
                                         scancentral package -bt mvn -bf pom.xml -o Package.zip
                                         fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --store ?
                                         fcli sc-sast scan wait-for ?
