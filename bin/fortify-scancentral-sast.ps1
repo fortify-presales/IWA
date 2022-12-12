@@ -36,8 +36,8 @@ if ([string]::IsNullOrEmpty($AppVersion)) { throw "Application Version has not b
 
 # Package, upload and run the scan and import results into SSC
 Write-Host Invoking ScanCentral SAST ...
-Write-Host "scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -b $AppName -application $AppName -version $AppVersion -bt gradle -bf build.gradle -email $ScanCentralEmail -block -o -f $($AppName).fpr $($ScanArgs)"
-& scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken `
+Write-Host "scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp Package.zip -b $AppName -application $AppName -version $AppVersion -bt gradle -bf build.gradle -email $ScanCentralEmail -block -o -f $($AppName).fpr $($ScanArgs)"
+& scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp Package.zip `
     -b $AppName -application $AppName -version $AppVersion -bt gradle -bf build.gradle `
     -email $ScanCentralEmail -block -o -f "$($AppName).fpr" `
     $($ScanArgs)
