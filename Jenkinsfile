@@ -86,11 +86,12 @@ pipeline {
         SSC_APP_NAME = "${params.SSC_APP_NAME ?: 'IWAPharmacyDirect'}" // Name of Application in SSC to upload results to
         SSC_APP_VERSION = "${params.SSC_APP_VERSION ?: 'build'}" // Name of Application Version in SSC to upload results to
         SSC_NOTIFY_EMAIL = "${params.SSC_NOTIFY_EMAIL ?: 'do-not-reply@microfocus.com'}" // User to notify with SSC/ScanCentral information
+        SSC_CI_TOKEN = "${params.SSC_CI_TOKEN ?: 'b1000683-58a4-4033-85b0-990a143fa155'}" // SSC CiToken to use
         SSC_SENSOR_POOL_UUID = "${params.SSC_SENSOR_POOL_UUID ?: '00000000-0000-0000-0000-000000000002'}" // UUID of Scan Central SAST Sensor Pool to use - leave for Default Pool
         SSC_SENSOR_VER = "${params.SSC_SENSOR_VER ?: '22.2'}" // ScanCentral SAST Sensor version
         SCAN_PRECISION_LEVEL = "${params.SCAN_PRECISION_LEVEL ?: 2}"  // Precision level of Fortify scan (see documentation for details)
         SCANCENTRAL_DAST_URL = "${params.SCANCENTRAL_DAST_URL ?: 'http://localhost:64814/'}" // ScanCentral DAST API URI
-        SCANCENTRAL_DAST_CICD = "${params.SCANCENTRAL_DAST_CICD ?: 'bd286bd2-632c-434c-99ef-a8ce879434ec'}" // ScanCentral DAST CICD identifier
+        SCANCENTRAL_DAST_CICD = "${params.SCANCENTRAL_DAST_CICD ?: '56dde3cd-d15d-4d45-ab44-adedf0bc6a42'}" // ScanCentral DAST CICD identifier
         NEXUS_IQ_URL = "${params.NEXUS_IQ_URL ?: 'http://localhost:8070'}" // Sonatype Nexus IQ URL
         NEXUS_IQ_APP_ID = "${params.NEXUS_IQ_APP_ID ?: 'IWAPharmacyDirect'}" // Sonatype Nexus IQ App Id
         DOCKER_ORG = "${params.DOCKER_ORG ?: 'mfdemouk'}" // Docker organisation (in Docker Hub) to push released images to
@@ -166,7 +167,7 @@ pipeline {
                         if (params.USE_FCLI) {
                             if (isUnix()) {
                                 sh"""
-                                    fcli sc-sast session login --ssc-ci-token ${env.FCLI_DEFAULT_SSC_CI_TOKEN}
+                                    fcli sc-sast session login --ssc-ci-token ${env.SSC_CI_TOKEN}
                                     scancentral package -bt mvn -bf pom.xml -o Package.zip
                                     fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --store ?
                                     fcli sc-sast scan wait-for ?
@@ -175,9 +176,9 @@ pipeline {
                                 """
                             } else {
                                 bat"""
-                                    fcli sc-sast session login --ssc-ci-token ${env.FCLI_DEFAULT_SSC_CI_TOKEN}
+                                    fcli sc-sast session login --ssc-ci-token ${env.SSC_CI_TOKEN}
                                     scancentral package -bt mvn -bf pom.xml -o Package.zip
-                                    fcli sc-sast scan start --sensor-version ${env.SCANCENTRAL_SAST_SENSOR_VERSION} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --store ?
+                                    fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --store ?
                                     fcli sc-sast scan wait-for ?
                                     fcli ssc appversion-vuln count 
                                     fcli ssc session logout
