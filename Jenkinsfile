@@ -309,7 +309,7 @@ pipeline {
                             if (isUnix()) {
                                 withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                     sh """
-                                        fcli sc-dast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}" --ssc-ci-token ${SSC_CI_TOKEN}
+                                        fcli sc-dast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}"
                                         fcli sc-dast scan start ${dastScanName} --settings ${env.SCANCENTRAL_DAST_CICD} --start-url http://localhost:9090 --store '?'
                                         fcli sc-dast scan wait-for '?'
                                         fcli sc-dast session logout
@@ -318,7 +318,7 @@ pipeline {
                             } else {
                                 withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                     bat """
-                                        fcli sc-dast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}" --ssc-ci-token ${SSC_CI_TOKEN}
+                                        fcli sc-dast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}"
                                         fcli sc-dast scan start ${dastScanName} --settings ${env.SCANCENTRAL_DAST_CICD} --start-url http://localhost:9090 --store '?'
                                         fcli sc-dast scan wait-for '?'
                                         fcli sc-dast session logout
