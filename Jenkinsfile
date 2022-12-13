@@ -78,6 +78,7 @@ pipeline {
         NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-token-id')
 
         // The following are defaulted and can be overriden by creating a "Build parameter" of the same name
+        APP_URL = "${params.APP_URL ?: 'http://jenkins.onfortify.com:9090'}" // URL of application to be tested by ScanCentral DAST
         SSC_URL = "${params.SSC_URL ?: 'http://localhost'}" // URL of Fortify Software Security Center
         SSC_APP_NAME = "${params.SSC_APP_NAME ?: 'IWAPharmacyDirect'}" // Name of Application in SSC to upload results to
         SSC_APP_VERSION = "${params.SSC_APP_VERSION ?: 'build'}" // Name of Application Version in SSC to upload results to
@@ -166,8 +167,8 @@ pipeline {
                                     sh """
                                         fcli sc-sast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}" --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
                                         scancentral package -bt mvn -bf pom.xml -sargs "-scan-precision ${env.SCAN_PRECISION_LEVEL}" -o Package.zip
-                                        fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --ssc-ci-token ${SSC_CI_TOKEN} --store ?
-                                        fcli sc-sast scan wait-for ?
+                                        fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --ssc-ci-token ${SSC_CI_TOKEN} --store '?'
+                                        fcli sc-sast scan wait-for '?' -i 5s
                                         fcli sc-sast session logout -u ${USERNAME} -p "${PASSWORD}"
                                     """
                                 }
@@ -176,8 +177,8 @@ pipeline {
                                     bat """
                                         fcli sc-sast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}" --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
                                         scancentral package -bt mvn -bf pom.xml -sargs "-scan-precision ${env.SCAN_PRECISION_LEVEL}" -o Package.zip
-                                        fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --ssc-ci-token ${SSC_CI_TOKEN} --store ?
-                                        fcli sc-sast scan wait-for ?
+                                        fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --ssc-ci-token ${SSC_CI_TOKEN} --store '?'
+                                        fcli sc-sast scan wait-for '?' -i 5s
                                         fcli sc-sast session logout -u ${USERNAME} -p "${PASSWORD}"
                                     """
                                 }
@@ -310,18 +311,18 @@ pipeline {
                                 withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                     sh """
                                         fcli sc-dast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}"
-                                        fcli sc-dast scan start ${dastScanName} --settings ${env.SCANCENTRAL_DAST_CICD} --start-url http://localhost:9090 --store '?'
-                                        fcli sc-dast scan wait-for '?'
-                                        fcli sc-dast session logout
+                                        fcli sc-dast scan start ${dastScanName} --settings ${env.SCANCENTRAL_DAST_CICD} --start-url ${env.APP_URL} --store '?'
+                                        fcli sc-dast scan wait-for '?' -i 30s
+                                        fcli sc-dast session logout -u ${USERNAME} -p "${PASSWORD}"
                                     """
                                 }
                             } else {
                                 withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                     bat """
                                         fcli sc-dast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}"
-                                        fcli sc-dast scan start ${dastScanName} --settings ${env.SCANCENTRAL_DAST_CICD} --start-url http://localhost:9090 --store '?'
-                                        fcli sc-dast scan wait-for '?'
-                                        fcli sc-dast session logout
+                                        fcli sc-dast scan start ${dastScanName} --settings ${env.SCANCENTRAL_DAST_CICD} --start-url ${env.APP_URL} --store '?'
+                                        fcli sc-dast scan wait-for '?' -i 30s
+                                        fcli sc-dast session logout -u ${USERNAME} -p "${PASSWORD}"
                                     """
                                 }
                             }
