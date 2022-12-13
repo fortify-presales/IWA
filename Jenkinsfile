@@ -283,20 +283,20 @@ pipeline {
                     if (params.SCANCENTRAL_DAST && params.USE_DOCKER) {
                         // check if container is still running and if so stop/remove it
                         if (isUnix()) {
-                            sh(script: "docker ps -aq --filter name=iwa-jenkins > container.id")
+                            sh(script: "docker ps -aq --filter name=${dockerContainerName} > container.id")
                             if (fileExists('container.id')) {
                                 def existingId = readFile('container.id').trim()
                                 if (existingId) {
-                                    echo "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
+                                    echo "Found existing ${dockerContainerName} container id: ${existingId} ... deleting..."
                                     sh(script: "docker stop $existingId && docker rm -f $existingId")
                                 }
                             }
                         } else {
-                            bat(script: "docker ps -aq --filter name=iwa-jenkins > container.id")
+                            bat(script: "docker ps -aq --filter name=${dockerContainerName} > container.id")
                             if (fileExists('container.id')) {
                                 def existingId = readFile('container.id').trim()
                                 if (existingId) {
-                                    echo "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
+                                    echo "Found existing ${dockerContainerName} container id: ${existingId} ... deleting..."
                                     bat(script: "docker stop ${existingId} && docker rm -f ${existingId}")
                                 }
                             }
@@ -385,20 +385,20 @@ pipeline {
                 // check if container is still running and if so stop/remove it
                 if (params.USE_DOCKER) {
                     if (isUnix()) {
-                        sh(script: "docker ps -aq --filter name=iwa-jenkins > container.id")
+                        sh(script: "docker ps -aq --filter name=${dockerContainerName} > container.id")
                         if (fileExists('container.id')) {
                             def existingId = readFile('container.id').trim()
                             if (existingId) {
-                                echo "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
+                                echo "Found existing ${dockerContainerName} container id: ${existingId} ... deleting..."
                                 sh(script: "docker stop $existingId && docker rm -f $existingId")
                             }
                         }
                     } else {
-                        bat(script: "docker ps -aq --filter name=iwa-jenkins > container.id")
+                        bat(script: "docker ps -aq --filter name=${dockerContainerName} > container.id")
                         if (fileExists('container.id')) {
                             def existingId = readFile('container.id').trim()
                             if (existingId) {
-                                echo "Found existing iwa-jenkins container id: ${existingId} ... deleting..."
+                                echo "Found existing ${dockerContainerName} container id: ${existingId} ... deleting..."
                                 bat(script: "docker stop ${existingId} && docker rm -f ${existingId}")
                             }
                         }
