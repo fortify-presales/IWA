@@ -277,8 +277,6 @@ pipeline {
                     expression { params.SCANCENTRAL_DAST == true }
                 }
             }
-            // Run on an Agent with "docker" label applied
-            agent {label "docker"}
             steps {
                 script {
                     if (params.SCANCENTRAL_DAST && params.USE_DOCKER) {
