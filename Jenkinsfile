@@ -258,12 +258,12 @@ pipeline {
                     if (isUnix()) {
                         // Create docker image using JAR file
                         if (params.USE_DOCKER) {
-                            dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f src/main/configs/Dockerfile .")
+                            dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile .")
                         }
                     } else {
                         // Create docker image using JAR file
                         if (params.USE_DOCKER) {
-                            dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f src\\main\\configs\\Dockerfile.win .")
+                            dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
                         }
                     }
                 }
