@@ -34,6 +34,7 @@
 def dockerImage
 def dockerContainer
 def dockerContainerName = "iwa-jenkins"
+def dastScanName = "iwa-jenkins"
 
 pipeline {
     agent any
@@ -306,19 +307,40 @@ pipeline {
                         echo "Starting docker container ${dockerContainerName}"
                         dockerContainer = dockerImage.run("--name ${dockerContainerName} -p 9090:8080")
 
-                        // run ScanCentral DAST scan using groovy script
-                        echo "Running ScanCentral DAST scan, please wait ..."
-                        withCredentials([usernamePassword(credentialsId: 'iwa-SCANCENTRAL_DAST-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                            SCANCENTRAL_DASTApi = load 'bin/fortify-scancentral-dast.groovy'
-                            SCANCENTRAL_DASTApi.setApiUri("${env.SCANCENTRAL_DAST_URL}")
-                            SCANCENTRAL_DASTApi.setDebug(true)
-                            SCANCENTRAL_DASTApi.authenticate("${USERNAME}", "${PASSWORD}")
-                            Integer scanId = SCANCENTRAL_DASTApi.startScanAndWait("Jenkins initiated scan", "${env.SCANCENTRAL_DAST_CICD}", 5)
-                            String scanStatus = SCANCENTRAL_DASTApi.getScanStatusValue(SCANCENTRAL_DASTApi.getScanStatusId(scanId))
-                            echo "ScanCentral DAST scan id: ${scanId} - status: ${scanStatus}"
+                        if (params.USE_FCLI) {
+                            if (isUnix()) {
+                                withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                    sh """
+                                        fcli sc-dast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}" --ssc-ci-token ${SSC_CI_TOKEN}
+                                        fcli sc-dast scan start ${dastScanName} --settings ${env.SCANCENTRAL_DAST_CICD} --start-url http://localhost:9090 --store '?'
+                                        fcli sc-dast scan wait-for '?'
+                                        fcli sc-dast session logout
+                                    """
+                                }
+                            } else {
+                                withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                    bat """
+                                        fcli sc-dast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}" --ssc-ci-token ${SSC_CI_TOKEN}
+                                        fcli sc-dast scan start ${dastScanName} --settings ${env.SCANCENTRAL_DAST_CICD} --start-url http://localhost:9090 --store '?'
+                                        fcli sc-dast scan wait-for '?'
+                                        fcli sc-dast session logout
+                                    """
+                                }
+                            }
+                        } else {
+                            // run ScanCentral DAST scan using groovy script
+                            echo "Running ScanCentral DAST scan, please wait ..."
+                            withCredentials([usernamePassword(credentialsId: 'iwa-SCANCENTRAL_DAST-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                SCANCENTRAL_DASTApi = load 'bin/fortify-scancentral-dast.groovy'
+                                SCANCENTRAL_DASTApi.setApiUri("${env.SCANCENTRAL_DAST_URL}")
+                                SCANCENTRAL_DASTApi.setDebug(true)
+                                SCANCENTRAL_DASTApi.authenticate("${USERNAME}", "${PASSWORD}")
+                                Integer scanId = SCANCENTRAL_DASTApi.startScanAndWait("Jenkins initiated scan", "${env.SCANCENTRAL_DAST_CICD}", 5)
+                                String scanStatus = SCANCENTRAL_DASTApi.getScanStatusValue(SCANCENTRAL_DASTApi.getScanStatusId(scanId))
+                                echo "ScanCentral DAST scan id: ${scanId} - status: ${scanStatus}"
+                            }
                         }
 
-                        // TODO: Use fcli instead
                     } else {
                         echo "No Dynamic Application Security Testing (DAST) to do."
                     }
