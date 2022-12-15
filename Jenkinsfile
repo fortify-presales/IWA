@@ -229,7 +229,7 @@ pipeline {
                             iqStage: 'develop',
                             jobCredentialsId: ''
                     } else if (params.DEBRICKED_SCA) {
-                        docker.image('debricked/debricked-cli').withRun('-v ${WORKSPACE}:/data -w /data') {
+                        docker.image('debricked/debricked-cli').withRun('-v ${WORKSPACE}:/data -w /data') { c ->
                             sh 'debricked:scan \"\" "$DEBRICKED_TOKEN" ${DEBRICKED_APP_ID} $GIT_COMMIT null cli'
                         }
                     } else {
