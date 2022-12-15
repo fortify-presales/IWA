@@ -230,7 +230,7 @@ pipeline {
                             jobCredentialsId: ''
                     } else if (params.DEBRICKED_SCA) {
                         docker.image('debricked/debricked-cli').withRun('-v ${WORKSPACE}:/data -w /data') {
-                            sh 'bash /home/entrypoint.sh debricked:scan \"\" "$DEBRICKED_TOKEN" ${DEBRICKED_APP_ID} $GIT_COMMIT null cli'
+                            sh 'debricked:scan \"\" "$DEBRICKED_TOKEN" ${DEBRICKED_APP_ID} $GIT_COMMIT null cli'
                         }
                     } else {
                         echo "No Software Composition Analysis to do."
