@@ -112,7 +112,6 @@ pipeline {
             agent any
             steps {
 
-                echo ${params.DEBRICKED_SCA}
                 // Get Git commit details - we might use this somewhere
                 script {
                     if (isUnix()) {
