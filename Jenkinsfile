@@ -112,25 +112,12 @@ pipeline {
             agent any
             steps {
 
-                // Get Git commit details - we might use this somewhere
                 script {
-                    if (isUnix()) {
-                        sh 'git rev-parse HEAD > .git/commit-id'
-                    } else {
-                        bat(/git rev-parse HEAD > .git\\commit-id/)
-                    }
-                    //bat(/git log --format="%ae" | head -1 > .git\commit-author/)
-                    env.GIT_COMMIT_ID = readFile('.git/commit-id').trim()
-                    //env.GIT_COMMIT_AUTHOR = readFile('.git/commit-author').trim()
-
-                    echo "Git commit id: ${env.GIT_COMMIT_ID}"
-                    //echo "Git commit author: ${env.GIT_COMMIT_AUTHOR}"
-
                     // Run maven to build WAR/JAR application
                     if (isUnix()) {
-                        sh 'mvn "-Dskip.unit.tests=false" -Dtest="*Test,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest,!SeleniumFlowIT" -P jar -B clean verify package --file pom.xml'
+                        sh 'mvn "-Dskip.unit.tests=false" -Dtest="*Test,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml'
                     } else {
-                        bat "mvn \"-Dskip.unit.tests=false\" \"-Dtest=*Test,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest,!SeleniumFlowIT\" -P jar -B clean verify package --file pom.xml"
+                        bat "mvn \"-Dskip.unit.tests=false\" \"-Dtest=*Test,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest\" -P jar -B clean verify package --file pom.xml"
                     }
                 }
             }
@@ -168,11 +155,7 @@ pipeline {
                     if (params.SCANCENTRAL_SAST) {
 
                         if (params.USE_FCLI) {
-                            if (params.UPLOAD_TO_SSC) {
-                                def uploadArg = '--upload'
-                            } else {
-                                def uploadArg = '--noupload'
-                            }
+                            def uploadArg = (params.UPLOAD_TO_SSC ? '--upload' : '--noupload')
                             if (isUnix()) {
                                 sh """
                                     fcli sc-sast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN} --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
@@ -238,16 +221,16 @@ pipeline {
                 script {
                     if (params.SONATYPE_SCA) {
                         nexusPolicyEvaluation advancedProperties: '',
-                                enableDebugLogging: false,
-                                failBuildOnNetworkError: true,
-                                iqApplication: selectedApplication("${NEXUS_IQ_APP_ID}"),
-                                iqModuleExcludes: [[moduleExclude: 'target/**/*test*.*']],
-                                iqScanPatterns: [[scanPattern: 'target/**/*.jar']],
-                                iqStage: 'develop',
-                                jobCredentialsId: ''
+                            enableDebugLogging: false,
+                            failBuildOnNetworkError: true,
+                            iqApplication: selectedApplication("${NEXUS_IQ_APP_ID}"),
+                            iqModuleExcludes: [[moduleExclude: 'target/**/*test*.*']],
+                            iqScanPatterns: [[scanPattern: 'target/**/*.jar']],
+                            iqStage: 'develop',
+                            jobCredentialsId: ''
                     } else if (params.DEBRICKED_SCA) {
-                        docker.image('debricked/debricked-cli').withRun('--entrypoint="" -v ${WORKSPACE}:/data -w /data') {
-                            sh 'bash /home/entrypoint.sh debricked:scan "" "$DEBRICKED_TOKEN" ${DEBRICKED_APP_ID} "$GIT_COMMIT" null cli'
+                        docker.image('debricked/debricked-cli').withRun('--entrypoint=\\"\\" -v ${WORKSPACE}:/data -w /data') {
+                            sh 'bash /home/entrypoint.sh debricked:scan \\"\\" "$DEBRICKED_TOKEN" ${DEBRICKED_APP_ID} $GIT_COMMIT null cli'
                         }
                     } else {
                         echo "No Software Composition Analysis to do."

@@ -582,9 +582,6 @@
                         <exclude>**/*IT.java</exclude>
                         <exclude>**/*ITCase.java</exclude>
                     </excludes>
-                    <includes>
-                        <include>**/SeleniumFlowIT.java</include>
-                    </includes>
                 </configuration>
                 <executions>
                     <execution>
