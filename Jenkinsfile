@@ -8,15 +8,18 @@
 // Pre-requisites:
 // - Fortify ScanCentral SAST has been installed (for Fortify Hosted/on-premise SAST)
 // - Fortify ScanCentral DAST has been installed (for Fortify Hosted/on-premise DAST)
-// - Docker Pipeline plugin has been installed (Jenkins)
+// - Fortify Jenkins plugins has been installed and configured (if not using fcli)
+// - Docker Jenkins Pipeline plugin has been installed
+// - [Optional] Debricked account
 // - [Optional] Sonatype Nexus IQ server has been installed for OSS SCA vulnerabilities
 //
 // Typical node setup:
-// - Install Fortify ScanCentral Client on the agent machine (and add its bin directory to path)
-// - Install Fortify CLI tool on the agent machine (and add to path)
-// - create a new Jenkins agent for this machine
+// - Create a new Jenkins agent (or reuse one) for running Fortify Commands
+// - Install Fortify ScanCentral Client on the agent machine
+// - Install Fortify CLI (fcli) tool on the agent machine
 // - Apply the label "fortify" to the agent.
-// - Set the environment variable "FORTIFY_HOME" on the agent point to the location of the Fortify ScanCentral Client installation
+// - Set the environment variable "FORTIFY_HOME" on the agent to point to the location of the Fortify ScanCentral Client installation
+// - Set the environment variable "FORTIFY_CLI_HOME" on the agent to point to the location of the Fortify FCLI installation
 //
 // Credentials setup:
 // Create the following "Secret text" credentials in Jenkins and enter values as follows:
@@ -25,6 +28,7 @@
 //      iwa-ssc-ci-token-id         - Fortify Software Security Center "CIToken" authentication token as Jenkins Secret credential
 //      iwa-edast-auth-id           - Fortify Scan Central DAST authentication as "Jenkins Username with Password" credential
 //      iwa-nexus-iq-token-id       - Sonatype Nexus IQ user token in form of "user code:pass code"
+//      iwa-debricked-token-id      - Debricked API access token as Jenkins Secret credential
 //      iwa-dockerhub-creds-id      - DockerHub login as Jenkins "Username with Password" credential
 // All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
 //
@@ -54,6 +58,8 @@ pipeline {
                 description: 'Run a remote scan using Scan Central DAST (WebInspect) for Dynamic Application Security Testing')
         booleanParam(name: 'SONATYPE_SCA',      defaultValue: params.SONATYPE_SCA ?: false,
                 description: 'Use Sonatype Nexus IQ for Open Source Software Composition Analysis')
+        booleanParam(name: 'DEBRICKED_SCA',      defaultValue: params.DEBRICKED_SCA ?: false,
+                description: 'Use Debricked for Open Source Software Composition Analysis')
         booleanParam(name: 'UPLOAD_TO_SSC',		defaultValue: params.UPLOAD_TO_SSC ?: false,
                 description: 'Enable upload of scan results to Fortify Software Security Center')
         booleanParam(name: 'USE_DOCKER', defaultValue: params.USE_DOCKER ?: false,
@@ -69,16 +75,17 @@ pipeline {
         COMPONENT_NAME = "iwa"                              // Shortform component name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         JAVA_VERSION = 11                                   // Java version to compile as
-        ISSUE_IDS = ""                                      // List of issues found from commit
 
         // Credential references
         GIT_CREDS = credentials('iwa-git-creds-id')
         SSC_CI_TOKEN = credentials('iwa-ssc-ci-token-id')
         SCANCENTRAL_DAST_AUTH = credentials('iwa-edast-auth-id')
         NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-token-id')
+        DEBRICKED_TOKEN = credentials('iwa-debricked-token-id')
 
         // The following are defaulted and can be overriden by creating a "Build parameter" of the same name
-        APP_URL = "${params.APP_URL ?: 'http://jenkins.onfortify.com:9090'}" // URL of application to be tested by ScanCentral DAST
+        // You can update this Jenkinsfile and set defaults here for internal pipelines
+        APP_URL = "${params.APP_URL ?: 'http://jenkins.onfortify.com'}" // URL of application to be tested by ScanCentral DAST
         SSC_URL = "${params.SSC_URL ?: 'http://localhost'}" // URL of Fortify Software Security Center
         SSC_APP_NAME = "${params.SSC_APP_NAME ?: 'IWAPharmacyDirect'}" // Name of Application in SSC to upload results to
         SSC_APP_VERSION = "${params.SSC_APP_VERSION ?: 'build'}" // Name of Application Version in SSC to upload results to
@@ -91,6 +98,7 @@ pipeline {
         SCANCENTRAL_DAST_CICD = "${params.SCANCENTRAL_DAST_CICD ?: '56dde3cd-d15d-4d45-ab44-adedf0bc6a42'}" // ScanCentral DAST CICD identifier
         NEXUS_IQ_URL = "${params.NEXUS_IQ_URL ?: 'http://localhost:8070'}" // Sonatype Nexus IQ URL
         NEXUS_IQ_APP_ID = "${params.NEXUS_IQ_APP_ID ?: 'IWAPharmacyDirect'}" // Sonatype Nexus IQ App Id
+        DEBRICKED_APP_ID = "${params.DEBRICKED_APP_ID ?: 'IWAPharmacyDirect'}" // Debricked App Id
         DOCKER_ORG = "${params.DOCKER_ORG ?: 'mfdemouk'}" // Docker organisation (in Docker Hub) to push released images to
     }
 
@@ -103,10 +111,8 @@ pipeline {
         stage('Build') {
             agent any
             steps {
-                // Get some code from a GitHub repository
-                //git credentialsId: 'iwa-git-creds-id', url: "${env.GIT_URL}"
 
-                // Get Git commit details
+                // Get Git commit details - we might use this somewhere
                 script {
                     if (isUnix()) {
                         sh 'git rev-parse HEAD > .git/commit-id'
@@ -162,26 +168,25 @@ pipeline {
                     if (params.SCANCENTRAL_SAST) {
 
                         if (params.USE_FCLI) {
-                            if (isUnix()) {
-                                withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                    sh """
-                                        fcli sc-sast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}" --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
-                                        scancentral package -bt mvn -bf pom.xml -sargs "-scan-precision ${env.SCAN_PRECISION_LEVEL}" -o Package.zip
-                                        fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --ssc-ci-token ${SSC_CI_TOKEN} --store '?'
-                                        fcli sc-sast scan wait-for '?' -i 5s
-                                        fcli sc-sast session logout -u ${USERNAME} -p "${PASSWORD}"
-                                    """
-                                }
+                            if (params.UPLOAD_TO_SSC) {
+                                def uploadArg = '--upload'
                             } else {
-                                withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                    bat """
-                                        fcli sc-sast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}" --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
-                                        scancentral package -bt mvn -bf pom.xml -sargs "-scan-precision ${env.SCAN_PRECISION_LEVEL}" -o Package.zip
-                                        fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip --upload --ssc-ci-token ${SSC_CI_TOKEN} --store '?'
-                                        fcli sc-sast scan wait-for '?' -i 5s
-                                        fcli sc-sast session logout -u ${USERNAME} -p "${PASSWORD}"
-                                    """
-                                }
+                                def uploadArg = '--noupload'
+                            }
+                            if (isUnix()) {
+                                sh """
+                                    fcli sc-sast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN} --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
+                                    scancentral package -bt mvn -bf pom.xml -sargs "-scan-precision ${env.SCAN_PRECISION_LEVEL}" -o Package.zip
+                                    fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip ${uploadArg} --store '?'
+                                    fcli sc-sast scan wait-for '?' -i 5s
+                                """
+                            } else {
+                                bat """
+                                    fcli sc-sast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN} --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
+                                    scancentral package -bt mvn -bf pom.xml -sargs "-scan-precision ${env.SCAN_PRECISION_LEVEL}" -o Package.zip
+                                    fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip ${uploadArg}  --store '?'
+                                    fcli sc-sast scan wait-for '?' -i 5s
+                                """
                             }
                         } else {
                             // Set Remote Analysis options
@@ -225,23 +230,25 @@ pipeline {
             when {
                 beforeAgent true
                 anyOf {
-                    expression { params.SONATYPE_SCA == true }
+                    expression { params.SONATYPE_SCA == true || params.DEBRICKED_SCA == true }
                 }
             }
-            // Run on an Agent with "fortify" label applied
-            agent {label "fortify"}
+            agent any
             steps {
                 script {
-
                     if (params.SONATYPE_SCA) {
                         nexusPolicyEvaluation advancedProperties: '',
                                 enableDebugLogging: false,
                                 failBuildOnNetworkError: true,
-                                iqApplication: selectedApplication('IWA'),
+                                iqApplication: selectedApplication("${NEXUS_IQ_APP_ID}"),
                                 iqModuleExcludes: [[moduleExclude: 'target/**/*test*.*']],
                                 iqScanPatterns: [[scanPattern: 'target/**/*.jar']],
                                 iqStage: 'develop',
                                 jobCredentialsId: ''
+                    } else if (params.DEBRICKED_SCA) {
+                        docker.image('debricked/debricked-cli').withRun('--entrypoint="" -v ${WORKSPACE}:/data -w /data') {
+                            sh 'bash /home/entrypoint.sh debricked:scan "" "$DEBRICKED_TOKEN" ${DEBRICKED_APP_ID} "$GIT_COMMIT" null cli'
+                        }
                     } else {
                         echo "No Software Composition Analysis to do."
                     }
