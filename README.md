@@ -22,17 +22,19 @@
 *   [Build and Pipeline Integrations](#build-and-pipeline-integrations)
     * [Jenkins Pipeline](#jenkins-pipeline)
     * [GitHub Actions](#github-actions)
-    * [Azure DevOps Pipeline](#azure-devops-pipelines)
-    * [GitLab CI/CD](#gitlab-cicd)
+    * [Other Pipeline Tools](#other-pipeline-tools)
 *   [Developing and Contributing](#developing-and-contributing)
 *   [Licensing](#licensing)
+
+## Notice
+
+**For an "official" version of this application with additional pipeline integrations please visit [https://github.com/fortify/IWA-Java](https://github.com/fortify/IWA-Java).**
 
 ## Overview
 
 _IWA (Insecure Web App) Pharmacy Direct_ is an example Java/Spring Web Application for use in **DevSecOps** scenarios and demonstrations.
 It includes some examples of bad and insecure code - which can be found using static and dynamic application
 security testing tools such as those provided by [Micro Focus Fortify](https://www.microfocus.com/en-us/cyberres/application-security).
-See the file [DEMO.md](DEMO.md) for a documented demonstration scenario of some of the applications vulnerabilities.
 
 One of the main aims of this project is to illustrate how security can be embedded early ("Shift-Left") and continuously ("CI/CD") in
 the development lifecycle. Therefore, a number of examples of "integrations" to common CI/CD pipeline tools are provided.
@@ -437,17 +439,9 @@ This repository includes a [GitHub Actions](https://github.com/features/actions)
 automates the build of the application and scans the code using either
 [Fortify on Demand](https://www.microfocus.com/en-us/products/application-security-testing) or [Fortify ScanCentral](https://www.microfocus.com/en-us/cyberres/application-security/static-code-analyzer) for SAST.
 
-### GitLab CI/CD
+### Other Pipeline Tools
 
-This repository includes a [GitLab Pipelines](https://docs.gitlab.com/ee/ci/pipelines/) example
-[pipeline](.gitlab-ci.yml) that automates the build of the application and uploads the source code to
-[Fortify on Demand](https://www.microfocus.com/en-us/products/application-security-testing) for SAST.
-
-It makes use of the [Fortify GitLab CI Templates](https://gitlab.com/Fortify/gitlab-ci-templates)
-
-### Azure DevOps Pipelines
-
-For a fully working Azure DevOps pipeline see the sister project [IWA.NET](https://dev.azure.com/mfdemouk/IWA.NET).
+For integrations with other pipeline tools please see [https://github.com/fortify/IWA-Java](https://github.com/fortify/IWA-Java).
 
 ## Developing and Contributing
 
