@@ -58,7 +58,7 @@ pipeline {
                 description: 'Run a remote scan using Scan Central DAST (WebInspect) for Dynamic Application Security Testing')
         booleanParam(name: 'SONATYPE_SCA',      defaultValue: params.SONATYPE_SCA ?: false,
                 description: 'Use Sonatype Nexus IQ for Open Source Software Composition Analysis')
-        booleanParam(name: 'DEBRICKED_SCA',     defaultValue: params.DEBRICKED_SCA ?: false,
+        booleanParam(name: 'DEBRICKED_SCA',      defaultValue: params.DEBRICKED_SCA ?: false,
                 description: 'Use Debricked for Open Source Software Composition Analysis')
         booleanParam(name: 'UPLOAD_TO_SSC',		defaultValue: params.UPLOAD_TO_SSC ?: false,
                 description: 'Enable upload of scan results to Fortify Software Security Center')
@@ -112,6 +112,7 @@ pipeline {
             agent any
             steps {
 
+                echo ${params.DEBRICKED_SCA}
                 // Get Git commit details - we might use this somewhere
                 script {
                     if (isUnix()) {
