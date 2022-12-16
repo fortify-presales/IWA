@@ -113,6 +113,15 @@ pipeline {
             steps {
 
                 script {
+                    // Retrieve latest Git commit id
+                    if (isUnix()) {
+                        sh 'git rev-parse HEAD > .git/commit-id'
+                    } else {
+                        bat(/git rev-parse HEAD > .git\\commit-id/)
+                    }
+                    env.GIT_COMMIT_ID = readFile('.git/commit-id').trim()
+                    echo "Git commit id: ${env.GIT_COMMIT_ID}"
+
                     // Run maven to build WAR/JAR application
                     if (isUnix()) {
                         sh 'mvn "-Dskip.unit.tests=false" -Dtest="*Test,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml'
@@ -230,7 +239,7 @@ pipeline {
                             jobCredentialsId: ''
                     } else if (params.DEBRICKED_SCA) {
                         docker.image('debricked/debricked-cli').inside('--entrypoint="" -v ${WORKSPACE}:/data -w /data') { c ->
-                            sh '/home/entrypoint.sh debricked:scan '' ${env.DEBRICKED_TOKEN} ${env.DEBRICKED_APP_ID} $GIT_COMMIT null cli'
+                            sh '/home/entrypoint.sh debricked:scan '' ${env.DEBRICKED_TOKEN} ${env.DEBRICKED_APP_ID} ${env.GIT_COMMIT_ID} null cli'
                         }
                     } else {
                         echo "No Software Composition Analysis to do."
