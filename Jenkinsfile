@@ -22,15 +22,14 @@
 // - Set the environment variable "FORTIFY_CLI_HOME" on the agent to point to the location of the Fortify FCLI installation
 //
 // Credentials setup:
-// Create the following "Secret text" credentials in Jenkins and enter values as follows:
-//		iwa-git-creds-id		    - Git login as Jenkins "Username with Password" credential
+// Create the following redentials in Jenkins and enter values as follows:
+//		iwa-git-auth-id		         - Git login as Jenkins "Username with Password" credential
 //      iwa-ssc-auth-id             - Fortify Software Security Center user password as "Jenkins Username with Password" credential
 //      iwa-ssc-ci-token-id         - Fortify Software Security Center "CIToken" authentication token as Jenkins Secret credential
 //      iwa-edast-auth-id           - Fortify Scan Central DAST authentication as "Jenkins Username with Password" credential
-//      iwa-nexus-iq-token-id       - Sonatype Nexus IQ user token in form of "user code:pass code"
+//      iwa-nexus-iq-token-id       - Sonatype Nexus IQ user token as Jenkins Secret credential in form of "user code:pass code"
 //      iwa-debricked-token-id      - Debricked API access token as Jenkins Secret credential
-//      iwa-dockerhub-creds-id      - DockerHub login as Jenkins "Username with Password" credential
-// All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
+// Note: All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
 //
 //****************************************************************************************************
 
@@ -78,7 +77,7 @@ pipeline {
         JAVA_VERSION = 11                                   // Java version to compile as
 
         // Credential references
-        GIT_CREDS = credentials('iwa-git-creds-id')
+        GIT_CREDS = credentials('iwa-git-auth-id')
         SSC_CI_TOKEN = credentials('iwa-ssc-ci-token-id')
         SCANCENTRAL_DAST_AUTH = credentials('iwa-edast-auth-id')
         NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-token-id')
@@ -87,7 +86,7 @@ pipeline {
         // The following are defaulted and can be overriden by creating a "Build parameter" of the same name
         // You can update this Jenkinsfile and set defaults here for internal pipelines
         APP_URL = "${params.APP_URL ?: 'http://jenkins.onfortify.com'}" // URL of application to be tested by ScanCentral DAST
-        SSC_URL = "${params.SSC_URL ?: 'http://localhost'}" // URL of Fortify Software Security Center
+        SSC_URL = "${params.SSC_URL ?: 'http://ssc.onfortify.com'}" // URL of Fortify Software Security Center
         SSC_APP_NAME = "${params.SSC_APP_NAME ?: 'IWAPharmacyDirect'}" // Name of Application in SSC to upload results to
         SSC_APP_VERSION = "${params.SSC_APP_VERSION ?: 'build'}" // Name of Application Version in SSC to upload results to
         SSC_NOTIFY_EMAIL = "${params.SSC_NOTIFY_EMAIL ?: 'do-not-reply@microfocus.com'}" // User to notify with SSC/ScanCentral information
@@ -95,9 +94,8 @@ pipeline {
         SSC_SENSOR_VER = "${params.SSC_SENSOR_VER ?: '22.2'}" // ScanCentral SAST Sensor version
         SCAN_PRECISION_LEVEL = "${params.SCAN_PRECISION_LEVEL ?: 2}"  // Precision level of Fortify scan (see documentation for details)
         SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN = "${params.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN ?: 'FortifyDemo'}" // ScanCentral SAST Client Authentication Token
-        SCANCENTRAL_DAST_URL = "${params.SCANCENTRAL_DAST_URL ?: 'http://localhost:64814/'}" // ScanCentral DAST API URI
+        SCANCENTRAL_DAST_URL = "${params.SCANCENTRAL_DAST_URL ?: 'http://scancentral.onfortify.com/'}" // ScanCentral DAST API URI
         SCANCENTRAL_DAST_CICD = "${params.SCANCENTRAL_DAST_CICD ?: '56dde3cd-d15d-4d45-ab44-adedf0bc6a42'}" // ScanCentral DAST CICD identifier
-        NEXUS_IQ_URL = "${params.NEXUS_IQ_URL ?: 'http://localhost:8070'}" // Sonatype Nexus IQ URL
         NEXUS_IQ_APP_ID = "${params.NEXUS_IQ_APP_ID ?: 'IWAPharmacyDirect'}" // Sonatype Nexus IQ App Id
         DEBRICKED_APP_ID = "${params.DEBRICKED_APP_ID ?: 'jenkins/IWAPharmacyDirect'}" // Debricked App Id
         DOCKER_OWNER = "${params.DOCKER_OWNER ?: 'fortify-presales'}" // Docker owner (in GitHub packages) to push released images to
@@ -184,7 +182,7 @@ pipeline {
                         } else {
                             // Set Remote Analysis options
                             def transOptions = '"-exclude \"**/Test/*.java\""'
-                            def scanOptions = '"-scan-precision 1"'
+                            def scanOptions = '"-scan-precision '.concat("${env.SCAN_PRECISION_LEVEL}").concat('"')
                             fortifyRemoteArguments transOptions: "${transOptions}", scanOptions: "${scanOptions}"
 
                             if (params.UPLOAD_TO_SSC) {
@@ -363,7 +361,7 @@ pipeline {
                 script {
                     // Example publish to GitHub packages
                     if (params.RELEASE_TO_GITHUB) {
-                        docker.withRegistry('https://ghcr.io', 'iwa-git-creds-id') {
+                        docker.withRegistry('https://ghcr.io', 'iwa-git-auth-id') {
                             dockerImage.push("${env.APP_VER}.${BUILD_NUMBER}")
                             // and tag as "latest"
                             dockerImage.push("latest")
