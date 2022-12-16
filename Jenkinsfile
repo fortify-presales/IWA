@@ -352,14 +352,14 @@ pipeline {
                         if (isUnix()) {
                             withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                 sh """
-                                    fcli ssc session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN}
+                                    fcli ssc session login --url ${env.SSC_URL} --ci-token ${SSC_CI_TOKEN}
                                     fcli ssc appversion-vuln count --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION}
                                 """
                             }
                         } else {
                             withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                 bat """
-                                    fcli sc-dast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN}}
+                                    fcli sc-dast session login --url ${env.SSC_URL} --ci-token ${SSC_CI_TOKEN}}
                                     fcli ssc appversion-vuln count --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION}
                                 """
                             }
