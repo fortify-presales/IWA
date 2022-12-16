@@ -308,7 +308,7 @@ pipeline {
                             if (isUnix()) {
                                 withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                     sh """
-                                        fcli sc-dast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN}"
+                                        fcli sc-dast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN}
                                         fcli sc-dast scan start ${dastScanName} --settings ${env.SCANCENTRAL_DAST_CICD} --start-url ${env.APP_URL} --store '?'
                                         fcli sc-dast scan wait-for '?' -i 30s
                                     """
@@ -316,7 +316,7 @@ pipeline {
                             } else {
                                 withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                     bat """
-                                        fcli sc-dast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN}}"
+                                        fcli sc-dast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN}}
                                         fcli sc-dast scan start ${dastScanName} --settings ${env.SCANCENTRAL_DAST_CICD} --start-url ${env.APP_URL} --store '?'
                                         fcli sc-dast scan wait-for '?' -i 30s
                                     """
@@ -343,15 +343,35 @@ pipeline {
             }
         }
 
-        // An example manual release checkpoint
-        stage('Stage') {
+        // An example release checkpoint
+        stage('Stage Gate') {
             agent any
             steps {
-                input id: 'Release',
-                        message: 'Ready to Release?',
-                        ok: 'Yes, let\'s go',
-                        submitter: 'admin',
-                        submitterParameter: 'approver'
+                script {
+                    if (params.USE_FCLI) {
+                        if (isUnix()) {
+                            withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                sh """
+                                    fcli ssc session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN}
+                                    fcli ssc appversion-vuln count --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION}
+                                """
+                            }
+                        } else {
+                            withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                bat """
+                                    fcli sc-dast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN}}
+                                    fcli ssc appversion-vuln count --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION}
+                                """
+                            }
+                        }
+                    } else {
+                        input id: 'Release',
+                                message: 'Ready to Release?',
+                                ok: 'Yes, let\'s go',
+                                submitter: 'admin',
+                                submitterParameter: 'approver'
+                    }
+                }
             }
         }
 
