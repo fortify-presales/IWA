@@ -98,7 +98,7 @@ pipeline {
         SCANCENTRAL_DAST_CICD = "${params.SCANCENTRAL_DAST_CICD ?: '56dde3cd-d15d-4d45-ab44-adedf0bc6a42'}" // ScanCentral DAST CICD identifier
         NEXUS_IQ_URL = "${params.NEXUS_IQ_URL ?: 'http://localhost:8070'}" // Sonatype Nexus IQ URL
         NEXUS_IQ_APP_ID = "${params.NEXUS_IQ_APP_ID ?: 'IWAPharmacyDirect'}" // Sonatype Nexus IQ App Id
-        DEBRICKED_APP_ID = "${params.DEBRICKED_APP_ID ?: 'IWAPharmacyDirect'}" // Debricked App Id
+        DEBRICKED_APP_ID = "${params.DEBRICKED_APP_ID ?: 'jenkins/IWAPharmacyDirect'}" // Debricked App Id
         DOCKER_ORG = "${params.DOCKER_ORG ?: 'mfdemouk'}" // Docker organisation (in Docker Hub) to push released images to
     }
 
@@ -229,8 +229,8 @@ pipeline {
                             iqStage: 'develop',
                             jobCredentialsId: ''
                     } else if (params.DEBRICKED_SCA) {
-                        docker.image('debricked/debricked-cli').withRun('-v ${WORKSPACE}:/data -w /data') { c ->
-                            sh 'bash /home/entrypoint.sh debricked:scan \"\" "$DEBRICKED_TOKEN" ${DEBRICKED_APP_ID} $GIT_COMMIT null cli'
+                        docker.image('debricked/debricked-cli').inside('--entrypoint="" -v ${WORKSPACE}:/data -w /data') { c ->
+                            sh '/home/entrypoint.sh debricked:scan '' ${env.DEBRICKED_TOKEN} ${env.DEBRICKED_APP_ID} $GIT_COMMIT null cli'
                         }
                     } else {
                         echo "No Software Composition Analysis to do."
