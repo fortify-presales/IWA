@@ -72,7 +72,8 @@ pipeline {
         // Application settings
         APP_NAME = "IWAPharmacyDirect"         		        // Application name
         APP_VER = "1.0-build"                               // Application version
-        COMPONENT_NAME = "iwa"                              // Shortform component name
+        COMPONENT_NAME = "iwa"                              // Short form component name
+        DOCKER_IMAGE_NAME = "iwapharmacydirect"             // Docker image name
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
         JAVA_VERSION = 11                                   // Java version to compile as
 
@@ -258,12 +259,12 @@ pipeline {
                     if (isUnix()) {
                         // Create docker image using JAR file
                         if (params.USE_DOCKER) {
-                            dockerImage = docker.build("${env.DOCKER_OWNER}/${env.APP_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile .")
+                            dockerImage = docker.build("${env.DOCKER_OWNER}/${env.DOCKER_IMAGE_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile .")
                         }
                     } else {
                         // Create docker image using JAR file
                         if (params.USE_DOCKER) {
-                            dockerImage = docker.build("${env.DOCKER_OWNER}/${env.APP_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
+                            dockerImage = docker.build("${env.DOCKER_OWNER}/${env.DOCKER_IMAGE_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
                         }
                     }
                 }
