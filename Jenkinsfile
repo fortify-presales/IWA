@@ -64,8 +64,8 @@ pipeline {
                 description: 'Enable upload of scan results to Fortify Software Security Center')
         booleanParam(name: 'USE_DOCKER', defaultValue: params.USE_DOCKER ?: false,
                 description: 'Package the application into a Dockerfile for running/testing')
-        booleanParam(name: 'RELEASE_TO_DOCKERHUB', defaultValue: params.RELEASE_TO_DOCKERHUB ?: false,
-                description: 'Release built and tested image to Docker Hub')
+        booleanParam(name: 'RELEASE_TO_GITHUB', defaultValue: params.RELEASE_TO_GITHUB ?: false,
+                description: 'Release built and tested image to GitHub packages')
     }
 
     environment {
@@ -99,7 +99,7 @@ pipeline {
         NEXUS_IQ_URL = "${params.NEXUS_IQ_URL ?: 'http://localhost:8070'}" // Sonatype Nexus IQ URL
         NEXUS_IQ_APP_ID = "${params.NEXUS_IQ_APP_ID ?: 'IWAPharmacyDirect'}" // Sonatype Nexus IQ App Id
         DEBRICKED_APP_ID = "${params.DEBRICKED_APP_ID ?: 'jenkins/IWAPharmacyDirect'}" // Debricked App Id
-        DOCKER_ORG = "${params.DOCKER_ORG ?: 'mfdemouk'}" // Docker organisation (in Docker Hub) to push released images to
+        DOCKER_OWNER = "${params.DOCKER_OWNER ?: 'fortify-presales'}" // Docker owner (in GitHub packages) to push released images to
     }
 
     tools {
@@ -235,7 +235,7 @@ pipeline {
                             iqApplication: selectedApplication("${NEXUS_IQ_APP_ID}"),
                             iqModuleExcludes: [[moduleExclude: 'target/**/*test*.*']],
                             iqScanPatterns: [[scanPattern: 'target/**/*.jar']],
-                            iqStage: 'develop',
+                            iqStage: 'build',
                             jobCredentialsId: ''
                     } else if (params.DEBRICKED_SCA) {
                         docker.image('debricked/debricked-cli').inside('--entrypoint="" -v ${WORKSPACE}:/data -w /data') {
@@ -258,12 +258,12 @@ pipeline {
                     if (isUnix()) {
                         // Create docker image using JAR file
                         if (params.USE_DOCKER) {
-                            dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile .")
+                            dockerImage = docker.build("${env.DOCKER_OWNER}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile .")
                         }
                     } else {
                         // Create docker image using JAR file
                         if (params.USE_DOCKER) {
-                            dockerImage = docker.build("${env.DOCKER_ORG}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
+                            dockerImage = docker.build("${env.DOCKER_OWNER}/${env.COMPONENT_NAME}:${env.APP_VER}.${env.BUILD_NUMBER}", "-f Dockerfile.win .")
                         }
                     }
                 }
@@ -309,26 +309,24 @@ pipeline {
                             if (isUnix()) {
                                 withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                     sh """
-                                        fcli sc-dast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}"
+                                        fcli sc-dast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN}"
                                         fcli sc-dast scan start ${dastScanName} --settings ${env.SCANCENTRAL_DAST_CICD} --start-url ${env.APP_URL} --store '?'
                                         fcli sc-dast scan wait-for '?' -i 30s
-                                        fcli sc-dast session logout -u ${USERNAME} -p "${PASSWORD}"
                                     """
                                 }
                             } else {
                                 withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                     bat """
-                                        fcli sc-dast session login --ssc-url ${env.SSC_URL} -u ${USERNAME} -p "${PASSWORD}"
+                                        fcli sc-dast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN}}"
                                         fcli sc-dast scan start ${dastScanName} --settings ${env.SCANCENTRAL_DAST_CICD} --start-url ${env.APP_URL} --store '?'
                                         fcli sc-dast scan wait-for '?' -i 30s
-                                        fcli sc-dast session logout -u ${USERNAME} -p "${PASSWORD}"
                                     """
                                 }
                             }
                         } else {
                             // run ScanCentral DAST scan using groovy script
                             echo "Running ScanCentral DAST scan, please wait ..."
-                            withCredentials([usernamePassword(credentialsId: 'iwa-SCANCENTRAL_DAST-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                            withCredentials([usernamePassword(credentialsId: 'iwa-edast-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                 SCANCENTRAL_DASTApi = load 'bin/fortify-scancentral-dast.groovy'
                                 SCANCENTRAL_DASTApi.setApiUri("${env.SCANCENTRAL_DAST_URL}")
                                 SCANCENTRAL_DASTApi.setDebug(true)
@@ -362,9 +360,9 @@ pipeline {
             agent any
             steps {
                 script {
-                    // Example publish to Docker Hub
-                    if (params.RELEASE_TO_DOCKERHUB) {
-                        docker.withRegistry('https://registry.hub.docker.com', 'iwa-dockerhub-creds-id') {
+                    // Example publish to GitHub packages
+                    if (params.RELEASE_TO_GITHUB) {
+                        docker.withRegistry('https://ghcr.io', 'iwa-git-creds-id') {
                             dockerImage.push("${env.APP_VER}.${BUILD_NUMBER}")
                             // and tag as "latest"
                             dockerImage.push("latest")
