@@ -238,8 +238,8 @@ pipeline {
                             iqStage: 'develop',
                             jobCredentialsId: ''
                     } else if (params.DEBRICKED_SCA) {
-                        docker.image('debricked/debricked-cli').inside('--entrypoint="" -v ${WORKSPACE}:/data -w /data') { c ->
-                            sh '/home/entrypoint.sh debricked:scan '' ${env.DEBRICKED_TOKEN} ${env.DEBRICKED_APP_ID} ${env.GIT_COMMIT_ID} null cli'
+                        docker.image('debricked/debricked-cli').inside('--entrypoint="" -v ${WORKSPACE}:/data -w /data') {
+                            sh "/home/entrypoint.sh debricked:scan '' ${env.DEBRICKED_TOKEN} ${env.DEBRICKED_APP_ID} ${env.GIT_COMMIT_ID} null cli"
                         }
                     } else {
                         echo "No Software Composition Analysis to do."
