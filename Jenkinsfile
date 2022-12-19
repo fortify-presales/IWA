@@ -23,8 +23,7 @@
 //
 // Credentials setup:
 // Create the following redentials in Jenkins and enter values as follows:
-//		iwa-git-auth-id		         - Git login as Jenkins "Username with Password" credential
-//      iwa-ssc-auth-id             - Fortify Software Security Center user password as "Jenkins Username with Password" credential
+//		iwa-git-auth-id		        - Git login as Jenkins "Username with Password" credential
 //      iwa-ssc-ci-token-id         - Fortify Software Security Center "CIToken" authentication token as Jenkins Secret credential
 //      iwa-edast-auth-id           - Fortify Scan Central DAST authentication as "Jenkins Username with Password" credential
 //      iwa-nexus-iq-token-id       - Sonatype Nexus IQ user token as Jenkins Secret credential in form of "user code:pass code"
@@ -79,7 +78,6 @@ pipeline {
         // Credential references
         GIT_CREDS = credentials('iwa-git-auth-id')
         SSC_CI_TOKEN = credentials('iwa-ssc-ci-token-id')
-        SCANCENTRAL_DAST_AUTH = credentials('iwa-edast-auth-id')
         NEXUS_IQ_AUTH_TOKEN = credentials('iwa-nexus-iq-token-id')
         DEBRICKED_TOKEN = credentials('iwa-debricked-token-id')
 
