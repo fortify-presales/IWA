@@ -169,14 +169,14 @@ pipeline {
                                     fcli sc-sast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN} --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
                                     scancentral package -bt mvn -bf pom.xml -sargs "-scan-precision ${env.SCAN_PRECISION_LEVEL}" -o Package.zip
                                     fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip ${uploadArg} --store '?'
-                                    fcli sc-sast scan wait-for '?' -i 5s
+                                    fcli sc-sast scan wait-for '?' -i 5s -t 1h
                                 """
                             } else {
                                 bat """
                                     fcli sc-sast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN} --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
                                     scancentral package -bt mvn -bf pom.xml -sargs "-scan-precision ${env.SCAN_PRECISION_LEVEL}" -o Package.zip
                                     fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} -p Package.zip ${uploadArg}  --store '?'
-                                    fcli sc-sast scan wait-for '?' -i 5s
+                                    fcli sc-sast scan wait-for '?' -i 5s -t 1h
                                 """
                             }
                         } else {
@@ -306,21 +306,17 @@ pipeline {
 
                         if (params.USE_FCLI) {
                             if (isUnix()) {
-                                withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                    sh """
-                                        fcli sc-dast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN}
-                                        fcli sc-dast scan start ${dastScanName} --settings ${env.SCANCENTRAL_DAST_CICD} --start-url ${env.APP_URL} --store '?'
-                                        fcli sc-dast scan wait-for '?' -i 30s
-                                    """
-                                }
+                                sh """
+                                    fcli sc-dast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN}
+                                    fcli sc-dast scan start ${dastScanName} --settings ${env.SCANCENTRAL_DAST_CICD} --start-url ${env.APP_URL} --store '?'
+                                    fcli sc-dast scan wait-for '?' -i 30s -t 6h
+                                """
                             } else {
-                                withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                    bat """
-                                        fcli sc-dast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN}}
-                                        fcli sc-dast scan start ${dastScanName} --settings ${env.SCANCENTRAL_DAST_CICD} --start-url ${env.APP_URL} --store '?'
-                                        fcli sc-dast scan wait-for '?' -i 30s
-                                    """
-                                }
+                                bat """
+                                    fcli sc-dast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN}}
+                                    fcli sc-dast scan start ${dastScanName} --settings ${env.SCANCENTRAL_DAST_CICD} --start-url ${env.APP_URL} --store '?'
+                                    fcli sc-dast scan wait-for '?' -i 30s -t 6h
+                                """
                             }
                         } else {
                             // run ScanCentral DAST scan using groovy script
@@ -343,26 +339,22 @@ pipeline {
             }
         }
 
-        // An example release checkpoint
-        stage('Stage Gate') {
+        // An example release gate/checkpoint
+        stage('Gate') {
             agent any
             steps {
                 script {
                     if (params.USE_FCLI) {
                         if (isUnix()) {
-                            withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                sh """
-                                    fcli ssc session login --url ${env.SSC_URL} --ci-token ${SSC_CI_TOKEN}
-                                    fcli ssc appversion-vuln count --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION}
-                                """
-                            }
+                            sh """
+                                fcli ssc session login --url ${env.SSC_URL} --ci-token ${SSC_CI_TOKEN}
+                                fcli ssc appversion-vuln count --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION}
+                            """
                         } else {
-                            withCredentials([usernamePassword(credentialsId: 'iwa-ssc-auth-id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                bat """
-                                    fcli sc-dast session login --url ${env.SSC_URL} --ci-token ${SSC_CI_TOKEN}}
-                                    fcli ssc appversion-vuln count --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION}
-                                """
-                            }
+                            bat """
+                                fcli sc-dast session login --url ${env.SSC_URL} --ci-token ${SSC_CI_TOKEN}}
+                                fcli ssc appversion-vuln count --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION}
+                            """
                         }
                     } else {
                         input id: 'Release',
