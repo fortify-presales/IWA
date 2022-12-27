@@ -6,7 +6,7 @@ function Test-Environment {
 
     $WarningPreference = "Continue"
 
-    Write-Host "Validating Fortify Installation..." -NoNewline
+    Write-Host "Validating Fortify Installation..."
 
     # Check Source Analyzer is on the path
     if ((Get-Command "sourceanalyzer.exe" -ErrorAction SilentlyContinue) -eq $null)
@@ -46,12 +46,12 @@ function Test-Environment {
         $ScanCentralClient = $False
     }
 
-    Write-Host "OK."
+    Write-Host "Done."
 }
 
 
 function Test-ThirdPartyEnvironment {
-    Write-Host "Validating Third Party Installation..." -NoNewline
+    Write-Host "Validating Third Party Installation..."
 
     # Check Maven is on the path
     if ((Get-Command "mvn" -ErrorAction SilentlyContinue) -eq $null)
@@ -67,5 +67,5 @@ function Test-ThirdPartyEnvironment {
         throw "Unable to find nexus-iq-cli.exe is not in your PATH"
     }
 
-    Write-Host "OK."
+    Write-Host "Done."
 }

@@ -12,7 +12,7 @@ param (
 Import-Module $PSScriptRoot\modules\FortifyFunctions.psm1
 
 # Import local environment specific settings
-$EnvSettings = $(ConvertFrom-StringData -StringData (Get-Content ".\.env" | Where-Object {-not ($_.StartsWith('#'))} | Out-String))
+$EnvSettings = $(ConvertFrom-StringData -StringData (Get-Content (Join-Path "." -ChildPath ".env") | Where-Object {-not ($_.StartsWith('#'))} | Out-String))
 $AppName = $EnvSettings['SSC_APP_NAME']
 $AppVersion = $EnvSettings['SSC_APP_VER_NAME']
 $SSCAuthToken = $EnvSettings['SSC_AUTH_TOKEN'] # CIToken
@@ -25,6 +25,7 @@ if ($QuickScan) {
     $ScanArgs += "-sargs"
     $ScanArgs += "`"-scan-precision 1`""
 }
+$PackageName = "Package.zip"
 
 # Test we have Fortify installed successfully
 Test-Environment
@@ -34,12 +35,19 @@ if ([string]::IsNullOrEmpty($SSCAuthToken)) { throw "SSC Authentication token ha
 if ([string]::IsNullOrEmpty($AppName)) { throw "Application Name has not been set" }
 if ([string]::IsNullOrEmpty($AppVersion)) { throw "Application Version has not been set" }
 
+# Delete Package if it already exists
+if (Test-Path $PackageName) {
+   Remove-Item $PackageName -Verbose
+}
+
 # Package, upload and run the scan and import results into SSC
+$FilterFile = Join-Path ".\etc" -ChildPath "sca-filter.txt"
+$CustomRules = Join-Path ".\etc" -ChildPath "sca-custom-rules.xml"
 Write-Host Invoking ScanCentral SAST ...
-Write-Host "scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp Package.zip -b $AppName -application $AppName -version $AppVersion -bt gradle -bf build.gradle -rules .\etc\sca-custom-rules.xml -filter .\etc\sca-filter.txt -email $ScanCentralEmail -block -o -f $($AppName).fpr $($ScanArgs)"
-& scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp Package.zip `
+Write-Host "scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp $PackageName -b $AppName -application $AppName -version $AppVersion -bt gradle -bf build.gradle -rules $CustomRules -filter $FilterFile-email $ScanCentralEmail -block -o -f $($AppName).fpr $($ScanArgs)"
+& scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp $PackageName `
     -b $AppName -application $AppName -version $AppVersion -bt gradle -bf build.gradle `
-    -rules .\etc\sca-custom-rules.xml -filter .\etc\sca-filter.txt `
+    -rules $CustomRules -filter $FilterFile `
     -email $ScanCentralEmail -block -o -f "$($AppName).fpr" `
     $($ScanArgs)
 
