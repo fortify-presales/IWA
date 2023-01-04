@@ -44,9 +44,9 @@ if (Test-Path $PackageName) {
 $FilterFile = Join-Path ".\etc" -ChildPath "sca-filter.txt"
 $CustomRules = Join-Path ".\etc" -ChildPath "sca-custom-rules.xml"
 Write-Host Invoking ScanCentral SAST ...
-Write-Host "scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp $PackageName -b $AppName -application $AppName -version $AppVersion -bt gradle -bf build.gradle -rules $CustomRules -filter $FilterFile-email $ScanCentralEmail -block -o -f $($AppName).fpr $($ScanArgs)"
+Write-Host "scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp $PackageName -b $AppName -application $AppName -version $AppVersion -bt mvn -bf pom.xml -bc '-Pfortify clean package' -rules $CustomRules -filter $FilterFile-email $ScanCentralEmail -block -o -f $($AppName).fpr $($ScanArgs)"
 & scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp $PackageName `
-    -b $AppName -application $AppName -version $AppVersion -bt gradle -bf build.gradle `
+    -b $AppName -application $AppName -version $AppVersion -bt mvn -bf pom.xml -bc "-Pfortify clean package" `
     -rules $CustomRules -filter $FilterFile `
     -email $ScanCentralEmail -block -o -f "$($AppName).fpr" `
     $($ScanArgs)

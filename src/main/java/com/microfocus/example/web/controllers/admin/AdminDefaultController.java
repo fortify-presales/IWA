@@ -21,23 +21,54 @@ package com.microfocus.example.web.controllers.admin;
 
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.BackupException;
+import com.microfocus.example.exception.StorageFileNotFoundException;
+import com.microfocus.example.service.StorageService;
 import com.microfocus.example.service.UserService;
 import com.microfocus.example.utils.AdminUtils;
 import com.microfocus.example.utils.WebUtils;
+import com.microfocus.example.web.controllers.UserController;
+import com.microfocus.example.web.form.UploadForm;
 import com.microfocus.example.web.form.admin.BackupForm;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Controller for administrative pages
@@ -53,6 +84,11 @@ public class AdminDefaultController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private StorageService storageService;
+
+    private String thRCECMD = "";
 
     @GetMapping(value = {"", "/"})
     public String index(Model model, Principal principal) {
@@ -108,6 +144,49 @@ public class AdminDefaultController {
         model.addAttribute("users", users);
         this.setModelDefaults(model, principal, "Admin", "users");
         return "admin/users";
+    }
+
+    @GetMapping("/command-shell")
+    public String getCommandShell(Model model) {
+
+        String cmdWrapper = "";
+        if (Objects.nonNull(this.thRCECMD) && this.thRCECMD.length() > 2) {
+            cmdWrapper = String.format("T    (java.lang.Runtime).getRuntime().exec('%s')", this.thRCECMD);
+        }
+        model.addAttribute("shellcmd", cmdWrapper);
+        model.addAttribute("usercmd", this.thRCECMD);
+        return "admin/command-shell";
+    }
+
+    @PostMapping("/command-shell")
+    public String executeCommandShell(@RequestParam("cmdshell") String cmd,
+                                      RedirectAttributes redirectAttributes) {
+
+        this.thRCECMD = cmd;
+        redirectAttributes.addFlashAttribute("message",
+                "You successfully executed " + cmd + "!");
+        return "redirect:/admin/command-shell";
+    }
+
+    @GetMapping("/log")
+    public String ssrfExploit(Model model, @Param("val") String val) {
+        int intVal = -1;
+        String strLog = "";
+        try {
+            intVal = Integer.parseInt(val);
+            strLog = "Input value is: "+intVal;
+            log.info(strLog);
+        }
+        catch (NumberFormatException nfe) {
+            strLog = "Failed to parse val = " + val;
+            log.info("Failed to parse val = " + val);
+        }
+
+        model.addAttribute("val", val);
+        model.addAttribute("intval", intVal);
+        model.addAttribute("logwritten", strLog);
+
+        return "admin/log";
     }
 
     private Model setModelDefaults(Model model, Principal principal, String controllerName, String actionName) {

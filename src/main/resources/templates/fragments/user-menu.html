@@ -24,12 +24,6 @@
                 <a class="list-group-item list-group-item-action"
                    th:classappend="${#strings.contains(activeItem,'download-file')} ? active : ''"
                    th:href="@{/user/download-file}"><i class="fas fa-download fa-fw"></i> Download Files </a>
-                <a class="list-group-item list-group-item-action"
-                   th:classappend="${#strings.contains(activeItem,'command-shell')} ? active : ''"
-                   th:href="@{/user/command-shell}"><i class="fas fa-terminal fa-fw"></i> Command Shell </a>
-                <a class="list-group-item list-group-item-action"
-                   th:classappend="${#strings.contains(activeItem,'log')} ? active : ''"
-                   th:href="@{/user/log}"><i class="fas fa-file-signature fa-fw"></i> Log Entry </a>
             </div>
         </div>
     </div>
