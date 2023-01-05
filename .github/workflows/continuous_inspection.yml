@@ -121,7 +121,7 @@ jobs:
           fcli --version
           fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET github-actions
           fcli fod release list --app $FOD_APP_NAME --session github-actions
-          RELID=$(fcli fod release create $FOD_APP_NAME:$GITHUB_BRANCH_NAME --description "Created automatically from GitHub" --copy-from $FOD_PARENT_RELEASE_NAME --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions)
+          RELID=$(fcli fod release create ${FOD_APP_NAME}:${FOD_RELEASE_NAME} --description "Created automatically from GitHub" --copy-from $FOD_PARENT_RELEASE_NAME --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions)
           echo "FOD_RELEASE_ID=${RELID}"
           echo "FOD_RELEASE_ID=${RELID}" >> $GITHUB_OUTPUT
         id: create_fod_release
@@ -130,8 +130,8 @@ jobs:
           FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
           FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
           FOD_APP_NAME: "IWAPharmacyDirect"
+          FOD_RELEASE_NAME: ${{ steps.extract_branch.outputs.branch }}
           FOD_PARENT_RELEASE_NAME: "main"
-          GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
 
       # Verify if FoD release with name matching branch name exists and if not create it
       # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
@@ -183,10 +183,31 @@ jobs:
       - name: Download Fortify ScanCentral Client
         uses: fortify/gha-setup-scancentral-client@v1
       - name: Package Code + Dependencies
-        run: scancentral package -bt mvn -bf pom.xml -bc "-X package --settings $GITHUB_WORKSPACE/settings.xml" -o $PACKAGE_FILE
+        run: scancentral package -bt mvn -bf pom.xml -bc "package --settings $GITHUB_WORKSPACE/settings.xml" -o $PACKAGE_FILE
         env:
             PACKAGE_FILE: "package.zip"
             PACKAGE_OPTS: '-bt mvn -bf pom.xml -bc package --settings $GITHUB_WORKSPACE/settings.xml'
+
+
+      # Create FoD release for GitHub branch - if it doesn't already exist
+      # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
+      #   FOD_CLIENT_ID/FOD_CLIENT_SECRET API Credentials should be obtained from your FoD tenant.
+      #   FOD_PARENT_RELEASE_NAME is the FoD release name corresponding to the parent branch of any newly created branch, this is typically "master" or "main"
+      - name: Perform SAST SCAN
+        shell: bash
+        run: |
+          SCANID=$(fcli fod sast-scan start ${FOD_APP_NAME}:${FOD_RELEASE_NAME} --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f -o $PACKAGE_FILE --store curScan --session github-actions)
+          fcli fod sast-scan wait-for "{?curScan:scanId}" --session github-actions
+          echo "FOD_SCAN_ID=${SCANID}"
+          echo "FOD_SCAN_ID=${SCANID}" >> $GITHUB_OUTPUT
+          fcli fod release get ${FOD_APP_NAME}:${FOD_RELEASE_NAME} -o expr="Critical:\t{critical}\nHigh:\t\t{high}\nMedium:\t\t{medium}\nLow:\t\t{low}" --session github-actions
+          if [ $(fcli fod release get ${FOD_APP_NAME}:${FOD_RELEASE_NAME} -o expr="{isPassed}" --session github-actions) = 'true' ]; then echo "passed"; else echo "not passed"; fi
+        id: perform_fod_scan
+        env:
+          PACKAGE_FILE: "package.zip"
+          FOD_APP_NAME: "IWAPharmacyDirect"
+          FOD_RELEASE_NAME: ${{ steps.extract_branch.outputs.branch }}
+          FOD_SCAN_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
 
       # TEST - Save package.zip
       #- name: 'Upload Artifact'
@@ -222,7 +243,7 @@ jobs:
           fod_base_url: "https://emea.fortify.com"
           fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
           fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
-          fod_release_id: ${{ steps.create_fod_release.outputs.FOD_RELEASE_ID }}
+          fod_release_name: ${{ steps.extract_branch.outputs.branch }}
 
       # Check if SARIF output file has been created
       - name: Check file existence
