@@ -111,14 +111,14 @@ jobs:
           curl -fsSL https://github.com/fortify-ps/fcli/releases/latest/download/fcli-linux.tgz | tar -zxvf - -C $HOME/fcli/bin
           echo "$HOME/fcli/bin" >> $GITHUB_PATH
 
-      # Test fcli is installed and available
-      - name: Test fcli
+      # Create FoD release for GitHub branch - if it doesn't already exist
+      - name: Create FoD release
         shell: bash
         run: |
-          echo "$PATH"
           fcli --version
-          fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET github-action
-          fcli fod release list --app $FOD_APP_NAME
+          fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET github-actions
+          fcli fod release list --app $FOD_APP_NAME --session github-actions
+          fcli fod release create $FOD_APP_NAME:$GITHUB_BRANCH_NAME --description "Created automatically from GitHub Actions" --copy-from $FOD_PARENT_RELEASE_NAME --status Development --skip-if-exists --session github-actions
         env:
           FOD_API_URI: "https://api.emea.fortify.com/"
           FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
