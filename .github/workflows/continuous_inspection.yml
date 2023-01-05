@@ -113,7 +113,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p $HOME/fcli/bin
-          curl -fsSL https://github.com/fortify-ps/fcli/releases/latest/download/fcli-linux.tgz | tar -zxvf - -C $HOME/fcli/bin
+          curl -fsSL https://github.com/fortify-ps/fcli/releases/download/v1.0.3/fcli-linux.tgz | tar -zxvf - -C $HOME/fcli/bin
           echo "$HOME/fcli/bin" >> $GITHUB_PATH
 
       # Create FoD release for GitHub branch - if it doesn't already exist
@@ -201,10 +201,10 @@ jobs:
       - name: Perform SAST SCAN
         shell: bash
         run: |
-          fcli fod sast-scan start ${APP_NAME}:${FOD_RELEASE_NAME} --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions
-          #fcli fod sast-scan wait-for "{?curScan:scanId}" --session github-actions
-          #echo "FOD_SCAN_ID=${SCANID}"
-          #echo "FOD_SCAN_ID=${SCANID}" >> $GITHUB_OUTPUT
+          SCANID=$(fcli fod sast-scan start ${APP_NAME}:${FOD_RELEASE_NAME} --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions)
+          fcli fod sast-scan wait-for "{?curScan:scanId}" --session github-actions
+          echo "FOD_SCAN_ID=${SCANID}"
+          echo "FOD_SCAN_ID=${SCANID}" >> $GITHUB_OUTPUT
           fcli fod release get ${APP_NAME}:${FOD_RELEASE_NAME} -o expr="Critical:\t{critical}\nHigh:\t\t{high}\nMedium:\t\t{medium}\nLow:\t\t{low}" --session github-actions
           if [ $(fcli fod release get ${APP_NAME}:${FOD_RELEASE_NAME} -o expr="{isPassed}" --session github-actions) = 'true' ]; then echo "passed"; else echo "not passed"; fi
         id: perform_fod_scan
