@@ -28,7 +28,12 @@ on:
         description: 'Carry out Application Security testing using Fortify on Demand'
         required: false
         default: 'true'
-        
+
+  # Global environment variables
+  env:
+    APP_NAME: "IWAPharmacyDirect"
+    PARENT_RELEASE_NAME: "main"
+
 jobs:
 
   Build-And-Test:
@@ -120,8 +125,8 @@ jobs:
         run: |
           fcli --version
           fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET github-actions
-          fcli fod release list --app $FOD_APP_NAME --session github-actions
-          RELID=$(fcli fod release create ${FOD_APP_NAME}:${FOD_RELEASE_NAME} --description "Created automatically from GitHub" --copy-from $FOD_PARENT_RELEASE_NAME --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions)
+          fcli fod release list --app $APP_NAME --session github-actions
+          RELID=$(fcli fod release create ${APP_NAME}:${FOD_RELEASE_NAME} --description "Created automatically from GitHub" --copy-from $FOD_PARENT_RELEASE_NAME --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions)
           echo "FOD_RELEASE_ID=${RELID}"
           echo "FOD_RELEASE_ID=${RELID}" >> $GITHUB_OUTPUT
         id: create_fod_release
@@ -196,12 +201,12 @@ jobs:
       - name: Perform SAST SCAN
         shell: bash
         run: |
-          SCANID=$(fcli fod sast-scan start ${FOD_APP_NAME}:${FOD_RELEASE_NAME} --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f -o $PACKAGE_FILE --store curScan --session github-actions)
+          SCANID=$(fcli fod sast-scan start ${APP_NAME}:${FOD_RELEASE_NAME} --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions)
           fcli fod sast-scan wait-for "{?curScan:scanId}" --session github-actions
           echo "FOD_SCAN_ID=${SCANID}"
           echo "FOD_SCAN_ID=${SCANID}" >> $GITHUB_OUTPUT
-          fcli fod release get ${FOD_APP_NAME}:${FOD_RELEASE_NAME} -o expr="Critical:\t{critical}\nHigh:\t\t{high}\nMedium:\t\t{medium}\nLow:\t\t{low}" --session github-actions
-          if [ $(fcli fod release get ${FOD_APP_NAME}:${FOD_RELEASE_NAME} -o expr="{isPassed}" --session github-actions) = 'true' ]; then echo "passed"; else echo "not passed"; fi
+          fcli fod release get ${APP_NAME}:${FOD_RELEASE_NAME} -o expr="Critical:\t{critical}\nHigh:\t\t{high}\nMedium:\t\t{medium}\nLow:\t\t{low}" --session github-actions
+          if [ $(fcli fod release get ${APP_NAME}:${FOD_RELEASE_NAME} -o expr="{isPassed}" --session github-actions) = 'true' ]; then echo "passed"; else echo "not passed"; fi
         id: perform_fod_scan
         env:
           PACKAGE_FILE: "package.zip"
