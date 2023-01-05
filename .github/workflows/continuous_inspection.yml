@@ -201,10 +201,10 @@ jobs:
       - name: Perform SAST SCAN
         shell: bash
         run: |
-          SCANID=$(fcli fod sast-scan start ${APP_NAME}:${FOD_RELEASE_NAME} --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions)
-          fcli fod sast-scan wait-for "{?curScan:scanId}" --session github-actions
-          echo "FOD_SCAN_ID=${SCANID}"
-          echo "FOD_SCAN_ID=${SCANID}" >> $GITHUB_OUTPUT
+          fcli fod sast-scan start ${APP_NAME}:${FOD_RELEASE_NAME} --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions
+          #fcli fod sast-scan wait-for "{?curScan:scanId}" --session github-actions
+          #echo "FOD_SCAN_ID=${SCANID}"
+          #echo "FOD_SCAN_ID=${SCANID}" >> $GITHUB_OUTPUT
           fcli fod release get ${APP_NAME}:${FOD_RELEASE_NAME} -o expr="Critical:\t{critical}\nHigh:\t\t{high}\nMedium:\t\t{medium}\nLow:\t\t{low}" --session github-actions
           if [ $(fcli fod release get ${APP_NAME}:${FOD_RELEASE_NAME} -o expr="{isPassed}" --session github-actions) = 'true' ]; then echo "passed"; else echo "not passed"; fi
         id: perform_fod_scan
@@ -212,7 +212,7 @@ jobs:
           PACKAGE_FILE: "package.zip"
           FOD_APP_NAME: "IWAPharmacyDirect"
           FOD_RELEASE_NAME: ${{ steps.extract_branch.outputs.branch }}
-          FOD_SCAN_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
+          FOD_SCAN_NOTES: "Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
 
       # TEST - Save package.zip
       #- name: 'Upload Artifact'
