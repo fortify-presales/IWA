@@ -111,11 +111,21 @@ jobs:
           curl -fsSL https://github.com/fortify-ps/fcli/releases/latest/download/fcli-linux.tgz | tar -zxvf - -C $HOME/fcli/bin
           echo "$HOME/fcli/bin" >> $GITHUB_PATH
 
+      # Test fcli is installed and available
       - name: Test fcli
         shell: bash
         run: |
           echo "$PATH"
           fcli --version
+          fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET github-action
+          fcli fod release list --app $FOD_APP_NAME
+        env:
+          FOD_API_URI: "https://api.emea.fortify.com/"
+          FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
+          FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
+          FOD_APP_NAME: "IWAPharmacyDirect"
+          FOD_PARENT_RELEASE_NAME: "main"
+          GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
 
       # Verify if FoD release with name matching branch name exists and if not create it
       # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
