@@ -121,7 +121,8 @@ jobs:
           fcli --version
           fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET github-actions
           fcli fod release list --app $FOD_APP_NAME --session github-actions
-          $rel = fcli fod release create $FOD_APP_NAME:$GITHUB_BRANCH_NAME --description "Created automatically from GitHub" --copy-from $FOD_PARENT_RELEASE_NAME --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions
+          $rel = ${fcli fod release create $FOD_APP_NAME:$GITHUB_BRANCH_NAME --description "Created automatically from GitHub" --copy-from $FOD_PARENT_RELEASE_NAME --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions}
+          echo "FOD_RELEASE_ID=$rel"
           echo "FOD_RELEASE_ID=$rel" >> $GITHUB_OUTPUT
         id: create_fod_release
         env:
@@ -219,9 +220,8 @@ jobs:
         uses: fortify/gha-export-vulnerabilities@v1
         with:
           fod_base_url: "https://emea.fortify.com"
-          fod_tenant: ${{ secrets.FOD_TENANT }}
-          fod_user: ${{ secrets.FOD_USER }}
-          fod_password: ${{ secrets.FOD_PAT }}
+          fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
+          fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
           fod_release_id: ${{ steps.create_fod_release.outputs.FOD_RELEASE_ID }}
 
       # Check if SARIF output file has been created
