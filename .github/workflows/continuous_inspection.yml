@@ -107,9 +107,9 @@ jobs:
       - name: Install FCLI
         shell: bash
         run: |
-          curl -fsSL https://github.com/fortify-ps/fcli/releases/latest/download/fcli-linux.tgz
+          curl -fsSL https://github.com/fortify-ps/fcli/releases/latest/download/fcli-linux.tgz -o fcli-linux.tgz
           ls
-          tar -zxvf fcli-linux.tgz -C ~/fcli/bin
+          tar -zxvf ./fcli-linux.tgz -C ~/fcli/bin
           export PATH=$PATH:$HOME/fcli/bin
           echo "$HOME/fcli/bin" >> $GITHUB_PATH
           fcli --version
