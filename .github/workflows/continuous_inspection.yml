@@ -29,10 +29,10 @@ on:
         required: false
         default: 'true'
 
-  # Global environment variables
-  env:
-    APP_NAME: "IWAPharmacyDirect"
-    PARENT_RELEASE_NAME: "main"
+# Global environment variables
+env:
+  APP_NAME: "IWAPharmacyDirect"
+  PARENT_RELEASE_NAME: "main"
 
 jobs:
 
