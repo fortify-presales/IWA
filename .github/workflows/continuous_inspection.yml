@@ -103,11 +103,13 @@ jobs:
           SOURCE_BRANCH: ${{ github.head_ref }}  
         id: extract_branch
 
-      # Install Fortify Command Line (FCLI) tool
+      # Install Fortify Command Line (fcli) tool
       - name: Install FCLI
         shell: bash
         run: |
-          curl -fsSL https://github.com/fortify-ps/fcli/releases/latest/download/fcli-linux.tgz | tar -zxvf - -C ~/fcli/bin
+          curl -fsSL https://github.com/fortify-ps/fcli/releases/latest/download/fcli-linux.tgz
+          ls
+          tar -zxvf fcli-linux.tgz -C ~/fcli/bin
           export PATH=$PATH:$HOME/fcli/bin
           echo "$HOME/fcli/bin" >> $GITHUB_PATH
           fcli --version
