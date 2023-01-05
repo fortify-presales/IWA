@@ -112,13 +112,18 @@ jobs:
           echo "$HOME/fcli/bin" >> $GITHUB_PATH
 
       # Create FoD release for GitHub branch - if it doesn't already exist
+      # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
+      #   FOD_CLIENT_ID/FOD_CLIENT_SECRET API Credentials should be obtained from your FoD tenant.
+      #   FOD_PARENT_RELEASE_NAME is the FoD release name corresponding to the parent branch of any newly created branch, this is typically "master" or "main"
       - name: Create FoD release
         shell: bash
         run: |
           fcli --version
           fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET github-actions
           fcli fod release list --app $FOD_APP_NAME --session github-actions
-          fcli fod release create $FOD_APP_NAME:$GITHUB_BRANCH_NAME --description "Created automatically from GitHub Actions" --copy-from $FOD_PARENT_RELEASE_NAME --status Development --skip-if-exists --session github-actions
+          $rel = fcli fod release create $FOD_APP_NAME:$GITHUB_BRANCH_NAME --description "Created automatically from GitHub" --copy-from $FOD_PARENT_RELEASE_NAME --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions
+          echo "FOD_RELEASE_ID=$rel" >> $GITHUB_OUTPUT
+        id: create_fod_release
         env:
           FOD_API_URI: "https://api.emea.fortify.com/"
           FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
@@ -132,40 +137,40 @@ jobs:
       #   Credentials should be obtained from your FoD tenant (only API Key can is used here but could be changed to Personal Access Token).
       #   FOD_PARENT_RELEASE_ID is the FoD release id corresponding to the parent branch of any newly created branch, this is typically "master" or "main"
       # The PowerShellForFOD module is used to carry out the automation (see: https://github.com/fortify-community-plugins/PowerShellForFOD)
-      - name: Verify FOD Release
-        shell: pwsh
-        run: |
-          Write-Output "Installing PowerShellForFOD module ..."
-          Install-Module PowerShellForFOD -Scope CurrentUser -Force -Repository PSGallery
-          Write-Output "Configuring FOD API $Env:FOD_API_URI or $env.FOD_API_URI ..."
-          $PWord = ConvertTo-SecureString -String "$Env:FOD_PAT" -AsPlainText -Force
-          $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$Env:FOD_TENANT\$Env:FOD_USER", $PWord
-          Set-FODConfig -ApiUri $Env:FOD_API_URI -GrantType UsernamePassword -Scope api-tenant
-          Get-FODToken -Credential $Credential
-          Write-Output "Checking for existence of $Env:GITHUB_BRANCH_NAME release in application $Env:FOD_APPLICATION_NAME"
-          if (-not (Test-FODRelease -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME)) { 
-              Write-Output "Release does not exist, creating it..."
-              $AppId = Get-FODApplicationId -ApplicationName $Env:FOD_APPLICATION_NAME
-              $NewReleaseObj = New-FODReleaseObject -ApplicationId $AppId -Name $Env:GITHUB_BRANCH_NAME -Description "Created automatically from GitHub" -CopyState -CopyReleaseId $env:FOD_PARENT_RELEASE_ID -SDLCStatus Development
-              $RelResponse = Add-FODRelease -Release $NewReleaseObj
-              $ReleaseId = $RelResponse.releaseId
-              Write-Output "::set-output name=FOD_RELEASE_ID::$ReleaseId"
-              Start-Sleep -Seconds 30 # Brief pause to make sure release has been created!
-          } else {
-              Write-Output "Release exists..."
-              $ReleaseId = Get-FODReleaseId -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME
-              Write-Output "::set-output name=FOD_RELEASE_ID::$ReleaseId"
-          }    
-        id: verify_fod_release
-        env:
-          FOD_TENANT: ${{ secrets.FOD_TENANT }}
-          FOD_USER: ${{ secrets.FOD_USER }}
-          FOD_PAT: ${{ secrets.FOD_PAT }}
-          FOD_APPLICATION_NAME: "IWAPharmacyDirect"
-          FOD_PARENT_RELEASE_ID: ${{ secrets.FOD_PARENT_RELEASE_ID }}
-          FOD_URL: "https://emea.fortify.com/"
-          FOD_API_URI: "https://api.emea.fortify.com/"
-          GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
+      #- name: Verify FOD Release
+      #  shell: pwsh
+      #  run: |
+      #    Write-Output "Installing PowerShellForFOD module ..."
+      #    Install-Module PowerShellForFOD -Scope CurrentUser -Force -Repository PSGallery
+      #    Write-Output "Configuring FOD API $Env:FOD_API_URI or $env.FOD_API_URI ..."
+      #    $PWord = ConvertTo-SecureString -String "$Env:FOD_PAT" -AsPlainText -Force
+      #    $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$Env:FOD_TENANT\$Env:FOD_USER", $PWord
+      #    Set-FODConfig -ApiUri $Env:FOD_API_URI -GrantType UsernamePassword -Scope api-tenant
+      #    Get-FODToken -Credential $Credential
+      #    Write-Output "Checking for existence of $Env:GITHUB_BRANCH_NAME release in application $Env:FOD_APPLICATION_NAME"
+      #    if (-not (Test-FODRelease -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME)) {
+      #        Write-Output "Release does not exist, creating it..."
+      #        $AppId = Get-FODApplicationId -ApplicationName $Env:FOD_APPLICATION_NAME
+      #        $NewReleaseObj = New-FODReleaseObject -ApplicationId $AppId -Name $Env:GITHUB_BRANCH_NAME -Description "Created automatically from GitHub" -CopyState -CopyReleaseId $env:FOD_PARENT_RELEASE_ID -SDLCStatus Development
+      #        $RelResponse = Add-FODRelease -Release $NewReleaseObj
+      #        $ReleaseId = $RelResponse.releaseId
+      #        Write-Output "::set-output name=FOD_RELEASE_ID::$ReleaseId"
+      #        Start-Sleep -Seconds 30 # Brief pause to make sure release has been created!
+      #    } else {
+      #        Write-Output "Release exists..."
+      #        $ReleaseId = Get-FODReleaseId -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME
+      #        Write-Output "::set-output name=FOD_RELEASE_ID::$ReleaseId"
+      #   }
+      #  id: verify_fod_release
+      #  env:
+      #    FOD_TENANT: ${{ secrets.FOD_TENANT }}
+      #    FOD_USER: ${{ secrets.FOD_USER }}
+      #    FOD_PAT: ${{ secrets.FOD_PAT }}
+      #    FOD_APPLICATION_NAME: "IWAPharmacyDirect"
+      #    FOD_PARENT_RELEASE_ID: ${{ secrets.FOD_PARENT_RELEASE_ID }}
+      #    FOD_URL: "https://emea.fortify.com/"
+      #    FOD_API_URI: "https://api.emea.fortify.com/"
+      #    GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
 
       # Prepare source+dependencies for upload. The default example is for a Maven project that uses pom.xml.
       # Update PACKAGE_OPTS based on the ScanCentral Client documentation for your project's included tech stack(s). Helpful hints:
@@ -182,42 +187,42 @@ jobs:
             PACKAGE_FILE: "package.zip"
             PACKAGE_OPTS: '-bt mvn -bf pom.xml -bc package --settings $GITHUB_WORKSPACE/settings.xml'
 
-      # TEST - Save fod.zip
+      # TEST - Save package.zip
       #- name: 'Upload Artifact'
       #  uses: actions/upload-artifact@v2
       #  with:
-      #    name: fod.zip
-      #    path: fod.zip
+      #    name: package.zip
+      #    path: package.zip
       #    retention-days: 5
 
       # Start Fortify on Demand SAST scan and wait until results complete. For more information on FoDUploader commands, see https://github.com/fod-dev/fod-uploader-java
       # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
       #   Credentials and release ID should be obtained from your FoD tenant (either Personal Access Token or API Key can be used).
       #   Automated Audit preference should be configured for the release's Static Scan Settings in the Fortify on Demand portal.
-      - name: Download Fortify on Demand Universal CI Tool
-        uses: fortify/gha-setup-fod-uploader@v1
-      - name: Perform SAST Scan
-        run: java -jar $FOD_UPLOAD_JAR -z $PACKAGE_FILE -aurl $FOD_API_URL -purl $FOD_URL -rid "$FOD_RELEASE_ID" -tc "$FOD_TENANT" -uc "$FOD_USER" "$FOD_PAT" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
-        env:
-            FOD_TENANT: ${{ secrets.FOD_TENANT }}
-            FOD_USER: ${{ secrets.FOD_USER }}
-            FOD_PAT: ${{ secrets.FOD_PAT }}
-            FOD_RELEASE_ID: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
-            FOD_URL: "https://emea.fortify.com/"
-            FOD_API_URL: "https://api.emea.fortify.com/"
-            FOD_UPLOADER_OPTS: "-ep 2 -pp 2 -I 1 -apf"
-            FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
-            PACKAGE_FILE: "package.zip"
+      #- name: Download Fortify on Demand Universal CI Tool
+      #  uses: fortify/gha-setup-fod-uploader@v1
+      #- name: Perform SAST Scan
+      #  run: java -jar $FOD_UPLOAD_JAR -z $PACKAGE_FILE -aurl $FOD_API_URL -purl $FOD_URL -rid "$FOD_RELEASE_ID" -tc "$FOD_TENANT" -uc "$FOD_USER" "$FOD_PAT" $FOD_UPLOADER_OPTS -n "$FOD_UPLOADER_NOTES"
+      #  env:
+      #      FOD_TENANT: ${{ secrets.FOD_TENANT }}
+      #      FOD_USER: ${{ secrets.FOD_USER }}
+      #      FOD_PAT: ${{ secrets.FOD_PAT }}
+      #      FOD_RELEASE_ID: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
+      #      FOD_URL: "https://emea.fortify.com/"
+      #      FOD_API_URL: "https://api.emea.fortify.com/"
+      #      FOD_UPLOADER_OPTS: "-ep 2 -pp 2 -I 1 -apf"
+      #      FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
+      #      PACKAGE_FILE: "package.zip"
 
       # Pull SAST issues from Fortify on Demand and generate GitHub-optimized SARIF output
       - name: Export Results
         uses: fortify/gha-export-vulnerabilities@v1
         with:
-          fod_base_url: https://emea.fortify.com
+          fod_base_url: "https://emea.fortify.com"
           fod_tenant: ${{ secrets.FOD_TENANT }}
           fod_user: ${{ secrets.FOD_USER }}
           fod_password: ${{ secrets.FOD_PAT }}
-          fod_release_id: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
+          fod_release_id: ${{ steps.create_fod_release.outputs.FOD_RELEASE_ID }}
 
       # Check if SARIF output file has been created
       - name: Check file existence
@@ -234,44 +239,44 @@ jobs:
           sarif_file: ./gh-fortify-sast.sarif
 
       # Run script to check the results of the scan to determine success/failure
-      - name: Check FOD Scan Status
-        shell: pwsh
-        run: |
-          Write-Output "Configuring FOD API $Env:FOD_API_URI or $env.FOD_API_URI ..."
-          $PWord = ConvertTo-SecureString -String "$Env:FOD_PAT" -AsPlainText -Force
-          $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$Env:FOD_TENANT\$Env:FOD_USER", $PWord
-          Set-FODConfig -ApiUri $Env:FOD_API_URI -GrantType UsernamePassword -Scope api-tenant
-          Get-FODToken -Credential $Credential
-          Write-Output "Checking status of FOD Release $Env:FOD_RELEASE_ID"
-          $ScanSummary = Get-FODReleaseScans -ReleaseId $Env:FOD_RELEASE_ID -OrderBy completedDateTime -Limit 1
-          $ScanId = $ScanSummary.scanId
-          $ReleaseName = $ScanSummary.releaseName
-          $ScanStatus = $ScanSummary.analysisStatusType
-          $StarRating = $ScanSummary.starRating
-          $IssueCountCritical = $ScanSummary.issueCountCritical
-          $IssueCountHigh = $ScanSummary.issueCountHigh
-          $IssueCountMedium = $ScanSummary.issueCountMedium
-          $IssueCountLow = $ScanSummary.issueCountLow
-          $IssueCountTotal = $ScanSummary.issueCountTotal
-          Write-Output "Finished scan $ScanId with status '$ScanStatus'"
-          Write-Output "Release '$ReleaseName' has a $StarRating star rating"
-          Write-Output "Critical Issues:  $IssueCountCritical"
-          Write-Output "High Issues:      $IssueCountHigh"
-          Write-Output "Medium Issues:    $IssueCountMedium"
-          Write-Output "Low Issues:       $IssueCountLow"
-          Write-Output "Total Issues:     $TotalIssues"
-          # Example of using issue data
-          if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
-            if ($StarRating -lt 2) { exit 1 } # Fail if less than 2 star rating - set to your own criteria
-          } 
-        env:
-          FOD_TENANT: ${{ secrets.FOD_TENANT }}
-          FOD_USER: ${{ secrets.FOD_USER }}
-          FOD_PAT: ${{ secrets.FOD_PAT }}
-          FOD_APPLICATION_NAME: "IWAPharmacyDirect"
-          FOD_RELEASE_ID: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
-          FOD_URL: "https://emea.fortify.com/"
-          FOD_API_URI: "https://api.emea.fortify.com/"
+      #- name: Check FOD Scan Status
+      #  shell: pwsh
+      #  run: |
+      #    Write-Output "Configuring FOD API $Env:FOD_API_URI or $env.FOD_API_URI ..."
+      #    $PWord = ConvertTo-SecureString -String "$Env:FOD_PAT" -AsPlainText -Force
+      #    $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$Env:FOD_TENANT\$Env:FOD_USER", $PWord
+      #    Set-FODConfig -ApiUri $Env:FOD_API_URI -GrantType UsernamePassword -Scope api-tenant
+      #    Get-FODToken -Credential $Credential
+      #    Write-Output "Checking status of FOD Release $Env:FOD_RELEASE_ID"
+      #    $ScanSummary = Get-FODReleaseScans -ReleaseId $Env:FOD_RELEASE_ID -OrderBy completedDateTime -Limit 1
+      #    $ScanId = $ScanSummary.scanId
+      #    $ReleaseName = $ScanSummary.releaseName
+      #    $ScanStatus = $ScanSummary.analysisStatusType
+      #    $StarRating = $ScanSummary.starRating
+      #    $IssueCountCritical = $ScanSummary.issueCountCritical
+      #    $IssueCountHigh = $ScanSummary.issueCountHigh
+      #    $IssueCountMedium = $ScanSummary.issueCountMedium
+      #    $IssueCountLow = $ScanSummary.issueCountLow
+      #    $IssueCountTotal = $ScanSummary.issueCountTotal
+      #    Write-Output "Finished scan $ScanId with status '$ScanStatus'"
+      #    Write-Output "Release '$ReleaseName' has a $StarRating star rating"
+      #    Write-Output "Critical Issues:  $IssueCountCritical"
+      #    Write-Output "High Issues:      $IssueCountHigh"
+      #    Write-Output "Medium Issues:    $IssueCountMedium"
+      #    Write-Output "Low Issues:       $IssueCountLow"
+      #    Write-Output "Total Issues:     $TotalIssues"
+      #    # Example of using issue data
+      #    if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
+      #      if ($StarRating -lt 2) { exit 1 } # Fail if less than 2 star rating - set to your own criteria
+      #    }
+      #  env:
+      #    FOD_TENANT: ${{ secrets.FOD_TENANT }}
+      #    FOD_USER: ${{ secrets.FOD_USER }}
+      #    FOD_PAT: ${{ secrets.FOD_PAT }}
+      #    FOD_APPLICATION_NAME: "IWAPharmacyDirect"
+      #    FOD_RELEASE_ID: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
+      #    FOD_URL: "https://emea.fortify.com/"
+      #    FOD_API_URI: "https://api.emea.fortify.com/"
 
   FoD-DAST-Scan:
     if: ${{ false }} 
