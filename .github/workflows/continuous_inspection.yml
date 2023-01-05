@@ -107,9 +107,9 @@ jobs:
       - name: Install FCLI
         shell: bash
         run: |
-          mkdir -p $HOME/.fcli/bin
-          curl -fsSL https://github.com/fortify-ps/fcli/releases/latest/download/fcli-linux.tgz | tar -zxvf - -C $HOME/.fcli/bin
-          echo "$HOME/.fcli/bin" >> $GITHUB_PATH
+          mkdir -p $HOME/fcli/bin
+          curl -fsSL https://github.com/fortify-ps/fcli/releases/latest/download/fcli-linux.tgz | tar -zxvf - -C $HOME/fcli/bin
+          echo "$HOME/fcli/bin" >> $GITHUB_PATH
           fcli --version
 
       # Verify if FoD release with name matching branch name exists and if not create it
