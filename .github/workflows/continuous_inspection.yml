@@ -65,6 +65,16 @@ jobs:
     - name: Build with Maven
       run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dskip.unit.tests=false -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
 
+  Quality-Gate:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+      needs: [ Build-And-Test ]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
   FoD-SAST-Scan:
     # Use the appropriate runner for building your source code.
     # Use a Windows runner for .NET projects that use msbuild. Additional changes to RUN commands will be required to switch to Windows syntax.
@@ -109,6 +119,17 @@ jobs:
         env:
           FCLI_VER: "dev_main"
 
+      # Login Fortify on Demand fcli session
+      - name: Login fcli
+        shell: bash
+        run: |
+          fcli --version
+          fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET github-actions
+        env:
+          FOD_API_URI: "https://api.emea.fortify.com/"
+          FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
+          FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
+
       # Create FoD release for GitHub branch - if it doesn't already exist
       # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
       #   FOD_CLIENT_ID/FOD_CLIENT_SECRET API Credentials should be obtained from your FoD tenant.
@@ -116,17 +137,12 @@ jobs:
       - name: Create FoD release
         shell: bash
         run: |
-          fcli --version
-          fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET github-actions
           fcli fod release list --app $APP_NAME --session github-actions
           RELID=$(fcli fod release create ${APP_NAME}:${FOD_RELEASE_NAME} --description "Created automatically from GitHub" --copy-from $FOD_PARENT_RELEASE_NAME --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions)
           echo "FOD_RELEASE_ID=${RELID}"
           echo "FOD_RELEASE_ID=${RELID}" >> $GITHUB_OUTPUT
         id: create_fod_release
         env:
-          FOD_API_URI: "https://api.emea.fortify.com/"
-          FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
-          FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
           FOD_RELEASE_NAME: ${{ steps.extract_branch.outputs.branch }}
           FOD_PARENT_RELEASE_NAME: "main"
 
@@ -154,7 +170,7 @@ jobs:
       #    retention-days: 5
 
       # Start Fortify on Demand SAST scan and wait until results complete.
-      - name: Perform SAST SCAN
+      - name: Perform SAST scan
         shell: bash
         run: |
           SCANID=$(fcli fod sast-scan start ${APP_NAME}:${FOD_RELEASE_NAME} --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions)
@@ -300,6 +316,17 @@ jobs:
         env:
           FCLI_VER: "dev_main"
 
+      # Login Fortify on Demand fcli session
+      - name: Login fcli
+        shell: bash
+        run: |
+          fcli --version
+          fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET github-actions
+        env:
+          FOD_API_URI: "https://api.emea.fortify.com/"
+          FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
+          FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
+
       # Run script to check the Security Policy of the Fortify on Demand Release to determine success/failure
       - name: Verify Security Policy
         shell: bash
@@ -316,3 +343,12 @@ jobs:
         run: |
           fcli fod session logout --session github-actions
 
+  Release-Gate:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+      needs: [ Quality-Gate, Security-Gate ]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
