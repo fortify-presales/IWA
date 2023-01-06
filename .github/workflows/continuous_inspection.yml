@@ -24,10 +24,14 @@ on:
  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
-      useFortifyOnDemand:
-        description: 'Carry out Application Security testing using Fortify on Demand'
+      runFoDSASTScan:
+        description: 'Carry out SAST scan using Fortify on Demand'
         required: false
         default: 'true'
+      runFoDDASTScan:
+        description: 'Carry out DAST scan using Fortify on Demand'
+        required: false
+        default: 'false'
 
 # Global environment variables
 env:
@@ -65,31 +69,18 @@ jobs:
     # Use the appropriate runner for building your source code.
     # Use a Windows runner for .NET projects that use msbuild. Additional changes to RUN commands will be required to switch to Windows syntax.
     runs-on: ubuntu-latest
-    # FoD-SAST-Scan will be default job unless "workflow_dispatch" then you can select/deslect FoD
-    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.useFortifyOnDemand == 'true') }}
+    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') && (github.event.inputs.runFoDSASTScan == 'true') }}
 
     steps:
       # Check out source code
       - name: Check Out Source Code
         uses: actions/checkout@v2
 
-      # Java 8 required by ScanCentral Client and FoD Uploader(Univeral CI Tool)
+      # Java 8 required by ScanCentral Client and FoD Uploader(Universal CI Tool)
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
             java-version: 1.11
-
-      # Build / Test with Maven (debug)
-      # "mvn -P fortify package" produces an fod.zip file with source code and dependencies
-      #- name: Build with Maven
-      #  run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -P fortify,jar -B clean package --file pom.xml
-
-      # Package up the source code and pom so that it can be uploaded to FOD
-      #- name: Zip up source code
-      #  uses: papeloto/action-zip@v1
-      #  with:
-      #    files: fod/ pom.xml
-      #    dest: fod.zip
 
       # Get the branch name or pr number
       - name: Extract branch name
@@ -136,49 +127,8 @@ jobs:
           FOD_API_URI: "https://api.emea.fortify.com/"
           FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
           FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
-          FOD_APP_NAME: "IWAPharmacyDirect"
           FOD_RELEASE_NAME: ${{ steps.extract_branch.outputs.branch }}
           FOD_PARENT_RELEASE_NAME: "main"
-
-      # Verify if FoD release with name matching branch name exists and if not create it
-      # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
-      #   Credentials should be obtained from your FoD tenant (only API Key can is used here but could be changed to Personal Access Token).
-      #   FOD_PARENT_RELEASE_ID is the FoD release id corresponding to the parent branch of any newly created branch, this is typically "master" or "main"
-      # The PowerShellForFOD module is used to carry out the automation (see: https://github.com/fortify-community-plugins/PowerShellForFOD)
-      #- name: Verify FOD Release
-      #  shell: pwsh
-      #  run: |
-      #    Write-Output "Installing PowerShellForFOD module ..."
-      #    Install-Module PowerShellForFOD -Scope CurrentUser -Force -Repository PSGallery
-      #    Write-Output "Configuring FOD API $Env:FOD_API_URI or $env.FOD_API_URI ..."
-      #    $PWord = ConvertTo-SecureString -String "$Env:FOD_PAT" -AsPlainText -Force
-      #    $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$Env:FOD_TENANT\$Env:FOD_USER", $PWord
-      #    Set-FODConfig -ApiUri $Env:FOD_API_URI -GrantType UsernamePassword -Scope api-tenant
-      #    Get-FODToken -Credential $Credential
-      #    Write-Output "Checking for existence of $Env:GITHUB_BRANCH_NAME release in application $Env:FOD_APPLICATION_NAME"
-      #    if (-not (Test-FODRelease -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME)) {
-      #        Write-Output "Release does not exist, creating it..."
-      #        $AppId = Get-FODApplicationId -ApplicationName $Env:FOD_APPLICATION_NAME
-      #        $NewReleaseObj = New-FODReleaseObject -ApplicationId $AppId -Name $Env:GITHUB_BRANCH_NAME -Description "Created automatically from GitHub" -CopyState -CopyReleaseId $env:FOD_PARENT_RELEASE_ID -SDLCStatus Development
-      #        $RelResponse = Add-FODRelease -Release $NewReleaseObj
-      #        $ReleaseId = $RelResponse.releaseId
-      #        Write-Output "::set-output name=FOD_RELEASE_ID::$ReleaseId"
-      #        Start-Sleep -Seconds 30 # Brief pause to make sure release has been created!
-      #    } else {
-      #        Write-Output "Release exists..."
-      #        $ReleaseId = Get-FODReleaseId -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME
-      #        Write-Output "::set-output name=FOD_RELEASE_ID::$ReleaseId"
-      #   }
-      #  id: verify_fod_release
-      #  env:
-      #    FOD_TENANT: ${{ secrets.FOD_TENANT }}
-      #    FOD_USER: ${{ secrets.FOD_USER }}
-      #    FOD_PAT: ${{ secrets.FOD_PAT }}
-      #    FOD_APPLICATION_NAME: "IWAPharmacyDirect"
-      #    FOD_PARENT_RELEASE_ID: ${{ secrets.FOD_PARENT_RELEASE_ID }}
-      #    FOD_URL: "https://emea.fortify.com/"
-      #    FOD_API_URI: "https://api.emea.fortify.com/"
-      #    GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
 
       # Prepare source+dependencies for upload. The default example is for a Maven project that uses pom.xml.
       # Update PACKAGE_OPTS based on the ScanCentral Client documentation for your project's included tech stack(s). Helpful hints:
@@ -195,11 +145,15 @@ jobs:
             PACKAGE_FILE: "package.zip"
             PACKAGE_OPTS: '-bt mvn -bf pom.xml -bc package --settings $GITHUB_WORKSPACE/settings.xml'
 
+      # FOR DEBUG - Save package.zip
+      #- name: 'Upload Artifact'
+      #  uses: actions/upload-artifact@v2
+      #  with:
+      #    name: package.zip
+      #    path: package.zip
+      #    retention-days: 5
 
-      # Create FoD release for GitHub branch - if it doesn't already exist
-      # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
-      #   FOD_CLIENT_ID/FOD_CLIENT_SECRET API Credentials should be obtained from your FoD tenant.
-      #   FOD_PARENT_RELEASE_NAME is the FoD release name corresponding to the parent branch of any newly created branch, this is typically "master" or "main"
+      # Start Fortify on Demand SAST scan and wait until results complete.
       - name: Perform SAST SCAN
         shell: bash
         run: |
@@ -212,17 +166,8 @@ jobs:
         id: perform_fod_scan
         env:
           PACKAGE_FILE: "package.zip"
-          FOD_APP_NAME: "IWAPharmacyDirect"
           FOD_RELEASE_NAME: ${{ steps.extract_branch.outputs.branch }}
           FOD_SCAN_NOTES: "Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-
-      # TEST - Save package.zip
-      #- name: 'Upload Artifact'
-      #  uses: actions/upload-artifact@v2
-      #  with:
-      #    name: package.zip
-      #    path: package.zip
-      #    retention-days: 5
 
       # Start Fortify on Demand SAST scan and wait until results complete. For more information on FoDUploader commands, see https://github.com/fod-dev/fod-uploader-java
       # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
@@ -266,52 +211,73 @@ jobs:
         with:
           sarif_file: ./gh-fortify-sast.sarif
 
-      # Run script to check the results of the scan to determine success/failure
-      #- name: Check FOD Scan Status
-      #  shell: pwsh
-      #  run: |
-      #    Write-Output "Configuring FOD API $Env:FOD_API_URI or $env.FOD_API_URI ..."
-      #    $PWord = ConvertTo-SecureString -String "$Env:FOD_PAT" -AsPlainText -Force
-      #    $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$Env:FOD_TENANT\$Env:FOD_USER", $PWord
-      #    Set-FODConfig -ApiUri $Env:FOD_API_URI -GrantType UsernamePassword -Scope api-tenant
-      #    Get-FODToken -Credential $Credential
-      #    Write-Output "Checking status of FOD Release $Env:FOD_RELEASE_ID"
-      #    $ScanSummary = Get-FODReleaseScans -ReleaseId $Env:FOD_RELEASE_ID -OrderBy completedDateTime -Limit 1
-      #    $ScanId = $ScanSummary.scanId
-      #    $ReleaseName = $ScanSummary.releaseName
-      #    $ScanStatus = $ScanSummary.analysisStatusType
-      #    $StarRating = $ScanSummary.starRating
-      #    $IssueCountCritical = $ScanSummary.issueCountCritical
-      #    $IssueCountHigh = $ScanSummary.issueCountHigh
-      #    $IssueCountMedium = $ScanSummary.issueCountMedium
-      #    $IssueCountLow = $ScanSummary.issueCountLow
-      #    $IssueCountTotal = $ScanSummary.issueCountTotal
-      #    Write-Output "Finished scan $ScanId with status '$ScanStatus'"
-      #    Write-Output "Release '$ReleaseName' has a $StarRating star rating"
-      #    Write-Output "Critical Issues:  $IssueCountCritical"
-      #    Write-Output "High Issues:      $IssueCountHigh"
-      #    Write-Output "Medium Issues:    $IssueCountMedium"
-      #    Write-Output "Low Issues:       $IssueCountLow"
-      #    Write-Output "Total Issues:     $TotalIssues"
-      #    # Example of using issue data
-      #    if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
-      #      if ($StarRating -lt 2) { exit 1 } # Fail if less than 2 star rating - set to your own criteria
-      #    }
-      #  env:
-      #    FOD_TENANT: ${{ secrets.FOD_TENANT }}
-      #    FOD_USER: ${{ secrets.FOD_USER }}
-      #    FOD_PAT: ${{ secrets.FOD_PAT }}
-      #    FOD_APPLICATION_NAME: "IWAPharmacyDirect"
-      #    FOD_RELEASE_ID: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
-      #    FOD_URL: "https://emea.fortify.com/"
-      #    FOD_API_URI: "https://api.emea.fortify.com/"
+      # Run script to check the Security Policy of the Fortify on Demand Release to determine success/failure
+      - name: Verify Security Policy
+        shell: bash
+        run: |
+          fcli fod release get ${APP_NAME}:${FOD_RELEASE_NAME} -o expr="Critical:\t{critical}\nHigh:\t\t{high}\nMedium:\t\t{medium}\nLow:\t\t{low}" --session github-actions
+          if [ $(fcli fod release get ${APP_NAME}:${FOD_RELEASE_NAME} -o expr="{isPassed}" --session github-actions) = 'true' ]; then echo "passed"; else echo "not passed"; fi
+        id: perform_fod_scan
+        env:
+          FOD_RELEASE_NAME: ${{ steps.extract_branch.outputs.branch }}
+
+      # Logout/Close Fortify on Demand fcli session
+      - name: Logout fcli
+        shell: bash
+        run: |
+          fcli fod session logout --session github-actions
 
   FoD-DAST-Scan:
-    if: ${{ false }} 
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') && (github.event.inputs.runFoDDASTScan == 'true') }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+
+      # Java 8 required by ScanCentral Client and FoD Uploader(Universal CI Tool)
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+
+      # Get the branch name or pr number
+      - name: Extract branch name
+        shell: pwsh
+        run: |
+          if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
+            $BranchName = $Env:GITHUB_REF -replace 'refs/pull/', ''
+            $PRNumber = $BranchName -replace '/merge', ''
+            $BranchName = "[PR]" + $Env:SOURCE_BRANCH + "#" + $PRNumber
+            Write-Output "::set-output name=branch::$BranchName"
+          } else {
+            $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
+            Write-Output "::set-output name=branch::$BranchName"
+          }
+        env:
+          SOURCE_BRANCH: ${{ github.head_ref }}
+        id: extract_branch
+
+      # Install Fortify Command Line (fcli) tool
+      - name: Install fcli
+        shell: bash
+        run: |
+          mkdir -p $HOME/fcli/bin
+          curl -fsSL https://github.com/fortify-ps/fcli/releases/download/${FCLI_VER}/fcli-linux.tgz | tar -zxvf - -C $HOME/fcli/bin
+          echo "$HOME/fcli/bin" >> $GITHUB_PATH
+        env:
+          FCLI_VER: "dev_main"
+
+
+      #
+      # TBD: fcli dast scan
+      #
+
+
+      # Logout/Close Fortify on Demand fcli session
+      - name: Logout fcli
+        shell: bash
+        run: |
+          fcli fod session logout --session github-actions
+
