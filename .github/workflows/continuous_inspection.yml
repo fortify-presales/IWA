@@ -116,7 +116,7 @@ jobs:
           curl -fsSL https://github.com/fortify-ps/fcli/releases/download/${FCLI_VER}/fcli-linux.tgz | tar -zxvf - -C $HOME/fcli/bin
           echo "$HOME/fcli/bin" >> $GITHUB_PATH
         env:
-          FCLI_VER: "v1.0.2"
+          FCLI_VER: "dev_main"
 
       # Create FoD release for GitHub branch - if it doesn't already exist
       # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
