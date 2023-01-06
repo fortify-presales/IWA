@@ -69,7 +69,7 @@ jobs:
     # Use the appropriate runner for building your source code.
     # Use a Windows runner for .NET projects that use msbuild. Additional changes to RUN commands will be required to switch to Windows syntax.
     runs-on: ubuntu-latest
-    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') && (github.event.inputs.runFoDSASTScan == 'true') }}
+    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runFoDSASTScan == 'true') }}
 
     steps:
       # Check out source code
@@ -209,16 +209,6 @@ jobs:
         with:
           sarif_file: ./gh-fortify-sast.sarif
 
-      # Run script to check the Security Policy of the Fortify on Demand Release to determine success/failure
-      - name: Verify Security Policy
-        shell: bash
-        run: |
-          fcli fod release get ${APP_NAME}:${FOD_RELEASE_NAME} -o expr="Critical:\t{critical}\nHigh:\t\t{high}\nMedium:\t\t{medium}\nLow:\t\t{low}" --session github-actions
-          if [ $(fcli fod release get ${APP_NAME}:${FOD_RELEASE_NAME} -o expr="{isPassed}" --session github-actions) = 'true' ]; then echo "passed"; else echo "not passed"; fi
-        id: verify_security_policy
-        env:
-          FOD_RELEASE_NAME: ${{ steps.extract_branch.outputs.branch }}
-
       # Logout/Close Fortify on Demand fcli session
       - name: Logout fcli
         shell: bash
@@ -227,7 +217,7 @@ jobs:
 
   FoD-DAST-Scan:
     runs-on: ubuntu-latest
-    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') && (github.event.inputs.runFoDDASTScan == 'true') }}
+    if: ${{ (github.event.inputs.runFoDDASTScan == 'true') }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -267,11 +257,58 @@ jobs:
         env:
           FCLI_VER: "dev_main"
 
+  FoD-Security-Policy:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+      needs: [ FoD-SAST-Scan,FoD-DAST-Scan ]
 
-      #
-      # TBD: fcli dast scan
-      #
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
 
+      # Java 8 required by ScanCentral Client and FoD Uploader(Universal CI Tool)
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+
+      # Get the branch name or pr number
+      - name: Extract branch name
+        shell: pwsh
+        run: |
+          if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
+            $BranchName = $Env:GITHUB_REF -replace 'refs/pull/', ''
+            $PRNumber = $BranchName -replace '/merge', ''
+            $BranchName = "[PR]" + $Env:SOURCE_BRANCH + "#" + $PRNumber
+            Write-Output "::set-output name=branch::$BranchName"
+          } else {
+            $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
+            Write-Output "::set-output name=branch::$BranchName"
+          }
+        env:
+          SOURCE_BRANCH: ${{ github.head_ref }}
+        id: extract_branch
+
+      # Install Fortify Command Line (fcli) tool
+      - name: Install fcli
+        shell: bash
+        run: |
+          mkdir -p $HOME/fcli/bin
+          curl -fsSL https://github.com/fortify-ps/fcli/releases/download/${FCLI_VER}/fcli-linux.tgz | tar -zxvf - -C $HOME/fcli/bin
+          echo "$HOME/fcli/bin" >> $GITHUB_PATH
+        env:
+          FCLI_VER: "dev_main"
+
+      # Run script to check the Security Policy of the Fortify on Demand Release to determine success/failure
+      - name: Verify Security Policy
+        shell: bash
+        run: |
+          fcli fod release get ${APP_NAME}:${FOD_RELEASE_NAME} -o expr="Critical:\t{critical}\nHigh:\t\t{high}\nMedium:\t\t{medium}\nLow:\t\t{low}" --session github-actions
+          if [ $(fcli fod release get ${APP_NAME}:${FOD_RELEASE_NAME} -o expr="{isPassed}" --session github-actions) = 'true' ]; then echo "Security policy: passed"; else echo "Security policy: failed"; fi
+        id: verify_security_policy
+        env:
+          FOD_RELEASE_NAME: ${{ steps.extract_branch.outputs.branch }}
 
       # Logout/Close Fortify on Demand fcli session
       - name: Logout fcli
