@@ -257,7 +257,7 @@ jobs:
         env:
           FCLI_VER: "dev_main"
 
-  FoD-Security-Policy:
+  Security-Gate:
     runs-on: ubuntu-latest
     if: ${{ always() }}
       needs: [ FoD-SAST-Scan,FoD-DAST-Scan ]
