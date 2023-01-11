@@ -205,8 +205,10 @@ jobs:
         uses: fortify/gha-export-vulnerabilities@v1
         with:
           fod_base_url: "https://emea.fortify.com"
-          fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
-          fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
+   #       fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
+   #       fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
+          fod_client_id: "4f847550-4898-4c69-87ef-97013062f285"
+          fod_client_secret: "clBZOXJlWFdENnk2aFN6U2VNQTlIYkB6VlQla3w50"
           fod_release_name: ${{ format('{0}:{1}', env.APP_NAME, steps.extract_branch.outputs.branch) }}
 
       # Check if SARIF output file has been created
