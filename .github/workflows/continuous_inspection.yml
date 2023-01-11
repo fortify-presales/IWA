@@ -178,7 +178,7 @@ jobs:
         id: perform_sast_scan
         env:
           PACKAGE_FILE: "package.zip"
-          FOD_RELEASE_NAME: ${{ format('{0}:{1}', APP_NAME, steps.extract_branch.outputs.branch) }}
+          FOD_RELEASE_NAME: ${{ format('{0}:{1}', env.APP_NAME, steps.extract_branch.outputs.branch) }}
           FOD_SCAN_NOTES: "Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
 
       # Start Fortify on Demand SAST scan and wait until results complete. For more information on FoDUploader commands, see https://github.com/fod-dev/fod-uploader-java
@@ -207,7 +207,7 @@ jobs:
           fod_base_url: "https://emea.fortify.com"
           fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
           fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
-          fod_release_name: ${{ format('{0}:{1}', APP_NAME, steps.extract_branch.outputs.branch) }}
+          fod_release_name: ${{ format('{0}:{1}', env.APP_NAME, steps.extract_branch.outputs.branch) }}
 
       # Check if SARIF output file has been created
       - name: Check file existence
