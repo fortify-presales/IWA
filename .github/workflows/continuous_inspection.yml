@@ -68,7 +68,7 @@ jobs:
   Quality-Gate:
     runs-on: ubuntu-latest
     if: ${{ always() }}
-      needs: [ Build-And-Test ]
+    needs: [ Build-And-Test ]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -344,7 +344,7 @@ jobs:
   Release-Gate:
     runs-on: ubuntu-latest
     if: ${{ always() }}
-      needs: [ Quality-Gate, Security-Gate ]
+    needs: [ Quality-Gate, Security-Gate ]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
