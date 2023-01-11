@@ -173,10 +173,8 @@ jobs:
       - name: Perform SAST scan
         shell: bash
         run: |
-          SCANID=$(fcli fod sast-scan start ${APP_NAME}:${FOD_RELEASE_NAME} --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions)
+          fcli fod sast-scan start ${APP_NAME}:${FOD_RELEASE_NAME} --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions
           fcli fod sast-scan wait-for "{?curScan:scanId}" --session github-actions
-          echo "FOD_SCAN_ID=${SCANID}"
-          echo "FOD_SCAN_ID=${SCANID}" >> $GITHUB_OUTPUT
         id: perform_sast_scan
         env:
           PACKAGE_FILE: "package.zip"
