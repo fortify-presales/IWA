@@ -13,7 +13,6 @@ on:
       - 'media/**'
       - 'Jenkinsfile'
       - '.gitlab-ci.yml'
-      - 'azure-pipelines.yml'
       - 'README.md'
       - 'LICENSE'
     branches:

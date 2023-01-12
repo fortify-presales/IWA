@@ -28,7 +28,7 @@
 
 ## Notice
 
-**For an "official" version of this application with additional pipeline integrations please visit [https://github.com/fortify/IWA-Java](https://github.com/fortify/IWA-Java).**
+**For a more "official" version of this application with additional pipeline integrations please visit [https://github.com/fortify/IWA-Java](https://github.com/fortify/IWA-Java).**
 
 ## Overview
 
@@ -96,21 +96,21 @@ There is also an administrative user:
 Upon login, you will be subsequently asked for a Multi-Factor Authentication (MFA) code. This functionality
 is not yet enabled and you can enter any digit number sequence, e.g. `12345`.
 
-### Release (Docker Image)
+### Deploy (Docker Image)
 
 The JAR file can be built into a [Docker](https://www.docker.com/) image using the provided `Dockerfile` in `src/main/configs` and the
 following commands:
 
 ```
 mvn -Pjar clean package
-docker build -t iwa -f src/main/configs/Dockerfile .
+docker build -t iwa -f Dockerfile .
 ```
 
 or on Windows:
 
 ```
 mvn -Pjar clean package
-docker build -t iwa -f src\main\configs\Dockerfile.win .
+docker build -t iwa -f Dockerfile.win .
 ```
 
 This image can then be executed using the following commands:
@@ -122,33 +122,6 @@ docker run -d -p 8888:8888 iwa
 There is also an example `docker-compose.yml` file in `src/main/configs` that illustrates how to run the application with HTTPS/SSL using
 [nginx](https://www.nginx.com/) and [certbot](https://certbot.eff.org/) - please note this is for reference only as it 
 uses a "hard-coded" domain name.
-
-Deploy Application (Azure)
---------------------------
-
-If you want to run the application in the cloud (so you can run a WebInspect scan for example) you can deploy the application to Microsoft Azure along with its required infrastructure
-by using the following (from a PowerShell command prompt):
-
-```
-Connect-AzAccount
-New-AzResourceGroup -Name iwa-[YOUR_INITIALS]-rg -Location eastus
-gradlew azureWebAppDeploy
-```
-
-Replace `eastus` with your own desired region and make sure in the `.env` file you have
-set `AZURE_APP_NAME` to a unique value.
-
-You can navigate to your [Azure portal](https://portal.azure.com/#home) to see the built infrastructure and to
-the deployed web application using the URL output shown from the `azureWebAppDeploy task`.
-
-Remove Application and Infrastructure
--------------------------------------
-
-To clean up all the resources you can execute the following (from a PowerShell console):
-
-```
-Remove-AzResourceGroup -Name iwa-[YOUR_INITIALS]-rg
-```
 
 ## Application Security Testing Integrations
 
@@ -189,11 +162,6 @@ FOD_API_SECRET=YYYY
 FOD_TENANT=[YOUR-TENANT]
 FOD_USER=[YOUR-USERNAME]
 FOD_PAT=XXXX
-# Azure (Resource Manager)
-AZURE_SUBSCRIPTION_ID=[YOUR-SUBSCRIPTION-ID]
-AZURE_RESOURCE_GROUP=[YOUR-NAME]-iwa-rg
-AZURE_APP_NAME=[YOUR-NAME]-iwa-app
-AZURE_REGION=eastus
 ```
 
 ### SAST using Fortify SCA command line
