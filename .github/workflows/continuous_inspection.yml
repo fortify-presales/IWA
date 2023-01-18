@@ -125,7 +125,7 @@ jobs:
           fcli --version
           fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET github-actions
         env:
-          FOD_API_URI: "https://api.emea.fortify.com/"
+          FOD_API_URI: ${{ secrets.FOD_API_URI }}
           FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
           FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
 
@@ -203,7 +203,7 @@ jobs:
       - name: Export Results
         uses: fortify/gha-export-vulnerabilities@v1
         with:
-          fod_base_url: "https://emea.fortify.com"
+          fod_base_url: ${{ secrets.FOD_BASE_URL }}
           fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
           fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
           fod_release_name: ${{ format('{0}:{1}', env.APP_NAME, steps.extract_branch.outputs.branch) }}
@@ -320,7 +320,7 @@ jobs:
           fcli --version
           fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET github-actions
         env:
-          FOD_API_URI: "https://api.emea.fortify.com/"
+          FOD_API_URI: ${{ secrets.FOD_API_URI }}
           FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
           FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
 
