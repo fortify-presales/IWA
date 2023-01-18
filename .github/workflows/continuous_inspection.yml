@@ -46,7 +46,7 @@ jobs:
     # Checkout the code
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3.3.0
       with:
         # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
         fetch-depth: 2
@@ -72,7 +72,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.3.0
 
   FoD-SAST-Scan:
     # Use the appropriate runner for building your source code.
@@ -83,7 +83,7 @@ jobs:
     steps:
       # Check out source code
       - name: Check Out Source Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.3.0
 
       # Java 8 required by ScanCentral Client and FoD Uploader(Universal CI Tool)
       - name: Setup Java
@@ -235,7 +235,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.3.0
 
       # Java 8 required by ScanCentral Client and FoD Uploader(Universal CI Tool)
       - name: Setup Java
@@ -278,7 +278,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.3.0
 
       # Java 8 required by ScanCentral Client and FoD Uploader(Universal CI Tool)
       - name: Setup Java
@@ -348,4 +348,4 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.3.0
