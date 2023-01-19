@@ -1,0 +1,6 @@
+fcli fod session login
+fcli fod sast-scan start IWAPharmacyDirect:fcli-test --entitlement SubscriptionOnly --notes "Started via fcli" -f FoDUpload.zip --store myScan
+fcli fod sast-scan wait-for "{?myScan:scanId}"
+fcli fod sast-scan get "{?myScan:scanId}"
+fcli fod sast-scan get "{?myScan:scanId}" -o expr="Fortify Security Rating: {starRating}"
+fcli fod session logout
