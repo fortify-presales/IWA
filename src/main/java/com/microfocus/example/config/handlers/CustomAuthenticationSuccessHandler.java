@@ -101,7 +101,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         boolean isAdmin = customUserDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         boolean isUser = !isAdmin;
-        String targetUrl = INDEX_URL;
+        String targetUrl;
 
         if (isAdmin) {
             targetUrl = ADMIN_HOME_URL;
@@ -112,7 +112,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 targetUrl = USER_HOME_URL;
             } else {
                 targetUrl = loginReferer;
-                String targetPath = null;
+                String targetPath = "";
                 try {
                     targetPath = new URL(targetUrl).getPath();
                 } catch (MalformedURLException ex) {
@@ -147,7 +147,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     private boolean requestAndRegisterVerification(UUID userId) {
         try {
             int otp = verificationService.generateOTP(userId.toString());
-            log.debug("Generated OTP '" + String.valueOf(otp) + "' for user id: " + userId.toString());
+            log.debug("Generated OTP '" + otp + "' for user id: " + userId);
             return (otp != 0);
         } catch (VerificationRequestFailedException ex) {
             log.error(ex.getLocalizedMessage());

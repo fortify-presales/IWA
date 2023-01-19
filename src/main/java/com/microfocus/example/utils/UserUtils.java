@@ -80,8 +80,12 @@ public class UserUtils {
         if (dataFile.exists()) {
             jsonArray = (JSONArray) jsonParser.parse(new FileReader(getFilePath(NEWSLETTER_USER_FILE)));
         } else {
-            dataFile.createNewFile();
-            log.debug("Created: " + getFilePath(NEWSLETTER_USER_FILE));
+            Boolean created = dataFile.createNewFile();
+            if (created) {
+                log.debug("Created: " + getFilePath(NEWSLETTER_USER_FILE));
+            } else {
+                log.debug("Using existing: " + getFilePath(NEWSLETTER_USER_FILE));
+            }
         }
 
         try (OutputStream fos = new FileOutputStream(dataFile, false)) {
@@ -132,6 +136,7 @@ public class UserUtils {
         while (e.hasMoreElements()) {
             log.info(e.nextElement().toString());
         }
+        zf.close();
     }
 
     private static String getFilePath(String relativePath) {
