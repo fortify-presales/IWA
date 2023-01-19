@@ -80,16 +80,11 @@ public class AdminUtils {
     }
 
     public static String getDbStatus(int backupId) {
-
-// Uncomment the following for more secure example:
-/*
-        if (Boolean.parseBoolean(isLocked(backupId))) {
-            return "LOCKED";
-        }
-*/
-
-        if(Boolean.getBoolean(isLocked(backupId))){
+        if (Boolean.getBoolean(isLocked(backupId))) {
             return"LOCKED";
+        }
+        if (Boolean.getBoolean(isReady(backupId))) {
+            return "READY";
         }
         return isReady(backupId);
     }

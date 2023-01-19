@@ -57,6 +57,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     public static final String REALM_NAME = "IWA";
 
+    private static final String AUTH_PASSWORD = "Jy`=f|#ym\"MRrb@~";
+
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
@@ -138,7 +140,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         @Override
         protected void configure(HttpSecurity httpSecurity) throws Exception {
             if (activeProfile.contains("dev")) {
-                log.info("Running development profile");
+                log.debug("Running development profile");
+                log.debug("Auth password: " + AUTH_PASSWORD);
                 httpSecurity.csrf().disable();
                 httpSecurity.headers().frameOptions().disable();
                 httpSecurity.cors().disable();
