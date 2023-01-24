@@ -68,7 +68,7 @@ jobs:
     - name: Build with Maven
       run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dskip.unit.tests=false -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
 
-  SCA-OSS:
+  Debricked-SCA:
     runs-on: ubuntu-latest
     if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runDebrickedScan == 'true') }}
 
@@ -301,7 +301,7 @@ jobs:
   Security-Gate:
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    needs: [ FoD-SAST-Scan,FoD-DAST-Scan ]
+    needs: [ Debricked-SCA,FoD-SAST-Scan,FoD-DAST-Scan ]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
