@@ -329,7 +329,20 @@ In order to use this collection with WebInspect you will need to make sure newma
 ### API Security Testing using ScanCentral DAST and Postman
 
 You can also import the Postman collections into ScanCentral DAST and run the resultant setup using the [fortify-scancentral-dast.ps1](bin\fortify-scancentral-dast.ps1)
-script and the relevant CICD Identifier.
+script and the relevant CICD Identifier. You will need to use the following
+
+Response Token:
+```aidl
+"accessToken"\s*:\s*"(?<BearerTokenValue>[-a-zA-Z0-9._~+/]+?=*)"
+```
+Request Token:
+```aidl
+Authorization:\sBearer\s(?<{0}>[^\r\n]*)\r?\n
+```
+Logout Condition:
+```aidl
+[STATUSCODE]401
+```
 
 
 ### FAST Using ScanCentral DAST and FAST proxy
@@ -403,7 +416,7 @@ you will need to do for a successful invocation.
 ### GitHub Actions
 
 This repository includes a [GitHub Actions](https://github.com/features/actions) example
-[workflow](.github/workflows/continuous_inspection.yml) that
+[workflow](.github/workflows/DevSecOps.yml) that
 automates the build of the application and scans the code using either
 [Fortify on Demand](https://www.microfocus.com/en-us/products/application-security-testing) or [Fortify ScanCentral](https://www.microfocus.com/en-us/cyberres/application-security/static-code-analyzer) for SAST.
 
