@@ -173,6 +173,12 @@ jobs:
           FOD_RELEASE_NAME: ${{ steps.extract_branch.outputs.branch }}
           FOD_PARENT_RELEASE_NAME: "main"
 
+      # For Debricked OSS scanning with FoD we need a dependencies file.
+      # For instructions on generating the resolved dependency tree file, see https://debricked.com/docs/language-support/java-kotlin.html#gradle.*
+      - name: Generate Maven dependencies file
+        shell: bash
+        run: mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
+
       # Prepare source+dependencies for upload. The default example is for a Maven project that uses pom.xml.
       # Update PACKAGE_OPTS based on the ScanCentral Client documentation for your project's included tech stack(s). Helpful hints:
       #   ScanCentral Client will download dependencies for maven (-bt mvn) and gradle (-bt gradle).
@@ -182,11 +188,13 @@ jobs:
       #   ScanCentral Client documentation is located at https://www.microfocus.com/documentation/fortify-software-security-center/
       - name: Download Fortify ScanCentral Client
         uses: fortify/gha-setup-scancentral-client@v1
+        with:
+          version: 22.2.0
       - name: Package Code + Dependencies
-        run: scancentral package -bt mvn -bf pom.xml -bc "package --settings $GITHUB_WORKSPACE/settings.xml" -o $PACKAGE_FILE
+        run: scancentral package -bt mvn -bf pom.xml -bc "package --settings $GITHUB_WORKSPACE/settings.xml" -oss -o $PACKAGE_FILE
         env:
             PACKAGE_FILE: "package.zip"
-            PACKAGE_OPTS: '-bt mvn -bf pom.xml -bc package --settings $GITHUB_WORKSPACE/settings.xml'
+            PACKAGE_OPTS: ${{ format('-bt mvn -bf pom.xml -bc "{0}" -oss', "package --settings $GITHUB_WORKSPACE/settings.xml") }}
 
       # FOR DEBUG - Save package.zip
       #- name: 'Upload Artifact'
