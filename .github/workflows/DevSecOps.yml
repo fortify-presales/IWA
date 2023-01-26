@@ -1,6 +1,6 @@
-# Default Continuous Inspection workflow including Application Security Testing with Fortify on Demand (FoD)
+# DevSecOps workflow including Application Security Testing with Fortify on Demand (FoD)
 
-name: Continuous Inspection
+name: DevSecOps with Fortify
 
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
@@ -25,6 +25,10 @@ on:
     inputs:
       runFoDSASTScan:
         description: 'Carry out SAST scan using Fortify on Demand'
+        required: false
+        default: 'true'
+      runDebrickedScan:
+        description: 'Carry out SCA scan using Debricked'
         required: false
         default: 'true'
       runFoDDASTScan:
@@ -63,6 +67,30 @@ jobs:
     # Build / Test with Maven
     - name: Build with Maven
       run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dskip.unit.tests=false -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
+
+  Debricked-SCA:
+    runs-on: ubuntu-latest
+    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runDebrickedScan == 'true') }}
+
+    steps:
+      - uses: actions/checkout@v3.3.0
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '13'
+      - uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - run: |
+          mvn dependency:tree \
+          -DoutputFile=.debricked-maven-dependencies.tgf \
+          -DoutputType=tgf
+
+      - uses: debricked/actions/scan@v1
+        env:
+          DEBRICKED_TOKEN: ${{ secrets.DEBRICKED_TOKEN }}
 
   Quality-Gate:
     runs-on: ubuntu-latest
@@ -273,7 +301,7 @@ jobs:
   Security-Gate:
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    needs: [ FoD-SAST-Scan,FoD-DAST-Scan ]
+    needs: [ Debricked-SCA,FoD-SAST-Scan,FoD-DAST-Scan ]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
