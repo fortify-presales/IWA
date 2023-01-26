@@ -1,0 +1,1959 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScanSettings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="109" type="SPI.Scanners.Web.Configuration.Data.ScanSettingsData" assembly="SPI.Scanners.Web.Settings" fips="false" xmlns="http://spidynamics.com/schemas/scanner/1.0">
+  <DebugSessionRegexSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+    <RegexOptions>Compiled</RegexOptions>
+    <AggregatePatterns>false</AggregatePatterns>
+    <RegexList />
+  </DebugSessionRegexSet>
+  <DebugSessionSeparateLog>false</DebugSessionSeparateLog>
+  <Alerts version="1" type="SPI.Scanners.Web.Framework.Interfaces.Alerts.AlertSettingsData" assembly="SPI.Scanners.Web.Framework.FrameworkInterfaces" fips="false">
+    <ExcessiveRedundantContent version="1" type="SPI.Scanners.Web.Framework.Interfaces.Alerts.AlertSourceSettingsData" assembly="SPI.Scanners.Web.Framework.FrameworkInterfaces" fips="false">
+      <IsEnabled>true</IsEnabled>
+      <MinimumSampleCount>50</MinimumSampleCount>
+      <ThresholdValue>0.5</ThresholdValue>
+      <TestIntervalSeconds>60</TestIntervalSeconds>
+      <ActiveIntervalSeconds>600</ActiveIntervalSeconds>
+    </ExcessiveRedundantContent>
+    <ExcessiveLogin version="1" type="SPI.Scanners.Web.Framework.Interfaces.Alerts.AlertSourceSettingsData" assembly="SPI.Scanners.Web.Framework.FrameworkInterfaces" fips="false">
+      <IsEnabled>true</IsEnabled>
+      <MinimumSampleCount>100</MinimumSampleCount>
+      <ThresholdValue>0.05</ThresholdValue>
+      <TestIntervalSeconds>60</TestIntervalSeconds>
+      <ActiveIntervalSeconds>600</ActiveIntervalSeconds>
+    </ExcessiveLogin>
+    <ResponseTime version="1" type="SPI.Scanners.Web.Framework.Interfaces.Alerts.AlertSourceSettingsData" assembly="SPI.Scanners.Web.Framework.FrameworkInterfaces" fips="false">
+      <IsEnabled>true</IsEnabled>
+      <MinimumSampleCount>50</MinimumSampleCount>
+      <ThresholdValue>500</ThresholdValue>
+      <TestIntervalSeconds>60</TestIntervalSeconds>
+      <ActiveIntervalSeconds>600</ActiveIntervalSeconds>
+    </ResponseTime>
+    <WafDetected version="1" type="SPI.Scanners.Web.Framework.Interfaces.Alerts.AlertWafDetectedSettingsData" assembly="SPI.Scanners.Web.Framework.FrameworkInterfaces" fips="false">
+      <IsEnabled>true</IsEnabled>
+      <MinimumSampleCount>1</MinimumSampleCount>
+      <ThresholdValue>1</ThresholdValue>
+      <TestIntervalSeconds>60</TestIntervalSeconds>
+      <ActiveIntervalSeconds>0</ActiveIntervalSeconds>
+      <WafSignatures>
+        <WafSignatureData version="1" type="SPI.Scanners.Web.Framework.Interfaces.Alerts.WafSignatureData" assembly="SPI.Scanners.Web.Framework.FrameworkInterfaces" fips="false">
+          <CustomSignatures>
+            <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+              <CustomSignatureType>SpiRegex</CustomSignatureType>
+              <Signature>[BODY]The\s+server\s+cannot\s+or\s+willsnot\s+process\s+the\s+request</Signature>
+            </CustomSignatureData>
+          </CustomSignatures>
+          <Message>Nginx WAF</Message>
+        </WafSignatureData>
+        <WafSignatureData version="1" type="SPI.Scanners.Web.Framework.Interfaces.Alerts.WafSignatureData" assembly="SPI.Scanners.Web.Framework.FrameworkInterfaces" fips="false">
+          <CustomSignatures>
+            <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+              <CustomSignatureType>SpiRegex</CustomSignatureType>
+              <Signature>[STATUSCODE](3|4|5)[0-9]{2}$ AND [BODY]illegal\s+response\s+code\s+in\s+HTTP\s+request</Signature>
+            </CustomSignatureData>
+          </CustomSignatures>
+          <Message>F5 WAF</Message>
+        </WafSignatureData>
+        <WafSignatureData version="1" type="SPI.Scanners.Web.Framework.Interfaces.Alerts.WafSignatureData" assembly="SPI.Scanners.Web.Framework.FrameworkInterfaces" fips="false">
+          <CustomSignatures>
+            <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+              <CustomSignatureType>SpiRegex</CustomSignatureType>
+              <Signature>[STATUSCODE](3|4|5)[0-9]{2}$ AND [HEADERS]x-amzn-RequestId AND [HEADERS]application/json</Signature>
+            </CustomSignatureData>
+          </CustomSignatures>
+          <Message>AWS WAF</Message>
+        </WafSignatureData>
+        <WafSignatureData version="1" type="SPI.Scanners.Web.Framework.Interfaces.Alerts.WafSignatureData" assembly="SPI.Scanners.Web.Framework.FrameworkInterfaces" fips="false">
+          <CustomSignatures>
+            <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+              <CustomSignatureType>SpiRegex</CustomSignatureType>
+              <Signature>[STATUSCODE](3|4|5)[0-9]{2}$ AND [BODY]The\s+request\s+is\s+blocked</Signature>
+            </CustomSignatureData>
+          </CustomSignatures>
+          <Message>Azure</Message>
+        </WafSignatureData>
+        <WafSignatureData version="1" type="SPI.Scanners.Web.Framework.Interfaces.Alerts.WafSignatureData" assembly="SPI.Scanners.Web.Framework.FrameworkInterfaces" fips="false">
+          <CustomSignatures>
+            <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+              <CustomSignatureType>SpiRegex</CustomSignatureType>
+              <Signature>[BODY]Incapsula\s+incident\s+id</Signature>
+            </CustomSignatureData>
+          </CustomSignatures>
+          <Message>Incapsula</Message>
+        </WafSignatureData>
+        <WafSignatureData version="1" type="SPI.Scanners.Web.Framework.Interfaces.Alerts.WafSignatureData" assembly="SPI.Scanners.Web.Framework.FrameworkInterfaces" fips="false">
+          <CustomSignatures>
+            <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+              <CustomSignatureType>SpiRegex</CustomSignatureType>
+              <Signature>[BODY](?:[0-9]{1,3}\.){3}[0-9]{1,3}\s+has\s+been\s+(blocked|banned)</Signature>
+            </CustomSignatureData>
+            <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+              <CustomSignatureType>SpiRegex</CustomSignatureType>
+              <Signature>[STATUSCODE](3|4|5)[0-9]{2} AND [BODY]Application\s+Firewall</Signature>
+            </CustomSignatureData>
+          </CustomSignatures>
+          <Message>misc</Message>
+        </WafSignatureData>
+      </WafSignatures>
+    </WafDetected>
+    <AutoDetectStateFail version="1" type="SPI.Scanners.Web.Framework.Interfaces.Alerts.AlertSourceSettingsData" assembly="SPI.Scanners.Web.Framework.FrameworkInterfaces" fips="false">
+      <IsEnabled>true</IsEnabled>
+      <MinimumSampleCount>1</MinimumSampleCount>
+      <ThresholdValue>0</ThresholdValue>
+      <TestIntervalSeconds>180</TestIntervalSeconds>
+      <ActiveIntervalSeconds>0</ActiveIntervalSeconds>
+    </AutoDetectStateFail>
+    <ResponseStateRulesFail version="1" type="SPI.Scanners.Web.Framework.Interfaces.Alerts.AlertSourceSettingsData" assembly="SPI.Scanners.Web.Framework.FrameworkInterfaces" fips="false">
+      <IsEnabled>true</IsEnabled>
+      <MinimumSampleCount>1</MinimumSampleCount>
+      <ThresholdValue>0</ThresholdValue>
+      <TestIntervalSeconds>999999</TestIntervalSeconds>
+      <ActiveIntervalSeconds>0</ActiveIntervalSeconds>
+    </ResponseStateRulesFail>
+  </Alerts>
+  <EnabledTriggeredMacroTests>DefaultEnabled</EnabledTriggeredMacroTests>
+  <VisibleTriggeredMacroTests>DefaultVisible</VisibleTriggeredMacroTests>
+  <StopScanTriggeredMacroTests>DefaultStopScan</StopScanTriggeredMacroTests>
+  <IsMacroTestOnly>false</IsMacroTestOnly>
+  <RescanScanID>00000000-0000-0000-0000-000000000000</RescanScanID>
+  <ReuseScanOptions>None</ReuseScanOptions>
+  <ReuseScanID>00000000-0000-0000-0000-000000000000</ReuseScanID>
+  <ReuseRetestSessionCheckFoundIDList />
+  <ReuseRetestDebugSessionCheckFoundIDList />
+  <ReuseRetestDebugLogSessionCheckFoundIDList />
+  <ReuseRetestDebugSessionIDList />
+  <EnableDBHashManagerCache>false</EnableDBHashManagerCache>
+  <ExternalScanIDList />
+  <ParameterValueIsNameIfEmpty>false</ParameterValueIsNameIfEmpty>
+  <ScanStatisticsSettings1901>
+    <Enable>true</Enable>
+    <EnableRealTime>true</EnableRealTime>
+    <EnableNonZeroService>true</EnableNonZeroService>
+    <ThreadCount>5</ThreadCount>
+    <SubSystems>
+      <SubSystem>AnyOrAll</SubSystem>
+    </SubSystems>
+    <SmartModes>
+      <SmartMode>AnyOrAll</SmartMode>
+    </SmartModes>
+    <Thread1Types>
+      <ThreadType>UnknownOrNone</ThreadType>
+    </Thread1Types>
+    <Thread2Types>
+      <ThreadType>UnknownOrNone</ThreadType>
+    </Thread2Types>
+    <Regions>
+      <Region>UnknownOrNone</Region>
+    </Regions>
+    <SubRegions>
+      <SubRegion>AuditorIAuditCapableSendSessionAttacks</SubRegion>
+      <SubRegion>AuditorIAuditCapableProcessAttack</SubRegion>
+    </SubRegions>
+    <Services>
+      <Service>AnyOrAll</Service>
+    </Services>
+    <TrackSessionID1>true</TrackSessionID1>
+    <TrackSessionID2>false</TrackSessionID2>
+    <TrackEngineID1>true</TrackEngineID1>
+    <TrackEngineID2>false</TrackEngineID2>
+  </ScanStatisticsSettings1901>
+  <RootPathsForPathSegmentsAttack />
+  <SessionCycleCheckOption>Never</SessionCycleCheckOption>
+  <SessionCycleRepairFlag>false</SessionCycleRepairFlag>
+  <SessionQueryBatchSize>10000</SessionQueryBatchSize>
+  <HashRequestFilterList />
+  <Overlays />
+  <ViewModelBehavior />
+  <GuidedSetupConfiguration />
+  <IsGuidedSetupEditing>false</IsGuidedSetupEditing>
+  <ServerSettingsList />
+  <EnableSaveSessionParameters>true</EnableSaveSessionParameters>
+  <EnableSessionCorrelationIDs>true</EnableSessionCorrelationIDs>
+  <EnableSessionCheckFoundCorrelationIDs>true</EnableSessionCheckFoundCorrelationIDs>
+  <SaveCorrelationIDHashString>false</SaveCorrelationIDHashString>
+  <DefaultCorrelationProviderIdsDirtyFlag>true</DefaultCorrelationProviderIdsDirtyFlag>
+  <DefaultCorrelationProviderIds version="1" type="SPI.Configuration.Data.GuidLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+    <LookupList>
+      <guid>82767ad9-1909-40fd-bae0-76fe828c4e1d</guid>
+      <guid>09857cf3-6b5e-454f-9efc-23cb81404897</guid>
+      <guid>eae9476b-1934-49e2-aa5e-2a3a640945e9</guid>
+      <guid>29cd8daa-15f5-46f7-a4ad-fb9938e47bb7</guid>
+    </LookupList>
+  </DefaultCorrelationProviderIds>
+  <EnabledIVulnerabilityFilterIds version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+    <IgnoreCase>true</IgnoreCase>
+    <LookupList>
+      <string>307949DB-86D4-4816-B825-12B0B95F0E98</string>
+      <string>2BC1ABDF-BC06-439c-86D2-35EF74BB9072</string>
+      <string>68CE38B9-1B2A-4EC6-97EE-228CE5025641</string>
+      <string>09857cf3-6b5e-454f-9efc-23cb81404897</string>
+    </LookupList>
+  </EnabledIVulnerabilityFilterIds>
+  <SendErrorLogEventsToScanLog>true</SendErrorLogEventsToScanLog>
+  <LaunchDebuggerOnLogEvent>false</LaunchDebuggerOnLogEvent>
+  <LaunchDebuggerOnResponseSetSessionIDMatch />
+  <LaunchDebuggerOnSaveSessionIDMatch />
+  <LaunchDebuggerOnReadSessionIDMatch />
+  <LaunchDebuggerOnSessionIDSetMatch />
+  <LaunchDebuggerOnSessionIDMergeMatch />
+  <LaunchDebuggerOnSessionMerge>false</LaunchDebuggerOnSessionMerge>
+  <ScanTypeValue>Normal</ScanTypeValue>
+  <CrawlerId>00000000-0000-0000-0000-0000000000bf</CrawlerId>
+  <EnableServerAnalysisServerTypeDetection>true</EnableServerAnalysisServerTypeDetection>
+  <EnableLegacyServerTypeDetection>true</EnableLegacyServerTypeDetection>
+  <EnableSmartAssessment>true</EnableSmartAssessment>
+  <EnableTrafficMonitor>true</EnableTrafficMonitor>
+  <EnableSimHash>false</EnableSimHash>
+  <EncryptTrafficMonitor>true</EncryptTrafficMonitor>
+  <X_EnableUrlContentResolver>false</X_EnableUrlContentResolver>
+  <PostmanScan>false</PostmanScan>
+  <PostmanCorrelationIDsExcludeAudit>
+    <string>02:7ED1ABA22A4CFA6637E43D7BDF6A4B0C</string>
+  </PostmanCorrelationIDsExcludeAudit>
+  <PostmanAuthentication version="1" type="SPI.Net.StateRequestor.Configuration.Data.PostmanAuthenticationData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+    <AuthType>Dynamic</AuthType>
+    <TokenType>None</TokenType>
+    <TokenSubtype>Custom</TokenSubtype>
+    <TokenResponseSubtype>Custom</TokenResponseSubtype>
+    <DynamicLoginCorrelationIDs />
+  </PostmanAuthentication>
+  <PostmanEnvironment version="1" type="SPI.Net.StateRequestor.Configuration.Data.PostmanEnvironmentData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+    <Name>IWAAPIProd.postman_environment</Name>
+    <Contents>{
+	"id": "fe830569-a67e-43bf-9cff-18298d45ff45",
+	"name": "Production",
+	"values": [
+		{
+			"key": "base_url",
+			"value": "https://iwa.onfortify.com",
+			"enabled": true
+		},
+		{
+			"key": "username",
+			"value": "api",
+			"enabled": true
+		},
+		{
+			"key": "password",
+			"value": "password",
+			"type": "secret",
+			"enabled": true
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "secret",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2023-01-18T14:35:39.095Z",
+	"_postman_exported_using": "Postman/10.8.1"
+}</Contents>
+  </PostmanEnvironment>
+  <StartParameters version="1" type="SPI.Scanners.Web.Configuration.Data.StartParametersData" assembly="SPI.Scanners.Web.Framework.FrameworkInterfaces" fips="false">
+    <StartOption>Macro</StartOption>
+    <StartSessionState>Audit</StartSessionState>
+    <StartUrlXmlDocument />
+    <StartUrlXmlDocumentFilePath />
+    <StartUrl>http://legacy.webappsecurity.com/CustomerAccounts/WebService.asmx?wsdl</StartUrl>
+    <SimplifiedRestrictToFolderOptions>None</SimplifiedRestrictToFolderOptions>
+    <MacroName />
+    <WorkflowMacros />
+    <ScanName>API: https://iwa.onfortify.com</ScanName>
+    <ApiDefinitionPath />
+    <ApiType>Postman</ApiType>
+  </StartParameters>
+  <ScanStrategy>ConcurrentCrawlAudit</ScanStrategy>
+  <UsePolicyFile>false</UsePolicyFile>
+  <PolicyPath />
+  <ScanSettingsPath />
+  <PolicyID>1044</PolicyID>
+  <PathTruncationCrawlDisabled>false</PathTruncationCrawlDisabled>
+  <RecursionDepthLimit>2</RecursionDepthLimit>
+  <ConnectionSettings version="1" type="SPI.Scanners.Web.Configuration.Data.ScanConnectionSettingsData" assembly="SPI.Scanners.Web.Settings" fips="false">
+    <ServerInstance>GBKLEE02\SQLEXPRESS</ServerInstance>
+    <ConnectionMode>SQLExpress</ConnectionMode>
+    <ConnectionStringEncrypted />
+    <ProfileName />
+  </ConnectionSettings>
+  <LaunchDebuggerOnRequestMemoHeaderRegexMatchList />
+  <AllowedMimeTypes version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+    <IgnoreCase>true</IgnoreCase>
+    <LookupList>
+      <string>application/x-shockwave-flash</string>
+      <string>text/plain</string>
+      <string>text/html</string>
+      <string>text/xml</string>
+      <string>application/xml</string>
+      <string>application/atom+xml</string>
+      <string>application/rss+xml</string>
+      <string>application/javascript</string>
+      <string>application/json</string>
+    </LookupList>
+  </AllowedMimeTypes>
+  <LogoutSignatures version="1" type="SPI.Net.StateRequestor.Configuration.Data.LogoutSignaturesData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+    <PosNegLogoutSignature version="1" type="SPI.Net.StateRequestor.Configuration.Data.PosNegLogoutSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+      <MatchPercentPositiveList>70</MatchPercentPositiveList>
+      <MatchPercentNegativeList>70</MatchPercentNegativeList>
+      <UseAmbiguityResolverUrlIfDefined>true</UseAmbiguityResolverUrlIfDefined>
+    </PosNegLogoutSignature>
+    <UmbrellaLogoutSignature version="1" type="SPI.Net.StateRequestor.Configuration.Data.UmbrellaLogoutSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+      <NumUncertaintyCount>15</NumUncertaintyCount>
+      <LoggedOutRegexes>
+        <string>(?i)\blog\s*in\b</string>
+        <string>(?i)\bsign\s*in\b</string>
+      </LoggedOutRegexes>
+      <LoggedInRegexes>
+        <string>(?i)\blog\s*out\b</string>
+        <string>(?i)\bsign\s*out\b</string>
+      </LoggedInRegexes>
+      <NumWellKnownRequestRetries>3</NumWellKnownRequestRetries>
+    </UmbrellaLogoutSignature>
+    <FortifyLogoutSignature version="1" type="SPI.Net.StateRequestor.Configuration.Data.FortifyLogoutSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+      <SignatureUse>Automatic</SignatureUse>
+    </FortifyLogoutSignature>
+  </LogoutSignatures>
+  <FileNotFoundChecker version="1" type="SPI.Net.StateRequestor.Configuration.Data.FileNotFoundCheckerData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+    <EnableHttpStatusCodeChecking>true</EnableHttpStatusCodeChecking>
+    <HttpNotFoundStatusCodes version="1" type="SPI.Configuration.Data.StatusCodeRangesData" assembly="SPI.Configuration.Settings" fips="false">
+      <List>
+        <StatusCodeRangeData version="1" type="SPI.Configuration.Data.StatusCodeRangeData" assembly="SPI.Configuration.Settings" fips="false">
+          <Begin>400</Begin>
+          <End>400</End>
+        </StatusCodeRangeData>
+        <StatusCodeRangeData version="1" type="SPI.Configuration.Data.StatusCodeRangeData" assembly="SPI.Configuration.Settings" fips="false">
+          <Begin>404</Begin>
+          <End>404</End>
+        </StatusCodeRangeData>
+        <StatusCodeRangeData version="1" type="SPI.Configuration.Data.StatusCodeRangeData" assembly="SPI.Configuration.Settings" fips="false">
+          <Begin>409</Begin>
+          <End>409</End>
+        </StatusCodeRangeData>
+        <StatusCodeRangeData version="1" type="SPI.Configuration.Data.StatusCodeRangeData" assembly="SPI.Configuration.Settings" fips="false">
+          <Begin>414</Begin>
+          <End>414</End>
+        </StatusCodeRangeData>
+      </List>
+    </HttpNotFoundStatusCodes>
+    <HttpFoundStatusCodes version="1" type="SPI.Configuration.Data.StatusCodeRangesData" assembly="SPI.Configuration.Settings" fips="false">
+      <List>
+        <StatusCodeRangeData version="1" type="SPI.Configuration.Data.StatusCodeRangeData" assembly="SPI.Configuration.Settings" fips="false">
+          <Begin>100</Begin>
+          <End>199</End>
+        </StatusCodeRangeData>
+        <StatusCodeRangeData version="1" type="SPI.Configuration.Data.StatusCodeRangeData" assembly="SPI.Configuration.Settings" fips="false">
+          <Begin>201</Begin>
+          <End>299</End>
+        </StatusCodeRangeData>
+        <StatusCodeRangeData version="1" type="SPI.Configuration.Data.StatusCodeRangeData" assembly="SPI.Configuration.Settings" fips="false">
+          <Begin>501</Begin>
+          <End>599</End>
+        </StatusCodeRangeData>
+      </List>
+    </HttpFoundStatusCodes>
+    <EnableCustomSignatureChecking>true</EnableCustomSignatureChecking>
+    <CustomSignatures>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>404 Not Found</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>404 - Not Found</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>404 Error</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>404 - Object Not Found</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>404 - File not found</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>Page Not Found</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>Document Not Found</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>could not locate the page you requested</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>the file you requested has moved or does not exist on our system</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>the page you're trying to reach is temporarily unavailable</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>The document you requested does not exist on this server</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>The page you're looking for is either temporarily unavailable or no longer exists</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>The file you have requested is no longer available</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>The page you requested cannot be found</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>the page you requested was not found</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>page that no longer exists</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Text</CustomSignatureType>
+        <Signature>page cannot be found</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Regex</CustomSignatureType>
+        <Signature>The\ssystem\scannot\sfind\sthe\s(?:file|path)\sspecified</Signature>
+      </CustomSignatureData>
+      <CustomSignatureData version="1" type="SPI.Net.StateRequestor.Configuration.Data.CustomSignatureData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <CustomSignatureType>Regex</CustomSignatureType>
+        <Signature>The requested URL .*? was not found on this server</Signature>
+      </CustomSignatureData>
+    </CustomSignatures>
+    <EnableAutoDetectChecking>true</EnableAutoDetectChecking>
+    <AutoDetectCheckingMatchRatio>0.9</AutoDetectCheckingMatchRatio>
+    <MaxResponseSizeBytes>200000</MaxResponseSizeBytes>
+    <MaxFileNotFoundCacheSizeBytes>5242880</MaxFileNotFoundCacheSizeBytes>
+  </FileNotFoundChecker>
+  <StatusCodeLimits version="1" type="SPI.Net.StateRequestor.Configuration.Data.StatusCodeLimitsData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+    <EnableFlag>false</EnableFlag>
+    <Limits>
+      <StatusCodeLimit>
+        <EnableFlag>false</EnableFlag>
+        <StatusCodes>
+          <unsignedInt>502</unsignedInt>
+          <unsignedInt>504</unsignedInt>
+        </StatusCodes>
+        <MaxConsecutiveCount>100</MaxConsecutiveCount>
+        <MaxTotalCount>1000</MaxTotalCount>
+      </StatusCodeLimit>
+      <StatusCodeLimit>
+        <EnableFlag>false</EnableFlag>
+        <StatusCodes>
+          <unsignedInt>307</unsignedInt>
+          <unsignedInt>308</unsignedInt>
+        </StatusCodes>
+        <MaxConsecutiveCount>200</MaxConsecutiveCount>
+        <MaxTotalCount>2000</MaxTotalCount>
+      </StatusCodeLimit>
+    </Limits>
+  </StatusCodeLimits>
+  <ConnectivityDetection version="1" type="SPI.Net.StateRequestor.Configuration.Data.ConnectivityDetectionData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+    <EnableFlag>true</EnableFlag>
+    <MaxConsequtiveServerRequestAbortCount>75</MaxConsequtiveServerRequestAbortCount>
+    <MaxConsequtiveGlobalRequestAbortCount>150</MaxConsequtiveGlobalRequestAbortCount>
+    <MaxTotalServerRequestAbortCount>0</MaxTotalServerRequestAbortCount>
+    <MaxTotalGlobalRequestAbortCount>350</MaxTotalGlobalRequestAbortCount>
+    <FailIfFirstRequestFails>true</FailIfFirstRequestFails>
+    <FailureHttpStatusCodes version="1" type="SPI.Configuration.Data.StatusCodeRangesData" assembly="SPI.Configuration.Settings" fips="false">
+      <List>
+        <StatusCodeRangeData version="1" type="SPI.Configuration.Data.StatusCodeRangeData" assembly="SPI.Configuration.Settings" fips="false">
+          <Begin>404</Begin>
+          <End>404</End>
+        </StatusCodeRangeData>
+        <StatusCodeRangeData version="1" type="SPI.Configuration.Data.StatusCodeRangeData" assembly="SPI.Configuration.Settings" fips="false">
+          <Begin>407</Begin>
+          <End>407</End>
+        </StatusCodeRangeData>
+        <StatusCodeRangeData version="1" type="SPI.Configuration.Data.StatusCodeRangeData" assembly="SPI.Configuration.Settings" fips="false">
+          <Begin>502</Begin>
+          <End>502</End>
+        </StatusCodeRangeData>
+      </List>
+    </FailureHttpStatusCodes>
+    <IgnoreRequestorStatusCodes version="1" type="SPI.Configuration.Data.IntegerCollectionData" assembly="SPI.Configuration.Settings" fips="false">
+      <List />
+    </IgnoreRequestorStatusCodes>
+  </ConnectivityDetection>
+  <Filters version="1" type="SPI.Scanners.Web.Configuration.Data.FiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+    <SuppressMemoHeadersMatchList>
+      <MemoHeaderMatchData version="1" type="SPI.Configuration.Data.MemoHeaderMatchData" assembly="SPI.Configuration.Settings" fips="false">
+        <HeaderName />
+        <Name />
+      </MemoHeaderMatchData>
+    </SuppressMemoHeadersMatchList>
+    <RequestFilterList />
+    <ResponseFilterList />
+  </Filters>
+  <Authentication version="1" type="SPI.Configuration.Data.AuthenticationData" assembly="SPI.Configuration.Settings" fips="false">
+    <AuthType>None</AuthType>
+    <UserNameEncrypted>__FIPS__0Ej432MRhqQN+LaL4BJaxw==</UserNameEncrypted>
+    <PasswordEncrypted>__FIPS__0Ej432MRhqQN+LaL4BJaxw==</PasswordEncrypted>
+    <ClientCertificateInfo version="1" type="SPI.Configuration.Data.ClientCertificateInfoData" assembly="SPI.Configuration.Settings" fips="false">
+      <Enabled>false</Enabled>
+      <CurrentUserOnly>false</CurrentUserOnly>
+      <StoreName />
+      <SerialNumber />
+      <Thumbprint />
+      <HasPrivateKey>false</HasPrivateKey>
+      <IsPrivateKeyExportable>false</IsPrivateKeyExportable>
+      <IsPrivateKeyFromDevice>false</IsPrivateKeyFromDevice>
+    </ClientCertificateInfo>
+  </Authentication>
+  <AutoGenUserNameEncrypted />
+  <AutoGenPasswordEncrypted />
+  <AutoGenUrl />
+  <SmartCredentialsUserNameEncrypted>__FIPS__0Ej432MRhqQN+LaL4BJaxw==</SmartCredentialsUserNameEncrypted>
+  <SmartCredentialsPasswordEncrypted>__FIPS__0Ej432MRhqQN+LaL4BJaxw==</SmartCredentialsPasswordEncrypted>
+  <SiteLoginParameters />
+  <ThreadSiteLoginParameters />
+  <UseThreadSiteLogin>false</UseThreadSiteLogin>
+  <WebMacros version="1" type="SPI.Net.StateRequestor.Configuration.Data.WebMacrosData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+    <WebMacroEntryList>
+      <WebMacroEntryData version="1" type="SPI.Net.StateRequestor.Configuration.Data.WebMacroEntryData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <EnableFlag>true</EnableFlag>
+        <IsEmpty>false</IsEmpty>
+        <WebMacroParse>
+          <AutoGenUrl />
+          <AutoGenUserName />
+          <AutoGenPasswordEncrypted />
+          <Encrypted>true</Encrypted>
+          <Compressed>false</Compressed>
+          <Text>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</Text>
+        </WebMacroParse>
+        <Name>IWAAPIAuth.postman_collection</Name>
+      </WebMacroEntryData>
+      <WebMacroEntryData version="1" type="SPI.Net.StateRequestor.Configuration.Data.WebMacroEntryData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+        <EnableFlag>true</EnableFlag>
+        <IsEmpty>false</IsEmpty>
+        <WebMacroParse>
+          <AutoGenUrl />
+          <AutoGenUserName />
+          <AutoGenPasswordEncrypted />
+          <Encrypted>true</Encrypted>
+          <Compressed>false</Compressed>
+          <Text>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</Text>
+        </WebMacroParse>
+        <Name>IWAAPIWorkflow.postman_collection</Name>
+      </WebMacroEntryData>
+    </WebMacroEntryList>
+    <SeedMacros>
+      <ArrayOfString>
+        <string>IWAAPIWorkflow.postman_collection</string>
+      </ArrayOfString>
+    </SeedMacros>
+    <StartupMacros>
+      <string>IWAAPIAuth.postman_collection</string>
+    </StartupMacros>
+    <TriggeredMacros>
+      <string>IWAAPIAuth.postman_collection</string>
+    </TriggeredMacros>
+    <EventBasedStartupMacros />
+    <EnableLogoutDetection>true</EnableLogoutDetection>
+  </WebMacros>
+  <SslProtocols>Ssl3 Tls Tls11 Tls12 Tls13</SslProtocols>
+  <Proxies version="1" type="SPI.Configuration.Data.ProxiesData" assembly="SPI.Configuration.Settings" fips="false">
+    <ProxyMode>UseIESettings</ProxyMode>
+    <CacheProxyInfo>true</CacheProxyInfo>
+    <PacFileURL />
+    <HTTPProxy version="1" type="SPI.Configuration.Data.ProxyData" assembly="SPI.Configuration.Settings" fips="false">
+      <EnableFlag>false</EnableFlag>
+      <ProxyType>Standard</ProxyType>
+      <Server />
+      <Port>0</Port>
+      <UserNameEncrypted>__FIPS__0Ej432MRhqQN+LaL4BJaxw==</UserNameEncrypted>
+      <PasswordEncrypted>__FIPS__0Ej432MRhqQN+LaL4BJaxw==</PasswordEncrypted>
+      <EnableBypassProxyHostsFlag>false</EnableBypassProxyHostsFlag>
+      <EnableLocalHostResolution>false</EnableLocalHostResolution>
+      <BypassProxyHosts />
+      <ProxyAuthType>None</ProxyAuthType>
+    </HTTPProxy>
+    <HTTPSProxy version="1" type="SPI.Configuration.Data.ProxyData" assembly="SPI.Configuration.Settings" fips="false">
+      <EnableFlag>false</EnableFlag>
+      <ProxyType>Standard</ProxyType>
+      <Server />
+      <Port>0</Port>
+      <UserNameEncrypted>__FIPS__0Ej432MRhqQN+LaL4BJaxw==</UserNameEncrypted>
+      <PasswordEncrypted>__FIPS__0Ej432MRhqQN+LaL4BJaxw==</PasswordEncrypted>
+      <EnableBypassProxyHostsFlag>false</EnableBypassProxyHostsFlag>
+      <EnableLocalHostResolution>false</EnableLocalHostResolution>
+      <BypassProxyHosts />
+      <ProxyAuthType>None</ProxyAuthType>
+    </HTTPSProxy>
+    <ProxyRequestFailureHttpStatusCodes version="1" type="SPI.Configuration.Data.StatusCodeRangesData" assembly="SPI.Configuration.Settings" fips="false">
+      <List>
+        <StatusCodeRangeData version="1" type="SPI.Configuration.Data.StatusCodeRangeData" assembly="SPI.Configuration.Settings" fips="false">
+          <Begin>502</Begin>
+          <End>502</End>
+        </StatusCodeRangeData>
+      </List>
+    </ProxyRequestFailureHttpStatusCodes>
+  </Proxies>
+  <X_EnableKnownRedirectFnfDetection>true</X_EnableKnownRedirectFnfDetection>
+  <AddMemoHeader>true</AddMemoHeader>
+  <RequestHeaders version="1" type="SPI.Net.StateRequestor.Configuration.Data.RequestHeadersData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+    <IncludeHostHeaderFlag>true</IncludeHostHeaderFlag>
+    <CustomHeaders>
+      <string>Accept: */*</string>
+      <string>Pragma: no-cache</string>
+      <string>Accept-Encoding: gzip, deflate</string>
+    </CustomHeaders>
+    <IncludeRefererHeaderFlag>true</IncludeRefererHeaderFlag>
+  </RequestHeaders>
+  <CompressResponse>true</CompressResponse>
+  <MaxResponseSizeBytes>1024000</MaxResponseSizeBytes>
+  <MaxRequestRetryCount>1</MaxRequestRetryCount>
+  <RequestTimeoutSeconds>20</RequestTimeoutSeconds>
+  <MaxRequestRecursionDepth>10</MaxRequestRecursionDepth>
+  <RunScriptLoadToDetermineRedirect>false</RunScriptLoadToDetermineRedirect>
+  <DisableForceScriptRedirect>false</DisableForceScriptRedirect>
+  <StateRequestor version="1" type="SPI.Net.StateRequestor.Configuration.Data.StateRequestorData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+    <ThreadCount>0</ThreadCount>
+    <MaxStackSize>0</MaxStackSize>
+    <ShareThreadState>false</ShareThreadState>
+    <QueueSize>5</QueueSize>
+  </StateRequestor>
+  <SystemSessionSaveFlags version="1" type="SPI.Scanners.Web.Configuration.Data.SystemSessionSaveFlagsData" assembly="SPI.Scanners.Web.Settings" fips="false">
+    <FileNotFoundAttackSessions>false</FileNotFoundAttackSessions>
+    <NonVulnerableAttackSessions>false</NonVulnerableAttackSessions>
+    <SaveDuplicateSessions>true</SaveDuplicateSessions>
+    <FileNotFoundProbe>false</FileNotFoundProbe>
+  </SystemSessionSaveFlags>
+  <StateManagement version="1" type="SPI.Configuration.Data.StateManagementData" assembly="SPI.Configuration.Settings" fips="false">
+    <StateManagerLockTimoutErrorMS>60000</StateManagerLockTimoutErrorMS>
+    <LogLogoutMatchRequestResponse>false</LogLogoutMatchRequestResponse>
+    <EnableLogoutTestResponse>false</EnableLogoutTestResponse>
+    <EnableLogoutTestProbe>false</EnableLogoutTestProbe>
+    <EnableResponseStateManagement>true</EnableResponseStateManagement>
+    <EnableUrlStateManagement>true</EnableUrlStateManagement>
+    <EnableParameterStateManagement>true</EnableParameterStateManagement>
+    <InitialCookies>
+      <string>CustomCookie=WebInspect;path=/</string>
+    </InitialCookies>
+    <StatefulQueryParamNames />
+    <StatefulCustomParamNames />
+    <StatefulPostParamNames />
+    <StatefulQueryParamRegexes />
+    <StatefulCustomParamRegexes />
+    <StatefulPostParamRegexes />
+    <StatelessCookieParamNames />
+    <StatefulParamValueRegexes />
+    <StatefulParamOrigins />
+    <EnableUrlStatePatterns>false</EnableUrlStatePatterns>
+    <UrlStatePatterns>
+      <KeyPairOfStringString>
+        <Key>\([^\(\)]{24}\)</Key>
+        <Value>ASP.NET 1.1 cookieless session IDs</Value>
+      </KeyPairOfStringString>
+      <KeyPairOfStringString>
+        <Key>\(([SFA]\([^\(\)]*\)){1,3}\)</Key>
+        <Value>ASP.NET 2.0 cookieless session IDs and forms authentication</Value>
+      </KeyPairOfStringString>
+      <KeyPairOfStringString>
+        <Key>;?jsessionid=(?:.)*?(?=[\?&amp;\r\n;\/]|$)</Key>
+        <Value />
+      </KeyPairOfStringString>
+    </UrlStatePatterns>
+    <EnableResponseStatePatterns>true</EnableResponseStatePatterns>
+    <EnableAutomaticResponseState>true</EnableAutomaticResponseState>
+    <ResponseStatePatternsCrossHost>true</ResponseStatePatternsCrossHost>
+    <ResponseStatePatterns>
+      <ResponseStateElement>
+        <name>PostmanAutoDetect</name>
+        <ReplaceRegexes>
+          <string>Authorization:\sBearer\s(?&lt;PostmanAutoDetect&gt;[^\r\n]*)\r?\n</string>
+        </ReplaceRegexes>
+        <SearchRegexes>
+          <string>"accessToken"\s*:\s*"(?&lt;PostmanAutoDetect&gt;[-a-zA-Z0-9._~+/]+?=*)"</string>
+        </SearchRegexes>
+      </ResponseStateElement>
+    </ResponseStatePatterns>
+    <ResetStateOnLogoutDetection>true</ResetStateOnLogoutDetection>
+    <UserDefinedCSRFRegexes />
+  </StateManagement>
+  <ResourceParams />
+  <ParamsExcludedFromSessionHash>
+    <string>__VIEWSTATE</string>
+    <string>__EVENTVALIDATION</string>
+    <string>__PREVIOUSPAGE</string>
+  </ParamsExcludedFromSessionHash>
+  <ScanIterationLimit>0</ScanIterationLimit>
+  <CaseSensitiveURLs>false</CaseSensitiveURLs>
+  <DefaultEncoding>windows-1252</DefaultEncoding>
+  <EnableCSRFDiscovery>false</EnableCSRFDiscovery>
+  <EnableCSRFDiscoveryInScriptIncludes>false</EnableCSRFDiscoveryInScriptIncludes>
+  <RejectShortCircuitEvaluation>false</RejectShortCircuitEvaluation>
+  <RejectSaveFlags version="1" type="SPI.Scanners.Web.Configuration.Data.RejectSaveFlagsData" assembly="SPI.Scanners.Web.Settings" fips="false">
+    <InvalidHost>false</InvalidHost>
+    <ExcludedURL>false</ExcludedURL>
+    <OutsideRootURL>false</OutsideRootURL>
+    <MaxFolderDepthExceeded>false</MaxFolderDepthExceeded>
+    <ExcludedFileExtension>false</ExcludedFileExtension>
+    <MaxDirectoryHits>false</MaxDirectoryHits>
+    <MaxURLHits>false</MaxURLHits>
+    <RequestRegex>false</RequestRegex>
+    <FnfDisallowedRedirect>false</FnfDisallowedRedirect>
+    <FnfStatusCode>false</FnfStatusCode>
+    <FnfSolicited>false</FnfSolicited>
+    <FnfCustomSignature>false</FnfCustomSignature>
+    <RejectedResponse>false</RejectedResponse>
+    <FnfDisallowedRedirectSaveResponse>false</FnfDisallowedRedirectSaveResponse>
+    <FnfStatusCodeSaveResponse>false</FnfStatusCodeSaveResponse>
+    <FnfSolicitedSaveResponse>false</FnfSolicitedSaveResponse>
+    <FnfCustomSignatureSaveResponse>false</FnfCustomSignatureSaveResponse>
+    <InvalidResponse_ResponseData>false</InvalidResponse_ResponseData>
+    <RejectedResponse_ResponseData>false</RejectedResponse_ResponseData>
+  </RejectSaveFlags>
+  <ExcludeFilters version="1" type="SPI.Scanners.Web.Configuration.Data.ExcludeFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+    <SessionMatch>&lt;or&gt;&lt;and&gt;&lt;metadata&gt;&lt;ArrayOfKeyValueOfstringstring xmlns="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:i="http://www.w3.org/2001/XMLSchema-instance"&gt;&lt;KeyValueOfstringstring&gt;&lt;Key&gt;Name&lt;/Key&gt;&lt;Value&gt;signalr&lt;/Value&gt;&lt;/KeyValueOfstringstring&gt;&lt;KeyValueOfstringstring&gt;&lt;Key&gt;__type&lt;/Key&gt;&lt;Value&gt;Simpilfied&lt;/Value&gt;&lt;/KeyValueOfstringstring&gt;&lt;/ArrayOfKeyValueOfstringstring&gt;&lt;/metadata&gt;&lt;containsstring&gt;&lt;string&gt;/signalr/&lt;/string&gt;&lt;selectrequest ref="Url" /&gt;&lt;/containsstring&gt;&lt;/and&gt;&lt;/or&gt;</SessionMatch>
+    <RequestFilters version="1" type="SPI.Scanners.Web.Configuration.Data.RequestFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <Extensions version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+        <IgnoreCase>true</IgnoreCase>
+        <LookupList />
+      </Extensions>
+      <UrlRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+        <RegexOptions>IgnoreCase Compiled</RegexOptions>
+        <AggregatePatterns>true</AggregatePatterns>
+        <RegexList>
+          <string>logout</string>
+          <string>logoff</string>
+          <string>exit</string>
+          <string>signout</string>
+          <string>signoff</string>
+        </RegexList>
+      </UrlRegularExpressionSet>
+      <HostRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+        <RegexOptions>IgnoreCase Compiled</RegexOptions>
+        <AggregatePatterns>true</AggregatePatterns>
+        <RegexList />
+      </HostRegularExpressionSet>
+      <RequestRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+        <RegexOptions>Compiled</RegexOptions>
+        <AggregatePatterns>true</AggregatePatterns>
+        <RegexList />
+      </RequestRegularExpressionSet>
+    </RequestFilters>
+    <ResponseFilters version="1" type="SPI.Scanners.Web.Configuration.Data.ResponseFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <MimeTypes version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+        <IgnoreCase>true</IgnoreCase>
+        <LookupList>
+          <string>image/bmp</string>
+          <string>image/fif</string>
+          <string>image/gif</string>
+          <string>image/ief</string>
+          <string>image/jpeg</string>
+          <string>image/png</string>
+          <string>image/tiff</string>
+          <string>image/vasa</string>
+          <string>image/vnd.rn-realpix</string>
+          <string>image/x-cmu-raster</string>
+          <string>image/x-freehand</string>
+          <string>image/x-jps</string>
+          <string>image/x-portable-anymap</string>
+          <string>image/x-portable-bitmap</string>
+          <string>image/x-portable-graymap</string>
+          <string>image/x-portable-pixmap</string>
+          <string>image/x-rgb</string>
+          <string>image/x-xbitmap</string>
+          <string>image/x-xpixmap</string>
+          <string>image/x-xres</string>
+          <string>image/x-xwindowdump</string>
+          <string>video/animaflex</string>
+          <string>video/x-ms-asf</string>
+          <string>video/x-ms-asf-plugin</string>
+          <string>video/avi</string>
+          <string>video/msvideo</string>
+          <string>video/x-msvideo</string>
+          <string>video/avs-video</string>
+          <string>video/dl</string>
+          <string>video/x-dl</string>
+          <string>video/x-dv</string>
+          <string>video/fli</string>
+          <string>video/x-fli</string>
+          <string>video/x-atomic3d-feature</string>
+          <string>video/gl</string>
+          <string>video/x-gl</string>
+          <string>audio/x-gsm</string>
+          <string>video/x-isvideo</string>
+          <string>audio/nspaudio</string>
+          <string>audio/x-nspaudio</string>
+          <string>audio/mpeg</string>
+          <string>audio/x-mpequrl</string>
+          <string>x-music/x-midi</string>
+          <string>audio/midi</string>
+          <string>audio/x-mid</string>
+          <string>audio/x-midi</string>
+          <string>music/crescendo</string>
+          <string>audio/x-vnd.audioexplosion.mjuicemediafile</string>
+          <string>video/x-motion-jpeg</string>
+          <string>audio/mod</string>
+          <string>audio/x-mod</string>
+          <string>audio/x-mpeg</string>
+          <string>video/mpeg</string>
+          <string>video/x-mpeq2a</string>
+          <string>audio/mpeg3</string>
+          <string>audio/x-mpeg-3</string>
+          <string>video/x-mpeg</string>
+          <string>video/x-sgi-movie</string>
+          <string>audio/make</string>
+          <string>audio/vnd.qcelp</string>
+          <string>video/quicktime</string>
+          <string>video/x-qtc</string>
+          <string>audio/x-pn-realaudio</string>
+          <string>audio/x-pn-realaudio-plugin</string>
+          <string>audio/x-realaudio</string>
+          <string>audio/mid</string>
+          <string>video/vnd.rn-realvideo</string>
+          <string>audio/s3m</string>
+          <string>video/x-scm</string>
+          <string>audio/x-psid</string>
+          <string>audio/basic</string>
+          <string>audio/x-adpcm.tsi</string>
+          <string>audio/tsp-audio</string>
+          <string>audio/tsplayereb</string>
+          <string>video/vivo</string>
+          <string>video/vnd.vivo</string>
+          <string>video/vnd.vivodeo/vdo</string>
+          <string>audio/voc</string>
+          <string>audio/x-voc</string>
+          <string>video/vosaic</string>
+          <string>audio/voxware</string>
+          <string>audio/x-twinvq-plugin</string>
+          <string>audio/x-twinvq</string>
+          <string>audio/wav</string>
+          <string>audio/x-wav</string>
+          <string>video/x-amt-demorun</string>
+          <string>audio/xm</string>
+          <string>video/x-amt-showrun</string>
+        </LookupList>
+      </MimeTypes>
+      <ResponseRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+        <RegexOptions>IgnoreCase Compiled</RegexOptions>
+        <AggregatePatterns>true</AggregatePatterns>
+        <RegexList />
+      </ResponseRegularExpressionSet>
+    </ResponseFilters>
+  </ExcludeFilters>
+  <RejectFilters version="1" type="SPI.Scanners.Web.Configuration.Data.RejectFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+    <SessionMatch />
+    <RequestFilters version="1" type="SPI.Scanners.Web.Configuration.Data.RequestFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <Extensions version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+        <IgnoreCase>true</IgnoreCase>
+        <LookupList />
+      </Extensions>
+      <UrlRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+        <RegexOptions>IgnoreCase Compiled</RegexOptions>
+        <AggregatePatterns>true</AggregatePatterns>
+        <RegexList>
+          <string>logout</string>
+          <string>logoff</string>
+          <string>exit</string>
+          <string>signout</string>
+          <string>signoff</string>
+        </RegexList>
+      </UrlRegularExpressionSet>
+      <HostRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+        <RegexOptions>IgnoreCase Compiled</RegexOptions>
+        <AggregatePatterns>true</AggregatePatterns>
+        <RegexList />
+      </HostRegularExpressionSet>
+      <RequestRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+        <RegexOptions>Compiled</RegexOptions>
+        <AggregatePatterns>true</AggregatePatterns>
+        <RegexList />
+      </RequestRegularExpressionSet>
+    </RequestFilters>
+  </RejectFilters>
+  <ScriptIncludeRejectFilters version="1" type="SPI.Scanners.Web.Configuration.Data.RejectFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+    <SessionMatch />
+    <RequestFilters version="1" type="SPI.Scanners.Web.Configuration.Data.RequestFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <Extensions version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+        <IgnoreCase>true</IgnoreCase>
+        <LookupList>
+          <string>ttf</string>
+          <string>woff</string>
+          <string>woff2</string>
+          <string>svg</string>
+        </LookupList>
+      </Extensions>
+      <UrlRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+        <RegexOptions>IgnoreCase Compiled</RegexOptions>
+        <AggregatePatterns>true</AggregatePatterns>
+        <RegexList />
+      </UrlRegularExpressionSet>
+      <HostRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+        <RegexOptions>IgnoreCase Compiled</RegexOptions>
+        <AggregatePatterns>true</AggregatePatterns>
+        <RegexList>
+          <string>youtube</string>
+          <string>facebook</string>
+          <string>twitter</string>
+          <string>linkedin</string>
+          <string>instagram</string>
+          <string>plus\.google\.com</string>
+          <string>pinterest</string>
+          <string>doubleclick</string>
+          <string>addthis\.com</string>
+          <string>serving\-sys\.com</string>
+          <string>nexus\.ensighten\.com</string>
+          <string>thebrighttag</string>
+          <string>ahalogy</string>
+          <string>google\-analytics.com</string>
+          <string>googlesyndication</string>
+          <string>googletagservices</string>
+          <string>ustream\.tv</string>
+          <string>eco-tag\.jp</string>
+          <string>maps\.googleapis\.com</string>
+          <string>maxymiser</string>
+          <string>bluekai</string>
+          <string>optimizely</string>
+          <string>crwdcntrl\.net</string>
+          <string>addthis\.com</string>
+          <string>sharethis\.com</string>
+          <string>addtoany\.com</string>
+          <string>rubiconproject\.com</string>
+          <string>fwmrm\.net</string>
+          <string>mybuys\.com</string>
+          <string>nr\-data\.net</string>
+          <string>serving\-sys\.com</string>
+          <string>liveperson\.net</string>
+          <string>bazaarvoice\.com</string>
+          <string>analytics\.yahoo\.com</string>
+          <string>outbrain\.com</string>
+          <string>massrelevance\.com</string>
+        </RegexList>
+      </HostRegularExpressionSet>
+      <RequestRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+        <RegexOptions>Compiled</RegexOptions>
+        <AggregatePatterns>true</AggregatePatterns>
+        <RegexList />
+      </RequestRegularExpressionSet>
+    </RequestFilters>
+  </ScriptIncludeRejectFilters>
+  <AgentRejectFilters version="1" type="SPI.Configuration.Data.RequestFilterData" assembly="SPI.Configuration.Settings" fips="false">
+    <Filter version="1" type="SPI.Configuration.Data.FilterData" assembly="SPI.Configuration.Settings" fips="false">
+      <EnableFlag>true</EnableFlag>
+      <Action>Replace</Action>
+      <SearchString />
+      <CaseSensitiveFlag>true</CaseSensitiveFlag>
+      <ActionString />
+    </Filter>
+    <RequestSearchArea>All</RequestSearchArea>
+  </AgentRejectFilters>
+  <HostFolderRules version="1" type="SPI.Scanners.Web.Configuration.Data.HostFolderRulesData" assembly="SPI.Scanners.Web.Settings" fips="false">
+    <List>
+      <HostFolderRuleData version="1" type="SPI.Scanners.Web.Configuration.Data.HostFolderRuleData" assembly="SPI.Scanners.Web.Settings" fips="false">
+        <Name>Restrict To Folder</Name>
+        <Enabled>true</Enabled>
+        <Action>Allow</Action>
+        <HostMatch version="1" type="SPI.Scanners.Web.Configuration.Data.HostMatchData" assembly="SPI.Scanners.Web.Settings" fips="false">
+          <List version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+            <IgnoreCase>true</IgnoreCase>
+            <LookupList>
+              <string>legacy.webappsecurity.com:80</string>
+            </LookupList>
+          </List>
+          <ListRegularExpressions version="1" type="SPI.Configuration.Data.RegexLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+            <LookupList />
+          </ListRegularExpressions>
+        </HostMatch>
+        <FolderMatch version="1" type="SPI.Scanners.Web.Configuration.Data.FolderMatchData" assembly="SPI.Scanners.Web.Settings" fips="false">
+          <Match>Descendents</Match>
+          <Folders version="1" type="SPI.Configuration.Data.FolderCollectionData" assembly="SPI.Configuration.Settings" fips="false">
+            <List>
+              <string>/</string>
+            </List>
+          </Folders>
+        </FolderMatch>
+      </HostFolderRuleData>
+      <HostFolderRuleData version="1" type="SPI.Scanners.Web.Configuration.Data.HostFolderRuleData" assembly="SPI.Scanners.Web.Settings" fips="false">
+        <Name>Allowed Host Rule</Name>
+        <Enabled>true</Enabled>
+        <Action>Allow</Action>
+        <HostMatch version="1" type="SPI.Scanners.Web.Configuration.Data.HostMatchData" assembly="SPI.Scanners.Web.Settings" fips="false">
+          <List version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+            <IgnoreCase>true</IgnoreCase>
+            <LookupList>
+              <string>iwa.onfortify.com:443</string>
+            </LookupList>
+          </List>
+          <ListRegularExpressions version="1" type="SPI.Configuration.Data.RegexLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+            <LookupList />
+          </ListRegularExpressions>
+        </HostMatch>
+        <FolderMatch version="1" type="SPI.Scanners.Web.Configuration.Data.FolderMatchData" assembly="SPI.Scanners.Web.Settings" fips="false">
+          <Match>Descendents</Match>
+          <Folders version="1" type="SPI.Configuration.Data.FolderCollectionData" assembly="SPI.Configuration.Settings" fips="false">
+            <List>
+              <string>/</string>
+            </List>
+          </Folders>
+        </FolderMatch>
+      </HostFolderRuleData>
+    </List>
+  </HostFolderRules>
+  <Crawl version="1" type="SPI.Scanners.Web.Configuration.Data.CrawlSettingsData" assembly="SPI.Scanners.Web.Settings" fips="false">
+    <ExcludeLimiterSettingsList>
+      <PlugInSettingsData version="1" type="SPI.Configuration.Data.PlugInSettingsData" assembly="SPI.Configuration.Settings" fips="false">
+        <EnableShadow>true</EnableShadow>
+        <Enable>false</Enable>
+        <ID>20000000-8588-40af-8073-9aaee3220b39</ID>
+        <InstanceID>0</InstanceID>
+        <ConfigurationJson>{
+  "MaxHitCount": "1",
+  "Threshold": 95,
+  "ShingleSize": 95,
+  "IncludeAttributes": "id,class"
+}</ConfigurationJson>
+      </PlugInSettingsData>
+    </ExcludeLimiterSettingsList>
+    <RejectLimiterSettingsList />
+    <TraceLevel>0</TraceLevel>
+    <LaunchDebuggerOnDequeueSessionIDMatch />
+    <LaunchDebuggerOnProcessSessionIDMatch />
+    <LaunchDebuggerOnLinkFoundSessionIDMatch />
+    <LaunchDebuggerOnIncludeSessionIDMatch />
+    <FormInputCountLimit>50</FormInputCountLimit>
+    <UseDomBasedLinkParser>true</UseDomBasedLinkParser>
+    <IncludeNormalCommentLinks>true</IncludeNormalCommentLinks>
+    <IncludeConditionalCommentLinks>true</IncludeConditionalCommentLinks>
+    <IncludeEmbeddedUrlLinks>true</IncludeEmbeddedUrlLinks>
+    <IncludeNonRootedLinks>false</IncludeNonRootedLinks>
+    <IncludePlainTextLinks>true</IncludePlainTextLinks>
+    <IncludeJavaScriptStaticLinks>true</IncludeJavaScriptStaticLinks>
+    <TreatFormActionsAsLinks>true</TreatFormActionsAsLinks>
+    <TreatScriptIncludeUrlsAsLinks>true</TreatScriptIncludeUrlsAsLinks>
+    <TreatStyleIncludeUrlsAsLinks>true</TreatStyleIncludeUrlsAsLinks>
+    <TreatNonRootedFormActionsAsLinks>false</TreatNonRootedFormActionsAsLinks>
+    <TreatNonRootedScriptIncludeUrlsAsLinks>false</TreatNonRootedScriptIncludeUrlsAsLinks>
+    <TreatNonRootedStyleIncludeUrlsAsLinks>false</TreatNonRootedStyleIncludeUrlsAsLinks>
+    <UseStaticParserForDynamicFormControls>false</UseStaticParserForDynamicFormControls>
+    <AutomaticSeedCusromParamRulesNotUsed>true</AutomaticSeedCusromParamRulesNotUsed>
+    <DFEnablePathRetraceFlag>false</DFEnablePathRetraceFlag>
+    <DFSimulateBackButtonFlag>false</DFSimulateBackButtonFlag>
+    <CrawlMode>Disabled</CrawlMode>
+    <InteractiveFlag>false</InteractiveFlag>
+    <OnlyTaggedInputsInteractive>false</OnlyTaggedInputsInteractive>
+    <DistanceEngine version="1" type="SPI.Scanners.Web.Configuration.Data.DistanceEngineData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <Enable>false</Enable>
+      <LogLevel>0</LogLevel>
+    </DistanceEngine>
+    <EasyScan version="1" type="SPI.Scanners.Web.Configuration.Data.EasyScanData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <Enable>false</Enable>
+      <UserID>__FIPS__0Ej432MRhqQN+LaL4BJaxw==</UserID>
+      <UserPassword>__FIPS__0Ej432MRhqQN+LaL4BJaxw==</UserPassword>
+    </EasyScan>
+    <WebForms version="1" type="SPI.Scanners.Web.Configuration.Data.WebFormsData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <SubmitFormsFlag>true</SubmitFormsFlag>
+      <MaxSubmitCount>3</MaxSubmitCount>
+      <Name />
+      <Values version="1" type="SPI.Scanners.Web.Configuration.Data.WebFormData" assembly="SPI.Scanners.Web.Settings" fips="false">
+        <Text>&lt;WebFormValues&gt;&lt;Form&gt;&lt;Url&gt;Global&lt;/Url&gt;&lt;Method&gt;Global&lt;/Method&gt;&lt;Name&gt;&lt;/Name&gt;&lt;Action&gt;Global&lt;/Action&gt;&lt;Charset&gt;utf-8&lt;/Charset&gt;&lt;Inputs&gt;&lt;Input&gt;&lt;Name&gt;cc&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;4556094837157224&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Exact&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;name&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;Jason&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Exact&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;access&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;19118021&lt;/Value&gt;&lt;MaxLength&gt;8&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;access&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;3344&lt;/Value&gt;&lt;MaxLength&gt;4&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;access&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;532623&lt;/Value&gt;&lt;MaxLength&gt;6&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;address&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;1707 Interdimensional Street&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;age&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;1974&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;areacode&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;770&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;birth_year&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;1968&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;cardnum&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;4556094837157224&lt;/Value&gt;&lt;MaxLength&gt;16&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;city&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;Atlanta&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;company&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;Widget+Express&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;credit&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;4556094837157224&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;day&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;26&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;email&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;John.Doe@somewhere.com&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;employer&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;Widget+Express&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;exp&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;12/2007&lt;/Value&gt;&lt;MaxLength&gt;7&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;exp&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;12/07&lt;/Value&gt;&lt;MaxLength&gt;5&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;expiration&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;12/07&lt;/Value&gt;&lt;MaxLength&gt;5&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;expiration&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;12/2007&lt;/Value&gt;&lt;MaxLength&gt;7&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;fax&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;404-525-0392&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;first&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;Peter&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;hinta&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;Twinkleberry&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;hintq&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;+dogs+name&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;last&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;Gibbons&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;login&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;foo&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;middle&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;X&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;month&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;9&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;mother&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;Teresa&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;pass&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;foo&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;Pass2&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;foo&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;password&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;foo&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;Password1&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;foo&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;phone&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;770&lt;/Value&gt;&lt;MaxLength&gt;3&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;phone&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;2600&lt;/Value&gt;&lt;MaxLength&gt;4&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;phone&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;404-555-0392&lt;/Value&gt;&lt;MaxLength&gt;12&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;phone&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;4045551212&lt;/Value&gt;&lt;MaxLength&gt;10&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;postal&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;30346&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;prefix&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;555&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;realname&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;Zack&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;sender&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;jfrost@webappsecurity.com&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;Social&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;672-07-4133&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;Default&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;12345&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;SSN&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;672&lt;/Value&gt;&lt;MaxLength&gt;3&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;SSN&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;07&lt;/Value&gt;&lt;MaxLength&gt;2&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;SSN&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;4133&lt;/Value&gt;&lt;MaxLength&gt;4&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;SSN&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;672-07-4133&lt;/Value&gt;&lt;MaxLength&gt;11&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;state&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;GA&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;suffix&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;2600&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;title&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;Shipping Clerk&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;xfname&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;Jack&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;xlname&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;Frost&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;year&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;1969&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;zip&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;30346&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;zip+four&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;30346-1111&lt;/Value&gt;&lt;MaxLength&gt;10&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;zipplus&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;303461111&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;hidden1&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;Jack Frost&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;False&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;Input&gt;&lt;Name&gt;hidden2&lt;/Name&gt;&lt;Type&gt;User Defined&lt;/Type&gt;&lt;DisplayType&gt;User Defined&lt;/DisplayType&gt;&lt;Value&gt;Jack X Frost&lt;/Value&gt;&lt;MaxLength&gt;0&lt;/MaxLength&gt;&lt;Values /&gt;&lt;SmartCred&gt;None&lt;/SmartCred&gt;&lt;DisplaySmartCred&gt;None&lt;/DisplaySmartCred&gt;&lt;MatchType&gt;Contains&lt;/MatchType&gt;&lt;SubmitHidden&gt;True&lt;/SubmitHidden&gt;&lt;/Input&gt;&lt;/Inputs&gt;&lt;/Form&gt;&lt;/WebFormValues&gt;</Text>
+      </Values>
+    </WebForms>
+    <SoapValuesSettings version="1" type="SPI.Scanners.Web.Configuration.Data.SoapValuesSettingsData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <SubmitFormsFlag>false</SubmitFormsFlag>
+      <Name />
+      <Values version="1" type="SPI.Scanners.Web.Configuration.Data.SoapValuesData" assembly="SPI.Scanners.Web.Settings" fips="false">
+        <Text>&lt;SoapValues&gt;&lt;SoapOperation&gt;&lt;Url&gt;Global&lt;/Url&gt;&lt;Action&gt;Global&lt;/Action&gt;&lt;Method&gt;Global&lt;/Method&gt;&lt;Inputs /&gt;&lt;/SoapOperation&gt;&lt;/SoapValues&gt;</Text>
+      </Values>
+      <MaxArraySize>2</MaxArraySize>
+    </SoapValuesSettings>
+    <WebServiceSettings version="1" type="SPI.Scanners.Web.Configuration.Data.WebServiceSettingsData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <SubmitFormsFlag>false</SubmitFormsFlag>
+      <Name />
+      <DesignData version="1" type="SPI.Scanners.Web.Configuration.Data.WebServiceDesignData" assembly="SPI.Scanners.Web.Settings" fips="false">
+        <Text />
+      </DesignData>
+      <MaxArraySize>2</MaxArraySize>
+    </WebServiceSettings>
+    <PostmanSettings version="1" type="SPI.Scanners.Web.Configuration.Data.PostmanSettingsData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <WorkflowCollectionName />
+      <WorkflowCollectionContents />
+      <WorkflowCollectionPath />
+      <AuthCollectionName />
+      <AuthCollectionContents />
+      <EnvironmentCollectionName />
+      <EnvironmentCollectionContents />
+      <EnvironmentCollectionPath />
+    </PostmanSettings>
+    <FormVariationWarningCount>1000</FormVariationWarningCount>
+    <FormVariationAbortCount>0</FormVariationAbortCount>
+    <ParseHTML>true</ParseHTML>
+    <ParseForms>true</ParseForms>
+    <ParseUrlsInRequestParams>true</ParseUrlsInRequestParams>
+    <ParseEmbeddedLinks>true</ParseEmbeddedLinks>
+    <ParseFlash>true</ParseFlash>
+    <ParseScript>true</ParseScript>
+    <ParseSilverlight>true</ParseSilverlight>
+    <XmlParamEnumerationMode>All</XmlParamEnumerationMode>
+    <JsonParamEnumerationMode>ValueOnly</JsonParamEnumerationMode>
+    <UrlParamDetectionEnabled>true</UrlParamDetectionEnabled>
+    <UrlParamPairToken>59</UrlParamPairToken>
+    <UrlParamValueToken>61</UrlParamValueToken>
+    <CustomLinkRegexes />
+    <ScriptTimeoutSeconds>60</ScriptTimeoutSeconds>
+    <ScriptDelaySeconds>0</ScriptDelaySeconds>
+    <ScriptDelayUrls>(ext-all)1000,(sap-ui)1000</ScriptDelayUrls>
+    <UseCachedIncludeResponse>true</UseCachedIncludeResponse>
+    <ApplyRejectRulesToScriptInclude>false</ApplyRejectRulesToScriptInclude>
+    <ApplyRejectRulesToScriptFrameInclude>false</ApplyRejectRulesToScriptFrameInclude>
+    <ApplyRejectRulesToScriptWindowInclude>true</ApplyRejectRulesToScriptWindowInclude>
+    <SmartScriptFrameEventExecution>true</SmartScriptFrameEventExecution>
+    <SmartScriptWindowEventExecution>false</SmartScriptWindowEventExecution>
+    <PrioritizeNewlyVisibleElements>false</PrioritizeNewlyVisibleElements>
+    <MaxDirectoryHitCountMinFolderDepth>1</MaxDirectoryHitCountMinFolderDepth>
+    <MaxDirectoryHitCount>200</MaxDirectoryHitCount>
+    <MaxURLHitCount>5</MaxURLHitCount>
+    <MinRepeatingDirSegmentCount>2</MinRepeatingDirSegmentCount>
+    <MaxCrawlSessionCount>0</MaxCrawlSessionCount>
+    <MaxCrawlFolderDepthCount>15</MaxCrawlFolderDepthCount>
+    <MaxCrawlDepth>15</MaxCrawlDepth>
+    <ExcludeFilters version="1" type="SPI.Scanners.Web.Configuration.Data.ExcludeFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <SessionMatch />
+      <RequestFilters version="1" type="SPI.Scanners.Web.Configuration.Data.RequestFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+        <Extensions version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+          <IgnoreCase>true</IgnoreCase>
+          <LookupList>
+            <string>ttf</string>
+            <string>woff</string>
+            <string>woff2</string>
+            <string>eot</string>
+            <string>svg</string>
+            <string>gif</string>
+            <string>jpeg</string>
+            <string>jpg</string>
+            <string>jpe</string>
+            <string>png</string>
+            <string>vis</string>
+            <string>tif</string>
+            <string>tiff</string>
+            <string>psd</string>
+            <string>bmp</string>
+            <string>ief</string>
+            <string>wbmp</string>
+            <string>ras</string>
+            <string>pnm</string>
+            <string>pbm</string>
+            <string>pgm</string>
+            <string>ppm</string>
+            <string>rgb</string>
+            <string>xbm</string>
+            <string>xpm</string>
+            <string>xwd</string>
+            <string>djv</string>
+            <string>djvu</string>
+            <string>iw4</string>
+            <string>iw44</string>
+            <string>fif</string>
+            <string>ifs</string>
+            <string>dwg</string>
+            <string>svf</string>
+            <string>wi</string>
+            <string>uff</string>
+            <string>mpg</string>
+            <string>mov</string>
+            <string>mpeg</string>
+            <string>mpeg2</string>
+            <string>avi</string>
+            <string>asf</string>
+            <string>asx</string>
+            <string>wmv</string>
+            <string>qt</string>
+            <string>movie</string>
+            <string>ice</string>
+            <string>viv</string>
+            <string>vivo</string>
+            <string>fvi</string>
+            <string>tar</string>
+            <string>tgz</string>
+            <string>gz</string>
+            <string>zip</string>
+            <string>jar</string>
+            <string>cab</string>
+            <string>hqx</string>
+            <string>arj</string>
+            <string>rar</string>
+            <string>rpm</string>
+            <string>ace</string>
+            <string>wav</string>
+            <string>vox</string>
+            <string>ra</string>
+            <string>rm</string>
+            <string>ram</string>
+            <string>wma</string>
+            <string>au</string>
+            <string>snd</string>
+            <string>mid</string>
+            <string>midi</string>
+            <string>kar</string>
+            <string>mpga</string>
+            <string>mp2</string>
+            <string>mp3</string>
+            <string>mp4</string>
+            <string>aif</string>
+            <string>aiff</string>
+            <string>aifc</string>
+            <string>es</string>
+            <string>esl</string>
+            <string>pac</string>
+            <string>pae</string>
+            <string>a3c</string>
+            <string>pdf</string>
+            <string>doc</string>
+            <string>xls</string>
+            <string>ppt</string>
+            <string>mp</string>
+            <string>msi</string>
+            <string>rmf</string>
+            <string>smi</string>
+            <string>bin</string>
+            <string>m4p</string>
+            <string>m4a</string>
+            <string>PS</string>
+            <string>EPS</string>
+            <string>ico</string>
+            <string>mpg2</string>
+            <string>flv</string>
+            <string>mdb</string>
+          </LookupList>
+        </Extensions>
+        <UrlRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>IgnoreCase Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </UrlRegularExpressionSet>
+        <HostRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>IgnoreCase Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </HostRegularExpressionSet>
+        <RequestRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </RequestRegularExpressionSet>
+      </RequestFilters>
+      <ResponseFilters version="1" type="SPI.Scanners.Web.Configuration.Data.ResponseFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+        <MimeTypes version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+          <IgnoreCase>true</IgnoreCase>
+          <LookupList />
+        </MimeTypes>
+        <ResponseRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>IgnoreCase Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </ResponseRegularExpressionSet>
+      </ResponseFilters>
+    </ExcludeFilters>
+    <RejectFilters version="1" type="SPI.Scanners.Web.Configuration.Data.RejectFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <SessionMatch />
+      <RequestFilters version="1" type="SPI.Scanners.Web.Configuration.Data.RequestFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+        <Extensions version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+          <IgnoreCase>true</IgnoreCase>
+          <LookupList>
+            <string>ttf</string>
+            <string>woff</string>
+            <string>woff2</string>
+            <string>eot</string>
+            <string>svg</string>
+            <string>gif</string>
+            <string>jpeg</string>
+            <string>jpg</string>
+            <string>jpe</string>
+            <string>png</string>
+            <string>vis</string>
+            <string>tif</string>
+            <string>tiff</string>
+            <string>psd</string>
+            <string>bmp</string>
+            <string>ief</string>
+            <string>wbmp</string>
+            <string>ras</string>
+            <string>pnm</string>
+            <string>pbm</string>
+            <string>pgm</string>
+            <string>ppm</string>
+            <string>rgb</string>
+            <string>xbm</string>
+            <string>xpm</string>
+            <string>xwd</string>
+            <string>djv</string>
+            <string>djvu</string>
+            <string>iw4</string>
+            <string>iw44</string>
+            <string>fif</string>
+            <string>ifs</string>
+            <string>dwg</string>
+            <string>svf</string>
+            <string>wi</string>
+            <string>uff</string>
+            <string>mpg</string>
+            <string>mov</string>
+            <string>mpeg</string>
+            <string>mpeg2</string>
+            <string>avi</string>
+            <string>asf</string>
+            <string>asx</string>
+            <string>wmv</string>
+            <string>qt</string>
+            <string>movie</string>
+            <string>ice</string>
+            <string>viv</string>
+            <string>vivo</string>
+            <string>fvi</string>
+            <string>tar</string>
+            <string>tgz</string>
+            <string>gz</string>
+            <string>zip</string>
+            <string>jar</string>
+            <string>cab</string>
+            <string>hqx</string>
+            <string>arj</string>
+            <string>rar</string>
+            <string>rpm</string>
+            <string>ace</string>
+            <string>wav</string>
+            <string>vox</string>
+            <string>ra</string>
+            <string>rm</string>
+            <string>ram</string>
+            <string>wma</string>
+            <string>au</string>
+            <string>snd</string>
+            <string>mid</string>
+            <string>midi</string>
+            <string>kar</string>
+            <string>mpga</string>
+            <string>mp2</string>
+            <string>mp3</string>
+            <string>mp4</string>
+            <string>aif</string>
+            <string>aiff</string>
+            <string>aifc</string>
+            <string>es</string>
+            <string>esl</string>
+            <string>pac</string>
+            <string>pae</string>
+            <string>a3c</string>
+            <string>pdf</string>
+            <string>doc</string>
+            <string>xls</string>
+            <string>ppt</string>
+            <string>mp</string>
+            <string>msi</string>
+            <string>rmf</string>
+            <string>smi</string>
+            <string>bin</string>
+            <string>m4p</string>
+            <string>m4a</string>
+            <string>PS</string>
+            <string>EPS</string>
+            <string>ico</string>
+            <string>mpg2</string>
+            <string>flv</string>
+            <string>mdb</string>
+          </LookupList>
+        </Extensions>
+        <UrlRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>IgnoreCase Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList>
+            <string>\?C=[DMNS];O=[AD]$</string>
+          </RegexList>
+        </UrlRegularExpressionSet>
+        <HostRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>IgnoreCase Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </HostRegularExpressionSet>
+        <RequestRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </RequestRegularExpressionSet>
+      </RequestFilters>
+    </RejectFilters>
+    <AgentRejectFilters version="1" type="SPI.Scanners.Web.Configuration.Data.AgentRejectFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <Extensions version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+        <IgnoreCase>true</IgnoreCase>
+        <LookupList />
+      </Extensions>
+      <UrlRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+        <RegexOptions>IgnoreCase Compiled</RegexOptions>
+        <AggregatePatterns>true</AggregatePatterns>
+        <RegexList />
+      </UrlRegularExpressionSet>
+    </AgentRejectFilters>
+    <SessionBatchSize>10</SessionBatchSize>
+    <StateRequestor version="1" type="SPI.Net.StateRequestor.Configuration.Data.StateRequestorData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+      <ThreadCount>5</ThreadCount>
+      <MaxStackSize>0</MaxStackSize>
+      <ShareThreadState>true</ShareThreadState>
+      <QueueSize>5</QueueSize>
+    </StateRequestor>
+    <EnableSessionLinksFlag>true</EnableSessionLinksFlag>
+    <ScriptReplacements />
+    <ScriptExcludedEventsXpath>
+      <string>//*[contains(translate(@id, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'logout')]</string>
+      <string>//*[contains(translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'logout')]</string>
+      <string>//*[translate(normalize-space(text()), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'logout']</string>
+      <string>//*[contains(translate(@id, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'signout')]</string>
+      <string>//*[contains(translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'signout')]</string>
+      <string>//*[translate(normalize-space(text()), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'signout']</string>
+    </ScriptExcludedEventsXpath>
+    <ScriptPriorityEventsXpath />
+    <ScriptExcludedJQueryUIXpath>
+      <string>//*[@id='ui-datepicker-div']/descendant-or-self::*</string>
+    </ScriptExcludedJQueryUIXpath>
+    <DynamicFormsPerSessionLimit>-1</DynamicFormsPerSessionLimit>
+    <SaveDynamicForms>false</SaveDynamicForms>
+    <UseCachedIncludeResponseInMacroPlayback>false</UseCachedIncludeResponseInMacroPlayback>
+    <GenerateFormVariationsOnFormSession>false</GenerateFormVariationsOnFormSession>
+    <IncludeParametersInHitCount>true</IncludeParametersInHitCount>
+    <ScriptEventClustering>true</ScriptEventClustering>
+    <ScriptEventClusterMinSize>3</ScriptEventClusterMinSize>
+    <ScriptEventClusterDistEngineThresholdWeightMultiplier>25</ScriptEventClusterDistEngineThresholdWeightMultiplier>
+    <ScriptEventClusterLoadOnly>false</ScriptEventClusterLoadOnly>
+    <ScriptEventClusterSaveExtendedData>false</ScriptEventClusterSaveExtendedData>
+    <UICrawlSettings version="1" type="SPI.Scanners.Web.Configuration.UICrawlSettingsData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <BrowserTimeoutInSeconds>15</BrowserTimeoutInSeconds>
+      <ElementTimeoutInSeconds>5</ElementTimeoutInSeconds>
+      <NumBrowsers>2</NumBrowsers>
+      <AllPagesAreDifferent>false</AllPagesAreDifferent>
+      <SimHashDistance>3</SimHashDistance>
+      <NavigateTimeout>60000</NavigateTimeout>
+      <EnableDebugFileLogging>false</EnableDebugFileLogging>
+      <EnableBrowserEventsDedup>true</EnableBrowserEventsDedup>
+      <EnableFormCachingInEventDiscovery>true</EnableFormCachingInEventDiscovery>
+    </UICrawlSettings>
+    <ExcludeCrawlCachingForLinkTypes>
+      <CrawlLinkType>WebSocket</CrawlLinkType>
+    </ExcludeCrawlCachingForLinkTypes>
+  </Crawl>
+  <Audit version="1" type="SPI.Scanners.Web.Configuration.Data.AuditSettingsData" assembly="SPI.Scanners.Web.Settings" fips="false">
+    <RequestParameterInfoAuditMode>Disabled</RequestParameterInfoAuditMode>
+    <RequestParameterInfoFileNames />
+    <DebugAttackDefinitionRegexSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+      <RegexOptions>Compiled</RegexOptions>
+      <AggregatePatterns>false</AggregatePatterns>
+      <RegexList />
+    </DebugAttackDefinitionRegexSet>
+    <DebugAttackDefinitionSeparateLog>false</DebugAttackDefinitionSeparateLog>
+    <AuditLoginSessionsWithState>false</AuditLoginSessionsWithState>
+    <AuditEngineProcessAttackHtmlDecodeOnNoMatch>true</AuditEngineProcessAttackHtmlDecodeOnNoMatch>
+    <RequestModifyAuditEngineTraceLevel>0</RequestModifyAuditEngineTraceLevel>
+    <TraceLevel>0</TraceLevel>
+    <EnginePrivilegeLevel>None</EnginePrivilegeLevel>
+    <PrivilegeEscalationResponseCompareMode>StatusCode</PrivilegeEscalationResponseCompareMode>
+    <PrivilegeEscalationConfigurationInvalid>false</PrivilegeEscalationConfigurationInvalid>
+    <PrivilegeEscalationMode>Disabled</PrivilegeEscalationMode>
+    <PrivilegeEscalationGenerateLowPrivilegeCrawls>false</PrivilegeEscalationGenerateLowPrivilegeCrawls>
+    <PrivilegeEscalationEmbedLowPrivilegeCrawls>true</PrivilegeEscalationEmbedLowPrivilegeCrawls>
+    <PrivilegeEscalationScanIDList />
+    <AttackDuplicateQueryParameters>false</AttackDuplicateQueryParameters>
+    <AttackDuplicatePostParameters>false</AttackDuplicatePostParameters>
+    <IgnoreAppsecThreadSafeAttribute>false</IgnoreAppsecThreadSafeAttribute>
+    <DisabledIAuditCapable version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+      <IgnoreCase>true</IgnoreCase>
+      <LookupList />
+    </DisabledIAuditCapable>
+    <EnableOnlyIAuditCapable version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+      <IgnoreCase>true</IgnoreCase>
+      <LookupList />
+    </EnableOnlyIAuditCapable>
+    <AuditEngineDiagnosticsSettings version="1" type="SPI.Scanners.Web.Configuration.Data.AuditEngineDiagnosticsSettingsData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <XSSDiagnosticsSettingsData version="1" type="SPI.Scanners.Web.Configuration.Data.SQLIDiagnosticsSettingsData" assembly="SPI.Scanners.Web.Settings" fips="false">
+        <SessionID />
+        <ParamName />
+        <Sequence>0</Sequence>
+        <LaunchDebugger>false</LaunchDebugger>
+        <Trace>false</Trace>
+      </XSSDiagnosticsSettingsData>
+      <SQLIDiagnosticsSettingsData version="1" type="SPI.Scanners.Web.Configuration.Data.XSSDiagnosticsSettingsData" assembly="SPI.Scanners.Web.Settings" fips="false">
+        <SessionID />
+        <ParamName />
+        <Sequence>0</Sequence>
+        <LaunchDebugger>false</LaunchDebugger>
+        <Trace>false</Trace>
+      </SQLIDiagnosticsSettingsData>
+    </AuditEngineDiagnosticsSettings>
+    <LaunchDebuggerOnEngineDrivenThreadStart>false</LaunchDebuggerOnEngineDrivenThreadStart>
+    <LaunchDebuggerOnSessionDrivenThreadStart>false</LaunchDebuggerOnSessionDrivenThreadStart>
+    <LaunchDebuggerOnVerifyThreadStart>false</LaunchDebuggerOnVerifyThreadStart>
+    <LaunchDebuggerOnReflectThreadStart>false</LaunchDebuggerOnReflectThreadStart>
+    <LaunchDebuggerOnDequeueSessionIDMatch />
+    <LaunchDebuggerOnReflectedSessionIDMatch />
+    <LaunchDebuggerOnParamRelationshipProbeAuditSessionIDMatch />
+    <LaunchDebuggerOnProcessAttackSessionIDMatch />
+    <LaunchDebuggerOnRequestAttackSessionIDMatch />
+    <LaunchDebuggerOnRequestAttackSessionRequestContainsString />
+    <SavePreAjaxAttackDom>false</SavePreAjaxAttackDom>
+    <RetestParamDescriptor />
+    <RetestAttackParamIndex>0</RetestAttackParamIndex>
+    <RetestAttackParamSubIndex>0</RetestAttackParamSubIndex>
+    <RetestAttackType>None</RetestAttackType>
+    <EnablePathRetraceFlag>false</EnablePathRetraceFlag>
+    <KeywordSearchOnlyFlag>false</KeywordSearchOnlyFlag>
+    <KeywordSearchOnlyFlagDefaultValue>true</KeywordSearchOnlyFlagDefaultValue>
+    <SuppressOffsiteVulnerabilities>false</SuppressOffsiteVulnerabilities>
+    <ParameterRelationshipThreadCount>1</ParameterRelationshipThreadCount>
+    <MaxReflectionSessionCount>0</MaxReflectionSessionCount>
+    <DisableUrlComponentManipulation>false</DisableUrlComponentManipulation>
+    <RunScriptParserOnParamManipulationAttackResponse>false</RunScriptParserOnParamManipulationAttackResponse>
+    <RunScriptParserOnAjaxAttackParentResponse>true</RunScriptParserOnAjaxAttackParentResponse>
+    <RunScriptParserOnDynamicSubmittedFormAttackParentResponse>false</RunScriptParserOnDynamicSubmittedFormAttackParentResponse>
+    <RunScriptParserOnDynamicFrameAttackParentResponse>false</RunScriptParserOnDynamicFrameAttackParentResponse>
+    <SuppressCrawlOnRedirectParameterAttacks>true</SuppressCrawlOnRedirectParameterAttacks>
+    <AuditMode>SessionDriven</AuditMode>
+    <StateRequestor version="1" type="SPI.Net.StateRequestor.Configuration.Data.StateRequestorData" assembly="SPI.Net.StateRequestor.Configuration" fips="false">
+      <ThreadCount>10</ThreadCount>
+      <MaxStackSize>0</MaxStackSize>
+      <ShareThreadState>false</ShareThreadState>
+      <QueueSize>5</QueueSize>
+    </StateRequestor>
+    <SessionBatchSize>5</SessionBatchSize>
+    <DebugEngineDirectory />
+    <AuditInputs version="1" type="SPI.Scanners.Web.Configuration.Data.AuditInputsData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <DefaultEngineSettings version="1" type="SPI.Scanners.Web.Configuration.Data.EngineSettingsData" assembly="SPI.Scanners.Web.Settings" fips="false">
+        <ResourceParamAuditMode>Always</ResourceParamAuditMode>
+        <ResourceParamAuditModeUseDefault>true</ResourceParamAuditModeUseDefault>
+        <AttackOnlyUniqueQueryParams>false</AttackOnlyUniqueQueryParams>
+        <AttackOnlyUniquePostParams>false</AttackOnlyUniquePostParams>
+        <AttackOnlyAllowedParams version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </AttackOnlyAllowedParams>
+        <AttackOnlyUniqueParamsUnless version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </AttackOnlyUniqueParamsUnless>
+        <MergeSimilarQueryParams version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </MergeSimilarQueryParams>
+        <MergeSimilarPostParams version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </MergeSimilarPostParams>
+        <HeaderAuditMode>Once</HeaderAuditMode>
+        <HeaderAuditModeUseDefault>true</HeaderAuditModeUseDefault>
+        <CookieAuditMode>SetCookieChildrenCookiesSet</CookieAuditMode>
+        <CookieAuditModeUseDefault>true</CookieAuditModeUseDefault>
+        <ExcludedQuerySubParameters version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </ExcludedQuerySubParameters>
+        <ExcludedQuerySubParametersMerge>true</ExcludedQuerySubParametersMerge>
+        <ExcludedQueryParameters version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>IgnoreCase Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList>
+            <string>__VIEWSTATE</string>
+            <string>__EVENTVALIDATION</string>
+            <string>__EVENTTARGET</string>
+            <string>__EVENTARGUMENT</string>
+            <string>__PREVIOUSPAGE</string>
+            <string>__PREVIOUSPAGE</string>
+            <string>jsessionid</string>
+            <string>sessionid</string>
+            <string>CFTOKEN</string>
+            <string>PHPSESSID</string>
+          </RegexList>
+        </ExcludedQueryParameters>
+        <ExcludedQueryParametersMerge>true</ExcludedQueryParametersMerge>
+        <ExcludedCustomParameters version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </ExcludedCustomParameters>
+        <ExcludedCustomParametersMerge>true</ExcludedCustomParametersMerge>
+        <IncludedPostdataParamsValueInAttackHash version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>IgnoreCase Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList>
+            <string>__EVENTTARGET</string>
+            <string>__EVENTARGUMENT</string>
+          </RegexList>
+        </IncludedPostdataParamsValueInAttackHash>
+        <IncludedPostdataParamsValueInAttackHashMerge>true</IncludedPostdataParamsValueInAttackHashMerge>
+        <IncludedQueryParamsValueInAttackHash version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>IgnoreCase Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </IncludedQueryParamsValueInAttackHash>
+        <IncludedQueryParamsValueInAttackHashMerge>true</IncludedQueryParamsValueInAttackHashMerge>
+        <IncludedCustomParamsValueInAttackHash version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </IncludedCustomParamsValueInAttackHash>
+        <IncludedCustomParamsValueInAttackHashMerge>true</IncludedCustomParamsValueInAttackHashMerge>
+        <ExcludedPostdataSubParameters version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </ExcludedPostdataSubParameters>
+        <ExcludedPostdataSubParametersMerge>true</ExcludedPostdataSubParametersMerge>
+        <ExcludedPostdataParameters version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>IgnoreCase Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList>
+            <string>__VIEWSTATE</string>
+            <string>__EVENTVALIDATION</string>
+            <string>__EVENTTARGET</string>
+            <string>__EVENTARGUMENT</string>
+            <string>__PREVIOUSPAGE</string>
+            <string>jsessionid</string>
+            <string>sessionid</string>
+            <string>CFTOKEN</string>
+            <string>PHPSESSID</string>
+          </RegexList>
+        </ExcludedPostdataParameters>
+        <ExcludedPostParametersMerge>true</ExcludedPostParametersMerge>
+        <ExcludedHeaders version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>IgnoreCase Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList>
+            <string>Content-Type</string>
+            <string>Content-Length</string>
+            <string>Connection</string>
+            <string>Pragma</string>
+            <string>Referer</string>
+            <string>Host</string>
+            <string>X-AscRawUrl</string>
+          </RegexList>
+        </ExcludedHeaders>
+        <ExcludedHeadersMerge>true</ExcludedHeadersMerge>
+        <ExcludedCookies version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>IgnoreCase Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList>
+            <string>ASPSESSIONID[A-Z]{0,8}</string>
+            <string>PHPSESSID</string>
+            <string>PHPSESSIONID</string>
+            <string>CFTOKEN</string>
+            <string>CustomCookie</string>
+            <string>BV_SESSIONID</string>
+            <string>BV_EngineID</string>
+            <string>jsessionid</string>
+            <string>sessionid</string>
+            <string>FORMCRED</string>
+            <string>SMSESSION</string>
+            <string>ASP.NET_SessionId</string>
+          </RegexList>
+        </ExcludedCookies>
+        <ExcludedWebServiceParameters version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </ExcludedWebServiceParameters>
+        <ExcludedCookiesMerge>true</ExcludedCookiesMerge>
+        <ExcludedWebServiceParametersMerge>true</ExcludedWebServiceParametersMerge>
+        <VirtualRootRules version="1" type="SPI.Scanners.Web.Configuration.Data.VirtualRootRulesData" assembly="SPI.Scanners.Web.Settings" fips="false">
+          <List>
+            <VirtualRootRuleData version="1" type="SPI.Scanners.Web.Configuration.Data.VirtualRootRuleData" assembly="SPI.Scanners.Web.Settings" fips="false">
+              <HostMatch version="1" type="SPI.Scanners.Web.Configuration.Data.HostMatchData" assembly="SPI.Scanners.Web.Settings" fips="false">
+                <List version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+                  <IgnoreCase>true</IgnoreCase>
+                  <LookupList>
+                    <string />
+                  </LookupList>
+                </List>
+                <ListRegularExpressions version="1" type="SPI.Configuration.Data.RegexLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+                  <LookupList />
+                </ListRegularExpressions>
+              </HostMatch>
+              <Folders version="1" type="SPI.Configuration.Data.FolderCollectionData" assembly="SPI.Configuration.Settings" fips="false">
+                <List>
+                  <string>/</string>
+                </List>
+              </Folders>
+            </VirtualRootRuleData>
+          </List>
+        </VirtualRootRules>
+        <VirtualRootRulesMerge>true</VirtualRootRulesMerge>
+        <SkipManipulationCheckIfTriggerMatchesRegex>true</SkipManipulationCheckIfTriggerMatchesRegex>
+        <ScanHealthSlowAuditParamCount>100</ScanHealthSlowAuditParamCount>
+      </DefaultEngineSettings>
+      <EngineSettings />
+      <CheckInputs />
+    </AuditInputs>
+    <RunPXSSDuringMainAudit>false</RunPXSSDuringMainAudit>
+    <ParemeterRelationshipParentDepth>-1</ParemeterRelationshipParentDepth>
+    <ParameterRelationshipChildDepth>1</ParameterRelationshipChildDepth>
+    <SqlTableExclusions version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+      <IgnoreCase>true</IgnoreCase>
+      <LookupList>
+        <string>ASPStateTempApplications</string>
+        <string>ASPStateTempSessions</string>
+      </LookupList>
+    </SqlTableExclusions>
+    <MaxVerificationRequestsPerProbe>15</MaxVerificationRequestsPerProbe>
+    <PRProbeWithSSConfirmation>true</PRProbeWithSSConfirmation>
+    <ExcludeFromAuditHttpStatusCodes version="1" type="SPI.Configuration.Data.StatusCodeRangesData" assembly="SPI.Configuration.Settings" fips="false">
+      <List />
+    </ExcludeFromAuditHttpStatusCodes>
+    <ExcludeFilters version="1" type="SPI.Scanners.Web.Configuration.Data.ExcludeFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <SessionMatch />
+      <RequestFilters version="1" type="SPI.Scanners.Web.Configuration.Data.RequestFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+        <Extensions version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+          <IgnoreCase>true</IgnoreCase>
+          <LookupList>
+            <string>ttf</string>
+            <string>woff</string>
+            <string>woff2</string>
+            <string>eot</string>
+            <string>svg</string>
+            <string>gif</string>
+            <string>jpeg</string>
+            <string>jpg</string>
+            <string>jpe</string>
+            <string>png</string>
+            <string>vis</string>
+            <string>tif</string>
+            <string>tiff</string>
+            <string>psd</string>
+            <string>bmp</string>
+            <string>ief</string>
+            <string>wbmp</string>
+            <string>ras</string>
+            <string>pnm</string>
+            <string>pbm</string>
+            <string>pgm</string>
+            <string>ppm</string>
+            <string>rgb</string>
+            <string>xbm</string>
+            <string>xpm</string>
+            <string>xwd</string>
+            <string>djv</string>
+            <string>djvu</string>
+            <string>iw4</string>
+            <string>iw44</string>
+            <string>fif</string>
+            <string>ifs</string>
+            <string>dwg</string>
+            <string>svf</string>
+            <string>wi</string>
+            <string>uff</string>
+            <string>mpg</string>
+            <string>mov</string>
+            <string>mpeg</string>
+            <string>mpeg2</string>
+            <string>avi</string>
+            <string>asf</string>
+            <string>asx</string>
+            <string>wmv</string>
+            <string>qt</string>
+            <string>movie</string>
+            <string>ice</string>
+            <string>viv</string>
+            <string>vivo</string>
+            <string>fvi</string>
+            <string>tar</string>
+            <string>tgz</string>
+            <string>gz</string>
+            <string>zip</string>
+            <string>jar</string>
+            <string>cab</string>
+            <string>hqx</string>
+            <string>arj</string>
+            <string>rar</string>
+            <string>rpm</string>
+            <string>ace</string>
+            <string>wav</string>
+            <string>vox</string>
+            <string>ra</string>
+            <string>rm</string>
+            <string>ram</string>
+            <string>wma</string>
+            <string>au</string>
+            <string>snd</string>
+            <string>mid</string>
+            <string>midi</string>
+            <string>kar</string>
+            <string>mpga</string>
+            <string>mp2</string>
+            <string>mp3</string>
+            <string>mp4</string>
+            <string>aif</string>
+            <string>aiff</string>
+            <string>aifc</string>
+            <string>es</string>
+            <string>esl</string>
+            <string>pac</string>
+            <string>pae</string>
+            <string>a3c</string>
+            <string>pdf</string>
+            <string>doc</string>
+            <string>xls</string>
+            <string>ppt</string>
+            <string>mp</string>
+            <string>msi</string>
+            <string>rmf</string>
+            <string>smi</string>
+            <string>bin</string>
+            <string>m4p</string>
+            <string>m4a</string>
+            <string>PS</string>
+            <string>EPS</string>
+            <string>ico</string>
+            <string>mpg2</string>
+            <string>flv</string>
+            <string>mdb</string>
+            <string>txt</string>
+            <string>css</string>
+            <string>axd</string>
+          </LookupList>
+        </Extensions>
+        <UrlRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>IgnoreCase Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </UrlRegularExpressionSet>
+        <HostRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>IgnoreCase Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </HostRegularExpressionSet>
+        <RequestRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </RequestRegularExpressionSet>
+      </RequestFilters>
+      <ResponseFilters version="1" type="SPI.Scanners.Web.Configuration.Data.ResponseFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+        <MimeTypes version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+          <IgnoreCase>true</IgnoreCase>
+          <LookupList />
+        </MimeTypes>
+        <ResponseRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>IgnoreCase Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </ResponseRegularExpressionSet>
+      </ResponseFilters>
+    </ExcludeFilters>
+    <RejectFilters version="1" type="SPI.Scanners.Web.Configuration.Data.RejectFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+      <SessionMatch />
+      <RequestFilters version="1" type="SPI.Scanners.Web.Configuration.Data.RequestFiltersData" assembly="SPI.Scanners.Web.Settings" fips="false">
+        <Extensions version="1" type="SPI.Configuration.Data.StringLookupListData" assembly="SPI.Configuration.Settings" fips="false">
+          <IgnoreCase>true</IgnoreCase>
+          <LookupList />
+        </Extensions>
+        <UrlRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>IgnoreCase Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </UrlRegularExpressionSet>
+        <HostRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>IgnoreCase Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </HostRegularExpressionSet>
+        <RequestRegularExpressionSet version="1" type="SPI.Configuration.Data.RegularExpressionSetData" assembly="SPI.Configuration.Settings" fips="false">
+          <RegexOptions>Compiled</RegexOptions>
+          <AggregatePatterns>true</AggregatePatterns>
+          <RegexList />
+        </RequestRegularExpressionSet>
+      </RequestFilters>
+    </RejectFilters>
+    <AdditionalRegexLanguages />
+    <CheckInputsOverrideXML />
+    <RunScriptParserOnParamManipulationAttackResponse2>NoScript</RunScriptParserOnParamManipulationAttackResponse2>
+    <CacheDomsOnParamManipulationAttackResponse>true</CacheDomsOnParamManipulationAttackResponse>
+    <AuditAjaxSessionRaw>true</AuditAjaxSessionRaw>
+    <SQLInjectionSpaceDelimiter>%09</SQLInjectionSpaceDelimiter>
+    <SQLInjectionWSSpaceDelimiter>%20</SQLInjectionWSSpaceDelimiter>
+    <JSONSpaceDelimiter>%20</JSONSpaceDelimiter>
+    <RefreshResponseBeforeRunScript>false</RefreshResponseBeforeRunScript>
+    <AuditAjaxNormalWhenAggressiveFails>true</AuditAjaxNormalWhenAggressiveFails>
+    <BlindSqlDetection>TimeBased_WhenUnreliableUseInferential</BlindSqlDetection>
+    <BlindSqlExtractionDbChars>0</BlindSqlExtractionDbChars>
+    <XSSCanReplace>true</XSSCanReplace>
+    <XSSValidationRunAllUserEvents>false</XSSValidationRunAllUserEvents>
+    <DoubleEncodeUrlParameters>false</DoubleEncodeUrlParameters>
+    <AttackTypeAllow />
+    <AttackTypeDeny />
+  </Audit>
+  <ManualScanSelectedBrowser>Firefox</ManualScanSelectedBrowser>
+  <UserAgentIE>Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)</UserAgentIE>
+  <UseNewScriptServer>true</UseNewScriptServer>
+  <PassUserAgentInInputParams>true</PassUserAgentInInputParams>
+  <ScriptyCrawlType>TandemUICrawl</ScriptyCrawlType>
+  <SPAOptions>Auto</SPAOptions>
+  <ShowScriptyConsole>false</ShowScriptyConsole>
+  <ScriptEngineType>Gecko</ScriptEngineType>
+  <NewScriptServerRemoteDesktop>true</NewScriptServerRemoteDesktop>
+  <NewScriptServerUseTokens>true</NewScriptServerUseTokens>
+  <NewScriptServerTokenizerTokens />
+  <NewScriptServerOverrideEventsWithTokens>false</NewScriptServerOverrideEventsWithTokens>
+  <RemoteScriptExecution>true</RemoteScriptExecution>
+  <JavascriptFireClickEventOnAllDescendents>false</JavascriptFireClickEventOnAllDescendents>
+  <LogJavascriptErrors>false</LogJavascriptErrors>
+  <EnableJSFrameworkUIExclusions>true</EnableJSFrameworkUIExclusions>
+  <ShutdownScriptServerAtMaxMemory>true</ShutdownScriptServerAtMaxMemory>
+  <ScriptServerMaxMemory>536870912</ScriptServerMaxMemory>
+  <MonitorScriptServerHangState>true</MonitorScriptServerHangState>
+  <RestartRemotingScriptServer>true</RestartRemotingScriptServer>
+  <ScriptServerInactivityProbeCount>3</ScriptServerInactivityProbeCount>
+  <ScriptServerInactivityProbeIntervalSeconds>10</ScriptServerInactivityProbeIntervalSeconds>
+  <RunScriptCrawlOnFrameSessions>true</RunScriptCrawlOnFrameSessions>
+  <NewScriptServerMaxMemory>536870912</NewScriptServerMaxMemory>
+  <CreateDomSnapshots>false</CreateDomSnapshots>
+  <CreateDomSessions>false</CreateDomSessions>
+  <MaxScriptEventsPerPage>1000</MaxScriptEventsPerPage>
+  <RunScriptEventsOnClobberedElements>true</RunScriptEventsOnClobberedElements>
+  <MaxRetryScriptCountForPagesWithClobberedElements>0</MaxRetryScriptCountForPagesWithClobberedElements>
+  <VerboseScriptParserDebugLogging>false</VerboseScriptParserDebugLogging>
+  <MaxScriptEventLevel>5</MaxScriptEventLevel>
+  <AggressiveAjaxAuditing>true</AggressiveAjaxAuditing>
+  <DiffEngineRetryPerSession>1</DiffEngineRetryPerSession>
+  <DuplicateEventDetection>true</DuplicateEventDetection>
+  <MaxRerunDuplicateEvents>0</MaxRerunDuplicateEvents>
+  <RequestWindowDotOpenUrlsInScript>false</RequestWindowDotOpenUrlsInScript>
+  <ParamsToRefreshInScriptInclude />
+  <RunScriptOnMacroPlayback>ScriptLoadEvent</RunScriptOnMacroPlayback>
+  <SafeActiveXProgIDs />
+  <SafeActiveXCLSIDs />
+  <CollectStateFromScriptAfterLoad>false</CollectStateFromScriptAfterLoad>
+  <URLRewrites version="1" type="SPI.Configuration.Data.URLRewritesData" assembly="SPI.Configuration.Settings" fips="false">
+    <List />
+  </URLRewrites>
+  <CrawlFnF>false</CrawlFnF>
+  <RunScriptOnFnf>false</RunScriptOnFnf>
+  <UseFastWirtTriggerHash>true</UseFastWirtTriggerHash>
+  <WebSpherePortalCrawl>false</WebSpherePortalCrawl>
+  <WebSpherePortalNavigationStateRegex>(?&lt;path&gt;.+)(?&lt;poc&gt;!ut/p/.*)(?&lt;file&gt;:RN:.*?)(?&lt;params&gt;:.*|$)</WebSpherePortalNavigationStateRegex>
+  <WebSpherePortalPOCDecoderPath>/wps/poc?uri=state:{0}&amp;mode=download</WebSpherePortalPOCDecoderPath>
+  <DiscoverExtendedSiteSurface>false</DiscoverExtendedSiteSurface>
+  <CorrelationIdProviders version="1" type="SPI.Configuration.Data.CorrelationIDProviderData" assembly="SPI.Configuration.Settings" fips="false">
+    <SynchronizeWithSSC>82767ad9-1909-40fd-bae0-76fe828c4e1d</SynchronizeWithSSC>
+    <ScanComparisonProvider>09857cf3-6b5e-454f-9efc-23cb81404897</ScanComparisonProvider>
+    <FalsePositiveProvider>09857cf3-6b5e-454f-9efc-23cb81404897</FalsePositiveProvider>
+    <RedundantPage>eae9476b-1934-49e2-aa5e-2a3a640945e9</RedundantPage>
+    <ResourceRewriteValue>29cd8daa-15f5-46f7-a4ad-fb9938e47bb7</ResourceRewriteValue>
+  </CorrelationIdProviders>
+  <NativeMobileProfileType>None</NativeMobileProfileType>
+  <UserAgentHeader>Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101 Firefox/98.0</UserAgentHeader>
+  <UserAgentAppName>Netscape</UserAgentAppName>
+  <UserAgentAppVersion>5.0 (Windows)</UserAgentAppVersion>
+  <UserAgentPlatform>Win64</UserAgentPlatform>
+  <DefaultGSBrowserType>TruClient</DefaultGSBrowserType>
+  <UserAgentFirefox>Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101 Firefox/98.0</UserAgentFirefox>
+</ScanSettings>
