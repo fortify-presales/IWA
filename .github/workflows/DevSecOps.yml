@@ -194,7 +194,7 @@ jobs:
         run: scancentral package -bt mvn -bf pom.xml -bc "package --settings $GITHUB_WORKSPACE/settings.xml" -oss -o $PACKAGE_FILE
         env:
             PACKAGE_FILE: "package.zip"
-            PACKAGE_OPTS: ${{ format('-bt mvn -bf pom.xml -bc "{0}" -oss', "package --settings $GITHUB_WORKSPACE/settings.xml") }}
+            PACKAGE_OPTS: ${{ format('-bt mvn -bf pom.xml -bc "{0}" -oss', 'package --settings $GITHUB_WORKSPACE/settings.xml') }}
 
       # FOR DEBUG - Save package.zip
       #- name: 'Upload Artifact'
