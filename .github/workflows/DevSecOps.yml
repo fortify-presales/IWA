@@ -56,7 +56,7 @@ jobs:
         fetch-depth: 2
     # If this run was triggered by a pull request event, then checkout the head of the pull request instead of the merge commit.
     - run: git checkout HEAD^2
-      if: ${{ github.event_name == 'pull_request' }}   
+      if: ${{ github.event_name == 'pull_request' }}
 
     # Setup JDK 1.11 on host
     - name: Set up JDK 1.11
@@ -66,7 +66,7 @@ jobs:
 
     # Build / Test with Maven
     - name: Build with Maven
-      run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dskip.unit.tests=false -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
+      run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dskip.unit.tests=false -DfailIfNoTests=false -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
 
   Debricked-SCA:
     runs-on: ubuntu-latest
@@ -131,9 +131,9 @@ jobs:
           } else {
             $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
             Write-Output "::set-output name=branch::$BranchName"
-          }  
+          }
         env:
-          SOURCE_BRANCH: ${{ github.head_ref }}  
+          SOURCE_BRANCH: ${{ github.head_ref }}
         id: extract_branch
 
       # Install Fortify Command Line (fcli) tool
@@ -191,10 +191,10 @@ jobs:
         with:
           version: 22.2.0
       - name: Package Code + Dependencies
-        run: scancentral package -bt mvn -bf pom.xml -bc "package --settings $GITHUB_WORKSPACE/settings.xml" -oss -o $PACKAGE_FILE
+        run: scancentral package -bt mvn -bf pom.xml -bc "package --settings $GITHUB_WORKSPACE/settings.xml -DfailIfNoTests=false" -oss -o $PACKAGE_FILE
         env:
             PACKAGE_FILE: "package.zip"
-            PACKAGE_OPTS: ${{ format('-bt mvn -bf pom.xml -bc "{0}" -oss', 'package --settings $GITHUB_WORKSPACE/settings.xml') }}
+            PACKAGE_OPTS: ${{ format('-bt mvn -bf pom.xml -bc "{0}" -oss', 'package --settings $GITHUB_WORKSPACE/settings.xml -DfailIfNoTests=false') }}
 
       # FOR DEBUG - Save package.zip
       #- name: 'Upload Artifact'
