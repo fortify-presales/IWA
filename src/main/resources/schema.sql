@@ -9,7 +9,6 @@
 drop table authorities if exists cascade;
 drop table users if exists cascade;
 drop table user_authorities if exists cascade;
-drop table verifications if exists cascade;
 drop table products if exists cascade;
 drop table messages if exists cascade;
 drop table orders if exists cascade;
@@ -39,8 +38,8 @@ create table users
     zip          varchar(255) default null,
     country      varchar(255) default null,
     verify_code  varchar(255) default null,
-    enabled      bit(1)       not null,
-    mfa          bit(1)       default 0,
+    enabled      bit       not null,
+    mfa          bit       default 0,
     primary key (id)
 );
 create table user_authorities
@@ -58,12 +57,12 @@ create table products
     description    clob         not null,
     image          varchar(255),
     price          float        not null,
-    on_sale        bit(1)       default 0 not null,
+    on_sale        bit       default 0 not null,
     sale_price     float        default 0.0 not null,
-    in_stock       bit(1)       default 1 not null,
+    in_stock       bit       default 1 not null,
     time_to_stock  integer      default 0 not null,
     rating         integer      default 1 not null,
-    available      bit(1)       default 1 not null,
+    available      bit       default 1 not null,
     primary key (id)
 );
 create table messages
@@ -73,7 +72,7 @@ create table messages
     text      clob          default null,
     sent_date datetime      default NOW(),
     read_date datetime      default null,
-    read      bit(1)        not null,
+    read      bit           not null,
     primary key (id)
 );
 create table orders
@@ -84,7 +83,7 @@ create table orders
     order_date      datetime        default NOW(),
     amount          float           not null,
     cart            clob            default null,
-    shipped         bit(1)          not null,
+    shipped         bit          not null,
     shipped_date    datetime        default null,
     primary key (id)
 );
@@ -96,7 +95,7 @@ create table reviews
     review_date     datetime        default NOW(),
     comment         clob            default null,
     rating          integer         default 1 not null,
-    visible         bit(1)          not null,
+    visible         bit             not null,
     primary key (id)
 );
 

@@ -23,14 +23,14 @@
             <url>https://opensource.org/licenses/gpl-license</url>
         </license>
     </licenses>
-	
+
 	<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 		<fod.dir>fod</fod.dir>
-        <h2.version>1.4.197</h2.version>
+        <h2.version>2.1.210</h2.version>
         <passay.version>1.5.0</passay.version>
         <bootstrap.version>4.5.3</bootstrap.version>
         <jquery.version>3.5.1</jquery.version>
@@ -47,7 +47,7 @@
         <skip.unit.tests>true</skip.unit.tests>
         <skip.integration.tests>true</skip.integration.tests>
     </properties>
-	
+
 	<dependencies>
 
         <dependency>
@@ -270,7 +270,7 @@
             <artifactId>FortifyAnnotations</artifactId>
             <version>${fortify.version}}</version>
         </dependency-->
-        
+
     </dependencies>
 
     <profiles>
@@ -319,7 +319,7 @@
                 </dependency>
             </dependencies>
         </profile>
-	
+
 		<!-- Example profile for preparing files for Fortify scans -->
         <!-- Note: recommended approach now is to use ScanCentral Client Tool for packaging -->
         <profile>
@@ -449,7 +449,7 @@
     <build>
 
         <plugins>
-        
+
             <!-- Display active profile in compile phase -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

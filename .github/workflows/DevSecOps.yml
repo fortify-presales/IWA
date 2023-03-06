@@ -66,7 +66,7 @@ jobs:
 
     # Build / Test with Maven
     - name: Build with Maven
-      run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dskip.unit.tests=false -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
+      run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dskip.unit.tests=false -DfailIfNoTests=false -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
 
   Debricked-SCA:
     runs-on: ubuntu-latest
@@ -191,10 +191,10 @@ jobs:
         with:
           version: 22.2.0
       - name: Package Code + Dependencies
-        run: scancentral package -bt mvn -bf pom.xml -bc "package --settings $GITHUB_WORKSPACE/settings.xml" -oss -o $PACKAGE_FILE
+        run: scancentral package -bt mvn -bf pom.xml -bc "package --settings $GITHUB_WORKSPACE/settings.xml -DfailIfNoTests=false" -oss -o $PACKAGE_FILE
         env:
             PACKAGE_FILE: "package.zip"
-            PACKAGE_OPTS: ${{ format('-bt mvn -bf pom.xml -bc "{0}" -oss', 'package --settings $GITHUB_WORKSPACE/settings.xml') }}
+            PACKAGE_OPTS: ${{ format('-bt mvn -bf pom.xml -bc "{0}" -oss', 'package --settings $GITHUB_WORKSPACE/settings.xml -DfailIfNoTests=false') }}
 
       # FOR DEBUG - Save ScanCentral log file
       - uses: actions/upload-artifact@v3
