@@ -187,9 +187,9 @@ jobs:
       #   For other build tools, add your build commands to download necessary dependencies and prepare according to Fortify on Demand Packaging documentation.
       #   ScanCentral Client documentation is located at https://www.microfocus.com/documentation/fortify-software-security-center/
       - name: Download Fortify ScanCentral Client
-        uses: fortify/gha-setup-scancentral-client@v1
+        uses: fortify/gha-setup-scancentral-client@v2.2.2
         with:
-          version: 22.2.0
+          version: 22.2.1
       - name: Package Code + Dependencies
         run: scancentral package -bt mvn -bf pom.xml -bc "package --settings $GITHUB_WORKSPACE/settings.xml -DfailIfNoTests=false" -oss -o $PACKAGE_FILE
         env:
@@ -201,7 +201,7 @@ jobs:
         if: failure()
         with:
           name: scancentral.log
-          path: /home/runner/.fortify/scancentral-22.2.0/log/scancentral.log
+          path: /home/runner/.fortify/scancentral-22.2.1/log/scancentral.log
           #    retention-days: 5
 
 
