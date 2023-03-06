@@ -208,8 +208,8 @@ jobs:
       - name: Perform SAST scan
         shell: bash
         run: |
-          fcli tool scancentral-client install ${SCANCENTRAL_VERSION} -d ~/tools
-          ~/tools/sc-client/bin/scancentral package -bt mvn -bf pom.xml -bc "-X clean package --settings $GITHUB_WORKSPACE/settings.xml -DfailIfNoTests=false" -oss -o $PACKAGE_FILE
+          fcli tool scancentral-client install ${SCANCENTRAL_VERSION} -d ~/fortify
+          ~/fortify/bin/scancentral package -bt mvn -bf pom.xml -bc "-X clean package --settings $GITHUB_WORKSPACE/settings.xml -DfailIfNoTests=false" -oss -o $PACKAGE_FILE
           fcli fod sast-scan start ${FOD_RELEASE_NAME} --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions
           fcli fod sast-scan wait-for "{?curScan:scanId}" --session github-actions
         id: perform_sast_scan
