@@ -40,6 +40,8 @@ on:
 env:
   APP_NAME: "IWAPharmacyDirect"
   PARENT_RELEASE_NAME: "main"
+  FCLI_VER: "v1.2.2"
+  SCANCENTRAL_VER: "22.2.0"
 
 jobs:
 
@@ -58,11 +60,18 @@ jobs:
     - run: git checkout HEAD^2
       if: ${{ github.event_name == 'pull_request' }}
 
-    # Setup JDK 1.11 on host
-    - name: Set up JDK 1.11
-      uses: actions/setup-java@v1
+    # Setup JDK 13 on host
+    - uses: actions/setup-java@v3
       with:
-        java-version: 1.11
+        distribution: 'temurin'
+        java-version: '13'
+        cache: 'maven'
+
+    # Setup Maven
+    - name: Set up Maven
+      uses: stCarolas/setup-maven@v4.5
+      with:
+        maven-version: 3.8.2
 
     # Build / Test with Maven
     - name: Build with Maven
@@ -74,20 +83,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3.3.0
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v3
         with:
+          distribution: 'temurin'
           java-version: '13'
-      - uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          cache: 'maven'
       - run: |
           mvn dependency:tree \
           -DoutputFile=.debricked-maven-dependencies.tgf \
           -DoutputType=tgf
-
       - uses: debricked/actions/scan@v1
         env:
           DEBRICKED_TOKEN: ${{ secrets.DEBRICKED_TOKEN }}
@@ -102,6 +106,8 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3.3.0
 
+    # TBD
+
   FoD-SAST-Scan:
     # Use the appropriate runner for building your source code.
     # Use a Windows runner for .NET projects that use msbuild. Additional changes to RUN commands will be required to switch to Windows syntax.
@@ -109,21 +115,17 @@ jobs:
     if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runFoDSASTScan == 'true') }}
 
     steps:
-      # Check out source code
       - name: Check Out Source Code
         uses: actions/checkout@v3.3.0
-
-      # Java required by ScanCentral Client and FoD Uploader(Universal CI Tool)
-      - uses: actions/checkout@v3.3.0
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v3
         with:
+          distribution: 'temurin'
           java-version: '13'
-      - uses: actions/cache@v2
+          cache: 'maven'
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4.5
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          maven-version: 3.8.2
 
       # Get the branch name or pr number
       - name: Extract branch name
@@ -149,10 +151,8 @@ jobs:
           mkdir -p $HOME/fcli/bin
           curl -fsSL https://github.com/fortify-ps/fcli/releases/download/${FCLI_VER}/fcli-linux.tgz | tar -zxvf - -C $HOME/fcli/bin
           echo "$HOME/fcli/bin" >> $GITHUB_PATH
-        env:
-          FCLI_VER: "v1.1.0"
 
-      # Login Fortify on Demand fcli session
+      # Login to Fortify on Demand fcli session
       - name: Login fcli
         shell: bash
         run: |
@@ -195,10 +195,9 @@ jobs:
       - name: Download and run Fortify ScanCentral Client
         uses: fortify/gha-setup-scancentral-client@v2.2.2
         with:
-          version: 22.2.0
+          version: ${SCANCENTRAL_VER}
       - name: Package Code + Dependencies
         run: scancentral package -bt mvn -bf pom.xml -bc "clean package -DfailIfNoTests=false" -oss -o $PACKAGE_FILE
-        #run: scancentral package -bt none -o $PACKAGE_FILE # -< This works
         env:
             PACKAGE_FILE: "package.zip"
 
@@ -222,8 +221,6 @@ jobs:
       - name: Perform SAST scan
         shell: bash
         run: |
-          fcli tool scancentral-client install ${SCANCENTRAL_VERSION} -d ~/fortify
-          ~/fortify/bin/scancentral package -bt mvn -bf pom.xml -bc "-e -X clean package -DfailIfNoTests=false" -oss -o $PACKAGE_FILE
           fcli fod sast-scan start ${FOD_RELEASE_NAME} --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions
           fcli fod sast-scan wait-for "{?curScan:scanId}" --session github-actions
         id: perform_sast_scan
@@ -231,15 +228,7 @@ jobs:
           PACKAGE_FILE: "package.zip"
           FOD_RELEASE_NAME: ${{ format('{0}:{1}', env.APP_NAME, steps.extract_branch.outputs.branch) }}
           FOD_SCAN_NOTES: "Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-          SCANCENTRAL_VERSION: 22.2.0
-
-      # FOR DEBUG - Save ScanCentral log file
-      - uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: scancentral2.log
-          path: ~/.fortify/scancentral-22.2.0/log/scancentral.log
-          #    retention-days: 5
+          SCANCENTRAL_VERSION: ${SCANCENTRAL_VER}
 
       # Start Fortify on Demand SAST scan and wait until results complete. For more information on FoDUploader commands, see https://github.com/fod-dev/fod-uploader-java
       # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
@@ -293,16 +282,14 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ (github.event.inputs.runFoDDASTScan == 'true') }}
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3.3.0
-
-      # Java 8 required by ScanCentral Client and FoD Uploader(Universal CI Tool)
-      - name: Setup Java
-        uses: actions/setup-java@v1
+      - name: Check Out Source Code
+        uses: actions/checkout@v3.3.0
+      - uses: actions/setup-java@v3
         with:
-          java-version: 1.11
+          distribution: 'temurin'
+          java-version: '13'
+          cache: 'maven'
 
       # Get the branch name or pr number
       - name: Extract branch name
@@ -328,8 +315,6 @@ jobs:
           mkdir -p $HOME/fcli/bin
           curl -fsSL https://github.com/fortify-ps/fcli/releases/download/${FCLI_VER}/fcli-linux.tgz | tar -zxvf - -C $HOME/fcli/bin
           echo "$HOME/fcli/bin" >> $GITHUB_PATH
-        env:
-          FCLI_VER: "dev_main"
 
   Security-Gate:
     runs-on: ubuntu-latest
@@ -338,14 +323,13 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3.3.0
-
-      # Java 8 required by ScanCentral Client and FoD Uploader(Universal CI Tool)
-      - name: Setup Java
-        uses: actions/setup-java@v1
+      - name: Check Out Source Code
+        uses: actions/checkout@v3.3.0
+      - uses: actions/setup-java@v3
         with:
-          java-version: 1.11
+          distribution: 'temurin'
+          java-version: '13'
+          cache: 'maven'
 
       # Get the branch name or pr number
       - name: Extract branch name
@@ -371,8 +355,6 @@ jobs:
           mkdir -p $HOME/fcli/bin
           curl -fsSL https://github.com/fortify-ps/fcli/releases/download/${FCLI_VER}/fcli-linux.tgz | tar -zxvf - -C $HOME/fcli/bin
           echo "$HOME/fcli/bin" >> $GITHUB_PATH
-        env:
-          FCLI_VER: "dev_main"
 
       # Login Fortify on Demand fcli session
       - name: Login fcli
@@ -408,5 +390,7 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3.3.0
+      - name: Check Out Source Code
+        uses: actions/checkout@v3.3.0
+
+    # TBD
