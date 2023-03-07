@@ -195,7 +195,7 @@ jobs:
       - name: Download and run Fortify ScanCentral Client
         uses: fortify/gha-setup-scancentral-client@v2.2.2
         with:
-          version: ${SCANCENTRAL_VER}
+          version: 22.2.0
       - name: Package Code + Dependencies
         run: scancentral package -bt mvn -bf pom.xml -bc "clean package -DfailIfNoTests=false" -oss -o $PACKAGE_FILE
         env:
