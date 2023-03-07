@@ -60,11 +60,11 @@ jobs:
     - run: git checkout HEAD^2
       if: ${{ github.event_name == 'pull_request' }}
 
-    # Setup JDK 13 on host
+    # Setup JDK 11 on host
     - uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
-        java-version: '13'
+        java-version: '11'
         cache: 'maven'
 
     # Setup Maven
@@ -86,7 +86,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '13'
+          java-version: '11'
           cache: 'maven'
       - run: |
           mvn dependency:tree \
@@ -120,7 +120,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '13'
+          java-version: '11'
           cache: 'maven'
       - name: Set up Maven
         uses: stCarolas/setup-maven@v4.5
@@ -288,7 +288,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '13'
+          java-version: '11'
           cache: 'maven'
 
       # Get the branch name or pr number
@@ -328,7 +328,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '13'
+          java-version: '11'
           cache: 'maven'
 
       # Get the branch name or pr number
