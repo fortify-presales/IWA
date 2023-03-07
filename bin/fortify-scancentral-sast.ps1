@@ -19,11 +19,23 @@ $SSCAuthToken = $EnvSettings['SSC_AUTH_TOKEN'] # CIToken
 $ScanCentralCtrlUrl = $EnvSettings['SCANCENTRAL_CTRL_URL']
 $ScanCentralPoolId = $EnvSettings['SCANCENTRAL_POOL_ID'] # Not yet used
 $ScanCentralEmail = $EnvSettings['SCANCENTRAL_EMAIL']
+
 $ScanSwitches = "-Dcom.fortify.sca.Phase0HigherOrder.Languages=javascript,typescript -Dcom.fortify.sca.EnableDOMModeling=true -Dcom.fortify.sca.follow.imports=true -Dcom.fortify.sca.exclude.unimported.node.modules=true"
-$ScanArgs = @()
+$BuildVersion = $(git log --format="%H" -n 1)
+$BuildLabel = "Jenkins-iwa_ci-123"
+$FilterFile = Join-Path ".\etc" -ChildPath "sca-filter.txt"
+$CustomRules = Join-Path ".\etc" -ChildPath "sca-custom-rules.xml"
+$ScanArgs = @(
+    "-build-project",
+    "$AppName",
+    "-build-version",
+    "$BuildVersion",
+    "-build-label",
+    "$BuildLabel"
+)
 if ($QuickScan) {
-    $ScanArgs += "-sargs"
-    $ScanArgs += "`"-scan-precision 1`""
+    $ScanArgs += "-scan-precision"
+    $ScanArgs += "1"
 }
 $PackageName = "Package.zip"
 
@@ -41,23 +53,21 @@ if (Test-Path $PackageName) {
 }
 
 # Package, upload and run the scan and import results into SSC
-$FilterFile = Join-Path ".\etc" -ChildPath "sca-filter.txt"
-$CustomRules = Join-Path ".\etc" -ChildPath "sca-custom-rules.xml"
 Write-Host Invoking ScanCentral SAST ...
-Write-Host "scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp $PackageName -b $AppName -application $AppName -version $AppVersion -bt mvn -bf pom.xml -bc '-Pfortify clean package' -rules $CustomRules -filter $FilterFile-email $ScanCentralEmail -block -o -f $($AppName).fpr $($ScanArgs)"
+Write-Host "scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp $PackageName -b $AppName -application $AppName -version $AppVersion -bt mvn -bf pom.xml -bc '-Pfortify clean package'  -email $ScanCentralEmail -block -o -f $($AppName).fpr -rules $CustomRules -filter $FilterFile -sargs `"$($ScanArgs)`""
 & scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp $PackageName `
     -b $AppName -application $AppName -version $AppVersion -bt mvn -bf pom.xml -bc "-Pfortify clean package" `
-    -rules $CustomRules -filter $FilterFile `
-    -email $ScanCentralEmail -block -o -f "$($AppName).fpr" `
-    $($ScanArgs)
+    -email $ScanCentralEmail -block -o -f "$($AppName).fpr" -rules $CustomRules -filter $FilterFile `
+    -sargs "$($ScanArgs)"
 
-# summarise issue count by analyzer
+# Summarise issue count by analyzer
 if ($SCALocalInstall -eq $True) {
     & fprutility -information -analyzerIssueCounts -project "$($AppName).fpr"
     Write-Host Generating PDF report...
     & ReportGenerator '-Dcom.fortify.sca.ProjectRoot=.fortify' -user "Demo User" -format pdf -f "$($AppName).pdf" -source "$($AppName).fpr"
 }
 
+# Uncomment if not using "-block" in scancentral command above
 #Write-Host
 #Write-Host You can check ongoing status with:
 #Write-Host " scancentral -url $ScanCentralCtrlUrl status -token [received-token]"

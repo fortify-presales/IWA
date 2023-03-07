@@ -222,6 +222,7 @@ jobs:
         shell: bash
         run: |
           fcli fod sast-scan start ${FOD_RELEASE_NAME} --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions
+          sleep 5
           fcli fod sast-scan wait-for "{?curScan:scanId}" --session github-actions
         id: perform_sast_scan
         env:

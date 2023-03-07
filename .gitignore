@@ -22,3 +22,9 @@ build/
 /FoDUpload.zip
 /IWAJava.pdf
 /fortify-sca.settings
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build

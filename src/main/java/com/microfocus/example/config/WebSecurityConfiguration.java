@@ -57,6 +57,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     public static final String REALM_NAME = "IWA";
 
+    public static final String DEFAULT_PASSWORD = "abcdef12345";
+
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
@@ -225,7 +227,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         public SessionRegistry sessionRegistry() {
             return new SessionRegistryImpl();
         }
-        
+
         @Bean
         public HttpFirewall getHttpFirewall() {
             return new DefaultHttpFirewall();
