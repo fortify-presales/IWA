@@ -189,7 +189,7 @@ jobs:
       - name: Download Fortify ScanCentral Client
         uses: fortify/gha-setup-scancentral-client@v2.2.2
         with:
-          version: 22.2.1
+          version: 22.2.0
       - name: Package Code + Dependencies
         #run: scancentral package -bt mvn -bf pom.xml -bc "-X clean package --settings $GITHUB_WORKSPACE/settings.xml -DfailIfNoTests=false" -oss -o $PACKAGE_FILE
         run: scancentral package -bt none -o $PACKAGE_FILE
@@ -202,7 +202,7 @@ jobs:
         if: failure()
         with:
           name: scancentral1.log
-          path: ~/.fortify/scancentral-22.2.1/log/scancentral.log
+          path: ~/.fortify/scancentral-22.2.0/log/scancentral.log
           #    retention-days: 5
 
       # FOR DEBUG - Save package.zip
@@ -226,14 +226,14 @@ jobs:
           PACKAGE_FILE: "package.zip"
           FOD_RELEASE_NAME: ${{ format('{0}:{1}', env.APP_NAME, steps.extract_branch.outputs.branch) }}
           FOD_SCAN_NOTES: "Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-          SCANCENTRAL_VERSION: 22.2.1
+          SCANCENTRAL_VERSION: 22.2.0
 
       # FOR DEBUG - Save ScanCentral log file
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: scancentral2.log
-          path: ~/.fortify/scancentral-22.2.1/log/scancentral.log
+          path: ~/.fortify/scancentral-22.2.0/log/scancentral.log
           #    retention-days: 5
 
       # Start Fortify on Demand SAST scan and wait until results complete. For more information on FoDUploader commands, see https://github.com/fod-dev/fod-uploader-java
