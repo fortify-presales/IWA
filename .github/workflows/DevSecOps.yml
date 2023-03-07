@@ -186,15 +186,24 @@ jobs:
       #   ScanCentral has additional options that should be set for PHP and Python projects
       #   For other build tools, add your build commands to download necessary dependencies and prepare according to Fortify on Demand Packaging documentation.
       #   ScanCentral Client documentation is located at https://www.microfocus.com/documentation/fortify-software-security-center/
-      #- name: Download Fortify ScanCentral Client
-      #  uses: fortify/gha-setup-scancentral-client@v2.2.2
-      #  with:
-      #    version: 22.2.1
-      #- name: Package Code + Dependencies
-      #  run: scancentral package -bt mvn -bf pom.xml -bc "-X clean package --settings $GITHUB_WORKSPACE/settings.xml -DfailIfNoTests=false" -oss -o $PACKAGE_FILE
-      #  env:
-      #      PACKAGE_FILE: "package.zip"
-      #      PACKAGE_OPTS: ${{ format('-bt mvn -bf pom.xml -bc "{0}" -oss', 'package --settings $GITHUB_WORKSPACE/settings.xml -DfailIfNoTests=false') }}
+      - name: Download Fortify ScanCentral Client
+        uses: fortify/gha-setup-scancentral-client@v2.2.2
+        with:
+          version: 22.2.1
+      - name: Package Code + Dependencies
+        #run: scancentral package -bt mvn -bf pom.xml -bc "-X clean package --settings $GITHUB_WORKSPACE/settings.xml -DfailIfNoTests=false" -oss -o $PACKAGE_FILE
+        run: scancentral package -bt none -o $PACKAGE_FILE
+        env:
+            PACKAGE_FILE: "package.zip"
+            PACKAGE_OPTS: ${{ format('-bt mvn -bf pom.xml -bc "{0}" -oss', 'package --settings $GITHUB_WORKSPACE/settings.xml -DfailIfNoTests=false') }}
+
+      # FOR DEBUG - Save ScanCentral log file
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: scancentral1.log
+          path: ~/.fortify/scancentral-22.2.0/log/scancentral.log
+          #    retention-days: 5
 
       # FOR DEBUG - Save package.zip
       #- name: 'Upload Artifact'
@@ -209,7 +218,7 @@ jobs:
         shell: bash
         run: |
           fcli tool scancentral-client install ${SCANCENTRAL_VERSION} -d ~/fortify
-          ~/fortify/bin/scancentral package -bt mvn -bf pom.xml -o $PACKAGE_FILE
+          ~/fortify/bin/scancentral package -bt mvn -bf pom.xml -bc "-X clean package --settings $GITHUB_WORKSPACE/settings.xml -DfailIfNoTests=false" -oss -o $PACKAGE_FILE
           fcli fod sast-scan start ${FOD_RELEASE_NAME} --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions
           fcli fod sast-scan wait-for "{?curScan:scanId}" --session github-actions
         id: perform_sast_scan
@@ -223,7 +232,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: scancentral.log
+          name: scancentral2.log
           path: ~/.fortify/scancentral-22.2.0/log/scancentral.log
           #    retention-days: 5
 
