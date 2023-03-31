@@ -149,25 +149,17 @@ jobs:
         shell: bash
         run: |
           if [[ $GITHUB_REF == *"refs/pull/"* ]]; then
-            BRANCH_NAME="$(echo ${GITHUB_REF} | sed -e 's|refs\/pull\/||g')"
-            PR_NUMBER="$(echo ${BRANCH_NAME} | sed -e 's|\/merge||g')"
+            BRANCH_NAME="$(echo ${GITHUB_REF#refs/pull/})"
+            PR_NUMBER="$(echo ${BRANCH_NAME%/merge})"
             BRANCH_NAME="[PR]${SOURCE_BRANCH}#${PR_NUMBER}"
           else
-            echo $GITHUB_REF
-            echo ${GITHUB_REF#refs/heads/}
-            echo $GITHUB_REF | sed -e 's/refs//'
-            BRANCH_NAME="$(echo ${GITHUB_REF} | sed -e 's|refs\/head\/||g')"
-            echo $BRANCH_NAME
+            BRANCH_NAME="$(echo ${GITHUB_REF#refs/heads/})"
           fi
-          echo "::set-output name=branch:$(echo ${BRANCH_NAME})"
+          echo echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          #echo "::set-output name=branch:$(echo ${BRANCH_NAME})"
         env:
           SOURCE_BRANCH: ${{ github.head_ref }}
         id: extract_branch
-
-      # extract branch name on pull request
-      #- name: Print branch name
-      #  if: github.event_name == 'pull_request'
-      #  run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_HEAD_REF})"
 
       # Install Fortify Command Line (fcli) tool
       - name: Install fcli
@@ -318,18 +310,35 @@ jobs:
           cache: 'maven'
 
       # Get the branch name or pr number
+      #- name: Extract branch name
+      #  shell: pwsh
+      #  run: |
+      #    if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
+      #      $BranchName = $Env:GITHUB_REF -replace 'refs/pull/', ''
+      #      $PRNumber = $BranchName -replace '/merge', ''
+      #      $BranchName = "[PR]" + $Env:SOURCE_BRANCH + "#" + $PRNumber
+      #      Write-Output "::set-output name=branch::$BranchName"
+      #    } else {
+      #      $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
+      #      Write-Output "::set-output name=branch::$BranchName"
+      #    }
+      #  env:
+      #    SOURCE_BRANCH: ${{ github.head_ref }}
+      # id: extract_branch
+
+      # Get the branch name or pr number
       - name: Extract branch name
-        shell: pwsh
+        shell: bash
         run: |
-          if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
-            $BranchName = $Env:GITHUB_REF -replace 'refs/pull/', ''
-            $PRNumber = $BranchName -replace '/merge', ''
-            $BranchName = "[PR]" + $Env:SOURCE_BRANCH + "#" + $PRNumber
-            Write-Output "::set-output name=branch::$BranchName"
-          } else {
-            $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
-            Write-Output "::set-output name=branch::$BranchName"
-          }
+          if [[ $GITHUB_REF == *"refs/pull/"* ]]; then
+            BRANCH_NAME="$(echo ${GITHUB_REF#refs/pull/})"
+            PR_NUMBER="$(echo ${BRANCH_NAME%/merge})"
+            BRANCH_NAME="[PR]${SOURCE_BRANCH}#${PR_NUMBER}"
+          else
+            BRANCH_NAME="$(echo ${GITHUB_REF#refs/heads/})"
+          fi
+          echo echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          #echo "::set-output name=branch:$(echo ${BRANCH_NAME})"
         env:
           SOURCE_BRANCH: ${{ github.head_ref }}
         id: extract_branch
@@ -358,18 +367,35 @@ jobs:
           cache: 'maven'
 
       # Get the branch name or pr number
+      #- name: Extract branch name
+      #  shell: pwsh
+      #  run: |
+      #    if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
+      #      $BranchName = $Env:GITHUB_REF -replace 'refs/pull/', ''
+      #      $PRNumber = $BranchName -replace '/merge', ''
+      #      $BranchName = "[PR]" + $Env:SOURCE_BRANCH + "#" + $PRNumber
+      #      Write-Output "::set-output name=branch::$BranchName"
+      #    } else {
+      #      $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
+      #      Write-Output "::set-output name=branch::$BranchName"
+      #    }
+      #  env:
+      #    SOURCE_BRANCH: ${{ github.head_ref }}
+      # id: extract_branch
+
+      # Get the branch name or pr number
       - name: Extract branch name
-        shell: pwsh
+        shell: bash
         run: |
-          if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
-            $BranchName = $Env:GITHUB_REF -replace 'refs/pull/', ''
-            $PRNumber = $BranchName -replace '/merge', ''
-            $BranchName = "[PR]" + $Env:SOURCE_BRANCH + "#" + $PRNumber
-            Write-Output "::set-output name=branch::$BranchName"
-          } else {
-            $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
-            Write-Output "::set-output name=branch::$BranchName"
-          }
+          if [[ $GITHUB_REF == *"refs/pull/"* ]]; then
+            BRANCH_NAME="$(echo ${GITHUB_REF#refs/pull/})"
+            PR_NUMBER="$(echo ${BRANCH_NAME%/merge})"
+            BRANCH_NAME="[PR]${SOURCE_BRANCH}#${PR_NUMBER}"
+          else
+            BRANCH_NAME="$(echo ${GITHUB_REF#refs/heads/})"
+          fi
+          echo echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          #echo "::set-output name=branch:$(echo ${BRANCH_NAME})"
         env:
           SOURCE_BRANCH: ${{ github.head_ref }}
         id: extract_branch
