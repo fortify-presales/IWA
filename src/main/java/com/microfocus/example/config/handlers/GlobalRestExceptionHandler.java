@@ -19,11 +19,8 @@
 
 package com.microfocus.example.config.handlers;
 
+import com.microfocus.example.exception.*;
 import com.microfocus.example.payload.response.ApiStatusResponse;
-import com.microfocus.example.exception.MessageNotFoundException;
-import com.microfocus.example.exception.ProductNotFoundException;
-import com.microfocus.example.exception.RoleNotFoundException;
-import com.microfocus.example.exception.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
@@ -32,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -63,6 +61,19 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalRestExceptionHandler.class);
 
     // Custom exception handlers
+
+    @ExceptionHandler(ApiSiteBadCredentialsException.class)
+    public ResponseEntity<ApiStatusResponse> badCredentials(final ApiSiteBadCredentialsException ex, final WebRequest request) {
+        ArrayList<String> errors = new ArrayList<>();
+        errors.add(ex.getLocalizedMessage());
+        final ApiStatusResponse apiStatusResponse = new ApiStatusResponse
+                .ApiResponseBuilder()
+                .withSuccess(false)
+                .atTime(LocalDateTime.now(ZoneOffset.UTC))
+                .withErrors(errors)
+                .build();
+        return new ResponseEntity<ApiStatusResponse>(apiStatusResponse, HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ApiStatusResponse> userNotFound(final UserNotFoundException ex, final WebRequest request) {

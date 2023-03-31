@@ -123,7 +123,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .antMatchers(HttpMethod.PATCH, "/api/**").hasAnyRole("ADMIN", "API")
                     .and().exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                     .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    //.and().httpBasic().authenticationEntryPoint(basicAuthenticationEntryPoint)
+                    //.and().exceptionHandling().authenticationEntryPoint(basicAuthenticationEntryPoint)
                     .and().exceptionHandling().accessDeniedHandler(apiAccessDeniedHandler)
                     .and().csrf().disable();
 

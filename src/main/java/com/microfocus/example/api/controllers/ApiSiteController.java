@@ -19,8 +19,10 @@
 
 package com.microfocus.example.api.controllers;
 
+import com.microfocus.example.config.handlers.GlobalRestExceptionHandler;
 import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.User;
+import com.microfocus.example.exception.ApiSiteBadCredentialsException;
 import com.microfocus.example.payload.request.LoginRequest;
 import com.microfocus.example.payload.request.RegisterUserRequest;
 import com.microfocus.example.payload.request.SubscribeUserRequest;
@@ -46,12 +48,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -211,8 +215,13 @@ public class ApiSiteController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<JwtResponse> signIn(@Valid @RequestBody LoginRequest loginRequest) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        Authentication authentication = null;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        } catch (final BadCredentialsException ex) {
+            throw new ApiSiteBadCredentialsException(loginRequest.getUsername());
+        }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
