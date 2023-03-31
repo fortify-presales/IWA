@@ -153,7 +153,10 @@ jobs:
             PR_NUMBER="$(echo ${BRANCH_NAME} | sed -e 's|\/merge||g')"
             BRANCH_NAME="[PR]${SOURCE_BRANCH}#${PR_NUMBER}"
           else
+            echo $GITHUB_REF
+            echo $GITHUB_REF | sed -e 's/refs//'
             BRANCH_NAME="$(echo ${GITHUB_REF} | sed -e 's|refs\/head\/||g')"
+            echo $BRANCH_NAME
           fi
           echo "::set-output name=branch:$(echo ${BRANCH_NAME})"
         env:
