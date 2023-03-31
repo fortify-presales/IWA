@@ -155,7 +155,7 @@ jobs:
           else
             BRANCH_NAME="$(echo ${GITHUB_REF#refs/heads/})"
           fi
-          echo echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
           #echo "::set-output name=branch:$(echo ${BRANCH_NAME})"
         env:
           SOURCE_BRANCH: ${{ github.head_ref }}
@@ -337,7 +337,7 @@ jobs:
           else
             BRANCH_NAME="$(echo ${GITHUB_REF#refs/heads/})"
           fi
-          echo echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
           #echo "::set-output name=branch:$(echo ${BRANCH_NAME})"
         env:
           SOURCE_BRANCH: ${{ github.head_ref }}
@@ -394,7 +394,7 @@ jobs:
           else
             BRANCH_NAME="$(echo ${GITHUB_REF#refs/heads/})"
           fi
-          echo echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
           #echo "::set-output name=branch:$(echo ${BRANCH_NAME})"
         env:
           SOURCE_BRANCH: ${{ github.head_ref }}
