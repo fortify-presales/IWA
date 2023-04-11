@@ -92,6 +92,7 @@ jobs:
           mvn dependency:tree \
           -DoutputFile=.debricked-maven-dependencies.tgf \
           -DoutputType=tgf
+      - uses: debricked/vulnerable-functionality/java/maven@v0
       - uses: debricked/actions/scan@v1
         env:
           DEBRICKED_TOKEN: ${{ secrets.DEBRICKED_TOKEN }}

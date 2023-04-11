@@ -34,6 +34,6 @@ public class ApiSiteBadCredentialsException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     public ApiSiteBadCredentialsException(String username) {
-        super("Invalid credentials for: " + username);
+        super("Invalid credentials for username: " + username);
     }
 }
