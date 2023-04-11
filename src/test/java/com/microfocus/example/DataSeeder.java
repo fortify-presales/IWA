@@ -3,6 +3,8 @@ package com.microfocus.example;
 import com.microfocus.example.entity.*;
 import com.microfocus.example.utils.EncryptedPasswordUtils;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -73,6 +75,16 @@ public class DataSeeder {
     public static final UUID TEST_REVIEW1_USERID = UUID.fromString("bd5b9e2f-ac55-4e34-a76d-599b7e5b3308");
     public static final String TEST_REVIEW1_COMMENT = "This is an example review of Test Product 1. It is very good";
 
+    // Test Refresh Token:
+    // Refresh Token 1 - stored in database on startup
+    public static final UUID TEST_REFRESH_TOKEN1_ID = UUID.fromString("08b43d0d-2d86-4252-9782-10e73266d5c5");
+    public static final UUID TEST_REFRESH_TOKEN1_USERID = UUID.fromString("bd5b9e2f-ac55-4e34-a76d-599b7e5b3308");
+    public static final Instant TEST_REFRESH_TOKEN1_EXPIRY_DATE = Instant.now();
+    // Test Refresh Token 2 - created in tests
+    public static final UUID TEST_REFRESH_TOKEN2_ID = UUID.fromString("b8d2f683-fdfe-492e-86af-9df43a6b658b");
+    public static final UUID TEST_REFRESH_TOKEN2_USERID = UUID.fromString("bd5b9e2f-ac55-4e34-a76d-599b7e5b3308");
+    public static final Instant TEST_REFRESH_TOKEN2_EXPIRY_DATE = Instant.now();
+
     public static User generateUser() {
         User user = new User();
         user.setUsername(TEST_USER2_USERNAME);
@@ -106,6 +118,13 @@ public class DataSeeder {
         product.setRating(TEST_PRODUCT2_RATING);
         product.setAvailable(true);
         return product;
+    }
+
+    public static RefreshToken generateRefreshToken() {
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setExpiryDate(TEST_REFRESH_TOKEN2_EXPIRY_DATE);
+        refreshToken.setId(TEST_REFRESH_TOKEN2_ID);
+        return refreshToken;
     }
 
     public static Authority generateAdminRole() {
