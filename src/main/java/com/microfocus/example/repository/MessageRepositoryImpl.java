@@ -76,9 +76,10 @@ public class MessageRepositoryImpl implements MessageRepositoryCustom {
     @SuppressWarnings("unchecked")
     public long countUnreadByUserId(UUID userId) {
         Query query = entityManager.createQuery(
-                "SELECT count(m) FROM Message m WHERE m.user.id = ?1 AND m.read = false",
+                "SELECT count(m) FROM Message m WHERE m.user.id = ?1 AND m.read = ?2",
                 Long.class);
         query.setParameter(1, userId);
+        query.setParameter(2, false);
         return (long)(query.getSingleResult());
     }
 

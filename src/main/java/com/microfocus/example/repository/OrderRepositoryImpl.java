@@ -111,9 +111,10 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     @SuppressWarnings("unchecked")
     public long countNotShippedByUserId(UUID userId) {
         Query query = entityManager.createQuery(
-                "SELECT count(o) FROM Order o WHERE o.user.id = ?1 AND o.shipped = false",
+                "SELECT count(o) FROM Order o WHERE o.user.id = ?1 AND o.shipped = ?2",
                 Long.class);
         query.setParameter(1, userId);
+        query.setParameter(2, false);
         return (long)(query.getSingleResult());
     }
 
