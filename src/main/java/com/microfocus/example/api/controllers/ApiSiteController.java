@@ -22,8 +22,8 @@ package com.microfocus.example.api.controllers;
 import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.RefreshToken;
 import com.microfocus.example.entity.User;
-import com.microfocus.example.exception.ApiSiteBadCredentialsException;
-import com.microfocus.example.exception.RefreshTokenException;
+import com.microfocus.example.exception.api.ApiBadCredentialsException;
+import com.microfocus.example.exception.api.ApiRefreshTokenException;
 import com.microfocus.example.payload.request.LoginRequest;
 import com.microfocus.example.payload.request.RefreshTokenRequest;
 import com.microfocus.example.payload.request.RegisterUserRequest;
@@ -59,6 +59,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -222,7 +223,7 @@ public class ApiSiteController {
             authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         } catch (final BadCredentialsException ex) {
-            throw new ApiSiteBadCredentialsException(loginRequest.getUsername());
+            throw new ApiBadCredentialsException(loginRequest.getUsername());
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -258,16 +259,22 @@ public class ApiSiteController {
     public ResponseEntity<RefreshTokenResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
 
         String requestRefreshToken = refreshTokenRequest.getRefreshToken();
-        log.debug("Refresh token request: " + refreshTokenRequest.getRefreshToken());
+        try{
+            UUID uuid = UUID.fromString(requestRefreshToken);
+            log.debug("Refresh token request: " + uuid.toString());
+        } catch (IllegalArgumentException ex){
+            throw new ApiRefreshTokenException(requestRefreshToken, "Invalid refresh token format.");
+        }
 
         return refreshTokenService.findByToken(requestRefreshToken)
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user -> {
                     String token = jwtUtils.generateJwtTokenFromUsername(user.getUsername());
-                    return ResponseEntity.ok(new RefreshTokenResponse(token, requestRefreshToken));
+                    long tokenExpiration = jwtUtils.getExpirationFromJwtToken(token);
+                    return ResponseEntity.ok(new RefreshTokenResponse(token, requestRefreshToken, tokenExpiration));
                 })
-                .orElseThrow(() -> new RefreshTokenException(requestRefreshToken,
+                .orElseThrow(() -> new ApiRefreshTokenException(requestRefreshToken,
                         "Refresh token not found in database."));
     }
 

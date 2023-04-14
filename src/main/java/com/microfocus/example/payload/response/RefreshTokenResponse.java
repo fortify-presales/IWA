@@ -22,10 +22,13 @@ package com.microfocus.example.payload.response;
 public class RefreshTokenResponse {
     private String token;
     private String refreshToken;
+    private long expiration;
 
-    public RefreshTokenResponse(String accessToken, String refreshToken) {
+
+    public RefreshTokenResponse(String accessToken, String refreshToken, long expiration) {
         this.token = accessToken;
         this.refreshToken = refreshToken;
+        this.expiration = expiration;
     }
 
     public String getAccessToken() {
@@ -42,6 +45,14 @@ public class RefreshTokenResponse {
 
     public void setRefreshTokenToken(String refreshToken) {
         this.token = refreshToken;
+    }
+
+    public long getTokenExpiration() {
+        return expiration;
+    }
+
+    public void setTokenExpiration(long expiration) {
+        this.expiration = expiration;
     }
 
 }

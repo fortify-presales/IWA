@@ -20,7 +20,7 @@
 package com.microfocus.example.service;
 
 import com.microfocus.example.entity.RefreshToken;
-import com.microfocus.example.exception.RefreshTokenException;
+import com.microfocus.example.exception.api.ApiRefreshTokenException;
 import com.microfocus.example.repository.RefreshTokenRepository;
 import com.microfocus.example.repository.UserRepository;
 import org.slf4j.Logger;
@@ -72,7 +72,7 @@ public class RefreshTokenService {
     public RefreshToken verifyExpiration(RefreshToken refreshToken) {
         if (refreshToken.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(refreshToken);
-            throw new RefreshTokenException(refreshToken.getId().toString(), "Refresh token is expired - please sign-in again!");
+            throw new ApiRefreshTokenException(refreshToken.getId().toString(), "Refresh token is expired - please sign-in again!");
         }
 
         return refreshToken;

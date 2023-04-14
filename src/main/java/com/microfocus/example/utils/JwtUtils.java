@@ -43,10 +43,10 @@ public class JwtUtils {
     @Value("${app.jwt.secret}")
     private String jwtSecret;
 
-    @Value("${app.jwt.expiration-ms}")
+    @Value("#{new Integer(${app.jwt.expiration-ms:0})}")
     private int jwtExpirationMs;
 
-    @Value("${app.jwt.refresh-ms}")
+    @Value("#{new Integer(${app.jwt.refresh-ms:0})}")
     private int jwtRefreshMs;
 
     public String generateJwtToken(Authentication authentication) {
@@ -55,7 +55,7 @@ public class JwtUtils {
     }
 
     public String generateJwtTokenFromUsername(String username) {
-        log.debug("generateJwtTokenFromUsername for: " + username);
+        log.debug("JwtUtils::generateJwtTokenFromUsername for: {}", username);
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
@@ -64,9 +64,9 @@ public class JwtUtils {
                 .compact();
     }
 
-    public String refreshJwtToken(Authentication authentication) {
+    public String generateJwtTokenFromUserDetails(Authentication authentication) {
+        log.debug("JwtUtils::generateJwtTokenFromUserDetails for: {}", authentication.toString());
         CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
-
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))
                 .setIssuedAt(new Date())
