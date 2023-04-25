@@ -36,6 +36,7 @@ import java.util.UUID;
 
 /**
  * Product Review entity
+ * 
  * @author Kevin A. Lee
  */
 @Entity
@@ -47,10 +48,7 @@ public class Review implements Serializable {
 
     @Id
     @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -148,7 +146,8 @@ public class Review implements Serializable {
 
     @Override
     public String toString() {
-        return "Review(" + id + " of: " + product.getName() + " by: " + user.getUsername() + " on : " + reviewDate + ")";
+        return "Review(" + id + " of: " + product.getName() + " by: " + user.getUsername() + " on : " + reviewDate
+                + ")";
     }
 
 }

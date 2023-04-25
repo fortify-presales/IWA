@@ -21,6 +21,7 @@ package com.microfocus.example.repository;
 
 /**
  * Interface for User Repository
+ * 
  * @author Kevin A. Lee
  */
 public interface UserRepository extends UserRepositoryBasic, UserRepositoryCustom {

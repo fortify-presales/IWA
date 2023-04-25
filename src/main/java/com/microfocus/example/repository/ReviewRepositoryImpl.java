@@ -20,108 +20,92 @@
 package com.microfocus.example.repository;
 
 import com.microfocus.example.entity.Review;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
  * Implementation of Custom Product Review Repository
+ * 
  * @author Kevin A. Lee
  */
 @Transactional
 public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
-    private static final Logger log = LoggerFactory.getLogger(ReviewRepositoryImpl.class);
-
-    private final ReviewRepositoryBasic reviewRepositoryBasic;
-
     @PersistenceContext
     EntityManager entityManager;
 
-    public ReviewRepositoryImpl(ReviewRepositoryBasic reviewRepositoryBasic) {
-        this.reviewRepositoryBasic = reviewRepositoryBasic;
-    }
-
-    @SuppressWarnings("unchecked")
     public List<Review> findProductReviews(UUID productId) {
-        Query query = entityManager.createQuery(
+        TypedQuery<Review> query = entityManager.createQuery(
                 "SELECT r FROM Review r WHERE r.product.id = ?1",
                 Review.class);
         query.setParameter(1, productId);
         return query.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     public List<Review> findByUserId(UUID userId) {
-        Query query = entityManager.createQuery(
+        TypedQuery<Review> query = entityManager.createQuery(
                 "SELECT r FROM Review r WHERE r.user.id = ?1",
                 Review.class);
         query.setParameter(1, userId);
         return query.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     public List<Review> findReviews(int offset, int limit) {
         List<Review> result = new ArrayList<>();
-        Query q = entityManager.createQuery(
+        TypedQuery<Review> q = entityManager.createQuery(
                 "SELECT r FROM Review r",
                 Review.class);
         q.setFirstResult(offset);
         q.setMaxResults(limit);
-        result = (List<Review>)q.getResultList();
+        result = (List<Review>) q.getResultList();
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     public long countByProductId(UUID productId) {
         Query query = entityManager.createQuery(
                 "SELECT count(r) FROM Review r WHERE r.product.id = ?1",
                 Long.class);
         query.setParameter(1, productId);
-        return (long)(query.getSingleResult());
+        return (long) (query.getSingleResult());
     }
 
-    @SuppressWarnings("unchecked")
     public long countByUserId(UUID userId) {
         Query query = entityManager.createQuery(
                 "SELECT count(r) FROM Review r WHERE r.user.id = ?1",
                 Long.class);
         query.setParameter(1, userId);
-        return (long)(query.getSingleResult());
+        return (long) (query.getSingleResult());
     }
 
-    @SuppressWarnings("unchecked")
     public List<Review> findReviewsByKeywords(String keywords, int offset, int limit) {
         List<Review> result = new ArrayList<>();
-        Query q = entityManager.createQuery(
+        TypedQuery<Review> q = entityManager.createQuery(
                 "SELECT r FROM Review r WHERE lower(r.comment) LIKE lower(?1)",
                 Review.class);
-        q.setParameter(1, "%"+keywords+"%");
+        q.setParameter(1, "%" + keywords + "%");
         q.setFirstResult(offset);
         q.setMaxResults(limit);
-        result = (List<Review>)q.getResultList();
+        result = (List<Review>) q.getResultList();
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     public List<Review> findProductReviewsByKeywords(UUID productId, String keywords, int offset, int limit) {
         List<Review> result = new ArrayList<>();
-        Query q = entityManager.createQuery(
+        TypedQuery<Review> q = entityManager.createQuery(
                 "SELECT r FROM Review r WHERE r.product.id = '?1' AND lower(r.comment) LIKE lower(?2)",
                 Review.class);
         q.setParameter(1, productId.toString());
-        q.setParameter(2, "%"+keywords+"%");
+        q.setParameter(2, "%" + keywords + "%");
         q.setFirstResult(offset);
         q.setMaxResults(limit);
-        result = (List<Review>)q.getResultList();
+        result = (List<Review>) q.getResultList();
         return result;
     }
 
@@ -130,26 +114,14 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         entityManager.createNativeQuery(
                 "INSERT INTO reviews (id, product_id, user_id, comment, rating) " +
                         "VALUES (" +
-                            reviewId + "," +
-                            productId + "," +
-                            userId + "," +
-                            "'" + comment + "'," +
-                            rating +
+                        reviewId + "," +
+                        productId + "," +
+                        userId + "," +
+                        "'" + comment + "'," +
+                        rating +
                         ")")
                 .executeUpdate();
         return entityManager.find(Review.class, reviewId);
     }
-
-    /*public Review save(ReviewRequest Review) {
-        Review o =  new Review();
-        o.setReviewNum(Review.getReviewNum());
-        o.setUser(Review.getUserId());
-        o.setReviewDate(Review.getReviewDate());
-        o.setAmount(Review.getAmount());
-        o.setCart(Review.getCart());
-        o.setShipped(Review.getShipped());
-        o.setShippedDate(Review.getShippedDate());
-        return ReviewRepositoryBasic.save(o);
-    }*/
 
 }

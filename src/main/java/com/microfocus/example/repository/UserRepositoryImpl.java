@@ -21,10 +21,9 @@ package com.microfocus.example.repository;
 
 import com.microfocus.example.entity.Authority;
 import com.microfocus.example.entity.AuthorityType;
-import com.microfocus.example.entity.Product;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.UserLockedOutException;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.hibernate.Session;
 import org.hibernate.jdbc.ReturningWork;
@@ -44,6 +43,7 @@ import java.util.*;
 
 /**
  * Implementation of Custom User Repository
+ * 
  * @author Kevin A. Lee
  */
 @Repository
@@ -52,17 +52,10 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
     private static final Logger log = LoggerFactory.getLogger(UserRepositoryImpl.class);
 
-    private final UserRepositoryBasic userRepositoryBasic;
-
     @PersistenceContext
     EntityManager entityManager;
 
-    public UserRepositoryImpl(UserRepositoryBasic userRepositoryBasic) {
-        this.userRepositoryBasic = userRepositoryBasic;
-    }
-
     @Override
-    @SuppressWarnings("unchecked")
     public Optional<User> findUserByUsername(String username) throws UserLockedOutException, UsernameNotFoundException {
         List<User> users = new ArrayList<>();
 
@@ -76,7 +69,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                     Statement stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                     ResultSet results = stmt.executeQuery(
                             "SELECT u.*, a.name as authority " +
-                                    "FROM users u, authorities a INNER JOIN user_authorities ua on a.id = ua.authority_id " +
+                                    "FROM users u, authorities a INNER JOIN user_authorities ua on a.id = ua.authority_id "
+                                    +
                                     "WHERE u.id = ua.user_id AND u.username LIKE '" + username + "'");
                     if (results.next()) {
                         log.debug("Found matching user in database for: " + username);
@@ -98,8 +92,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                                         results.getString("zip"),
                                         results.getString("country"),
                                         results.getBoolean("enabled"),
-                                        results.getBoolean("mfa")
-                                );
+                                        results.getBoolean("mfa"));
                                 utmp.setCountry(results.getString("country"));
                                 utmp.setAddress(results.getString("address"));
                                 utmp.setState(results.getString("state"));
@@ -136,10 +129,9 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Optional<User> findUserByEmail(String email) {
         List<User> users = new ArrayList<>();
-        Query q = entityManager.createQuery(
+        TypedQuery<User> q = entityManager.createQuery(
                 "SELECT u FROM User u WHERE u.email = :email",
                 User.class);
         q.setParameter("email", email);
@@ -153,52 +145,48 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
         return optionalUser;
     }
 
-    @SuppressWarnings("unchecked")
     public List<User> findUsersByUsername(String username) {
         List<User> result = new ArrayList<>();
-        Query q = entityManager.createQuery(
+        TypedQuery<User> q = entityManager.createQuery(
                 "SELECT u FROM User u WHERE u.username = :username",
                 User.class);
         q.setParameter("username", username);
-        result = (List<User>)q.getResultList();
+        result = (List<User>) q.getResultList();
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     public List<User> listUsers(int offset, int limit) {
         List<User> result = new ArrayList<>();
-        Query q = entityManager.createQuery(
+        TypedQuery<User> q = entityManager.createQuery(
                 "SELECT u FROM User u",
                 User.class);
         q.setFirstResult(offset);
         q.setMaxResults(limit);
-        result = (List<User>)q.getResultList();
+        result = (List<User>) q.getResultList();
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     public List<User> findUsersByKeywords(String keywords, int offset, int limit) {
         List<User> result = new ArrayList<>();
-        Query q = entityManager.createQuery(
+        TypedQuery<User> q = entityManager.createQuery(
                 "SELECT u FROM User u WHERE lower(u.firstName) LIKE lower(?1)" +
-                " OR lower(u.lastName) LIKE lower(?1) ",
+                        " OR lower(u.lastName) LIKE lower(?1) ",
                 User.class);
-        q.setParameter(1, "%"+keywords+"%");
+        q.setParameter(1, "%" + keywords + "%");
         q.setFirstResult(offset);
         q.setMaxResults(limit);
-        result = (List<User>)q.getResultList();
+        result = (List<User>) q.getResultList();
         return result;
     }
 
-    @SuppressWarnings("unchecked")
-	public List<User> findUsersByEnabledAndUsername(boolean enabled, String username) {
+    public List<User> findUsersByEnabledAndUsername(boolean enabled, String username) {
         List<User> result = new ArrayList<>();
-        Query q = entityManager.createQuery(
-        "SELECT u FROM User u WHERE u.enabled = :enabled AND u.username LIKE :username",
+        TypedQuery<User> q = entityManager.createQuery(
+                "SELECT u FROM User u WHERE u.enabled = :enabled AND u.username LIKE :username",
                 User.class);
         q.setParameter("enabled", enabled);
         q.setParameter("username", username);
-        result = (List<User>)q.getResultList();
+        result = (List<User>) q.getResultList();
         return result;
     }
 }

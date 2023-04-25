@@ -34,6 +34,7 @@ import java.util.UUID;
 
 /**
  * Order entity
+ * 
  * @author Kevin A. Lee
  */
 @Entity
@@ -45,10 +46,7 @@ public class Order implements Serializable {
 
     @Id
     @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 

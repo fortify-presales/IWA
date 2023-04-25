@@ -27,6 +27,7 @@ import java.util.UUID;
 
 /**
  * Interface for User Repository
+ * 
  * @author Kevin A. Lee
  */
 @Repository

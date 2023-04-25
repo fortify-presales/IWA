@@ -20,12 +20,13 @@
 package com.microfocus.example.repository;
 
 import com.microfocus.example.entity.Order;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.microfocus.example.entity.User;
+import com.microfocus.example.payload.request.OrderRequest;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +35,14 @@ import java.util.UUID;
 
 /**
  * Implementation of Custom Order Repository
+ * 
  * @author Kevin A. Lee
  */
 @Transactional
 public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
-    private static final Logger log = LoggerFactory.getLogger(OrderRepositoryImpl.class);
-
     private final OrderRepositoryBasic orderRepositoryBasic;
+    private UserRepository userRepository;
 
     @PersistenceContext
     EntityManager entityManager;
@@ -59,65 +60,46 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         return query.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     public Optional<Order> findByNumber(String code) {
-        List<Order> result = new ArrayList<>();
-        Query q = entityManager.createQuery(
-                "SELECT o FROM Order o WHERE lower(o.orderNum) = lower(?1)",
-                Order.class);
-        q.setParameter(1, code);
-        result = (List<Order>)q.getResultList();
-        Optional<Order> optionalOrder = Optional.empty();
-        if (!result.isEmpty()) {
-            optionalOrder = Optional.of(result.get(0));
-        }
-        return optionalOrder;
+        Order order = entityManager.find(Order.class, code.toLowerCase());
+        return Optional.ofNullable(order);
     }
 
-    @SuppressWarnings("unchecked")
     public List<Order> listOrders(int offset, int limit) {
-        List<Order> result = new ArrayList<>();
-        Query q = entityManager.createQuery(
-                "SELECT o FROM Order o",
-                Order.class);
-        q.setFirstResult(offset);
-        q.setMaxResults(limit);
-        result = (List<Order>)q.getResultList();
-        return result;
+        return entityManager.createQuery("SELECT o FROM Order o", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     public List<Order> findOrdersByKeywords(String keywords, int offset, int limit) {
         List<Order> result = new ArrayList<>();
-        Query q = entityManager.createQuery(
-                "SELECT o FROM Order o WHERE lower(o.orderNum) LIKE lower(?1)",
+        TypedQuery<Order> q = entityManager.createQuery(
+                "SELECT o FROM Order o WHERE lower(o.orderNum) = lower(?1)",
                 Order.class);
-        q.setParameter(1, "%"+keywords+"%");
+        q.setParameter(1, "%" + keywords + "%");
         q.setFirstResult(offset);
         q.setMaxResults(limit);
-        result = (List<Order>)q.getResultList();
+        result = (List<Order>) q.getResultList();
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     public long countByUserId(UUID userId) {
         Query query = entityManager.createQuery(
                 "SELECT count(o) FROM Order o WHERE o.user.id = ?1",
                 Long.class);
         query.setParameter(1, userId);
-        return (long)(query.getSingleResult());
+        return (long) (query.getSingleResult());
     }
 
-    @SuppressWarnings("unchecked")
     public long countNotShippedByUserId(UUID userId) {
         Query query = entityManager.createQuery(
                 "SELECT count(o) FROM Order o WHERE o.user.id = ?1 AND o.shipped = false",
                 Long.class);
         query.setParameter(1, userId);
-        return (long)(query.getSingleResult());
+        return (long) (query.getSingleResult());
     }
 
-    @SuppressWarnings("unchecked")
     public void markOrderAsShippedById(UUID OrderId) {
         Query query = entityManager.createQuery(
                 "UPDATE Order o SET o.shipped = true WHERE o.id = ?1");
@@ -125,16 +107,21 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         query.executeUpdate();
     }
 
-    /*public Order save(OrderRequest order) {
-        Order o =  new Order();
+    public User getUserById(UUID idUser) {
+        Optional<User> user = userRepository.findById(idUser);
+        return user.get();
+    }
+
+    public Order save(OrderRequest order) {
+        Order o = new Order();
         o.setOrderNum(order.getOrderNum());
-        o.setUser(order.getUserId());
+        o.setUser(getUserById(order.getUserId()));
         o.setOrderDate(order.getOrderDate());
         o.setAmount(order.getAmount());
         o.setCart(order.getCart());
         o.setShipped(order.getShipped());
         o.setShippedDate(order.getShippedDate());
         return orderRepositoryBasic.save(o);
-    }*/
+    }
 
 }
