@@ -51,9 +51,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         this.orderRepositoryBasic = orderRepositoryBasic;
     }
 
-    @SuppressWarnings("unchecked")
     public List<Order> findByUserId(UUID userId) {
-        Query query = entityManager.createQuery(
+        TypedQuery<Order> query = entityManager.createQuery(
                 "SELECT o FROM Order o WHERE o.user.id = ?1",
                 Order.class);
         query.setParameter(1, userId);

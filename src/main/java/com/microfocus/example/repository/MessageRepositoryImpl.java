@@ -25,6 +25,7 @@ import com.microfocus.example.web.form.MessageForm;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
@@ -46,9 +47,8 @@ public class MessageRepositoryImpl implements MessageRepositoryCustom {
         this.messageRepositoryBasic = messageRepositoryBasic;
     }
 
-    @SuppressWarnings("unchecked")
     public List<Message> findByUserId(UUID userId) {
-        Query query = entityManager.createQuery(
+        TypedQuery<Message> query = entityManager.createQuery(
                 "SELECT m FROM Message m WHERE m.user.id = ?1",
                 Message.class);
         query.setParameter(1, userId);
