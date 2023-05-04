@@ -49,18 +49,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Transactional
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = Optional.ofNullable(null);
+        User user = null;
         try {
-            user = userRepository.findUserByUsername(username);
-            if (!user.isPresent()) {
-                user = userRepository.findUserByEmail(username);
-            }
-            if (!user.isPresent()) {
-                throw new UsernameNotFoundException("User with email: " + username + " not found.");
-            }
+            // Tenta encontrar o usuário pelo nome de usuário e, se não encontrado, tenta encontrar pelo e-mail
+            user = userRepository.findUserByUsername(username)
+                .orElseGet(() -> userRepository.findUserByEmail(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User with email: " + username + " not found.")));
         } catch (UserLockedOutException ignored) {
-            // Do something here
+            // Tratamento de exceção para usuário bloqueado
         }
-        return new CustomUserDetails(user.get());
+        // Retorna os detalhes do usuário
+        return new CustomUserDetails(user);
     }
 }
