@@ -139,37 +139,46 @@ public class ProductService {
             if (!productExistsById(productId))
                 throw new ProductNotFoundException("Product not found with id: " + productId);
         }
-        ptmp.setCode(product.getCode());
-        ptmp.setName(product.getName());
-        ptmp.setSummary(product.getSummary());
-        ptmp.setDescription(product.getDescription());
-        ptmp.setImage(product.getImage());
-        ptmp.setPrice(product.getPrice());
-        ptmp.setOnSale(product.getOnSale());
-        ptmp.setSalePrice(product.getSalePrice());
-        ptmp.setInStock(product.getInStock());
-        ptmp.setTimeToStock(product.getTimeToStock());
-        ptmp.setRating(product.getRating());
-        ptmp.setAvailable(product.getAvailable());
-        return productRepository.save(ptmp);
+        return setRequestProductAttributes(ptmp, product);
     }
 
+    public Product setRequestProductAttributes(Product p , ProductRequest pr){
+        p.setCode(pr.getCode());
+        p.setName(pr.getName());
+        p.setSummary(pr.getSummary());
+        p.setDescription(pr.getDescription());
+        p.setImage(pr.getImage());
+        p.setPrice(pr.getPrice());
+        p.setOnSale(pr.getOnSale());
+        p.setSalePrice(pr.getSalePrice());
+        p.setInStock(pr.getInStock());
+        p.setTimeToStock(pr.getTimeToStock());
+        p.setRating(pr.getRating());
+        p.setAvailable(pr.getAvailable());
+        return productRepository.save(p);
+    }
+    public Product setAdminFormProductAttributes(Product p , AdminNewProductForm pr){
+        p.setCode(pr.getCode());
+        p.setName(pr.getName());
+        p.setSummary(pr.getSummary());
+        p.setDescription(pr.getDescription());
+        p.setImage(pr.getImage());
+        p.setPrice(pr.getPrice());
+        p.setOnSale(pr.getOnSale());
+        p.setSalePrice(pr.getSalePrice());
+        p.setInStock(pr.getInStock());
+        p.setTimeToStock(pr.getTimeToStock());
+        p.setRating(pr.getRating());
+        p.setAvailable(pr.getAvailable());
+        return productRepository.save(p);
+    }
+    
     public Product saveProductFromAdminProductForm(AdminProductForm adminProductForm) throws ProductNotFoundException {
         Optional<Product> optionalProduct = productRepository.findByCode(adminProductForm.getCode());
         if (optionalProduct.isPresent()) {
             Product ptmp = optionalProduct.get();
-            ptmp.setName(adminProductForm.getName());
-            ptmp.setSummary(adminProductForm.getSummary());
-            ptmp.setDescription(adminProductForm.getDescription());
-            ptmp.setImage(adminProductForm.getImage());
-            ptmp.setPrice(adminProductForm.getPrice());
-            ptmp.setOnSale(adminProductForm.getOnSale());
-            ptmp.setSalePrice(adminProductForm.getSalePrice());
-            ptmp.setInStock(adminProductForm.getInStock());
-            ptmp.setTimeToStock(adminProductForm.getTimeToStock());
-            ptmp.setRating(adminProductForm.getRating());
-            ptmp.setAvailable(adminProductForm.getAvailable());
-            return productRepository.save(ptmp);
+            
+            return setAdminFormProductAttributes(ptmp, null);
         } else {
             throw new ProductNotFoundException("Product not found: " + adminProductForm.getCode());
         }
@@ -177,21 +186,24 @@ public class ProductService {
 
     public Product newProductFormAdminNewProductForm(AdminNewProductForm productForm) {
         Product ptmp = new Product();
-        ptmp.setCode(productForm.getCode());
-        ptmp.setName(productForm.getName());
-        ptmp.setSummary(productForm.getSummary());
-        ptmp.setDescription(productForm.getDescription());
-        ptmp.setPrice(productForm.getPrice());
-        ptmp.setOnSale(productForm.getOnSale() != null ? productForm.getOnSale() : false);
-        ptmp.setSalePrice(productForm.getSalePrice());
-        ptmp.setInStock(productForm.getInStock() != null ? productForm.getInStock() : false);
-        ptmp.setTimeToStock(productForm.getTimeToStock());
-        ptmp.setImage(productForm.getImage());
-        ptmp.setAvailable(productForm.getAvailable() != null ? productForm.getAvailable() : false);
-        Product newProduct = productRepository.save(ptmp);
+        Product newProduct = setNewAdminFormProductAttributes(ptmp, productForm);
         return newProduct;
     }
-
+    public Product setNewAdminFormProductAttributes(Product p , AdminNewProductForm pr){
+        p.setCode(pr.getCode());
+        p.setName(pr.getName());
+        p.setSummary(pr.getSummary());
+        p.setDescription(pr.getDescription());
+        p.setImage(pr.getImage());
+        p.setPrice(pr.getPrice());
+        p.setOnSale(pr.getOnSale());
+        p.setSalePrice(pr.getSalePrice());
+        p.setInStock(pr.getInStock());
+        p.setTimeToStock(pr.getTimeToStock());
+        p.setRating(pr.getRating());
+        p.setAvailable(pr.getAvailable());
+        return productRepository.save(p);
+    }
     //
     // Reviews
     //
