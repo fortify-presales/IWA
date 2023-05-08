@@ -69,7 +69,7 @@ public class EmailSenderService {
             emailSender.send(message);
         } catch (MessagingException e) {
             log.error("Error while sending email: " + e.getMessage(), e);
-            // Handle the exception, throw it, or return an appropriate result
+            
         } 
     }
 
