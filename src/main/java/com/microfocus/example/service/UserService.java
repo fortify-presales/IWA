@@ -41,8 +41,6 @@ import com.microfocus.example.web.form.admin.AdminPasswordForm;
 import com.microfocus.example.web.form.admin.AdminUserForm;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.json.simple.parser.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -59,8 +57,6 @@ import java.util.*;
 @Transactional
 public class UserService {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
-    private final String SERVICE_NAME = getClass().getName();
 
     @Autowired
     private UserRepository userRepository;

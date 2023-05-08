@@ -39,7 +39,6 @@ import java.nio.charset.StandardCharsets;
 public class EmailSenderService {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final String SERVICE_NAME = getClass().getName();
 
     @Autowired
     private JavaMailSender emailSender;

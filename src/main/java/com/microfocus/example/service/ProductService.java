@@ -38,8 +38,6 @@ import com.microfocus.example.web.form.admin.AdminNewProductForm;
 import com.microfocus.example.web.form.admin.AdminOrderForm;
 import com.microfocus.example.web.form.admin.AdminProductForm;
 import com.microfocus.example.web.form.admin.AdminReviewForm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -56,7 +54,6 @@ import java.util.*;
 @Transactional
 public class ProductService {
 
-    private static final Logger log = LoggerFactory.getLogger(ProductService.class);
 
     @Autowired
     private ProductRepository productRepository;

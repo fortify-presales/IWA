@@ -39,7 +39,6 @@ import java.util.concurrent.TimeUnit;
 public class VerificationService {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final String SERVICE_NAME = getClass().getName();
 
     private static final Integer EXPIRE_MINS = 4;
 
