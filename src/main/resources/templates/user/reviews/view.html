@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Product Review</title>
+</head>
+<body>
+    <div layout:fragment="content" th:remove="tag">
+
+        <div class="bg-light py-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 mb-0">
+                        <a th:href="@{/user/}">User</a> <span class="mx-2 mb-0">/</span>
+                        <a th:href="@{/user/reviews}">Reviews</a> <span class="mx-2 mb-0">/</span>
+                        <strong th:text="${reviewForm.getProduct().getName()}" class="text-black">Product</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="site-section">
+
+            <div class="container">
+
+                <div class="row">
+
+                    <div class="col-md-3 mr-auto">
+                        <div th:replace="fragments/user-menu.html :: userMenu('/user/reviews')"></div>
+                    </div>
+
+                    <div class="col-md-9">
+
+                        <form class="form-horizontal">
+                            <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                                <span th:text="${message}">message</span>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="form-group row">
+                                <label for="productName" class="col-sm-2 col-form-label">Product</label>
+                                <div class="col-sm-10">
+                                    <a th:href="@{/products/{id}(id=${reviewForm.product.id})}"><span id="productName" th:text="${#strings.abbreviate(reviewForm.product.name,40)}"> Product </span></a>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="reviewDate" class="col-sm-2 col-form-label">Date Reviewed</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly class="form-control-plaintext" id="reviewDate" th:value="${#dates.format(reviewForm.reviewDate, 'MM-dd-yyyy')}"/>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="reviewRating" class="col-sm-2 col-form-label">Rating</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly class="form-control-plaintext" id="reviewRating" th:value="${reviewForm.rating}"/>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="reviewComment" class="col-sm-2 col-form-label">Comment</label>
+                                <div class="col-sm-10">
+                                    <textarea rows="5" readonly class="form-control-plaintext" id="reviewComment" th:field="${reviewForm.comment}"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group row mt-4">
+                                <div class="col-md-12">
+                                    <a class="btn btn-primary" th:href="@{/user/reviews}"> Back </a>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

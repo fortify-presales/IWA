@@ -14,6 +14,9 @@
                    th:classappend="${#strings.contains(activeItem,'orders')} ? active : ''"
                    th:href="@{/user/orders}"><i class="fas fa-shopping-cart fa-fw"></i> Orders </a>
                 <a class="list-group-item list-group-item-action"
+                   th:classappend="${#strings.contains(activeItem,'reviews')} ? active : ''"
+                   th:href="@{/user/reviews}"><i class="fas fa-comment-alt fa-fw"></i> Reviews </a>
+                <a class="list-group-item list-group-item-action"
                    th:classappend="${#strings.contains(activeItem,'messages')} ? active : ''"
                    th:href="@{/user/messages}"><i class="fas fa-envelope fa-fw"></i> Messages <span id="unread-message-count" class="badge badge-pill badge-info">0</span>
                     <span class="sr-only">unread messages</span>

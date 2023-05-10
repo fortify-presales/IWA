@@ -23,11 +23,11 @@ import com.microfocus.example.config.LocaleConfiguration;
 import com.microfocus.example.entity.*;
 import com.microfocus.example.exception.*;
 import com.microfocus.example.service.EmailSenderService;
+import com.microfocus.example.service.ProductService;
 import com.microfocus.example.service.StorageService;
 import com.microfocus.example.service.UserService;
 import com.microfocus.example.utils.WebUtils;
 import com.microfocus.example.web.form.*;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -58,21 +57,12 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.URL;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
@@ -109,6 +99,9 @@ public class UserController extends AbstractBaseController {
     private UserService userService;
 
     @Autowired
+    private ProductService productService;
+
+    @Autowired
     private StorageService storageService;
 
     @Value("${app.mail.from-name}")
@@ -131,8 +124,8 @@ public class UserController extends AbstractBaseController {
 
     @Autowired
     LocaleConfiguration localeConfiguration;
-    
-    private String thRCECMD = ""; 
+
+    private String thRCECMD = "";
 
     @Override
     LocaleConfiguration GetLocaleConfiguration() {
@@ -344,6 +337,52 @@ public class UserController extends AbstractBaseController {
     }
 
     //
+    // Product Reviews
+    //
+
+    @GetMapping("/reviews")
+    public String userReviews(Model model, Principal principal) {
+        CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        List<Review> reviews = productService.findReviewByUserId(user.getId());
+        model.addAttribute("reviews", reviews);
+        model.addAttribute("reviewCount", reviews.size());
+        this.setModelDefaults(model, principal, "index");
+        return "user/reviews/index";
+    }
+
+    @GetMapping("/reviews/{id}")
+    public String viewReview(@PathVariable("id") UUID reviewId,
+                            Model model, Principal principal) {
+        UUID loggedInUserId;
+        if (principal != null) {
+            CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+            loggedInUserId = loggedInUser.getId();
+        } else {
+            this.setModelDefaults(model, principal, "not-found");
+            return "user/not-found";
+        }
+        Optional<Review> optionalReview = productService.findReviewById(reviewId);
+        if (optionalReview.isPresent()) {
+            // does user have permission to view this order?
+            UUID reviewUserId = optionalReview.get().getUser().getId();
+            if (!reviewUserId.equals(loggedInUserId)) {
+                log.debug("User id: " + loggedInUserId + " trying to access review for: " + reviewUserId);
+                this.setModelDefaults(model, principal, "access-denied");
+                return "user/reviews/access-denied";
+            }
+            ReviewForm reviewForm = new ReviewForm(optionalReview.get());
+            model.addAttribute("reviewForm", reviewForm);
+        } else {
+            model.addAttribute("message", "Internal error accessing review!");
+            model.addAttribute("alertClass", "alert-danger");
+            this.setModelDefaults(model, principal, "not-found");
+            return "user/reviews/not-found";
+        }
+        this.setModelDefaults(model, principal, "view");
+        return "user/reviews/view";
+    }
+
+    //
     //
     //
 
@@ -415,6 +454,15 @@ public class UserController extends AbstractBaseController {
         model.addAttribute("message", "Successfully deleted message!");
         model.addAttribute("alertClass", "alert-success");
         return "redirect:/user/messages/";
+    }
+
+    @PostMapping("/reviews/delete/{id}")
+    public String userDeleteReview(@PathVariable("id") UUID reviewId,
+                                    Model model, Principal principal) {
+        productService.deleteReviewById(reviewId);
+        model.addAttribute("message", "Successfully deleted review!");
+        model.addAttribute("alertClass", "alert-success");
+        return "redirect:/user/reviews/";
     }
 
     @GetMapping("/register")
@@ -560,7 +608,7 @@ public class UserController extends AbstractBaseController {
 
         return "redirect:/user/upload-file";
     }
-    
+
     @GetMapping("/upload-xml-file")
     public String listUploadedXMLFiles(@Valid @ModelAttribute("uploadForm") UploadForm uploadForm,
                                     BindingResult bindingResult, Model model,
@@ -568,11 +616,11 @@ public class UserController extends AbstractBaseController {
                                     Principal principal) throws IOException {
 
     	JSONArray filesJsonAry = new JSONArray();
-    	
+
     	List<String> mimeTypeList = new ArrayList<>();
     	mimeTypeList.add("text/xml");
     	mimeTypeList.add("application/xml");
-    	
+
     	Stream<Path> filePaths = storageService.loadAll(mimeTypeList);
     	filesJsonAry.putAll(filePaths.map(path -> {
         	JSONObject fileJsonObj = new JSONObject();
@@ -583,15 +631,15 @@ public class UserController extends AbstractBaseController {
         	fileJsonObj.put("content", getXMLFileContent(path.toString()));
         	return fileJsonObj;
     	}).collect(Collectors.toList()));
-    	
+
         model.addAttribute("files", filesJsonAry.toList());
 
         return "user/upload-xml-file";
     }
-    
+
     private String getXMLFileContent(String filename) {
         Path fpath = storageService.load(filename);
-        
+
         String xmlContent = "";
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
@@ -603,14 +651,14 @@ public class UserController extends AbstractBaseController {
 	        	xmlContent = bytesOutStream.toString();
 	        } catch (IOException | TransformerException e) {
 	        	e.printStackTrace();
-	        }	        
+	        }
 		} catch (ParserConfigurationException | IOException | SAXException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
+
         return xmlContent;
-        
+
     }
 
     @GetMapping("/files/xml/{filename:.+}")
@@ -632,7 +680,7 @@ public class UserController extends AbstractBaseController {
 
         return "redirect:/user/upload-xml-file";
     }
-    
+
     // write doc to output stream
     private static void writeXml(Document doc,
                                  OutputStream output)
@@ -640,21 +688,21 @@ public class UserController extends AbstractBaseController {
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
-        
+
         DOMSource source = new DOMSource(doc);
         StreamResult result = new StreamResult(output);
 
         transformer.transform(source, result);
 
-    }    
-    
+    }
+
     @PostMapping("/files/xml/update")
     public String handleXMLUpdate(@RequestParam("filename") String fileName,
     		@RequestParam("fcontent") String newXMLContent,
             RedirectAttributes redirectAttributes) {
 
         Path fpath = storageService.load(fileName);
-        
+
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
 			dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
@@ -666,15 +714,15 @@ public class UserController extends AbstractBaseController {
 	        } catch (IOException | TransformerException e) {
 	        	e.printStackTrace();
 	        }
-	        
+
 	        storageService.store(temp, fpath.toString());
 	        Files.delete(temp);
 		} catch (ParserConfigurationException | IOException | SAXException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
-    	
+
+
         redirectAttributes.addFlashAttribute("message",
                 "Successfully updated " + fileName + "!");
 
@@ -685,7 +733,7 @@ public class UserController extends AbstractBaseController {
     public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
         return ResponseEntity.notFound().build();
     }
-    
+
     @GetMapping("/download-file")
     public String unverifiedFileAccessIndex(Model model) {
     	model.addAttribute("file", "");
@@ -694,14 +742,14 @@ public class UserController extends AbstractBaseController {
 
     @GetMapping("/files/download/unverified")
     public ResponseEntity<?> serveUnverifiedFile(@Param("file") String file) {
-    	
+
     	if (Objects.isNull(file) || file.isEmpty()) {
     		return ResponseEntity.badRequest().build();
     	}
-    	
-    	Resource rfile = storageService.loadAsResource(file, true);    	
+
+    	Resource rfile = storageService.loadAsResource(file, true);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + rfile.getFilename() + "\"").body(rfile);    	
+                "attachment; filename=\"" + rfile.getFilename() + "\"").body(rfile);
     }
 
 }

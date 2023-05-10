@@ -11,7 +11,7 @@
 - [X] Allow login by email address instead of username
 - [X] Complete registration process with email validation
 - [X] Add API Refresh token feature
-- [ ] Add user review posting
+- [ ] Allow customers to post product reviews
 - [ ] Add message when order is made
 
 #### Configuration
