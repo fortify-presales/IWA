@@ -11,6 +11,8 @@
 - [X] Allow login by email address instead of username
 - [X] Complete registration process with email validation
 - [X] Add API Refresh token feature
+- [ ] Add user review posting
+- [ ] Add message when order is made
 
 #### Configuration
 
@@ -18,7 +20,7 @@
 - [X] Provide alternate Gradle build scripts
 - [X] Include log4j dependency vulnerabilities (by using affected version of log4j)
 - [ ] Azure Resource Manager deployment
-- [ ] Migrate pipelines to fcli
+- [X] Migrate pipelines to fcli
 
 #### Data
 

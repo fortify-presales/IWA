@@ -27,7 +27,7 @@ $ScanSwitches = "-Dcom.fortify.sca.rules.enable_wi_correlation=true -Dcom.fortif
 if ($QuickScan) {
     $PrecisionLevel = 1
 } else {
-    $PrecisionLevel = 3 # or 4 for full scan
+    $PrecisionLevel = 4 # 4 for full scan
 }
 
 # Test we have Fortify installed successfully
