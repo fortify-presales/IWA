@@ -21,8 +21,6 @@ package com.microfocus.example.web.controllers;
 
 import com.microfocus.example.config.LocaleConfiguration;
 import com.microfocus.example.utils.WebUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
 
 import java.security.Principal;
@@ -31,12 +29,10 @@ import java.util.Locale;
 
 public abstract class AbstractBaseController {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
     abstract LocaleConfiguration GetLocaleConfiguration();
     abstract String GetControllerName();
 
-    final Model setModelDefaults(Model model, Principal principal, String viewName) {
+    final void setModelDefaults(Model model, Principal principal, String viewName) {
         Locale currentLocale = GetLocaleConfiguration().getLocale();
         Currency currency = Currency.getInstance(currentLocale);
         model.addAttribute("currencySymbol", currency.getSymbol());
@@ -44,6 +40,5 @@ public abstract class AbstractBaseController {
         model.addAttribute("messageCount", "0");
         model.addAttribute("controllerName", GetControllerName());
         model.addAttribute("viewName", viewName);
-        return model;
     }
 }
