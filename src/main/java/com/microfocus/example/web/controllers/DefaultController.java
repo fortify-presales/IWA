@@ -22,17 +22,14 @@ package com.microfocus.example.web.controllers;
 import com.microfocus.example.config.LocaleConfiguration;
 import com.microfocus.example.config.handlers.CustomAuthenticationSuccessHandler;
 import com.microfocus.example.entity.CustomUserDetails;
-import com.microfocus.example.entity.Mail;
 import com.microfocus.example.entity.SMS;
 import com.microfocus.example.exception.VerificationRequestFailedException;
-import com.microfocus.example.service.EmailSenderService;
 import com.microfocus.example.service.SmsSenderService;
 import com.microfocus.example.service.VerificationService;
 import com.microfocus.example.utils.JwtUtils;
 import com.microfocus.example.utils.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
@@ -44,8 +41,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -64,17 +59,20 @@ public class DefaultController extends AbstractBaseController{
     @Value("${app.messages.home}")
     private String message = "Hello World";
 
-    @Autowired
-    private JwtUtils jwtUtils;
+    private final JwtUtils jwtUtils;
 
-    @Autowired
-    LocaleConfiguration localeConfiguration;
+    final LocaleConfiguration localeConfiguration;
 
-    @Autowired
-    VerificationService verificationService;
+    final VerificationService verificationService;
 
-    @Autowired
-    SmsSenderService smsSenderService;
+    final SmsSenderService smsSenderService;
+
+    public DefaultController(JwtUtils jwtUtils, LocaleConfiguration localeConfiguration, VerificationService verificationService, SmsSenderService smsSenderService) {
+        this.jwtUtils = jwtUtils;
+        this.localeConfiguration = localeConfiguration;
+        this.verificationService = verificationService;
+        this.smsSenderService = smsSenderService;
+    }
 
     @Override
     LocaleConfiguration GetLocaleConfiguration() {
@@ -103,10 +101,9 @@ public class DefaultController extends AbstractBaseController{
     }
 
     @GetMapping("/login_mfa")
-    public String otpLogin(HttpServletRequest request, Model model, Principal principal) {
+    public String otpLogin(Model model, Principal principal) {
         CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         String userId = loggedInUser.getId().toString();
-        String email = loggedInUser.getEmail();
         String mobile = loggedInUser.getMobile();
         log.debug("Verifying user with id: " + userId);
         if (model.containsAttribute("otp")) {
@@ -152,7 +149,7 @@ public class DefaultController extends AbstractBaseController{
             return "login_mfa";
         }
 
-        int otpNum = Integer.valueOf(optStr).intValue();
+        int otpNum = Integer.parseInt(optStr);
         // validate OTP "one-time-password" for user
         if (otpNum > 0) {
             log.debug("Verifying otp '" + otp + "' of user with id: " + userId);

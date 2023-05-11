@@ -32,10 +32,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +56,6 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -66,13 +63,10 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
@@ -105,11 +99,8 @@ public class UserController extends AbstractBaseController {
     @Value(("${EMAIL_ADDRESS_TAKEN_ERROR:An email address was used that is already taken.}"))
     private String EMAIL_ADDRESS_TAKEN_ERROR;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private StorageService storageService;
+    private final UserService userService;
+    private final StorageService storageService;
 
     @Value("${app.mail.from-name}")
     private String emailFromName;
@@ -123,16 +114,17 @@ public class UserController extends AbstractBaseController {
     @Value("${app.messages.home}")
     private final String message = "Hello World";
 
-    @Autowired
-    EmailSenderService emailSenderService;
+    final EmailSenderService emailSenderService;
+    private final SessionRegistry sessionRegistry;
+    final LocaleConfiguration localeConfiguration;
 
-    @Autowired
-    private SessionRegistry sessionRegistry;
-
-    @Autowired
-    LocaleConfiguration localeConfiguration;
-    
-    private String thRCECMD = ""; 
+    public UserController(EmailSenderService emailSenderService, SessionRegistry sessionRegistry, LocaleConfiguration localeConfiguration, StorageService storageService, UserService userService) {
+        this.emailSenderService = emailSenderService;
+        this.sessionRegistry = sessionRegistry;
+        this.localeConfiguration = localeConfiguration;
+        this.storageService = storageService;
+        this.userService = userService;
+    }
 
     @Override
     LocaleConfiguration GetLocaleConfiguration() {
@@ -234,21 +226,6 @@ public class UserController extends AbstractBaseController {
         this.setModelDefaults(model, principal, "index");
         return "user/messages/index";
     }
-
-    /*
-    @GetMapping("/unread-message-count")
-    @ResponseBody
-    public String getUserMessageCount(Model model, Principal principal) {
-        UUID loggedInUserId;
-        if (principal != null) {
-            CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
-            loggedInUserId = loggedInUser.getId();
-            long userMessageCount = userService.getUserUnreadMessageCount(loggedInUserId);
-            return Long.toString(userMessageCount);
-        } else {
-            return "0";
-        }
-    }*/
 
     @GetMapping("/messages/{id}")
     public String viewMessage(@PathVariable("id") UUID messageId,
@@ -565,7 +542,7 @@ public class UserController extends AbstractBaseController {
     public String listUploadedXMLFiles(@Valid @ModelAttribute("uploadForm") UploadForm uploadForm,
                                     BindingResult bindingResult, Model model,
                                     RedirectAttributes redirectAttributes,
-                                    Principal principal) throws IOException {
+                                    Principal principal) {
 
     	JSONArray filesJsonAry = new JSONArray();
     	
