@@ -28,7 +28,7 @@
 
 ## Notice
 
-**For a more "official" version of this application with additional pipeline integrations please visit [https://github.com/fortify/IWA-Java](https://github.com/fortify/IWA-Java).**
+**For an "official" version of this application with additional pipeline integrations please visit [https://github.com/fortify/IWA-Java](https://github.com/fortify/IWA-Java).**
 
 ## Overview
 
@@ -55,13 +55,18 @@ your own GitHub account. The process of "forking" is described in detail in the 
 
 ## Building the Application
 
-To build (and unit test) the application, execute the following from the command line:
+To build the application using Maven, execute the following from the command line:
 
 ```
-mvn clean package
+mvn clean verify
 ```
 
-This will create a JAR file (called `iwa.jar`) in the `target` directory.
+You can also use Gradle if you prefer:
+
+```
+.\gradlew clean build
+```
+
 
 To build a WAR file for deployment to an application server such as [Apache Tomcat](http://tomcat.apache.org/)
 execute the following:
@@ -84,21 +89,28 @@ To run (and test) locally in development mode, execute the following from the co
 mvn spring-boot:run
 ```
 
+or
+
+```
+.\gradlew bootRun
+```
+
 Then navigate to the URL: [http://localhost:8888](http://localhost:8888). You can carry out a number of
-actions unauthenticated, but if you want to login you can do so as the following user:
+actions unauthenticated, but if you want to login you can do so as one of the following users:
 
 - **user1@localhost.com/password**
+- **user2@localhost.com/password**
   
 There is also an administrative user:
 
 - **admin@localhost.com/password**
 
-Upon login, you will be subsequently asked for a Multi-Factor Authentication (MFA) code. This functionality
-is not yet enabled and you can enter any digit number sequence, e.g. `12345`.
+Note if you login with `user2`, you will be subsequently asked for a Multi-Factor Authentication (MFA) code. You
+can find this code by examining the console output.
 
 ### Deploy (Docker Image)
 
-The JAR file can be built into a [Docker](https://www.docker.com/) image using the provided `Dockerfile` in `src/main/configs` and the
+The JAR file can be built into a [Docker](https://www.docker.com/) image using the provided `Dockerfile` and the
 following commands:
 
 ```
@@ -119,7 +131,7 @@ This image can then be executed using the following commands:
 docker run -d -p 8888:8888 iwa
 ```
 
-There is also an example `docker-compose.yml` file in `src/main/configs` that illustrates how to run the application with HTTPS/SSL using
+There is also an example `docker-compose.yml` file that illustrates how to run the application with HTTPS/SSL using
 [nginx](https://www.nginx.com/) and [certbot](https://certbot.eff.org/) - please note this is for reference only as it 
 uses a "hard-coded" domain name.
 
@@ -140,7 +152,7 @@ SSC_USERNAME=admin
 SSC_PASSWORD=password
 SSC_AUTH_TOKEN=XXX
 SSC_APP_NAME=IWAPharmacyDirect
-SSC_APP_VER_NAME=master
+SSC_APP_VER_NAME=main
 # ScanCentral SAST/DAST
 SCANCENTRAL_CTRL_URL=http://[YOUR-SCANCENTRAL-SERVER]/scancentral-ctrl
 SCANCENTRAL_CTRL_TOKEN=XXX
@@ -151,10 +163,6 @@ SCANCENTRAL_DAST_API=http://[YOUR-SCANCENTRAL-DAST-SERVER]/api/
 FAST_EXE=C:\\Program Files\\Micro Focus WIRC Server\\Fast.exe
 FAST_PORT=8087
 FAST_PROXY=127.0.0.1:8087
-# Nexus IQ Lifecycle
-NEXUS_IQ_URL=http://[YOUR-NEXUS-IQ-SERVER]
-NEXUS_IQ_AUTH=XXX
-NEXUS_IQ_APP_ID=IWAPharmacyDirect
 # Fortify on Demand
 FOD_API_URL=https://api.ams.fortify.com
 FOD_API_KEY=XXXX
@@ -170,10 +178,10 @@ There is an example PowerShell script [fortify-sast.ps1](bin/fortify-sast.ps1) t
 via [Fortify SCA](https://www.microfocus.com/en-us/products/static-code-analysis-sast/overview).
 
 ```aidl
-.\bin\fortify-sast.ps1
+.\bin\fortify-sast.ps1 -SkipSSC
 ```
 
-This script runs a "sourceanalyzer" translation and scan on the project's source code. It creates a Fortify Project Results file called `IWA.fpr`
+This script runs a `sourceanalyzer` translation and scan on the project's source code. It creates a Fortify Project Results file called `IWAPharmacyDirect.fpr`
 which you can open using the Fortify `auditworkbench` tool:
 
 ```aidl
@@ -189,7 +197,7 @@ In order to upload to SSC you will need to have entries in the `.env` similar to
 SSC_URL=http://localhost:8080/ssc
 SSC_AUTH_TOKEN=28145aad-c40d-426d-942b-f6d6aec9c56f
 SSC_APP_NAME=IWAPharmacyDirect
-SSC_APP_VER_NAME=master
+SSC_APP_VER_NAME=main
 ```
 
 The `SSC_AUTH_TOKEN` entry should be set to the value of a 'CIToken' created in SSC _"Administration->Token Management"_.
@@ -208,8 +216,8 @@ In order to use ScanCentral SAST you will need to have entries in the `.env` sim
 ```aidl
 SSC_URL=http://localhost:8080/ssc
 SSC_AUTH_TOKEN=6b16aa46-35d7-4ea6-98c1-8b780851fb37
-SSC_APP_NAME=IWA
-SSC_APP_VER_NAME=master
+SSC_APP_NAME=IWAPharmacyDirect
+SSC_APP_VER_NAME=main
 SCANCENTRAL_CTRL_URL=http://localhost:8080/scancentral-ctrl
 SCANCENTRAL_CTRL_TOKEN=96846342-1349-4e36-b94f-11ed96b9a1e3
 SCANCENTRAL_POOL_ID=00000000-0000-0000-0000-000000000002
@@ -217,30 +225,6 @@ SCANCENTRAL_EMAIL=test@test.com
 ```
 
 The `SSC_AUTH_TOKEN` entry should be set to the value of a 'CIToken' created in SSC _"Administration->Token Management"_.
-
-### Open Source Software Composition Analysis using Sonatype Nexus
-
-There is a PowerShell script [fortify-sourceandlibscanner.ps1](bin\fortify-sourceandlibscanner.ps1) that you can use to carry out
-Open Source Software Composition Analysis (using [Sonatype Nexus](https://www.sonatype.com/products/open-source-security-dependency-management) 
-and upload the results to SSC:
-
-```aidl
-.\bin\fortify-sourceandlibscanner.ps1
-```
-
-In order to user Nexus IQ Server you will need to have entries in the `.env` similar to the following:
-
-```aidl
-SSC_URL=http://localhost:8080/ssc
-SSC_AUTH_TOKEN=6b16aa46-35d7-4ea6-98c1-8b780851fb37
-SSC_APP_NAME=IWA
-SSC_APP_VER_NAME=master
-NEXUS_IQ_URL=http://localhost:8070
-NEXUS_IQ_AUTH=XXX:YYY
-NEXUS_IQ_APP_ID=IWA
-```
-
-where `NEXUS_IQ_AUTH` is an encoded User token created in the Nexus IQ Server UI, e.g. "User Code:Passcode". 
 
 ### SAST using Fortify on Demand
 
@@ -344,7 +328,6 @@ Logout Condition:
 [STATUSCODE]401
 ```
 
-
 ### FAST Using ScanCentral DAST and FAST proxy
 
 _The Fortify FAST Proxy allows you to capture traffic from an automated test run and then use the traffic
@@ -428,7 +411,7 @@ For integrations with other pipeline tools please see [https://github.com/fortif
 
 Please see the [Contribution Guide](CONTRIBUTING.md) for information on how to develop and contribute.
 
-If you have any problems, please consult [GitHub Issues](https://github.com/fortify-presales/IWAPharmacyDirect/issues) to see if has already been discussed.
+If you have any problems, please consult [GitHub Issues](https://github.com/fortify-presales/IWAPharmacyDirect/issues) to see if it has already been discussed.
 
 ## Licensing
 

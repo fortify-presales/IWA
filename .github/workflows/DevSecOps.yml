@@ -92,6 +92,7 @@ jobs:
           mvn dependency:tree \
           -DoutputFile=.debricked-maven-dependencies.tgf \
           -DoutputType=tgf
+      - uses: debricked/vulnerable-functionality/java/maven@v0
       - uses: debricked/actions/scan@v1
         env:
           DEBRICKED_TOKEN: ${{ secrets.DEBRICKED_TOKEN }}
@@ -126,23 +127,6 @@ jobs:
         uses: stCarolas/setup-maven@v4.5
         with:
           maven-version: 3.8.2
-
-      # Get the branch name or pr number
-      #- name: Extract branch name
-      #  shell: pwsh
-      #  run: |
-      #    if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
-      #      $BranchName = $Env:GITHUB_REF -replace 'refs/pull/', ''
-      #      $PRNumber = $BranchName -replace '/merge', ''
-      #      $BranchName = "[PR]" + $Env:SOURCE_BRANCH + "#" + $PRNumber
-      #      Write-Output "::set-output name=branch::$BranchName"
-      #    } else {
-      #      $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
-      #      Write-Output "::set-output name=branch::$BranchName"
-      #    }
-      #  env:
-      #    SOURCE_BRANCH: ${{ github.head_ref }}
-       # id: extract_branch
 
       # Get the branch name or pr number
       - name: Extract branch name
@@ -278,14 +262,14 @@ jobs:
       # Check if SARIF output file has been created
       - name: Check file existence
         id: check_files_fod
-        uses: andstor/file-existence-action@v1
+        uses: andstor/file-existence-action@v2
         with:
           files: "./gh-fortify-sast.sarif"
 
       # Import Fortify SAST results to GitHub Security Code Scanning
       - name: Import Results
         if: steps.check_files_fod.outputs.files_exists == 'true'
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ./gh-fortify-sast.sarif
 
@@ -307,23 +291,6 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
           cache: 'maven'
-
-      # Get the branch name or pr number
-      #- name: Extract branch name
-      #  shell: pwsh
-      #  run: |
-      #    if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
-      #      $BranchName = $Env:GITHUB_REF -replace 'refs/pull/', ''
-      #      $PRNumber = $BranchName -replace '/merge', ''
-      #      $BranchName = "[PR]" + $Env:SOURCE_BRANCH + "#" + $PRNumber
-      #      Write-Output "::set-output name=branch::$BranchName"
-      #    } else {
-      #      $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
-      #      Write-Output "::set-output name=branch::$BranchName"
-      #    }
-      #  env:
-      #    SOURCE_BRANCH: ${{ github.head_ref }}
-      # id: extract_branch
 
       # Get the branch name or pr number
       - name: Extract branch name
@@ -363,23 +330,6 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
           cache: 'maven'
-
-      # Get the branch name or pr number
-      #- name: Extract branch name
-      #  shell: pwsh
-      #  run: |
-      #    if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
-      #      $BranchName = $Env:GITHUB_REF -replace 'refs/pull/', ''
-      #      $PRNumber = $BranchName -replace '/merge', ''
-      #      $BranchName = "[PR]" + $Env:SOURCE_BRANCH + "#" + $PRNumber
-      #      Write-Output "::set-output name=branch::$BranchName"
-      #    } else {
-      #      $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
-      #      Write-Output "::set-output name=branch::$BranchName"
-      #    }
-      #  env:
-      #    SOURCE_BRANCH: ${{ github.head_ref }}
-      # id: extract_branch
 
       # Get the branch name or pr number
       - name: Extract branch name

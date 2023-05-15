@@ -22,11 +22,12 @@ package com.microfocus.example.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-public class NotAuthorisedException extends RuntimeException {
+@ResponseStatus(HttpStatus.FORBIDDEN)
+public class RefreshTokenException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    public NotAuthorisedException(String userName) {
-        super("Not authorised: " + userName);
+    public RefreshTokenException(String token, String message) {
+        super(String.format("Failed for [%s]: %s", token, message));
     }
 }

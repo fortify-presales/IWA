@@ -17,7 +17,7 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.exception;
+package com.microfocus.example.exception.api;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -29,11 +29,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Kevin A. Lee
  */
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class ApiSiteBadCredentialsException extends RuntimeException {
+public class ApiBadCredentialsException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    public ApiSiteBadCredentialsException(String username) {
+    public ApiBadCredentialsException(String username) {
         super("Invalid credentials for username: " + username);
     }
 }

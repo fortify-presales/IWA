@@ -19,6 +19,7 @@
 
 package com.microfocus.example.utils;
 
+import java.time.Instant;
 import java.util.Date;
 
 import com.microfocus.example.entity.CustomUserDetails;
@@ -42,34 +43,40 @@ public class JwtUtils {
     @Value("${app.jwt.secret}")
     private String jwtSecret;
 
-    @Value("${app.jwt.expiration-ms}")
+    @Value("#{new Integer(${app.jwt.expiration-ms:0})}")
     private int jwtExpirationMs;
 
-    @Value("${app.jwt.refresh-ms}")
+    @Value("#{new Integer(${app.jwt.refresh-ms:0})}")
     private int jwtRefreshMs;
 
     public String generateJwtToken(Authentication authentication) {
-
         CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
-        log.debug("generateJwtToken for: " + userPrincipal.getUsername());
+        return generateJwtTokenFromUsername(userPrincipal.getUsername());
+    }
 
+    public String generateJwtTokenFromUsername(String username) {
+        log.debug("JwtUtils::generateJwtTokenFromUsername for: {}", username);
         return Jwts.builder()
-                .setSubject((userPrincipal.getUsername()))
+                .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
-    public String refreshJwtToken(Authentication authentication) {
+    public String generateJwtTokenFromUserDetails(Authentication authentication) {
+        log.debug("JwtUtils::generateJwtTokenFromUserDetails for: {}", authentication.toString());
         CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
-
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtRefreshMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
+    }
+
+    public Instant getDefaultExpiration() {
+        return Instant.now().plusMillis(jwtRefreshMs);
     }
 
     public long getExpirationFromJwtToken(String token) {

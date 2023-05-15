@@ -1391,11 +1391,11 @@ a:hover {
 .sign-in {
     width: 100px;
 }
-.bag {
+.cart {
     position: relative;
 }
 
-.bag .number {
+.cart .number {
     position: absolute;
     top: 0;
     width: 20px;

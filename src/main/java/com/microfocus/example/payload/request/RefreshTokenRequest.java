@@ -17,23 +17,19 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.exception;
+package com.microfocus.example.payload.request;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import javax.validation.constraints.NotBlank;
 
-/**
- * Allow the controller to return a 404 if a user is not found by simply
- * throwing this exception. The @ResponseStatus causes Spring MVC to return a
- * 404 instead of the usual 500.
- * @author Kevin A. Lee
- */
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class ApiSiteBadCredentialsException extends RuntimeException {
+public class RefreshTokenRequest {
+    @NotBlank
+    private String refreshToken;
 
-    private static final long serialVersionUID = 1L;
+    public String getRefreshToken() {
+        return refreshToken;
+    }
 
-    public ApiSiteBadCredentialsException(String username) {
-        super("Invalid credentials for username: " + username);
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

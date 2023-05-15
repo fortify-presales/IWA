@@ -88,7 +88,7 @@
                             <span th:if="${product.onSale == true}" th:text="${currencySymbol + #strings.replace(#numbers.formatDecimal(product.salePrice, 0, 2), '.00', '')}"> Sale Price </span>
                             <span th:if="${product.inStock}" class="badge badge-success">In Stock</span>
                             <span th:unless="${product.inStock}" class="badge badge-danger">Out of Stock</span>
-                            <span th:unless="${product.inStock}" th:text="In stock in ${product.timeToStock} days" class="badge badge-light text-dark"> </span>
+                            <span th:unless="${product.inStock}" th:text="'In stock in ' + ${product.timeToStock} + ' days'" class="badge badge-light text-dark"> </span>
                         </h5>
 
                         <div class="cart-add">

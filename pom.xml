@@ -43,7 +43,7 @@
         <groovy.version>3.0.8</groovy.version>
         <selenium.version>4.0.0-rc-2</selenium.version>
         <junit.version>4.12</junit.version>
-        <fortify.version>21.2.3</fortify.version>
+        <fortify.version>22.2.0</fortify.version>
         <skip.unit.tests>true</skip.unit.tests>
         <skip.integration.tests>true</skip.integration.tests>
     </properties>
