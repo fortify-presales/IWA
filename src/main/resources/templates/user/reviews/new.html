@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Product Review</title>
+</head>
+<body>
+    <div layout:fragment="content" th:remove="tag">
+
+        <div class="bg-light py-3">
+            <div class="container">
+                <div class="row">
+                    <a th:href="@{/user/}">User</a> <span class="mx-2 mb-0">/</span>
+                    <a th:href="@{/user/reviews}">Reviews</a> <span class="mx-2 mb-0">/</span>
+                    <strong class="text-black"> New </strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="site-section">
+
+            <div class="container">
+
+                <div class="row">
+
+                    <div class="col-md-3 mr-auto">
+                        <div th:replace="fragments/user-menu.html :: userMenu('/user/reviews')"></div>
+                    </div>
+
+                    <div class="col-md-9">
+
+                        <h5>New Review</h5>
+                        <form class="form-horizontal needs-validation" th:action="@{/user/reviews/new}" th:object="${newReviewForm}" method="post">
+
+                            <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                                <span th:text="${message}">message</span>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div th:object="${newReviewForm}" th:remove="tag">
+                                <div class="alert alert-danger" th:if="${#fields.hasErrors('global')}">
+                                    <p th:each="error : ${#fields.errors('global')}" th:text="${error}">error</p>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <label for="productName" class="text-black">Product: <span class="text-danger">*</span></label>
+                                    <input type="text" readonly class="form-control" id="productName" th:field="*{productName}" th:value="${newReviewForm.productName}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="rating" class="text-black">Rating: <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="rating" th:field="*{rating}">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12" th:classappend="${#fields.hasErrors('comment')}? 'has-error':''">
+                                    <label for="comment" class="text-black">Comment: <span class="text-danger">*</span></label>
+                                    <textarea rows="5" class="form-control" id="comment" th:field="*{comment}" th:value="${newReviewForm.comment}"></textarea>
+
+                                    <div th:if="${#fields.hasErrors('comment')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="productId" th:field="*{productId}" th:value="${newReviewForm.productId}">
+                            <input type="hidden" id="userId" th:field="*{userId}" th:value="${newReviewForm.userId}">
+
+                            <input type="hidden" id="reviewData" th:field="*{reviewDate}" th:value="${newReviewForm.reviewDate}">
+                            <input type="hidden" id="visible" th:field="*{visible}" th:value="${newReviewForm.visible}">
+
+                            <div class="form-group row mt-4">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-space btn-primary">Submit</button>
+                                    <a class="btn btn-info" th:href="@{/user/reviews}">Cancel</a>
+                                </div>
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</body>
+</html>

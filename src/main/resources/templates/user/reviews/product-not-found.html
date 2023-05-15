@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+    <head>
+        <title>Review :: Product Not Found</title>
+    </head>
+    <body>
+        <div layout:fragment="content" th:remove="tag">
+
+            <div class="site-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <span class="display-3 text-danger">
+                                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                            </span>r
+                            <h2 class="display-3 text-black">Product Not Found</h2>
+                            <p class="lead mb-5">We're sorry the product you specified cannot be found!</p>
+                            <p><a th:href="@{/user/reviews}" class="btn btn-md height-auto px-4 py-3 btn-primary">Back to Reviews</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </body>
+</html>

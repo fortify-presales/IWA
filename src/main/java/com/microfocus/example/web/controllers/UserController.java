@@ -40,6 +40,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -380,6 +381,59 @@ public class UserController extends AbstractBaseController {
         }
         this.setModelDefaults(model, principal, "view");
         return "user/reviews/view";
+    }
+
+
+    @GetMapping("/reviews/new")
+    public String newReview(@RequestParam("pid") Optional<UUID> pid,
+                            Model model, Principal principal) {
+        log.debug("UserController::newReview");
+        UUID productId = (pid.isPresent() ? pid.get() : null);
+
+        if (pid.isEmpty() || !productService.productExistsById(productId)) {
+            model.addAttribute("message", "The product id '" + productId.toString() + "' is invalid!");
+            model.addAttribute("alertClass", "alert-danger");
+            this.setModelDefaults(model, principal, "product-not-found");
+            return "user/reviews/product-not-found";
+        }
+        log.debug("Reviewing product: " + productId.toString());
+
+        CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        Optional<User> optionalUser = userService.findUserById(user.getId());
+        log.debug(optionalUser.toString());
+        Optional<Product> optionalProduct = productService.findProductById(productId);
+        if (optionalUser.isPresent()) {
+            NewReviewForm newReviewForm = new NewReviewForm(optionalUser.get().getId(), productId, optionalProduct.get().getName());
+            model.addAttribute("newReviewForm", newReviewForm);
+            model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
+        } else {
+            model.addAttribute("message", "Internal error accessing user!");
+            model.addAttribute("alertClass", "alert-danger");
+            this.setModelDefaults(model, principal, "not-found");
+            return "user/not-found";
+        }
+        this.setModelDefaults(model, principal, "new");
+        log.debug(model.toString());
+        return "user/reviews/new";
+    }
+
+    @PostMapping("/reviews/new")
+    public String newReview(@Valid @ModelAttribute("newReviewForm") NewReviewForm newReviewForm,
+                                  BindingResult bindingResult, Model model,
+                                  RedirectAttributes redirectAttributes,
+                                  Principal principal) {
+        if (bindingResult.hasErrors()) {
+            log.debug("binding errors: "+bindingResult.toString());
+            this.setModelDefaults(model, principal, "new");
+            return "user/reviews/new";
+        } else {
+            log.debug("saving review: " + newReviewForm);
+            productService.newReviewFromNewReviewForm(newReviewForm);
+            redirectAttributes.addFlashAttribute("message", "Review created successfully.");
+            redirectAttributes.addFlashAttribute("alertClass", "alert-success");
+            this.setModelDefaults(model, principal, "index");
+            return "redirect:/user/reviews";
+        }
     }
 
     //
