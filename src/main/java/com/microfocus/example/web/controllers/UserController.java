@@ -260,7 +260,6 @@ public class UserController extends AbstractBaseController {
             // does user have permission to read this message?
             UUID messageUserId = optionalMessage.get().getUser().getId();
             if (!messageUserId.equals(loggedInUserId)) {
-                log.debug("User id: " + loggedInUserId + " trying to access message for: " + messageUserId);
                 this.setModelDefaults(model, principal, "access-denied");
                 return "user/messages/access-denied";
             }
@@ -321,7 +320,6 @@ public class UserController extends AbstractBaseController {
             // does user have permission to view this order?
             UUID orderUserId = optionalOrder.get().getUser().getId();
             if (!orderUserId.equals(loggedInUserId)) {
-                log.debug("User id: " + loggedInUserId + " trying to access order for: " + orderUserId);
                 this.setModelDefaults(model, principal, "access-denied");
                 return "user/orders/access-denied";
             }
@@ -367,7 +365,7 @@ public class UserController extends AbstractBaseController {
             // does user have permission to view this order?
             UUID reviewUserId = optionalReview.get().getUser().getId();
             if (!reviewUserId.equals(loggedInUserId)) {
-                log.debug("User id: " + loggedInUserId + " trying to access review for: " + reviewUserId);
+                log.error("User id: " + loggedInUserId + " trying to access review for: " + reviewUserId);
                 this.setModelDefaults(model, principal, "access-denied");
                 return "user/reviews/access-denied";
             }
@@ -383,24 +381,51 @@ public class UserController extends AbstractBaseController {
         return "user/reviews/view";
     }
 
+    @GetMapping("/reviews/{id}/edit")
+    public String editReview(@PathVariable("id") UUID reviewId,
+                             Model model, Principal principal) {
+        UUID loggedInUserId;
+        if (principal != null) {
+            CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+            loggedInUserId = loggedInUser.getId();
+        } else {
+            this.setModelDefaults(model, principal, "not-found");
+            return "user/not-found";
+        }
+        Optional<Review> optionalReview = productService.findReviewById(reviewId);
+        if (optionalReview.isPresent()) {
+            // does user have permission to view this order?
+            UUID reviewUserId = optionalReview.get().getUser().getId();
+            if (!reviewUserId.equals(loggedInUserId)) {
+                log.error("User id: " + loggedInUserId + " trying to access review for: " + reviewUserId);
+                this.setModelDefaults(model, principal, "access-denied");
+                return "user/reviews/access-denied";
+            }
+            ReviewForm reviewForm = new ReviewForm(optionalReview.get());
+            model.addAttribute("reviewForm", reviewForm);
+        } else {
+            model.addAttribute("message", "Internal error accessing review!");
+            model.addAttribute("alertClass", "alert-danger");
+            this.setModelDefaults(model, principal, "not-found");
+            return "user/reviews/not-found";
+        }
+        this.setModelDefaults(model, principal, "edit");
+        return "user/reviews/edit";
+    }
+
 
     @GetMapping("/reviews/new")
     public String newReview(@RequestParam("pid") Optional<UUID> pid,
                             Model model, Principal principal) {
-        log.debug("UserController::newReview");
         UUID productId = (pid.isPresent() ? pid.get() : null);
-
         if (pid.isEmpty() || !productService.productExistsById(productId)) {
             model.addAttribute("message", "The product id '" + productId.toString() + "' is invalid!");
             model.addAttribute("alertClass", "alert-danger");
             this.setModelDefaults(model, principal, "product-not-found");
             return "user/reviews/product-not-found";
         }
-        log.debug("Reviewing product: " + productId.toString());
-
         CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         Optional<User> optionalUser = userService.findUserById(user.getId());
-        log.debug(optionalUser.toString());
         Optional<Product> optionalProduct = productService.findProductById(productId);
         if (optionalUser.isPresent()) {
             NewReviewForm newReviewForm = new NewReviewForm(optionalUser.get().getId(), productId, optionalProduct.get().getName());
@@ -413,7 +438,6 @@ public class UserController extends AbstractBaseController {
             return "user/not-found";
         }
         this.setModelDefaults(model, principal, "new");
-        log.debug(model.toString());
         return "user/reviews/new";
     }
 
@@ -423,13 +447,28 @@ public class UserController extends AbstractBaseController {
                                   RedirectAttributes redirectAttributes,
                                   Principal principal) {
         if (bindingResult.hasErrors()) {
-            log.debug("binding errors: "+bindingResult.toString());
             this.setModelDefaults(model, principal, "new");
             return "user/reviews/new";
         } else {
-            log.debug("saving review: " + newReviewForm);
             productService.newReviewFromNewReviewForm(newReviewForm);
             redirectAttributes.addFlashAttribute("message", "Review created successfully.");
+            redirectAttributes.addFlashAttribute("alertClass", "alert-success");
+            this.setModelDefaults(model, principal, "index");
+            return "redirect:/user/reviews";
+        }
+    }
+
+    @PostMapping("/reviews/save")
+    public String saveReview(@Valid @ModelAttribute("reviewForm") ReviewForm reviewForm,
+                            BindingResult bindingResult, Model model,
+                            RedirectAttributes redirectAttributes,
+                            Principal principal) {
+        if (bindingResult.hasErrors()) {
+            this.setModelDefaults(model, principal, "edit");
+            return "user/reviews/edit";
+        } else {
+            productService.saveReviewFromUserReviewForm(reviewForm);
+            redirectAttributes.addFlashAttribute("message", "Review updated successfully.");
             redirectAttributes.addFlashAttribute("alertClass", "alert-success");
             this.setModelDefaults(model, principal, "index");
             return "redirect:/user/reviews";
@@ -538,7 +577,6 @@ public class UserController extends AbstractBaseController {
         } else {
             try {
                 User u = userService.registerUser(registerUserForm);
-                log.debug("Created user '" + u.getEmail() + "' with verification token: " + u.getVerifyCode());
                 String targetUrl = appUrl + "/user/verify?email=" + u.getEmail() + "&code=" + u.getVerifyCode();
 
                 Mail mail = new Mail();

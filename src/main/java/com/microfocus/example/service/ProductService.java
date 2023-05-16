@@ -36,6 +36,7 @@ import com.microfocus.example.repository.ReviewRepository;
 import com.microfocus.example.repository.UserRepository;
 import com.microfocus.example.web.form.NewReviewForm;
 import com.microfocus.example.web.form.OrderForm;
+import com.microfocus.example.web.form.ReviewForm;
 import com.microfocus.example.web.form.admin.AdminNewProductForm;
 import com.microfocus.example.web.form.admin.AdminOrderForm;
 import com.microfocus.example.web.form.admin.AdminProductForm;
@@ -254,7 +255,6 @@ public class ProductService {
     }
 
     public Review newReviewFromNewReviewForm(NewReviewForm newReviewForm) {
-        log.debug("Creating new review: {}", newReviewForm.toString());
         Review rtmp = new Review();
         Optional<User> optionalUser = userRepository.findById(newReviewForm.getUserId());
         if (optionalUser.isEmpty()) throw new UserNotFoundException("Cannot find user for product review.");
@@ -269,16 +269,15 @@ public class ProductService {
         return reviewRepository.save(rtmp);
     }
 
-    public Review saveReviewFromUserReviewForm(NewReviewForm newReviewForm) throws ReviewNotFoundException {
-        Optional<Review> optionalReview = reviewRepository.findById(newReviewForm.getId());
+    public Review saveReviewFromUserReviewForm(ReviewForm reviewForm) throws ReviewNotFoundException {
+        Optional<Review> optionalReview = reviewRepository.findById(reviewForm.getId());
         if (optionalReview.isPresent()) {
             Review rtmp = optionalReview.get();
-            rtmp.setComment(newReviewForm.getComment());
-            rtmp.setRating(newReviewForm.getRating());
-            rtmp.setVisible(newReviewForm.getVisible());
-            return rtmp;
+            rtmp.setComment(reviewForm.getComment());
+            rtmp.setRating(reviewForm.getRating());
+            return reviewRepository.save(rtmp);
         } else {
-            throw new ReviewNotFoundException("Review not found: " + newReviewForm.getId());
+            throw new ReviewNotFoundException("Review not found: " + reviewForm.getId());
         }
     }
 

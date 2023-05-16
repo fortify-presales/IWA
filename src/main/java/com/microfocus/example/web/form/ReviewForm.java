@@ -47,6 +47,10 @@ public class ReviewForm {
 
     private int rating;
 
+    public ReviewForm() {
+
+    }
+
     public ReviewForm(Review review) {
         this.id = review.getId();
         this.user = review.getUser();
