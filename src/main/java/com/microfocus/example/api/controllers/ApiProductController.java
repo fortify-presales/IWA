@@ -35,11 +35,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -160,6 +163,34 @@ public class ApiProductController {
                 .build();
         return new ResponseEntity<>(apiStatusResponse, HttpStatus.OK);
     }
+
+    @Operation(summary = "Get product image by Id", description = "Get a product's image by its UUID", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = ProductResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Product Not Found", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+    })
+    @GetMapping(value = {"/{id}/image"}, produces =  {"application/json"})
+    public ResponseEntity<InputStreamResource> findProductImageById(
+            @Parameter(description = "UUID of the product. Cannot be empty.", example = "eec467c8-5de9-4c7c-8541-7b31614d31a0", required = true) @PathVariable("id") UUID id) {
+        log.debug("API::Retrieving product image for UUID: " + id);
+        if (!productService.productExistsById(id))
+            throw new ProductNotFoundException("Product with UUID: " + id.toString() + " does not exist.");
+        Optional<Product> product = productService.findProductById(id);
+        MediaType contentType = MediaType.IMAGE_JPEG;
+        InputStream in = getClass().getResourceAsStream("/static/img/products/"+product.get().getImage());
+        if (in == null) {
+            log.error("Could not find resource /static/img/products/{}", product.get().getImage());
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok()
+                .contentType(contentType)
+                .body(new InputStreamResource(in));
+    }
+
 
 }
 
