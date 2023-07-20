@@ -25,11 +25,11 @@ $.fn.OrderSummary = function (options) {
         if (size > 0) {
             orderIsEmpty = false;
             $.each(order, function (i, product) {
-                console.log(product)
                 $('#item-table>tbody').append(
                     "<tr id='" + product.id + "'>" +
                     "<td>" + product.name + "<strong class='mx-2'>x</strong><span class='product-quantity text-xs-right'>" + product.quantity + "</span></td>" +
                     "<td><span class='product-price text-xs-right'></span>" + String(options.currencySymbol).concat(Number(product.price).toFixed(2)) + "</span></td>" +
+                    "<td><a href='/user/reviews/new?pid=" + product.id + "'>Review</a></td>" +
                     "</tr>"
                 )
             });
@@ -43,5 +43,5 @@ $.fn.OrderSummary = function (options) {
             $('#empty-order').toggleClass("d-none");
         }
     });
-    
+
 };

@@ -6,7 +6,7 @@ on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
     paths-ignore:
-      - .github/workflows/**
+      - '.github/workflows/**'
       - 'bin/**'
       - 'data/**'
       - 'etc/**'
@@ -38,9 +38,9 @@ on:
 
 # Global environment variables
 env:
-  APP_NAME: "IWAPharmacyDirect"
-  PARENT_RELEASE_NAME: "main"
-  FCLI_VER: "v1.2.3"
+  DEFAULT_APP_NAME: "IWA-Java"
+  #FCLI_VER: "v1.2.5"
+  FCLI_VER: "dev_2.0.0-beta"
   SCANCENTRAL_VER: "22.2.0"
 
 jobs:
@@ -128,6 +128,22 @@ jobs:
         with:
           maven-version: 3.8.2
 
+      # set the FOD app name to be used throughout the workflow
+      - name: Set FoD app name
+        shell: bash
+        run: |
+          if [[ -z "$APP_NAME_OVERRIDE" ]]; then
+            echo "::debug::Setting FOD_APP_NAME environment variable to default: $DEFAULT_APP_NAME"
+            echo "FOD_APP_NAME=$(echo ${DEFAULT_APP_NAME})" >> $GITHUB_ENV
+          else
+            echo "::debug::Setting FOD_APP_NAME environment variable to override: $APP_NAME_OVERRIDE"
+            echo "FOD_APP_NAME=$(echo ${APP_NAME_OVERRIDE})" >> $GITHUB_ENV
+          fi
+        env:
+          DEFAULT_APP_NAME: ${{ env.DEFAULT_APP_NAME }}
+          APP_NAME_OVERRIDE: ${{ vars.FOD_APP_NAME }}
+        id: set_fod_app_name
+
       # Get the branch name or pr number
       - name: Extract branch name
         shell: bash
@@ -152,32 +168,30 @@ jobs:
           curl -fsSL https://github.com/fortify-ps/fcli/releases/download/${FCLI_VER}/fcli-linux.tgz | tar -zxvf - -C $HOME/fcli/bin
           echo "$HOME/fcli/bin" >> $GITHUB_PATH
 
-      # Login to Fortify on Demand fcli session
+      # Login Fortify on Demand fcli session
       - name: Login fcli
         shell: bash
         run: |
           fcli --version
           fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET github-actions
         env:
-          FOD_API_URI: ${{ secrets.FOD_API_URI }}
+          FOD_API_URI: ${{ vars.FOD_API_URI }}
           FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
           FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
 
       # Create FoD release for GitHub branch - if it doesn't already exist
-      # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
-      #   FOD_CLIENT_ID/FOD_CLIENT_SECRET API Credentials should be obtained from your FoD tenant.
-      #   FOD_PARENT_RELEASE_NAME is the FoD release name corresponding to the parent branch of any newly created branch, this is typically "master" or "main"
       - name: Create FoD release
         shell: bash
         run: |
-          fcli fod release list --app $APP_NAME --session github-actions
-          RELID=$(fcli fod release create ${APP_NAME}:${FOD_RELEASE_NAME} --description "Created automatically from GitHub" --copy-from $FOD_PARENT_RELEASE_NAME --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions)
-          echo "FOD_RELEASE_ID=${RELID}"
+          fcli fod release list --app "$FOD_APP_NAME" --session github-actions
+          RELID=$(fcli fod release create "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" --description "Created automatically from GitHub" --copy-from $FOD_PARENT_RELEASE_NAME --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions)
+          echo "::debug::Created FOD_RELEASE_ID=${RELID}"
           echo "FOD_RELEASE_ID=${RELID}" >> $GITHUB_OUTPUT
         id: create_fod_release
         env:
+          FOD_APP_NAME: ${{ env.FOD_APP_NAME }}
           FOD_RELEASE_NAME: ${{ steps.extract_branch.outputs.branch }}
-          FOD_PARENT_RELEASE_NAME: "main"
+          FOD_PARENT_RELEASE_NAME: ${{ vars.FOD_PARENT_RELEASE_NAME }}
 
       # For Debricked OSS scanning with FoD we need a dependencies file.
       # For instructions on generating the resolved dependency tree file, see https://debricked.com/docs/language-support/java-kotlin.html#gradle.*
@@ -221,15 +235,14 @@ jobs:
       - name: Perform SAST scan
         shell: bash
         run: |
-          fcli fod sast-scan start ${FOD_RELEASE_NAME} --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions
+          fcli fod scan start-sast "${FOD_RELEASE_NAME}" --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions
           sleep 5
-          fcli fod sast-scan wait-for "{?curScan:scanId}" --session github-actions
+          fcli fod scan wait-for ::curScan:: --session github-actions
         id: perform_sast_scan
         env:
           PACKAGE_FILE: "package.zip"
-          FOD_RELEASE_NAME: ${{ format('{0}:{1}', env.APP_NAME, steps.extract_branch.outputs.branch) }}
+          FOD_RELEASE_NAME: ${{ format('{0}:{1}', env.FOD_APP_NAME, steps.extract_branch.outputs.branch) }}
           FOD_SCAN_NOTES: "Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-          SCANCENTRAL_VERSION: ${SCANCENTRAL_VER}
 
       # Start Fortify on Demand SAST scan and wait until results complete. For more information on FoDUploader commands, see https://github.com/fod-dev/fod-uploader-java
       # Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
@@ -254,10 +267,10 @@ jobs:
       - name: Export Results
         uses: fortify/gha-export-vulnerabilities@v1
         with:
-          fod_base_url: ${{ secrets.FOD_BASE_URL }}
+          fod_base_url: ${{ vars.FOD_BASE_URL }}
           fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
           fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
-          fod_release_name: ${{ format('{0}:{1}', env.APP_NAME, steps.extract_branch.outputs.branch) }}
+          fod_release_name: ${{ format('{0}:{1}', env.FOD_APP_NAME, steps.extract_branch.outputs.branch) }}
 
       # Check if SARIF output file has been created
       - name: Check file existence
@@ -316,6 +329,8 @@ jobs:
           curl -fsSL https://github.com/fortify-ps/fcli/releases/download/${FCLI_VER}/fcli-linux.tgz | tar -zxvf - -C $HOME/fcli/bin
           echo "$HOME/fcli/bin" >> $GITHUB_PATH
 
+      # TBD
+
   Security-Gate:
     runs-on: ubuntu-latest
     if: ${{ always() }}
@@ -330,6 +345,22 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
           cache: 'maven'
+
+      # set the FOD app name to be used throughout the workflow
+      - name: Set FoD app name
+        shell: bash
+        run: |
+          if [[ -z "$APP_NAME_OVERRIDE" ]]; then
+            echo "::debug::Setting FOD_APP_NAME environment variable to default: $DEFAULT_APP_NAME"
+            echo "FOD_APP_NAME=$(echo ${DEFAULT_APP_NAME})" >> $GITHUB_ENV
+          else
+            echo "::debug::Setting FOD_APP_NAME environment variable to override: $APP_NAME_OVERRIDE"
+            echo "FOD_APP_NAME=$(echo ${APP_NAME_OVERRIDE})" >> $GITHUB_ENV
+          fi
+        env:
+          DEFAULT_APP_NAME: ${{ env.DEFAULT_APP_NAME }}
+          APP_NAME_OVERRIDE: ${{ vars.FOD_APP_NAME }}
+        id: set_fod_app_name
 
       # Get the branch name or pr number
       - name: Extract branch name
@@ -362,7 +393,7 @@ jobs:
           fcli --version
           fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET github-actions
         env:
-          FOD_API_URI: ${{ secrets.FOD_API_URI }}
+          FOD_API_URI: ${{ vars.FOD_API_URI }}
           FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
           FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
 
@@ -370,10 +401,11 @@ jobs:
       - name: Verify Security Policy
         shell: bash
         run: |
-          fcli fod release get ${APP_NAME}:${FOD_RELEASE_NAME} -o expr="Critical:\t{critical}\nHigh:\t\t{high}\nMedium:\t\t{medium}\nLow:\t\t{low}" --session github-actions
-          if [ $(fcli fod release get ${APP_NAME}:${FOD_RELEASE_NAME} -o expr="{isPassed}" --session github-actions) = 'true' ]; then echo "Security policy: passed"; else echo "Security policy: failed"; fi
+          fcli fod release get "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" -o expr="Critical:\t{critical}\nHigh:\t\t{high}\nMedium:\t\t{medium}\nLow:\t\t{low}" --session github-actions
+          if [ $(fcli fod release get "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" -o expr="{isPassed}" --session github-actions) = 'true' ]; then echo "Security policy: passed"; else echo "Security policy: failed"; fi
         id: verify_security_policy
         env:
+          FOD_APP_NAME: ${{ env.FOD_APP_NAME }}
           FOD_RELEASE_NAME: ${{ steps.extract_branch.outputs.branch }}
 
       # Logout/Close Fortify on Demand fcli session

@@ -4,7 +4,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{fragments/layout}">
 <head>
-    <title>User Orders</title>
+    <title>Product Reviews</title>
 </head>
     <body>
         <div layout:fragment="content" th:remove="tag">
@@ -12,7 +12,7 @@
             <div class="bg-light py-3">
                 <div class="container">
                     <div class="row">
-                        <div class="col-md-12 mb-0"><a th:href="@{/user/}">User</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Orders</strong></div>
+                        <div class="col-md-12 mb-0"><a th:href="@{/user/}">User</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Reviews</strong></div>
                     </div>
                 </div>
             </div>
@@ -24,7 +24,7 @@
                     <div class="row">
 
                         <div class="col-md-3 mr-auto">
-                            <div th:replace="fragments/user-menu.html :: userMenu('/user/orders')"></div>
+                            <div th:replace="fragments/user-menu.html :: userMenu('/user/reviews')"></div>
                         </div>
 
                         <div class="col-md-9">
@@ -32,10 +32,9 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th scope="col">Shipped</th>
-                                        <th scope="col">Number</th>
-                                        <th scope="col">Amount</th>
-                                        <th scope="col">Shipped Date</th>
+                                        <th scope="col">Product</th>
+                                        <th scope="col">Rating</th>
+                                        <th scope="col">Review Date</th>
                                         <th scope="col">View</th>
                                         <th scope="col">Delete</th>
                                     </tr>
@@ -43,49 +42,45 @@
                                 <tfoot>
                                     <tr>
                                         <td colspan="5">
-                                            <h5 class="text-muted">You have <span th:text="${unshippedOrderCount}"></span> order(s) awaiting shipping.</h5>
+                                            <h5 class="text-muted">You have reviewed <span th:text="${reviewCount}"></span> product(s).</h5>
                                         </td>
                                     </tr>
                                 </tfoot>
                                 <tbody>
-                                <tr th:if="${orders.isEmpty()}">
-                                    <td colspan="5"> You have no orders </td>
+                                <tr th:if="${reviews.isEmpty()}">
+                                    <td colspan="5"> You have not yet reviewed any products </td>
                                 </tr>
-                                <tr th:each="o : ${orders}" th:classappend="${o.shipped} ? text-muted : text-info">
+                                <tr th:each="r : ${reviews}" class="text-info">
+                                    <td><a th:href="@{/products/{id}(id=${r.product.id})}"><span th:text="${#strings.abbreviate(r.product.name,40)}"> Product </span></a></td>
+                                    <td><span th:text="${r.rating}"> Rating</span></td>
                                     <td>
-                                        <span th:if="${o.shipped}"> <i class="fas fa-check"></i> </span>
-                                        <span th:unless="${o.shipped}"> <i class="fas fa-times"></i> </span>
-                                    </td>
-                                    <td><a th:href="@{/user/orders/{id}(id=${o.id})}"><span th:text="${#strings.abbreviate(o.orderNum,40)}"> Order Number </span></a></td>
-                                    <td><span th:text="${currencySymbol + #strings.replace(#numbers.formatDecimal(o.amount, 0, 2), '.00', '')}"> Amount </span></td>
-                                    <td>
-                                        <span th:if="${o.shippedDate}" th:text="${#dates.format(o.shippedDate, 'MM-dd-yyyy')}"> Shipped Date </span>
+                                        <span th:if="${r.reviewDate}" th:text="${#dates.format(r.reviewDate, 'MM-dd-yyyy')}"> Review Date </span>
                                     </td>
                                     <td>
-                                        <a type="button" class="btn btn-primary btn-sm" role="button" th:href="@{/user/orders/{id}(id=${o.id})}">
+                                        <a type="button" class="btn btn-primary btn-sm" role="button" th:href="@{/user/reviews/{id}(id=${r.id})}">
                                             <i class="fa fa-eye" aria-hidden="true"></i>
                                         </a>
                                     </td>
                                     <td>
-                                        <a type="button" class="btn btn-sm btn-danger" role="button" data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${o.id }">
+                                        <a type="button" class="btn btn-sm btn-danger" role="button" data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${r.id }">
                                             <i class="fa fa-trash" aria-hidden="true"></i>
                                         </a>
                                     </td>
 
                                     <!-- delete modal -->
-                                    <div class="modal modal-warning fade in" th:id="modal-warning+${o.id }" >
+                                    <div class="modal modal-warning fade in" th:id="modal-warning+${r.id }" >
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                         <span aria-hidden="true">×</span></button>
-                                                    <h5 class="modal-title">Delete Order</h5>
+                                                    <h5 class="modal-title">Delete Review</h5>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <h3>Are you sure want to delete this order?</h3>
+                                                    <h3>Are you sure want to delete this review?</h3>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <form action="#" th:action="@{/user/orders/delete/{id}(id=${o.id})}" method="post">
+                                                    <form action="#" th:action="@{/user/reviews/delete/{id}(id=${r.id})}" method="post">
                                                         <button type="submit" class="btn btn-danger" role="button"><i class="fa fa-check"></i>&nbsp;Yes</button>
                                                         <button type="button" class="btn btn-default" role="button" data-dismiss="modal">No</button>
                                                     </form>
@@ -97,6 +92,8 @@
                                 </tr>
                                 </tbody>
                             </table>
+
+                            <!--a class="btn btn-primary" th:href="@{/user/reviews/new}">New Review</a-->
 
                         </div>
 

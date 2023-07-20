@@ -26,6 +26,7 @@ import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.OrderNotFoundException;
 import com.microfocus.example.exception.ProductNotFoundException;
 import com.microfocus.example.exception.ReviewNotFoundException;
+import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.payload.request.OrderRequest;
 import com.microfocus.example.payload.request.ProductRequest;
 import com.microfocus.example.payload.request.ReviewRequest;
@@ -33,7 +34,9 @@ import com.microfocus.example.repository.OrderRepository;
 import com.microfocus.example.repository.ProductRepository;
 import com.microfocus.example.repository.ReviewRepository;
 import com.microfocus.example.repository.UserRepository;
+import com.microfocus.example.web.form.NewReviewForm;
 import com.microfocus.example.web.form.OrderForm;
+import com.microfocus.example.web.form.ReviewForm;
 import com.microfocus.example.web.form.admin.AdminNewProductForm;
 import com.microfocus.example.web.form.admin.AdminOrderForm;
 import com.microfocus.example.web.form.admin.AdminProductForm;
@@ -248,6 +251,33 @@ public class ProductService {
             return rtmp;
         } else {
             throw new ReviewNotFoundException("Review not found: " + adminReviewForm.getId());
+        }
+    }
+
+    public Review newReviewFromNewReviewForm(NewReviewForm newReviewForm) {
+        Review rtmp = new Review();
+        Optional<User> optionalUser = userRepository.findById(newReviewForm.getUserId());
+        if (optionalUser.isEmpty()) throw new UserNotFoundException("Cannot find user for product review.");
+        Optional<Product> optionalProduct = productRepository.findById(newReviewForm.getProductId());
+        if (optionalProduct.isEmpty()) throw new ProductNotFoundException("Cannot find product for product review");
+        rtmp.setProduct(optionalProduct.get());
+        rtmp.setUser(optionalUser.get());
+        rtmp.setComment(newReviewForm.getComment());
+        rtmp.setRating(newReviewForm.getRating());
+        rtmp.setReviewDate(newReviewForm.getReviewDate());
+        rtmp.setVisible(newReviewForm.getVisible());
+        return reviewRepository.save(rtmp);
+    }
+
+    public Review saveReviewFromUserReviewForm(ReviewForm reviewForm) throws ReviewNotFoundException {
+        Optional<Review> optionalReview = reviewRepository.findById(reviewForm.getId());
+        if (optionalReview.isPresent()) {
+            Review rtmp = optionalReview.get();
+            rtmp.setComment(reviewForm.getComment());
+            rtmp.setRating(reviewForm.getRating());
+            return reviewRepository.save(rtmp);
+        } else {
+            throw new ReviewNotFoundException("Review not found: " + reviewForm.getId());
         }
     }
 

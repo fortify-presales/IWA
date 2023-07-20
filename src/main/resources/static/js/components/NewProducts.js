@@ -29,7 +29,7 @@ $.fn.NewProducts = function (options) {
             (product.image ? "<img src='/img/products/" + product.image + "' alt='Image' class='img-fluid'" : "<img src='/img/products/awaiting-image-sm.png' alt='Image' class='img-fluid'>") +
             "</a>" +
             "<h3 class='text - dark'><a href='/products/" + product.id + "'>" + product.name + "</a></h3>" +
-            (product.onSale ? "<p class='price'><del>" + options.currencySymbol + product.price + "</del> &mdash; " + options.currencySymbol + product.salePrice + "</p>" : "<p class='price'>" + options.currencySymbol + product.price + "</p>") +
+            (product.onSale ? "<p class='price'><del>" + options.currencySymbol + Number(product.price).toFixed(2) + "</del> &mdash; " + options.currencySymbol + Number(product.salePrice).toFixed(2) + "</p>" : "<p class='price'>" + options.currencySymbol + Number(product.price).toFixed(2) + "</p>") +
             "</div>"
         );
     }

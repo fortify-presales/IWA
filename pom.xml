@@ -26,9 +26,9 @@
 
 	<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.8</java.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <java.version>11</java.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
 		<fod.dir>fod</fod.dir>
         <h2.version>2.1.210</h2.version>
         <passay.version>1.5.0</passay.version>
@@ -634,8 +634,16 @@
                 <version>3.0.2</version>
                 <configuration>
                     <appName>insecurewebapp</appName>
-                    <jdkVersion>1.8</jdkVersion>
+                    <jdkVersion>11</jdkVersion>
                     <warFile>${project.build.directory}/${project.artifactId}.war</warFile>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
 

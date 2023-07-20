@@ -57,13 +57,13 @@ your own GitHub account. The process of "forking" is described in detail in the 
 
 To build the application using Maven, execute the following from the command line:
 
-```
+```PowerShell
 mvn clean verify
 ```
 
 You can also use Gradle if you prefer:
 
-```
+```PowerShell
 .\gradlew clean build
 ```
 
@@ -71,7 +71,7 @@ You can also use Gradle if you prefer:
 To build a WAR file for deployment to an application server such as [Apache Tomcat](http://tomcat.apache.org/)
 execute the following:
 
-```
+```PowerShell
 mvn -Pwar clean package
 ```
 
@@ -85,13 +85,13 @@ There are a number of ways of running the application depending on the scenario(
 
 To run (and test) locally in development mode, execute the following from the command line:
 
-```
+```PowerShell
 mvn spring-boot:run
 ```
 
 or
 
-```
+```PowerShell
 .\gradlew bootRun
 ```
 
@@ -113,21 +113,21 @@ can find this code by examining the console output.
 The JAR file can be built into a [Docker](https://www.docker.com/) image using the provided `Dockerfile` and the
 following commands:
 
-```
+```PowerShell
 mvn -Pjar clean package
 docker build -t iwa -f Dockerfile .
 ```
 
 or on Windows:
 
-```
+```PowerShell
 mvn -Pjar clean package
 docker build -t iwa -f Dockerfile.win .
 ```
 
 This image can then be executed using the following commands:
 
-```
+```PowerShell
 docker run -d -p 8888:8888 iwa
 ```
 
@@ -143,7 +143,7 @@ Most of the following examples need environment and user specific credentials. T
 in the project root directory. This file is not created by default (and should never be stored in source control). An example
 with all of the possible settings for the following scenarios is illustrated below:
 
-```aidl
+```
 # Application URL (locally)
 APP_URL=http://localhost:8888
 # Software Security Center
@@ -177,14 +177,14 @@ FOD_PAT=XXXX
 There is an example PowerShell script [fortify-sast.ps1](bin/fortify-sast.ps1) that you can use to execute static application security testing
 via [Fortify SCA](https://www.microfocus.com/en-us/products/static-code-analysis-sast/overview).
 
-```aidl
+```PowerShell
 .\bin\fortify-sast.ps1 -SkipSSC
 ```
 
 This script runs a `sourceanalyzer` translation and scan on the project's source code. It creates a Fortify Project Results file called `IWAPharmacyDirect.fpr`
 which you can open using the Fortify `auditworkbench` tool:
 
-```aidl
+```PowerShell
 auditworkbench.cmd .\IWAPharmacyDirect.fpr
 ```
 
@@ -193,7 +193,7 @@ uploads the results to [Fortify Software Security Center](https://www.microfocus
 
 In order to upload to SSC you will need to have entries in the `.env` similar to the following:
 
-```aidl
+```
 SSC_URL=http://localhost:8080/ssc
 SSC_AUTH_TOKEN=28145aad-c40d-426d-942b-f6d6aec9c56f
 SSC_APP_NAME=IWAPharmacyDirect
@@ -207,13 +207,13 @@ The `SSC_AUTH_TOKEN` entry should be set to the value of a 'CIToken' created in 
 There is a PowerShell script [fortify-scancentral-sast.ps1](bin\fortify-scancentral-sast.ps1) that you can use to package
 up the project and initiate a remote scan using Fortify ScanCentral SAST:
 
-```aidl
+```PowerShell
 .\bin\fortify-scancentral-sast.ps1
 ```
 
 In order to use ScanCentral SAST you will need to have entries in the `.env` similar to the following:
 
-```aidl
+```
 SSC_URL=http://localhost:8080/ssc
 SSC_AUTH_TOKEN=6b16aa46-35d7-4ea6-98c1-8b780851fb37
 SSC_APP_NAME=IWAPharmacyDirect
@@ -232,7 +232,7 @@ To execute a [Fortify on Demand](https://www.microfocus.com/en-us/products/appli
 you need to package and upload the source code to Fortify on Demand. To package the code into a Zip file for uploading
 you can use the `scancentral` command utility as following:
 
-```aidl
+```PowerShell
 scancentral package -bt mvn -bf pom.xml --output fod.zip
 ```
 
@@ -253,7 +253,7 @@ PowerShell module.
 To carry out a WebInspect scan you should first "run" the application using one of the steps described above.
 Then you can start a scan using the following command line:
 
-```
+```PowerShell
 "C:\Program Files\Fortify\Fortify WebInspect\WI.exe" -s ".\etc\IWA-UI-Dev-Settings.xml" -macro ".\etc\IWA-UI-Dev-Login.webmacro" -u "http://localhost:8888" -ep ".\IWA-DAST.fpr" -ps 1008
 ```
 
@@ -266,7 +266,7 @@ PDF report from using `ReportGenerator`). You could also upload it to Fortify SS
 There is an example PowerShell script file [fortify-webinspect.ps1](bin\fortify-webinspect.ps1) that you can run to 
 execute the scan and upload the results to SSC:
 
-```aidl
+```PowerShell
 .\bin\fortify-webinspect.ps1
 ```
 
@@ -316,15 +316,15 @@ You can also import the Postman collections into ScanCentral DAST and run the re
 script and the relevant CICD Identifier. You will need to use the following
 
 Response Token:
-```aidl
+```
 "accessToken"\s*:\s*"(?<BearerTokenValue>[-a-zA-Z0-9._~+/]+?=*)"
 ```
 Request Token:
-```aidl
+```
 Authorization:\sBearer\s(?<{0}>[^\r\n]*)\r?\n
 ```
 Logout Condition:
-```aidl
+```
 [STATUSCODE]401
 ```
 
@@ -339,7 +339,7 @@ There is an example [Selenium](https://www.selenium.dev/) Python test script pro
 functional test of the running application. There are also a couple of PowerShell scripts [start_fast_proxy.ps1](`.\bin\start_fast_proxy.ps1`) and [stop_fast_proxy.ps1](`.\bin\stop_fast_proxy.ps1`) that can
 be used to start/stop the FAST Proxy. In order to use these scripts you will need to have entries in the `.env` file similar to the following:
 
-```aidl
+```
 APP_URL=https://iwa.onfortify.com
 SSC_AUTH_TOKEN_BASE64=MmYyMTA5MzYtN2Q5Ny00NmM1LWI5NTUtYThkZWI2YmJlMDUy
 SSCANCENTRAL_DAST_API=http://localhost:5001/api/
@@ -362,15 +362,15 @@ pip install python-dotenv
 ```
 Make sure the application is running and then execute the following in a terminal window:
 
-```aidl
-powershell bin\start_fast_proxy.ps1
+```PowerShell
+.\bin\start_fast_proxy.ps1
 ```
 
 Then in another terminal window execute the following:
 
-```aidl
+```PowerShell
 pytest
-powershell bin\stop_fast_proxy.ps1
+.\bin\stop_fast_proxy.ps1
 ```
 
 The FAST executable from the first terminal should terminate and then a scan execute in your
