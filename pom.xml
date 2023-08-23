@@ -11,11 +11,11 @@
     </parent>
 
     <groupId>com.microfocus.example</groupId>
-    <artifactId>iwa</artifactId>
+    <artifactId>iwa-web</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>${project.artifactId}</name>
     <packaging>${packaging.type}</packaging>
-    <description>Insecure Web App (IWA) Pharmacy Direct</description>
+    <description>IWA (Insecure Web App) Pharmacy Direct - an insecure web application for use in Fortify demonstrations</description>
 
     <licenses>
         <license>

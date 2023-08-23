@@ -6,7 +6,7 @@ on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
     paths-ignore:
-      - '.github/workflows/**'
+#      - '.github/workflows/**'
       - 'bin/**'
       - 'data/**'
       - 'etc/**'
@@ -38,7 +38,7 @@ on:
 
 # Global environment variables
 env:
-  DEFAULT_APP_NAME: "IWA-Java"
+  DEFAULT_APP_NAME: "IWA-Web"
   #FCLI_VER: "v1.2.5"
   FCLI_VER: "dev_2.0.0-beta"
   SCANCENTRAL_VER: "22.2.0"
