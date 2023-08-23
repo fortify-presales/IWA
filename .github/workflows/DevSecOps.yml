@@ -30,7 +30,7 @@ on:
       runDebrickedScan:
         description: 'Carry out SCA scan using Debricked'
         required: false
-        default: 'true'
+        default: 'false'
       runFoDDASTScan:
         description: 'Carry out DAST scan using Fortify on Demand'
         required: false
@@ -173,7 +173,7 @@ jobs:
         shell: bash
         run: |
           fcli --version
-          fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET github-actions
+          fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET --session github-actions
         env:
           FOD_API_URI: ${{ vars.FOD_API_URI }}
           FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
@@ -290,7 +290,7 @@ jobs:
       - name: Logout fcli
         shell: bash
         run: |
-          fcli fod session logout github-actions
+          fcli fod session --session github-actions
 
   FoD-DAST-Scan:
     runs-on: ubuntu-latest
@@ -391,7 +391,7 @@ jobs:
         shell: bash
         run: |
           fcli --version
-          fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET github-actions
+          fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret --session github-actions
         env:
           FOD_API_URI: ${{ vars.FOD_API_URI }}
           FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
@@ -412,7 +412,7 @@ jobs:
       - name: Logout fcli
         shell: bash
         run: |
-          fcli fod session logout github-actions
+          fcli fod session --session github-actions
 
   Release-Gate:
     runs-on: ubuntu-latest
