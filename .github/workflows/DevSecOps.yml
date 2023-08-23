@@ -290,7 +290,7 @@ jobs:
       - name: Logout fcli
         shell: bash
         run: |
-          fcli fod session --session github-actions
+          fcli fod session logout --session github-actions
 
   FoD-DAST-Scan:
     runs-on: ubuntu-latest
@@ -412,7 +412,7 @@ jobs:
       - name: Logout fcli
         shell: bash
         run: |
-          fcli fod session --session github-actions
+          fcli fod session logout --session github-actions
 
   Release-Gate:
     runs-on: ubuntu-latest
