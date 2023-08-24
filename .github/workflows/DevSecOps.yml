@@ -391,7 +391,7 @@ jobs:
         shell: bash
         run: |
           fcli --version
-          fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret --session github-actions
+          fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET --session github-actions
         env:
           FOD_API_URI: ${{ vars.FOD_API_URI }}
           FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
