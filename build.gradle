@@ -84,12 +84,19 @@ dependencies {
 
 apply plugin: 'io.spring.dependency-management'
 
-def props = new Properties()
-file(".env").withInputStream { props.load(it) }
-project.archivesBaseName = 'iwa'
+Properties props = new Properties()
+File propertiesFile = project.file('..\\.env')
+if (!propertiesFile.exists()) {
+    props.setProperty('APP_NAME', 'iwa')
+    Writer writer = new FileWriter(propertiesFile, false)
+    properties.store(writer, "Change these variables to relevant values. Don't commit this file to source control.")
+    writer.close()
+}
+props.load(propertiesFile.newDataInputStream())
+project.archivesBaseName = 'iwa-web'
 group = 'com.microfocus.example'
 version = ''
-description = 'IWAPharmacyDirect'
+description = 'IWA (Insecure Web App) Pharmacy Direct - an insecure web application for use in Fortify demonstrations'
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
 
