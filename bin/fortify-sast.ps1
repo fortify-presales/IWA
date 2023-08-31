@@ -50,13 +50,13 @@ $ClassPath = Get-Content -Path $DependenciesFile
 
 Write-Host Running translation...
 & sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' $JVMArgs $ScanSwitches -b "$AppName" `
-    -jdk 11 -java-build-dir "target/classes" -cp $ClassPath -debug -verbose `
+    -jdk 11 -java-build-dir "target/classes" -cp $ClassPath -debug -verbose -filter etc/sca-filter.txt `
     -exclude ".\src\main\resources\static\js\lib" -exclude ".\src\main\resources\static\css\lib" -exclude ".\node_modules" `
     "src/main/java/**/*" "src/main/resources/**/*" "Dockerfile*"
 
 Write-Host Running scan...
 & sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' $JVMArgs $ScanSwitches -b "$AppName" `
-    -cp $ClassPath  -java-build-dir "target/classes" -debug -verbose -rules etc/sca-custom-rules.xml `
+    -cp $ClassPath  -java-build-dir "target/classes" -debug -verbose -rules etc/sca-custom-rules.xml -filter etc/sca-filter.txt `
     -scan-precision $PrecisionLevel -build-project "$AppName" -build-version "$AppVersion" -build-label "SNAPSHOT" -scan -f "$($AppName).fpr"
 
 # summarise issue count by analyzer

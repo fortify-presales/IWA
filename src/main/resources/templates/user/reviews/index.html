@@ -33,8 +33,9 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">Product</th>
+                                        <th scope="col">Summary</th>
+                                        <th scope="col">Date</th>
                                         <th scope="col">Rating</th>
-                                        <th scope="col">Review Date</th>
                                         <th scope="col">View</th>
                                         <th scope="col">Delete</th>
                                     </tr>
@@ -52,9 +53,19 @@
                                 </tr>
                                 <tr th:each="r : ${reviews}" class="text-info">
                                     <td><a th:href="@{/products/{id}(id=${r.product.id})}"><span th:text="${#strings.abbreviate(r.product.name,40)}"> Product </span></a></td>
-                                    <td><span th:text="${r.rating}"> Rating</span></td>
+                                    <td><a th:href="@{/user/reviews/{id}(id=${r.id})}"><span th:text="${#strings.abbreviate(r.comment,40)}"> Comment </span></a></td>
+
+                                    <td><span th:text="${#dates.format(r.reviewDate, 'MM-dd-yyyy')}"> Date </span></td>
+
                                     <td>
-                                        <span th:if="${r.reviewDate}" th:text="${#dates.format(r.reviewDate, 'MM-dd-yyyy')}"> Review Date </span>
+                                        <span th:each="i : ${#numbers.sequence( 1, r.rating, 1)}">
+                                            <i class="fas fa-star" style="color: cornflowerblue"> </i>
+                                        </span>
+                                        <span th:if="${r.rating != 5}">
+                                            <span th:each="i : ${#numbers.sequence(r.rating, 4, 1)}">
+                                                <i class="fas fa-star" style="color: gray"> </i>
+                                            </span>
+                                        </span>
                                     </td>
                                     <td>
                                         <a type="button" class="btn btn-primary btn-sm" role="button" th:href="@{/user/reviews/{id}(id=${r.id})}">
