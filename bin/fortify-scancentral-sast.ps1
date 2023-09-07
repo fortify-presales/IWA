@@ -56,7 +56,7 @@ if (Test-Path $PackageName) {
 Write-Host Invoking ScanCentral SAST ...
 Write-Host "scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp $PackageName -b $AppName -application $AppName -version $AppVersion -bt mvn -bf pom.xml -bc '-Pfortify clean package'  -email $ScanCentralEmail -block -o -f $($AppName).fpr -rules $CustomRules -filter $FilterFile -sargs `"$($ScanArgs)`""
 & scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp $PackageName `
-    -b $AppName -application $AppName -version $AppVersion -bt mvn -bf pom.xml -bc "-Pfortify clean package" `
+    -application $AppName -version $AppVersion -bt mvn -bf pom.xml -bc "-Pfortify clean package" `
     -email $ScanCentralEmail -block -o -f "$($AppName).fpr" -rules $CustomRules -filter $FilterFile `
     -sargs "$($ScanArgs)"
 
