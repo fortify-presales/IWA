@@ -97,19 +97,6 @@ public class ProductController extends AbstractBaseController {
         return ResponseEntity.ok().body(retContent);
     }
 
-    @GetMapping("/firstaid")
-    public String firstaid(Model model, @Param("keywords") String keywords, @Param("limit") Integer limit, Principal principal) {
-        log.debug("Searching for products using keywords: " + ((keywords == null || keywords.isEmpty()) ? "none" : keywords));
-        productService.setPageSize((limit == null ? defaultPageSize : limit));
-        List<Product> products = productService.getAllActiveProducts(0, keywords);
-        model.addAttribute("keywords", keywords);
-        model.addAttribute("products", products);
-        model.addAttribute("productCount", products.size());
-        model.addAttribute("productTotal", productService.count());
-        this.setModelDefaults(model, principal, "index");
-        return "products/firstaid";
-    }
-
     @GetMapping(value = {"", "/"})
     public String index(Model model, @Param("keywords") String keywords, @Param("limit") Integer limit, Principal principal) {
         log.debug("Searching for products using keywords: " + ((keywords == null || keywords.isEmpty()) ? "none" : keywords));

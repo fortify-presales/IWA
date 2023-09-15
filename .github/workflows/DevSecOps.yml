@@ -6,7 +6,7 @@ on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
     paths-ignore:
-#      - '.github/workflows/**'
+      - '.github/workflows/**'
       - 'bin/**'
       - 'data/**'
       - 'etc/**'
@@ -16,11 +16,11 @@ on:
       - 'README.md'
       - 'LICENSE'
     branches:
-    - '**'        # matches every branch
+      - '**'        # matches every branch
   pull_request:
     branches: [ main ]
 
- # Allows you to run this workflow manually from the Actions tab
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
       runFoDSASTScan:
@@ -51,31 +51,31 @@ jobs:
 
     # Checkout the code
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3.3.0
-      with:
-        # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
-        fetch-depth: 2
-    # If this run was triggered by a pull request event, then checkout the head of the pull request instead of the merge commit.
-    - run: git checkout HEAD^2
-      if: ${{ github.event_name == 'pull_request' }}
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
+        with:
+          # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
+          fetch-depth: 2
+      # If this run was triggered by a pull request event, then checkout the head of the pull request instead of the merge commit.
+      - run: git checkout HEAD^2
+        if: ${{ github.event_name == 'pull_request' }}
 
-    # Setup JDK 11 on host
-    - uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '11'
-        cache: 'maven'
+      # Setup JDK 11 on host
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          cache: 'maven'
 
-    # Setup Maven
-    - name: Set up Maven
-      uses: stCarolas/setup-maven@v4.5
-      with:
-        maven-version: 3.8.2
+      # Setup Maven
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4.5
+        with:
+          maven-version: 3.8.2
 
-    # Build / Test with Maven
-    - name: Build with Maven
-      run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dskip.unit.tests=false -DfailIfNoTests=false -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
+      # Build / Test with Maven
+      - name: Build with Maven
+        run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dskip.unit.tests=false -DfailIfNoTests=false -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
 
   Debricked-SCA:
     runs-on: ubuntu-latest
@@ -184,7 +184,8 @@ jobs:
         shell: bash
         run: |
           fcli fod release list --app "$FOD_APP_NAME" --session github-actions
-          RELID=$(fcli fod release create "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" --description "Created automatically from GitHub" --copy-from $FOD_PARENT_RELEASE_NAME --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions)
+          echo fcli fod release create "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" --description "Created automatically from GitHub" --copy-from "${FOD_APP_NAME}:${FOD_PARENT_RELEASE_NAME}" --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions
+          RELID=$(fcli fod release create "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" --description "Created automatically from GitHub" --copy-from "${FOD_APP_NAME}:${FOD_PARENT_RELEASE_NAME}" --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions)
           echo "::debug::Created FOD_RELEASE_ID=${RELID}"
           echo "FOD_RELEASE_ID=${RELID}" >> $GITHUB_OUTPUT
         id: create_fod_release
@@ -213,7 +214,7 @@ jobs:
       - name: Package Code + Dependencies
         run: scancentral package -bt mvn -bf pom.xml -bc "clean package -DfailIfNoTests=false" -oss -o $PACKAGE_FILE
         env:
-            PACKAGE_FILE: "package.zip"
+          PACKAGE_FILE: "package.zip"
 
       # FOR DEBUG - Save ScanCentral log file
       - uses: actions/upload-artifact@v3

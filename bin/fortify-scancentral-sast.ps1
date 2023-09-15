@@ -22,17 +22,20 @@ $ScanCentralEmail = $EnvSettings['SCANCENTRAL_EMAIL']
 
 $ScanSwitches = "-Dcom.fortify.sca.Phase0HigherOrder.Languages=javascript,typescript -Dcom.fortify.sca.EnableDOMModeling=true -Dcom.fortify.sca.follow.imports=true -Dcom.fortify.sca.exclude.unimported.node.modules=true"
 $BuildVersion = $(git log --format="%H" -n 1)
-$BuildLabel = "Jenkins-iwa_ci-123"
+$BuildLabel = "iwa-web-cli"
 $FilterFile = Join-Path ".\etc" -ChildPath "sca-filter.txt"
 $CustomRules = Join-Path ".\etc" -ChildPath "sca-custom-rules.xml"
 $ScanArgs = @(
     "-build-project",
-    "$AppName",
+    "'$AppName'",
     "-build-version",
     "$BuildVersion",
     "-build-label",
     "$BuildLabel"
 )
+#    "-Dcom.fortify.sca.limiters.MaxSink=256",
+#    "-Dcom.fortify.sca.limiters.MaxSource=256",
+#    "-Dcom.fortify.sca.limiters.MaxNodesForGlobal=256"
 if ($QuickScan) {
     $ScanArgs += "-scan-precision"
     $ScanArgs += "1"
@@ -54,9 +57,9 @@ if (Test-Path $PackageName) {
 
 # Package, upload and run the scan and import results into SSC
 Write-Host Invoking ScanCentral SAST ...
-Write-Host "scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp $PackageName -b $AppName -application $AppName -version $AppVersion -bt mvn -bf pom.xml -bc '-Pfortify clean package'  -email $ScanCentralEmail -block -o -f $($AppName).fpr -rules $CustomRules -filter $FilterFile -sargs `"$($ScanArgs)`""
+Write-Host "scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp $PackageName -application $AppName -version $AppVersion -bt mvn -bf pom.xml -bc '-Pfortify clean package'  -email $ScanCentralEmail -block -o -f $($AppName).fpr -rules $CustomRules -filter $FilterFile -sargs `"$($ScanArgs)`""
 & scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp $PackageName `
-    -b $AppName -application $AppName -version $AppVersion -bt mvn -bf pom.xml -bc "-Pfortify clean package" `
+    -application "$AppName" -version $AppVersion -bt mvn -bf pom.xml -bc "-Pfortify clean package" `
     -email $ScanCentralEmail -block -o -f "$($AppName).fpr" -rules $CustomRules -filter $FilterFile `
     -sargs "$($ScanArgs)"
 
