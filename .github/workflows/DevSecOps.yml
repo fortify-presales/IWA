@@ -236,6 +236,8 @@ jobs:
       - name: Perform SAST scan
         shell: bash
         run: |
+          fcli --version
+          echo "fcli fod scan start-sast \"${FOD_RELEASE_NAME}\" --entitlement SubscriptionOnly --notes \"${FOD_SCAN_NOTES}\" -f $PACKAGE_FILE --store curScan --session github-actions"
           fcli fod scan start-sast "${FOD_RELEASE_NAME}" --entitlement SubscriptionOnly --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions
           sleep 5
           fcli fod scan wait-for ::curScan:: --session github-actions
