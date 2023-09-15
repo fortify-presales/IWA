@@ -33,9 +33,6 @@ $ScanArgs = @(
     "-build-label",
     "$BuildLabel"
 )
-#    "-Dcom.fortify.sca.limiters.MaxSink=256",
-#    "-Dcom.fortify.sca.limiters.MaxSource=256",
-#    "-Dcom.fortify.sca.limiters.MaxNodesForGlobal=256"
 if ($QuickScan) {
     $ScanArgs += "-scan-precision"
     $ScanArgs += "1"
