@@ -90,7 +90,7 @@ if (!propertiesFile.exists()) {
     props.setProperty('APP_NAME', 'iwa')
     //propertiesFile.withWriter { props.store(it) }
     Writer writer = new FileWriter(propertiesFile, false)
-    properties.store(writer, "Change these variables to relevant values. Don't commit this file to source control.")
+    props.store(writer, "Change these variables to relevant values. Don't commit this file to source control.")
     writer.close()
 }
 //propertiesFile.withReader { props.load(it) }
