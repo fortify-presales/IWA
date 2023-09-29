@@ -97,8 +97,8 @@ project.archivesBaseName = 'iwa-web'
 group = 'com.microfocus.example'
 version = ''
 description = 'IWA (Insecure Web App) Pharmacy Direct - an insecure web application for use in Fortify demonstrations'
-sourceCompatibility = '1.11'
-targetCompatibility = '1.11'
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 sourceSets {
 

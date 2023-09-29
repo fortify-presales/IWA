@@ -1,98 +1,66 @@
 #
-# Example script to perform Fortify On Demand static analysis including verification and polling
+# Example script to perform Fortify On Demand static scan using Fortify Command Line (fcli)
 #
 
-    [CmdletBinding()]
+# Parameters
 param (
-    [Parameter(Mandatory)]
-    [string]$ZipFile = '.\foD.zip',
-
-    [Parameter(Mandatory)]
-    [string]$ApplicationName,
-
-    [Parameter(Mandatory)]
-    [string]$ReleaseName,
-
-    [Parameter(Mandatory)]
-    [string]$FoDApiUri,
-
-    [Parameter(Mandatory)]
-    [string]$FoDApiKey,
-
-    [Parameter(Mandatory)]
-    [string]$FoDApiSecret,
-
-    [Parameter()]
-    [string]$FoDApiGrantType = 'ClientCredentials',
-
-    [Parameter()]
-    [string]$FoDApiScope = 'api-tenant',
-
-    [Parameter()]
-    [string]$Notes = 'Uploaded from PowerShellForFOD',
-
-    [Parameter()]
-    [int]$PollingInterval = 30,
-
-    [Parameter()]
-    [switch]$Raw
+    [Parameter(Mandatory=$false)]
+    [switch]$ReBuild
 )
-begin {
-    if (-not (Test-Path -Path $ZipFile)) {
-        Write-Error "File $ZipFile does not exist!" -ErrorAction Stop
+
+# Import some supporting functions
+Import-Module $PSScriptRoot\modules\FortifyFunctions.psm1
+
+# Import local environment specific settings
+$EnvSettings = $(ConvertFrom-StringData -StringData (Get-Content ".\.env" | Where-Object {-not ($_.StartsWith('#'))} | Out-String))
+$AppName = $EnvSettings['SSC_APP_NAME']
+$AppVersion = $EnvSettings['SSC_APP_VER_NAME']
+$FoDApiUrl = $EnvSettings['FOD_API_URL']
+$FoDUser = $EnvSettings['FOD_USER']
+$FoDPassword = $EnvSettings['FOD_PASSWORD']
+$FoDTenant = $EnvSettings['FOD_TENANT']
+$PackageName = "FoDPackage.zip"
+
+# Test we have Fortify installed successfully
+Test-Environment
+if ([string]::IsNullOrEmpty($AppName)) { throw "Application Name has not been set" }
+if ([string]::IsNullOrEmpty($AppVersion)) { throw "Application Version has not been set" }
+if ([string]::IsNullOrEmpty($FoDApiUrl)) { throw "FoD API URL has not been set" }
+if ([string]::IsNullOrEmpty($FoDUser)) { throw "FoD User has not been set" }
+if ([string]::IsNullOrEmpty($FoDPassword)) { throw "FoD Password has not been set" }
+if ([string]::IsNullOrEmpty($FoDTenant)) { throw "FoD Tenant has not been set" }
+
+# Check Package exists
+if (Test-Path $PackageName) {
+    $PackageExists = $true
+} else {
+    $PackageExists = $false
+}
+
+if ($ReBuild -or (-not $PackageExists))
+{
+    # Delete Package if it already exists
+    if ($PackageExists) {
+        Remove-Item $PackageName -Verbose
     }
 
-    # Make sure PowerShellForFoD Module is installed
-    Write-Host "Installing PowerShellForFoD module ..."
-    Install-Module PowerShellForFoD -Scope CurrentUser -Force -Repository PSGallery
+    # Use scancentral to create Package
+    Write-Host "Invoking ScanCentral Package ..."
+    Write-Host "> scancentral package -bt gradle -bf build.gradle -bc `"clean build -x test`" -oss -o $PackageName"
+    & scancentral package -bt gradle -bf build.gradle -bc "clean build -x test" -oss -o $PackageName
 }
-process {
 
-    # Configure API
-    Write-Verbose "Configuring FoD API ..."
-    $PWord = ConvertTo-SecureString -String $FoDApiSecret -AsPlainText -Force
-    $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $FoDApiKey, $PWord
-    Set-FoDConfig -ApiUri $FoDApiUri -GrantType $FoDApiGrantType -Scope $FoDApiScope
-    Get-FoDToken -Credential $Credential
-
-    try
-    {
-        $ReleaseId = Get-FoDReleaseId -ApplicationName $ApplicationName -ReleaseName $ReleaseName
-        if ($ReleaseId) {
-            Write-Host "Found release id: '$ReleaseId' in application '$ApplicationName'"
-        } else{
-            Write-Error "Could not find release id for release: '$ReleaseName'" -ErrorAction Stop
-        }
-    } catch {
-        Write-Error "Error finding release id: $_" -ErrorAction Stop
-    }
-
-    # Start Scan
-    $ZipFilePath = (Resolve-Path -Path $ZipFile).Path
-    Write-Host "Uploading" $ZipFile "for scanning ..."
-    $StaticScan = Start-FoDStaticScan -ReleaseId $ReleaseId -ZipFile $ZipFilePath -EntitlementPreference SubscriptionOnly `
-        -RemediationScanPreference NonRemediationScanOnly -InProgressScanPreference DoNotStartScan `
-        -Notes $Notes -Raw
-    $ScanId = $StaticScan.scanId
-
-    Write-Host "Upload complete - started scan id: '$ScanId'"
-    Write-Host "Polling status of scan ..."
-    do {
-        Start-Sleep -s $PollingInterval # sleep for X seconds
-        $ScanSummary = Get-FoDScanSummary -Id $ScanId
-        $ScanStatus = $ScanSummary.analysisStatusType
-        Write-Host "Scan id: '$ScanId' status: $ScanStatus"
-    } until (
-    -not ($ScanStatus -eq "Queued" -or
-            $ScanStatus -eq "In_Progress" -or
-            $ScanStatus -eq "Cancelled")
-    )
-
+# Check Package exists
+if (-not ($PackageExists)) {
+    throw "ScanCentral package $PackageName does not exist, try the '-Rebuild' option"
 }
-end {
-    if ($Raw) {
-        $ScanSummary
-    } else {
-        Write-Host "$ScanStatus scan id: $ScanId"
-    }
-}
+
+Write-Host "Uploading $PackageName to $FoDApiUrl ..."
+& fcli fod session login --url $FoDApiUrl --user $FoDUser --password $FoDPassword --tenant $FoDTenant --session iwa-fcli
+& fcli fod scan start-sast "$($AppName):$($AppVersion)" --notes "fcli scan" -f $PackageName --store curScan --session iwa-fcli
+Start-Sleep -s 5
+Write-Host "Waiting until the scan has finished ..."
+& fcli fod scan wait-for ::curScan:: --session iwa-fcli
+& fcli fod session logout --session iwa-fcli
+
+Write-Host "Scan complete".

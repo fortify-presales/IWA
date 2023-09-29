@@ -3,6 +3,7 @@
 function Test-Environment {
     $SCALocalInstall = $True
     $ScanCentralClient = $True
+    $Fcli = $True
 
     $WarningPreference = "Continue"
 
@@ -46,7 +47,14 @@ function Test-Environment {
         $ScanCentralClient = $False
     }
 
-    Write-Host "Done."
+    # Check ScanCentral Client is installed
+    if ((Get-Command "fcli.exe" -ErrorAction SilentlyContinue) -eq $null)
+    {
+        Write-Warning "fcli.exe is not in your PATH - some scripts will not run"
+        $Fcli = $False
+    }
+
+    Write-Host "Valid."
 }
 
 
