@@ -38,10 +38,10 @@ on:
 
 # Global environment variables
 env:
-  DEFAULT_APP_NAME: "IWA-Web"
-  #FCLI_VER: "v1.2.5"
+  DEFAULT_APP_NAME: "IWA-Java"
+  #FCLI_VER: "v1.3"
   FCLI_VER: "dev_2.0.0-beta"
-  SCANCENTRAL_VER: "22.2.0"
+  SCANCENTRAL_VER: "23.1.0"
 
 jobs:
 
@@ -65,27 +65,13 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-          #cache: 'maven'
-          cache: 'gradle'
-
-      # Setup Maven
-      #- name: Set up Maven
-      #  uses: stCarolas/setup-maven@v4.5
-      #  with:
-      #    maven-version: 3.8.2
-
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 7.3
-
       # Build / Test with Gradle
       - name: Build with Gradle
         run: ./gradlew clean build
-
-      # Build / Test with Maven
-      #- name: Build with Maven
-      #  run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dskip.unit.tests=false -DfailIfNoTests=false -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
 
   Debricked-SCA:
     runs-on: ubuntu-latest
@@ -97,12 +83,14 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-          cache: 'maven'
-      - run: |
-          mvn dependency:tree \
-          -DoutputFile=.debricked-maven-dependencies.tgf \
-          -DoutputType=tgf
-      - uses: debricked/vulnerable-functionality/java/maven@v0
+          #cache: 'maven'
+      #- run: |
+      #    mvn dependency:tree \
+      #    -DoutputFile=.debricked-maven-dependencies.tgf \
+      #    -DoutputType=tgf
+      - run: ./gradlew dependencies > .debricked-gradle-dependencies.txt
+      #- uses: debricked/vulnerable-functionality/java/maven@v0
+      - uses: debricked/vulnerable-functionality/java/gradle@v0
       - uses: debricked/actions/scan@v1
         env:
           DEBRICKED_TOKEN: ${{ secrets.DEBRICKED_TOKEN }}
@@ -132,11 +120,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-          #cache: 'maven'
-      #- name: Set up Maven
-      #  uses: stCarolas/setup-maven@v4.5
-      #  with:
-      #    maven-version: 3.8.2
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
@@ -222,11 +205,10 @@ jobs:
       #   For other build tools, add your build commands to download necessary dependencies and prepare according to Fortify on Demand Packaging documentation.
       #   ScanCentral Client documentation is located at https://www.microfocus.com/documentation/fortify-software-security-center/
       - name: Download and run Fortify ScanCentral Client
-        uses: fortify/gha-setup-scancentral-client@v2.2.2
+        uses: fortify/gha-setup-scancentral-client@v2.3.0
         with:
-          version: 22.2.0
+          version: 23.1.0
       - name: Package Code + Dependencies
-        #run: scancentral package -bt mvn -bf pom.xml -bc "clean package -DfailIfNoTests=false" -oss -o $PACKAGE_FILE
         run: scancentral package -bt gradle -bf build.gradle -bc "clean build -x test" -oss -o $PACKAGE_FILE
         env:
           PACKAGE_FILE: "package.zip"
@@ -235,8 +217,8 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: scancentral1.log
-          path: ~/.fortify/scancentral-22.2.0/log/scancentral.log
+          name: scancentral.log
+          path: ~/.fortify/scancentral-23.1.0/log/scancentral.log
           #    retention-days: 5
 
       # FOR DEBUG - Save package.zip
@@ -281,7 +263,7 @@ jobs:
 
       # Pull SAST issues from Fortify on Demand and generate GitHub-optimized SARIF output
       - name: Export Results
-        uses: fortify/gha-export-vulnerabilities@v1
+        uses: fortify/gha-export-vulnerabilities@v1.0.2
         with:
           fod_base_url: ${{ vars.FOD_BASE_URL }}
           fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
@@ -319,7 +301,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-          #cache: 'maven'
 
       # Get the branch name or pr number
       - name: Extract branch name
@@ -360,7 +341,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-          #cache: 'maven'
 
       # set the FOD app name to be used throughout the workflow
       - name: Set FoD app name
