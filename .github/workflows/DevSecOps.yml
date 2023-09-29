@@ -65,17 +65,27 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-          cache: 'maven'
+          #cache: 'maven'
+          cache: 'gradle'
 
       # Setup Maven
-      - name: Set up Maven
-        uses: stCarolas/setup-maven@v4.5
+      #- name: Set up Maven
+      #  uses: stCarolas/setup-maven@v4.5
+      #  with:
+      #    maven-version: 3.8.2
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
         with:
-          maven-version: 3.8.2
+          gradle-version: 7.3
+
+      # Build / Test with Gradle
+      - name: Build with Gradle
+        run: ./gradlew clean build
 
       # Build / Test with Maven
-      - name: Build with Maven
-        run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dskip.unit.tests=false -DfailIfNoTests=false -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
+      #- name: Build with Maven
+      #  run:  mvn -Dmaven.compiler.debuglevel=lines,vars,source -Dskip.unit.tests=false -DfailIfNoTests=false -Dtest="*,!PasswordConstraintValidatorTest,!UserServiceTest,!DefaultControllerTest" -P jar -B clean verify package --file pom.xml
 
   Debricked-SCA:
     runs-on: ubuntu-latest
@@ -122,11 +132,15 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-          cache: 'maven'
-      - name: Set up Maven
-        uses: stCarolas/setup-maven@v4.5
+          #cache: 'maven'
+      #- name: Set up Maven
+      #  uses: stCarolas/setup-maven@v4.5
+      #  with:
+      #    maven-version: 3.8.2
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
         with:
-          maven-version: 3.8.2
+          gradle-version: 7.3
 
       # set the FOD app name to be used throughout the workflow
       - name: Set FoD app name
@@ -196,9 +210,9 @@ jobs:
 
       # For Debricked OSS scanning with FoD we need a dependencies file.
       # For instructions on generating the resolved dependency tree file, see https://debricked.com/docs/language-support/java-kotlin.html#gradle.*
-      - name: Generate Maven dependencies file
-        shell: bash
-        run: mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
+      #- name: Generate Maven dependencies file
+      #  shell: bash
+      #  run: mvn dependency:tree -DoutputFile=.debricked-maven-dependencies.tgf -DoutputType=tgf
 
       # Prepare source+dependencies for upload. The default example is for a Maven project that uses pom.xml.
       # Update PACKAGE_OPTS based on the ScanCentral Client documentation for your project's included tech stack(s). Helpful hints:
@@ -212,7 +226,8 @@ jobs:
         with:
           version: 22.2.0
       - name: Package Code + Dependencies
-        run: scancentral package -bt mvn -bf pom.xml -bc "clean package -DfailIfNoTests=false" -oss -o $PACKAGE_FILE
+        #run: scancentral package -bt mvn -bf pom.xml -bc "clean package -DfailIfNoTests=false" -oss -o $PACKAGE_FILE
+        run: scancentral package -bt gradle -bf build.gradle -bc "clean build -x test" -oss -o $PACKAGE_FILE
         env:
           PACKAGE_FILE: "package.zip"
 
@@ -304,7 +319,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-          cache: 'maven'
+          #cache: 'maven'
 
       # Get the branch name or pr number
       - name: Extract branch name
@@ -345,7 +360,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-          cache: 'maven'
+          #cache: 'maven'
 
       # set the FOD app name to be used throughout the workflow
       - name: Set FoD app name
