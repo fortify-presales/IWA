@@ -5,7 +5,8 @@
 # Parameters
 param (
     [Parameter(Mandatory=$false)]
-    [switch]$QuickScan,
+    [ValidateSet('classic','security','devops')]
+    [string]$ScanPolicy = "classic",
     [Parameter(Mandatory=$false)]
     [switch]$SkipPDF,
     [Parameter(Mandatory=$false)]
@@ -24,11 +25,6 @@ $SSCAuthToken = $EnvSettings['SSC_AUTH_TOKEN'] # CIToken
 $JVMArgs = "-Xss256M"
 #$ScanSwitches = "-Dcom.fortify.sca.rules.enable_wi_correlation=true"
 $ScanSwitches = "-Dcom.fortify.sca.rules.enable_wi_correlation=true -Dcom.fortify.sca.Phase0HigherOrder.Languages=javascript,typescript -Dcom.fortify.sca.EnableDOMModeling=true -Dcom.fortify.sca.follow.imports=true -Dcom.fortify.sca.exclude.unimported.node.modules=true"
-if ($QuickScan) {
-    $PrecisionLevel = 1
-} else {
-    $PrecisionLevel = 4 # 4 for full scan
-}
 
 # Test we have Fortify installed successfully
 Test-Environment
@@ -51,13 +47,17 @@ $ClassPath = Get-Content -Path $DependenciesFile
 Write-Host Running translation...
 & sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' $JVMArgs $ScanSwitches -b "$AppName" `
     -jdk 11 -java-build-dir "target/classes" -cp $ClassPath -debug -verbose `
-    -exclude ".\src\main\resources\static\js\lib" -exclude ".\src\main\resources\static\css\lib" -exclude ".\node_modules" `
+    -exclude ".\src\main\resources\static\js\lib" -exclude ".\src\main\resources\static\css\lib" `
+    -exclude ".\node_modules" -exclude "src/main/resources/schema.sql" -exclude "src/main/resources/data.sql" `
     "src/main/java/**/*" "src/main/resources/**/*" "Dockerfile*"
 
 Write-Host Running scan...
 & sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' $JVMArgs $ScanSwitches -b "$AppName" `
-    -cp $ClassPath  -java-build-dir "target/classes" -debug -verbose -rules etc/sca-custom-rules.xml `
-    -scan-precision $PrecisionLevel -build-project "$AppName" -build-version "$AppVersion" -build-label "SNAPSHOT" -scan -f "$($AppName).fpr"
+    -cp $ClassPath  -java-build-dir "target/classes" -debug -verbose `
+    -rules etc/sca-custom-rules.xml -filter etc/sca-filter.txt `
+    -scan-policy $ScanPolicy `
+    -build-project "$AppName" -build-version "$AppVersion" -build-label "SNAPSHOT" `
+    -scan -f "$($AppName).fpr"
 
 # summarise issue count by analyzer
 & fprutility -information -analyzerIssueCounts -project "$($AppName).fpr"

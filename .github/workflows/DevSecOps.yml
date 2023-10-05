@@ -42,6 +42,10 @@ env:
   #FCLI_VER: "v1.3"
   FCLI_VER: "dev_2.0.0-beta"
   SCANCENTRAL_VER: "23.1.0"
+  # some insecure variables to be picked up by fortify scan
+  AWS_REGION: US_WEST_2
+  AWS_ACCESS_KEY_ID: AKIAIOSFODNN7EXAMPLE
+  AWS_SECRET_ACCESS_KEY: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 
 jobs:
 
@@ -209,7 +213,7 @@ jobs:
         with:
           version: 23.1.0
       - name: Package Code + Dependencies
-        run: scancentral package -bt gradle -bf build.gradle -bc "clean build -x test" -oss -o $PACKAGE_FILE
+        run: scancentral package -bt gradle -bf build.gradle -bc "clean build -x test" -o $PACKAGE_FILE
         env:
           PACKAGE_FILE: "package.zip"
 

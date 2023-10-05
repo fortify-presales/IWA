@@ -54,9 +54,9 @@ if (Test-Path $PackageName) {
 
 # Package, upload and run the scan and import results into SSC
 Write-Host Invoking ScanCentral SAST ...
-Write-Host "scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp $PackageName -application $AppName -version $AppVersion -bt mvn -bf pom.xml -bc '-Pfortify clean package'  -email $ScanCentralEmail -block -o -f $($AppName).fpr -rules $CustomRules -filter $FilterFile -sargs `"$($ScanArgs)`""
 & scancentral -url $ScanCentralCtrlUrl start -upload -uptoken $SSCAuthToken -sp $PackageName `
-    -application "$AppName" -version $AppVersion -bt mvn -bf pom.xml -bc "-Pfortify clean package" `
+    -application "$AppName" -version $AppVersion -bt gradle -bf build.gradle -bc "clean build -x test" `
+    -exclude "src/main/resources/schema.sql" -exclude "src/main/resources/data.sql" `
     -email $ScanCentralEmail -block -o -f "$($AppName).fpr" -rules $CustomRules -filter $FilterFile `
     -sargs "$($ScanArgs)"
 
