@@ -213,7 +213,7 @@ jobs:
         with:
           version: 23.1.0
       - name: Package Code + Dependencies
-        run: scancentral package -bt gradle -bf build.gradle -bc "clean build -x test" -o $PACKAGE_FILE
+        run: scancentral package -bt gradle -bf build.gradle -bc "clean build -x test" -oss -o $PACKAGE_FILE
         env:
           PACKAGE_FILE: "package.zip"
 
