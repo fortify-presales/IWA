@@ -5,7 +5,12 @@
 # Parameters
 param (
     [Parameter(Mandatory=$false)]
-    [switch]$QuickScan
+    [ValidateSet('classic','security','devops')]
+    [string]$ScanPolicy = "classic",
+    [Parameter(Mandatory=$false)]
+    [switch]$SkipPDF,
+    [Parameter(Mandatory=$false)]
+    [switch]$SkipSSC
 )
 
 # Import some supporting functions
@@ -23,8 +28,8 @@ $ScanCentralEmail = $EnvSettings['SCANCENTRAL_EMAIL']
 $ScanSwitches = "-Dcom.fortify.sca.Phase0HigherOrder.Languages=javascript,typescript -Dcom.fortify.sca.EnableDOMModeling=true -Dcom.fortify.sca.follow.imports=true -Dcom.fortify.sca.exclude.unimported.node.modules=true"
 $BuildVersion = $(git log --format="%H" -n 1)
 $BuildLabel = "iwa-web-cli"
-$FilterFile = Join-Path ".\etc" -ChildPath "sca-filter.txt"
-$CustomRules = Join-Path ".\etc" -ChildPath "sca-custom-rules.xml"
+$FilterFile =  Join-Path ".\etc" -ChildPath "sast-filters" | Join-Path -ChildPath "example-filter.txt"
+$CustomRules = Join-Path ".\etc" -ChildPath "sast-custom-rules" | Join-Path -ChildPath "example-custom-rules.xml"
 $ScanArgs = @(
     "-build-project",
     "'$AppName'",
@@ -33,9 +38,10 @@ $ScanArgs = @(
     "-build-label",
     "$BuildLabel"
 )
-if ($QuickScan) {
-    $ScanArgs += "-scan-precision"
-    $ScanArgs += "1"
+switch ($ScanPolicy) {
+    "classic"   { $FilterFile =  Join-Path ".\etc" -ChildPath "sast-filters" | Join-Path -ChildPath "scan-policy-classic.txt" }
+    "security"  { $FilterFile =  Join-Path ".\etc" -ChildPath "sast-filters" | Join-Path -ChildPath "scan-policy-security.txt" }
+    "devops"    { $FilterFile =  Join-Path ".\etc" -ChildPath "sast-filters" | Join-Path  -ChildPath "scan-policy-devops.txt" }
 }
 $PackageName = "Package.zip"
 

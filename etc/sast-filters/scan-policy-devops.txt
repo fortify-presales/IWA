@@ -1,0 +1,64 @@
+# DevOps focused Scan Policy:
+# This scan policy aggressively suppresses results
+# that are either not security related
+# or have a high probably of being noise.
+# Its primary use case is in Dev(Sec)Ops scenarios
+# where speed is of the essence and developers directly
+# review results coming from Fortify
+# without an intermediate auditing step.
+
+Access Control: Database
+Insecure Randomness
+Mass Assignment: Insecure Binder Configuration
+Weak XML Schema
+Log Forging
+Often Misused
+Build Misconfiguration
+
+Impact <= 1.5
+Likelihood <= 1.5
+
+
+# Adding filters from "security" scan policy
+
+Code Correctness
+Dead Code
+Double Free
+Experimental API
+Format String
+Memory leak
+Null Dereference
+Obsolete
+Poor Style
+
+Poor Error Handling
+Portability Flaw
+Race Condition
+Redundant Null Check
+Type Mismatch
+Undefined Behavior
+Uninitialized Variable
+Unreleased Resource
+Use After Free
+Missing Check against Null
+
+Android Bad Practices: Use of Internal APIs
+Android Bad Practices: Use of File Scheme Cookies
+Android Bad Practices: Leftover Debug Code
+ASP.NET Bad Practices: Unminified Code
+ASP.NET Bad Practices: Leftover Debug Code
+ASP.NET Bad Practices: Non-Serializable Object Stored in Session
+Castor Bad Practices: Query Mode Not Read-Only
+Castor Bad Practices: Unspecified Query Mode
+EJB Bad Practices: Use of AWT/Swing
+EJB Bad Practices: Use of java.io
+EJB Bad Practices: Use of Class Loader
+EJB Bad Practices: Use of Sockets
+EJB Bad Practices: Use of Synchronization Primitives
+Flash Bad Practices: Stage Size Too Small
+Go Bad Practices: Leftover Debug Code
+J2EE Bad Practices: Non-Serializable Object Stored in Session
+J2EE Bad Practices: Leftover Debug Code
+Kubernetes Bad Practices: Default Namespace
+Python Bad Practices: Leftover Debug Code
+SQL Bad Practices: Direct Update

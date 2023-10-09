@@ -33,14 +33,12 @@ if ([string]::IsNullOrEmpty($AppName)) { throw "Application Name has not been se
 # Run the translation and scan
 
 # Compile the application if not already built
-$DependenciesFile = Join-Path -Path (Get-Location) -ChildPath target\cp.txt
+$DependenciesFile = Join-Path -Path (Get-Location) -ChildPath "build\classpath.txt"
 if (-not (Test-Path -PathType Leaf -Path $DependenciesFile)) {
     Write-Host Cleaning up workspace...
     & sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' -b "$AppName" -clean
-    Write-Host Re-compiling application in debug mode...
-    & mvn -P release,jar -DskipTests '-Dmaven.compiler.debuglevel="lines,vars,source"' verify package
-    # write dependencies to file we can use later in sourceanalyzer command
-    & mvn dependency:build-classpath '-Dmdep.outputFile=.\target\cp.txt'
+    Write-Host Building application...
+    & .\gradlew clean build writeClasspath -x test
 }
 $ClassPath = Get-Content -Path $DependenciesFile
 
@@ -54,7 +52,7 @@ Write-Host Running translation...
 Write-Host Running scan...
 & sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' $JVMArgs $ScanSwitches -b "$AppName" `
     -cp $ClassPath  -java-build-dir "target/classes" -debug -verbose `
-    -rules etc/sca-custom-rules.xml -filter etc/sca-filter.txt `
+    -rules etc/sast-custom-rules/example-custom-rules.xml -filter etc/sast-filters/sca-filter.txt `
     -scan-policy $ScanPolicy `
     -build-project "$AppName" -build-version "$AppVersion" -build-label "SNAPSHOT" `
     -scan -f "$($AppName).fpr"

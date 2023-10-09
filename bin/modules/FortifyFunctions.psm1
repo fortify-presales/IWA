@@ -7,7 +7,7 @@ function Test-Environment {
 
     $WarningPreference = "Continue"
 
-    Write-Host "Validating Fortify Installation..."
+    Write-Host "Checking Fortify Installation..." -NoNewline
 
     # Check Source Analyzer is on the path
     if ((Get-Command "sourceanalyzer.exe" -ErrorAction SilentlyContinue) -eq $null)
@@ -54,12 +54,12 @@ function Test-Environment {
         $Fcli = $False
     }
 
-    Write-Host "Valid."
+    Write-Host "Done."
 }
 
 
 function Test-ThirdPartyEnvironment {
-    Write-Host "Validating Third Party Installation..."
+    Write-Host "Validating Third Party Installation..." -NoNewline
 
     # Check Maven is on the path
     if ((Get-Command "mvn" -ErrorAction SilentlyContinue) -eq $null)

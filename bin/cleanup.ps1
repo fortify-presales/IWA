@@ -12,6 +12,6 @@ Remove-Item "$($AppName)*.fpr" -ErrorAction SilentlyContinue
 Remove-Item "$($AppName)*.pdf" -ErrorAction SilentlyContinue
 Remove-Item "iqReport.json" -ErrorAction SilentlyContinue
 Remove-Item "fod.zip" -ErrorAction SilentlyContinue
-Remove-Item "FoDPackage.zip" -ErrorAction SilentlyContinue
+Remove-Item "*Package.zip" -ErrorAction SilentlyContinue
 
 Write-Host "Done."

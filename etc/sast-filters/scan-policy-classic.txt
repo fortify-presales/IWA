@@ -1,0 +1,3 @@
+# Classic Scan Policy
+# Default Scan Policy Filter File
+# This scan policy does not filter out anything
