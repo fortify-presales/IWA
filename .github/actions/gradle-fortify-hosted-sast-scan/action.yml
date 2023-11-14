@@ -98,7 +98,7 @@ runs:
       working-directory: ${{ env.BASE_DIR }}
       shell: bash
       run: |
-        fcli sc-sast scan start --sensor-version ${SSC_SENSOR_VER} --appversion "${SSC_APPVER_NAME}" -p $PACKAGE_FILE --upload --store curScan --session github-actions
+        fcli sc-sast scan start --sensor-version ${SSC_SENSOR_VER} --publish-to "${SSC_APPVER_NAME}" -p $PACKAGE_FILE --store curScan --session github-actions
         sleep 5
         echo "scsast_scan_id=$(fcli util var get ::curScan::)" >> $GITHUB_OUTPUT
         fcli sc-sast scan wait-for ::curScan:: --session github-actions
