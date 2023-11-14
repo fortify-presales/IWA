@@ -87,7 +87,7 @@ runs:
     - name: Package Code + Dependencies
       uses: fortify/github-action/package@v1
       env:
-        EXTRA_PACKAGE_OPTS: -bt gradle -bf build.gradle -bc "clean build -x test" -oss -o $PACKAGE_FILE
+        EXTRA_PACKAGE_OPTS: -bt gradle -bf build.gradle -bc "clean build -x test" -oss
         PACKAGE_FILE: "package"
     # Start Fortify on Demand SAST scan and wait until results complete.
     - name: Perform FoD SAST scan
