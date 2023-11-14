@@ -1,13 +1,10 @@
 
 # Create GitHub Action Repository Variables for your version of the application:
-#   FORTIFY_HOSTED_BASE_URL should be Fortify BASE URL for your tenant (e.g. https://ssc.uat.fortifyhosted.net)
-#   FORTIFY_HOSTED_PARENT_RELEASE_NAME is the Fortify release name corresponding to the parent branch of any newly created branch, this is typically "main"
+#   FORTIFY_HOSTED_BASE_URL should be the Fortify Hosted Base URL for your tenant (e.g. https://ssc.uat.fortifyhosted.net)
+#   FORTIFY_HOSTED_PARENT_APPVER_NAME is the Fortify SSC Application Version Name name corresponding to the parent branch of any newly created branch, this is typically "main"
 # Create GitHub Action Secrets for your version of the application:
-#   FORTIFY_HOSTED_CLIENT_ID should be an API Key obtained from your Fortify tenant.
-#   FORTIFY_HOSTED_CLIENT_SECRET should be the secret for the API Key obtained for your Fortify tenant.
-# Helpful hints:
-#   API Key credentials can be obtained from your Fortify tenant, under Administration -> Settings -> API
-#   It is recommended to create credentials with 'Security Lead' Role selected.
+#   FORTIFY_HOSTED_SSC_TOKEN should be an SSC Authorization token (CIToken) obtained from your Fortify tenant.
+#   FORTIFY_HOSTED_SCSAST_CLIENT_AUTH_TOKEN should be the ScanCentral SAST Client Authentication token for your Fortify tenant.
 
 name: DevSecOps with Fortify Hosted
 
@@ -36,10 +33,10 @@ on:
         description: 'Carry out SAST scan using Fortify Hosted'
         required: false
         default: 'true'
-      runDebrickedScan:
-        description: 'Carry out SCA scan using Debricked'
-        required: false
-        default: 'false'
+#      runDebrickedScan:
+#        description: 'Carry out SCA scan using Debricked'
+#        required: false
+#        default: 'false'
       runFortifyDASTScan:
         description: 'Carry out DAST scan using Fortify Hosted'
         required: false
@@ -79,20 +76,20 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build
 
-  Debricked-SCA:
-    runs-on: ubuntu-latest
-    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runDebrickedScan == 'true') }}
-    steps:
-      - uses: actions/checkout@v3.3.0
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '11'
-      - run: ./gradlew dependencies > .debricked-gradle-dependencies.txt
-      - uses: debricked/vulnerable-functionality/java/gradle@v0
-      - uses: debricked/actions/scan@v1
-        env:
-          DEBRICKED_TOKEN: ${{ secrets.DEBRICKED_TOKEN }}
+#  Debricked-SCA:
+#    runs-on: ubuntu-latest
+#    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runDebrickedScan == 'true') }}
+#    steps:
+#      - uses: actions/checkout@v3.3.0
+#      - uses: actions/setup-java@v3
+#        with:
+#          distribution: 'temurin'
+#          java-version: '11'
+#      - run: ./gradlew dependencies > .debricked-gradle-dependencies.txt
+#      - uses: debricked/vulnerable-functionality/java/gradle@v0
+#      - uses: debricked/actions/scan@v1
+#        env:
+#          DEBRICKED_TOKEN: ${{ secrets.DEBRICKED_TOKEN }}
 
   Quality-Gate:
     runs-on: ubuntu-latest
@@ -152,7 +149,7 @@ jobs:
   Security-Gate:
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    needs: [ Debricked-SCA,Fortify-SAST-Scan,Fortify-DAST-Scan ]
+    needs: [ Fortify-SAST-Scan,Fortify-DAST-Scan ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3.3.0
