@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>com.microfocus.example</groupId>
-    <artifactId>iwa-web</artifactId>
+    <artifactId>iwa-java</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>${project.artifactId}</name>
     <packaging>${packaging.type}</packaging>

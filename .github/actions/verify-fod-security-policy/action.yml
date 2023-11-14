@@ -1,0 +1,70 @@
+name: "Verify FoD Security Policy"
+description: "Verify that the security policy in Fortify on Demand has been met for the release"
+inputs:
+  fod_api_uri:
+    required: false
+    description: "FoD API URI"
+    default: "https://api.emea.fortify.com"
+  fod_client_id:
+    required: true
+    description: "FoD API Client Id"
+  fod_client_secret:
+    required: true
+    description: "FoD API Client Secret"
+  fod_app_name:
+    required: true
+    description: "FoD Application Name"
+  fod_release_name:
+    required: true
+    description: "FoD Release Name"
+runs:
+  using: "composite"
+  steps:
+    # Java is required to run the various Fortify utilities.
+    # Setup JDK 11 on host
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+    # Install Fortify tools
+    - name: Setup Fortify tools
+      uses: fortify/github-action/setup@v1
+      with:
+        export-path: true
+        fcli: latest
+        sc-client: latest
+        fod-uploader: skip
+        vuln-exporter: v2
+        bugtracker-utility: skip
+    # Login to Fortify on Demand fcli session
+    - name: Login fcli
+      shell: bash
+      run: |
+        fcli --version
+        fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET --session github-actions
+      env:
+        FOD_API_URI: ${{ inputs.fod_api_uri }}
+        FOD_CLIENT_ID: ${{ inputs.fod_client_id }}
+        FOD_CLIENT_SECRET: ${{ inputs.fod_client_secret }}
+    # Run script to check the Security Policy of the Fortify on Demand Release to determine success/failure
+    # We will just print a message in this example
+    - name: Verify Security Policy
+      id: verify-security-policy
+      shell: bash
+      run: |
+        fcli fod release get "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" -o expr="Critical:\t{critical}\nHigh:\t\t{high}\nMedium:\t\t{medium}\nLow:\t\t{low}" --session github-actions
+        echo "### FoD Issue Summary" >> $GITHUB_STEP_SUMMARY
+        echo "| Critical | High | Medium | Low |" >> $GITHUB_STEP_SUMMARY
+        echo "| -------- | ---- | ------ | --- |" >> $GITHUB_STEP_SUMMARY
+        ISSUES=$(fcli fod release get "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" -o expr="|{critical}|{high}|{medium}|{low}" --session github-actions)
+        echo "${ISSUES}" >> $GITHUB_STEP_SUMMARY
+        #if [ $(fcli fod release get "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" -o expr="{isPassed}" --session github-actions) = 'true' ]; then echo "Security policy: passed" >> $GITHUB_STEP_SUMMARY; else echo "Security policy: failed" >> $GITHUB_STEP_SUMMARY; fi
+        # TODO: add to summary output
+      env:
+        FOD_APP_NAME: ${{ inputs.fod_app_name }}
+        FOD_RELEASE_NAME: ${{ inputs.fod_release_name }}
+    # Logout/Close Fortify on Demand fcli session
+    - name: Logout fcli
+      shell: bash
+      run: |
+        fcli fod session logout --session github-actions

@@ -1,0 +1,185 @@
+
+# Create GitHub Action Repository Variables for your version of the application:
+#   FOD_BASE_URL should be FoD BASE URL for your tenant (e.g. https://emea.fortify.com)
+#   FOD_API_URI should be FoD API URI for your tenant (e.g. https://api.emea,fortify.com)
+#   FOD_PARENT_RELEASE_NAME is the FoD release name corresponding to the parent branch of any newly created branch, this is typically "main"
+# Create GitHub Action Secrets for your version of the application:
+#   FOD_CLIENT_ID should be an API Key obtained from your FoD tenant.
+#   FOD_CLIENT_SECRET should be the secret for the API Key obtained for your FoD tenant.
+# Helpful hints:
+#   API Key credentials can be obtained from your FoD tenant, under Administration -> Settings -> API
+#   It is recommended to create credentials with 'Security Lead' Role selected.
+#   "Automated Audit preference" should be configured for the release's Static Scan Settings.
+
+name: DevSecOps with Fortify Hosted
+
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    paths-ignore:
+      - '.github/**/**'
+      - 'bin/**'
+      - 'data/**'
+      - 'etc/**'
+      - 'media/**'
+      - 'Jenkinsfile'
+      - '.gitlab-ci.yml'
+      - 'README.md'
+      - 'LICENSE'
+    branches:
+      - '**'        # matches every branch
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      runFoDSASTScan:
+        description: 'Carry out SAST scan using Fortify Hosted'
+        required: false
+        default: 'true'
+      runDebrickedScan:
+        description: 'Carry out SCA scan using Debricked'
+        required: false
+        default: 'false'
+      runFoDDASTScan:
+        description: 'Carry out DAST scan using Fortify Hosted'
+        required: false
+        default: 'false'
+
+# Global environment variables
+env:
+  DEFAULT_APP_NAME: "IWA-Java"
+  # some insecure variables to be picked up by fortify scan
+  AWS_REGION: US_WEST_2
+  AWS_ACCESS_KEY_ID: AKIAIOSFODNN7EXAMPLE
+  AWS_SECRET_ACCESS_KEY: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+
+jobs:
+
+  Build-And-Test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
+        with:
+          # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
+          fetch-depth: 2
+      # If this run was triggered by a pull request event, then checkout the head of the pull request instead of the merge commit.
+      - run: git checkout HEAD^2
+        if: ${{ github.event_name == 'pull_request' }}
+      # Setup JDK 11 on host
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 7.3
+      # Build / Test with Gradle
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+  Debricked-SCA:
+    runs-on: ubuntu-latest
+    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runDebrickedScan == 'true') }}
+    steps:
+      - uses: actions/checkout@v3.3.0
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - run: ./gradlew dependencies > .debricked-gradle-dependencies.txt
+      - uses: debricked/vulnerable-functionality/java/gradle@v0
+      - uses: debricked/actions/scan@v1
+        env:
+          DEBRICKED_TOKEN: ${{ secrets.DEBRICKED_TOKEN }}
+
+  Quality-Gate:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [ Build-And-Test ]
+    steps:
+      - uses: actions/checkout@v3.3.0
+
+    # TBD
+
+  FoD-SAST-Scan:
+    runs-on: ubuntu-latest
+    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runFoDSASTScan == 'true') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
+        with:
+          # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
+          fetch-depth: 2
+      # If this run was triggered by a pull request event, then checkout the head of the pull request instead of the merge commit.
+      - run: git checkout HEAD^2
+        if: ${{ github.event_name == 'pull_request' }}
+      - name: Fortify App and Release Name
+        id: fortify-app-and-release-name
+        uses: ./.github/actions/fortify-app-and-release-name
+        with:
+          default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
+          default_fortify_release_name: 'main'
+          app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
+      #- name: Gradle FoD SAST scan
+      #  id: gradle-fod-sast-scan
+      #  uses: ./.github/actions/gradle-fod-sast-scan
+      #  with:
+      #    working_directory: ${{ env.BASE_DIR }}
+      #    fod_api_uri: ${{ vars.FOD_API_URI }}
+      #    fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
+      #    fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
+      #    fod_app_name: ${{ steps.fod-app-and-rel-name.outputs.app_name }}
+      #    fod_release_name: ${{ steps.fod-app-and-rel-name.outputs.release_name }}
+
+  FoD-DAST-Scan:
+    runs-on: ubuntu-latest
+    if: ${{ (github.event.inputs.runFoDDASTScan == 'true') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
+      - name: Fortify App and Release Name
+        id: fortify-app-and-release-name
+        uses: ./.github/actions/fortify-app-and-release-name
+        with:
+          default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
+          default_fortify_release_name: 'main'
+          app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
+
+      # TBD
+
+  Security-Gate:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [ Debricked-SCA,FoD-SAST-Scan,FoD-DAST-Scan ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
+      - name: Fortify App and Release Name
+        id: fortify-app-and-release-name
+        uses: ./.github/actions/fortify-app-and-release-name
+        with:
+          default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
+          default_fortify_release_name: 'main'
+          app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
+      #- name: Verify FoD Security Policy
+      #  uses: ./.github/actions/verify-fod-security-policy
+      #  with:
+      #    fod_api_uri: ${{ vars.FOD_API_URI }}
+      #    fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
+      #    fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
+      #    fod_app_name: ${{ steps.fod-app-and-rel-name.outputs.app_name }}
+      #    fod_release_name: ${{ steps.fod-app-and-rel-name.outputs.release_name }}
+
+  Release-Gate:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [ Quality-Gate, Security-Gate ]
+    steps:
+      - name: Check Out Source Code
+        uses: actions/checkout@v3.3.0
+
+      # TBD

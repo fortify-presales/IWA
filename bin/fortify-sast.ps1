@@ -52,7 +52,7 @@ Write-Host Running translation...
 Write-Host Running scan...
 & sourceanalyzer '-Dcom.fortify.sca.ProjectRoot=.fortify' $JVMArgs $ScanSwitches -b "$AppName" `
     -cp $ClassPath  -java-build-dir "target/classes" -debug -verbose `
-    -rules etc/sast-custom-rules/example-custom-rules.xml -filter etc/sast-filters/sca-filter.txt `
+    -rules etc/sast-custom-rules/example-custom-rules.xml -filter etc/sast-filters/example-filter.txt `
     -scan-policy $ScanPolicy `
     -build-project "$AppName" -build-version "$AppVersion" -build-label "SNAPSHOT" `
     -scan -f "$($AppName).fpr"

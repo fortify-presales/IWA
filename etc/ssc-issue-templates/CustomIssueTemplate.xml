@@ -1,42 +1,55 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<FilterTemplate publishVersion="1" objectVersion="4" id="e54cefcf-d341-452f-ada2-d1317e323a8f" disableEdit="false" version="1.2">
-    <Name>Custom Process Issue Template</Name>
+<FilterTemplate version="1.2" disableEdit="false" id="e54cefcf-d341-452f-ada2-d1317e323a8f" objectVersion="4" publishVersion="1">
+    <Name>Custom Issue Template</Name>
     <Description>Custom Issue Template</Description>
-    <FolderDefinition color="ca3f37" id="b968f72f-cc12-03b5-976e-ad4c13920c21">
+    <FolderDefinition id="b968f72f-cc12-03b5-976e-ad4c13920c21" color="ca3f37">
         <name>Critical</name>
         <description>This folder provides a comprehensive list of issues in the application with a high impact and high likelihood.</description>
     </FolderDefinition>
-    <FolderDefinition color="ff8c00" id="5b50bb77-071d-08ed-fdba-1213fa90ac5a">
+    <FolderDefinition id="5b50bb77-071d-08ed-fdba-1213fa90ac5a" color="ff8c00">
         <name>High</name>
         <description>This folder provides a comprehensive list of issues in the application with a high impact and low likelihood.</description>
     </FolderDefinition>
-    <FolderDefinition color="ffc800" id="d5f55910-5f0d-a775-e91f-191d1f5608a4">
+    <FolderDefinition id="d5f55910-5f0d-a775-e91f-191d1f5608a4" color="ffc800">
         <name>Medium</name>
         <description>This folder provides a comprehensive list of issues in the application with a low impact and high likelihood.</description>
     </FolderDefinition>
-    <FolderDefinition color="dbb604" id="bb824e8d-b401-40be-13bd-5d156696a685">
+    <FolderDefinition id="bb824e8d-b401-40be-13bd-5d156696a685" color="dbb604">
         <name>Low</name>
         <description>This folder provides a comprehensive list of issues in the application with a low impact and low likelihood.</description>
     </FolderDefinition>
+    <FolderDefinition id="fd2fb536-d19c-4821-8f2d-c8095f299eca" color="blue">
+        <name>Noise</name>
+        <description>This folder is used to identify issues which might be deemed as Noise so they can be manipulated/reviewed en-masse.</description>
+    </FolderDefinition>
     <DefaultFolder folderID="bb824e8d-b401-40be-13bd-5d156696a685"/>
-    <TagDefinition valueType="LIST" objectVersion="0" hidden="false" extensible="false" type="user" id="87f2364f-dcd4-49e6-861d-f8d3f351686b">
+    <TagDefinition id="87f2364f-dcd4-49e6-861d-f8d3f351686b" type="user" extensible="false" hidden="false" restriction="RESTRICTED" objectVersion="2" valueType="LIST">
         <name>Analysis</name>
-        <Description>The analysis tag must be set for an issue to be counted as 'Audited.' This is encouraged to be the final action performed by an auditor.</Description>
-        <value hidden="false" id="0">Not an Issue</value>
-        <value hidden="false" id="1">Reliability Issue</value>
-        <value hidden="false" id="2">Bad Practice</value>
-        <value hidden="false" id="3">Suspicious</value>
-        <value hidden="false" id="4">Exploitable</value>
+        <Description>The analysis tag must be set for an issue to be counted as 'Audited.' Fortify recommends that the auditor set the analysis tag as the final action during an issue audit.</Description>
+        <value id="0" Description="" hidden="false">Not an Issue</value>
+        <value id="1" Description="" hidden="false">Reliability Issue</value>
+        <value id="2" Description="" hidden="false">Bad Practice</value>
+        <value id="3" Description="" hidden="false">Suspicious</value>
+        <value id="4" Description="" hidden="false">Exploitable</value>
+        <value id="5" Description="Not Predicted" hidden="false">Not Predicted</value>
     </TagDefinition>
-    <TagDefinition valueType="LIST" objectVersion="1" hidden="false" extensible="false" type="user" id="b4656239-4d81-4277-9950-a9d3cb79d694">
+    <TagDefinition id="b4656239-4d81-4277-9950-a9d3cb79d694" type="user" extensible="false" hidden="false" objectVersion="0" valueType="LIST">
         <name>Baseline</name>
-        <Description>Baseline tag is used to tag all issues present in the initial scan, inorder to differentiate between issues already present before fortify was implemented for the project, and issues introduced afterwards.</Description>
-        <value hidden="false" id="0">yes</value>
+        <Description>The baseline tag is used to tag all issues present in an initial scan, in order to differentiate between issues already present before Fortify was implemented on the project, and issues introduced afterwards.</Description>
+        <value id="0" hidden="false">yes</value>
     </TagDefinition>
-    <TagDefinition valueType="LIST" objectVersion="2" restriction="RESTRICTED" hidden="false" extensible="false" type="user" id="c9bf6e0a-3818-4a4f-8e5f-00ebb51c9291">
+    <TagDefinition id="c9bf6e0a-3818-4a4f-8e5f-00ebb51c9291" type="user" extensible="false" hidden="false" restriction="RESTRICTED" objectVersion="0" valueType="LIST">
         <name>Reviewed</name>
-        <Description>All issues marked as not an issue must be reviewed by CISO team before they will be hidden from the standard views.</Description>
-        <value hidden="false" id="0">yes</value>
+        <Description>All issues marked as "Not an Issue" must be reviewed by the Application Security Team before they will be hidden from the standard views.</Description>
+        <value id="0" hidden="false">yes</value>
+    </TagDefinition>
+    <TagDefinition id="a5cf3561-90bb-497e-a7a2-7c10321bbb64" type="user" extensible="false" hidden="true" restriction="RESTRICTED" objectVersion="0" valueType="LIST">
+        <name>Priority Override</name>
+        <Description>Supports issue priority override.</Description>
+        <value id="15" hidden="false">Low</value>
+        <value id="20" hidden="false">Medium</value>
+        <value id="25" hidden="false">High</value>
+        <value id="30" hidden="false">Critical</value>
     </TagDefinition>
     <PrimaryTag>
         <primaryTagGUID>87f2364f-dcd4-49e6-861d-f8d3f351686b</primaryTagGUID>
@@ -44,9 +57,9 @@
         <openRange>(2,5]</openRange>
         <naiRange>[0,2]</naiRange>
     </PrimaryTag>
-    <FilterSet disableEdit="false" enabled="true" id="a243b195-0a59-3f8b-1403-d55b7a7d78e6" type="user">
-        <Title>All Issues (Except Reviewed Not an Issue)</Title>
-        <Description>This filter set shows all issues except issues for which Analysis tag  has been set to  &quot;not an issue&quot;  (False Positive) and reviewed tag has been set to True (Reviewed by CISO)</Description>
+    <FilterSet type="user" id="a243b195-0a59-3f8b-1403-d55b7a7d78e6" enabled="false" disableEdit="false">
+        <Title>All Issues (Except Reviewed or Not an Issue)</Title>
+        <Description>This filter set shows all issues except those which have had Analysis tag set to "Not an Issue" (False Positives) and Reviewed tag has been set to "True" (Reviewed by Security Team).</Description>
         <EnabledFolders>b968f72f-cc12-03b5-976e-ad4c13920c21</EnabledFolders>
         <EnabledFolders>5b50bb77-071d-08ed-fdba-1213fa90ac5a</EnabledFolders>
         <EnabledFolders>d5f55910-5f0d-a775-e91f-191d1f5608a4</EnabledFolders>
@@ -73,11 +86,11 @@
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Analysis:&quot;not an issue&quot; AND Reviewed:&quot;yes&quot;</query>
+            <query>Analysis:"not an issue" AND Reviewed:"yes"</query>
             <action>hide</action>
         </Filter>
     </FilterSet>
-    <FilterSet disableEdit="false" enabled="false" id="cd31f2d8-721a-4122-ac84-b0e2c6347663" type="user">
+    <FilterSet type="user" id="cd31f2d8-721a-4122-ac84-b0e2c6347663" enabled="false" disableEdit="false">
         <Title>All Issues (All)</Title>
         <Description>This filter set shows all issues.</Description>
         <EnabledFolders>b968f72f-cc12-03b5-976e-ad4c13920c21</EnabledFolders>
@@ -105,11 +118,9 @@
             <action>setFolder</action>
         </Filter>
     </FilterSet>
-    <FilterSet disableEdit="false" enabled="false" id="84815f00-2bef-427f-9696-de54feb33ede" type="user">
+    <FilterSet type="user" id="84815f00-2bef-427f-9696-de54feb33ede" enabled="false" disableEdit="false">
         <Title>Baseline (Not Audited)</Title>
-        <Description>This filter set shows all issues for which Baseline Tag is set to &quot;true&quot; (base line issues) and for which Analysis tag is not set (not yet audited)    &#xD;
-            &#xD;
-            This view can be used to audit baseline issues by team security lead.</Description>
+        <Description>This filter set shows all issues for which Baseline tag is set to "true" (baseline issues) and for which Analysis tag is not set (not yet audited). This view can be used to audit baseline issues by team security lead.</Description>
         <EnabledFolders>b968f72f-cc12-03b5-976e-ad4c13920c21</EnabledFolders>
         <EnabledFolders>5b50bb77-071d-08ed-fdba-1213fa90ac5a</EnabledFolders>
         <EnabledFolders>d5f55910-5f0d-a775-e91f-191d1f5608a4</EnabledFolders>
@@ -136,12 +147,12 @@
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Baseline:!&quot;yes&quot;</query>
+            <query>Baseline:!"yes"</query>
             <action>hide</action>
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Analysis:&quot;not an issue&quot; AND Reviewed:&quot;yes&quot;</query>
+            <query>Analysis:"not an issue" AND Reviewed:"yes"</query>
             <action>hide</action>
         </Filter>
         <Filter>
@@ -150,11 +161,9 @@
             <action>hide</action>
         </Filter>
     </FilterSet>
-    <FilterSet disableEdit="false" enabled="false" id="c190db2e-2a61-4176-a3bd-cbb60f27b5b3" type="user">
+    <FilterSet type="user" id="c190db2e-2a61-4176-a3bd-cbb60f27b5b3" enabled="false" disableEdit="false">
         <Title>Baseline (Audited)</Title>
-        <Description>This filter set shows all issues for which Baseline Tag is set to &quot;true&quot; (base line issues) and for which Analysis tag is set (audited)  This excludes issues for which Analysis tag  has been set to  &quot;not an issue&quot;  (False Positive) and reviewed tag has been set to True (Reviewed by CISO)    &#xD;
-            &#xD;
-            This view can be used by team security lead or by any one to review which baseline  issues have previously been audited.</Description>
+        <Description>This filter set shows all issues for which Baseline tag is set to "true" (baseline issues) and for which Analysis tag is set (audited). This excludes issues for which Analysis tag has been set to "not an issue" (False Positives) and the Reviewed tag has been set to True (Reviewed by Security Team). This view can be used by team security lead or by any one to review which baseline issues have previously been audited.</Description>
         <EnabledFolders>b968f72f-cc12-03b5-976e-ad4c13920c21</EnabledFolders>
         <EnabledFolders>5b50bb77-071d-08ed-fdba-1213fa90ac5a</EnabledFolders>
         <EnabledFolders>d5f55910-5f0d-a775-e91f-191d1f5608a4</EnabledFolders>
@@ -181,12 +190,12 @@
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Baseline:!&quot;yes&quot;</query>
+            <query>Baseline:!"yes"</query>
             <action>hide</action>
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Analysis:&quot;not an issue&quot; AND Reviewed:&quot;yes&quot;</query>
+            <query>Analysis:"not an issue" AND Reviewed:"yes"</query>
             <action>hide</action>
         </Filter>
         <Filter>
@@ -195,9 +204,9 @@
             <action>hide</action>
         </Filter>
     </FilterSet>
-    <FilterSet disableEdit="false" enabled="false" id="c206582d-2572-411a-93d4-85341faeefbf" type="user">
+    <FilterSet type="user" id="c206582d-2572-411a-93d4-85341faeefbf" enabled="false" disableEdit="false">
         <Title>Baseline (All)</Title>
-        <Description>This filter set shows all issues for which Baseline Tag is set to &quot;true&quot; (base line issues).</Description>
+        <Description>This filter set shows all issues for which Baseline tag is set to "true" (baseline issues).</Description>
         <EnabledFolders>b968f72f-cc12-03b5-976e-ad4c13920c21</EnabledFolders>
         <EnabledFolders>5b50bb77-071d-08ed-fdba-1213fa90ac5a</EnabledFolders>
         <EnabledFolders>d5f55910-5f0d-a775-e91f-191d1f5608a4</EnabledFolders>
@@ -224,16 +233,13 @@
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Baseline:!&quot;yes&quot;</query>
+            <query>Baseline:!"yes"</query>
             <action>hide</action>
         </Filter>
     </FilterSet>
-    <FilterSet disableEdit="false" enabled="false" id="2868c211-7c03-4ef1-9aca-41e0fe976d88" type="user">
+    <FilterSet type="user" id="2868c211-7c03-4ef1-9aca-41e0fe976d88" enabled="false" disableEdit="false">
         <Title>Non Baseline (Not Audited)</Title>
-        <Description>This filter set shows all issues for which Baseline Tag is not set to &quot;true&quot; (non base line issues) and for which Analysis tag is not set (not yet audited).&#xD;
-            &#xD;
-            This view can be used to audit non baseline issues by team security lead.&#xD;
-        </Description>
+        <Description>This filter set shows all issues for which Baseline tag is not set to "true" (non baseline issues) and for which Analysis tag is not set (not yet audited). This view can be used to audit non baseline issues by team security lead.</Description>
         <EnabledFolders>b968f72f-cc12-03b5-976e-ad4c13920c21</EnabledFolders>
         <EnabledFolders>5b50bb77-071d-08ed-fdba-1213fa90ac5a</EnabledFolders>
         <EnabledFolders>d5f55910-5f0d-a775-e91f-191d1f5608a4</EnabledFolders>
@@ -260,12 +266,12 @@
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Baseline:&quot;yes&quot;</query>
+            <query>Baseline:"yes"</query>
             <action>hide</action>
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Analysis:&quot;not an issue&quot; AND Reviewed:&quot;yes&quot;</query>
+            <query>Analysis:"not an issue" AND Reviewed:"yes"</query>
             <action>hide</action>
         </Filter>
         <Filter>
@@ -274,11 +280,9 @@
             <action>hide</action>
         </Filter>
     </FilterSet>
-    <FilterSet disableEdit="false" enabled="false" id="0d548a4b-916c-4526-88a4-c8c6f66b0247" type="user">
+    <FilterSet type="user" id="0d548a4b-916c-4526-88a4-c8c6f66b0247" enabled="false" disableEdit="false">
         <Title>Non Baseline (Audited)</Title>
-        <Description>This filter set shows all issues for which Baseline Tag is not set to &quot;true&quot; (non base line issues) and for which Analysis tag is set (audited)  This excludes issues for which Analysis tag  has been set to  &quot;not an issue&quot;  (False Positive) and reviewed tag has been set to True (Reviewed by CISO)&#xD;
-            &#xD;
-            This view can be used by team security lead or by any one to review which non baseline  issues have previously been audited.</Description>
+        <Description>This filter set shows all issues for which Baseline tag is not set to "true" (non baseline issues) and for which Analysis tag is set (audited). This excludes issues for which Analysis tag has been set to "not an issue" (False Positives) and Reviewed tag has been set to True (Reviewed by Security Team). This view can be used by team security lead or by any one to review which non baseline issues have previously been audited.</Description>
         <EnabledFolders>b968f72f-cc12-03b5-976e-ad4c13920c21</EnabledFolders>
         <EnabledFolders>5b50bb77-071d-08ed-fdba-1213fa90ac5a</EnabledFolders>
         <EnabledFolders>d5f55910-5f0d-a775-e91f-191d1f5608a4</EnabledFolders>
@@ -305,12 +309,12 @@
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Baseline:&quot;yes&quot;</query>
+            <query>Baseline:"yes"</query>
             <action>hide</action>
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Analysis:&quot;not an issue&quot; AND Reviewed:&quot;yes&quot;</query>
+            <query>Analysis:"not an issue" AND Reviewed:"yes"</query>
             <action>hide</action>
         </Filter>
         <Filter>
@@ -319,9 +323,9 @@
             <action>hide</action>
         </Filter>
     </FilterSet>
-    <FilterSet disableEdit="false" enabled="false" id="a169036d-5b48-40ed-9e2a-389bfbd94bfe" type="user">
+    <FilterSet type="user" id="a169036d-5b48-40ed-9e2a-389bfbd94bfe" enabled="false" disableEdit="false">
         <Title>Non Baseline (All)</Title>
-        <Description>This filter set shows all issues for which Baseline Tag is not set to &quot;true&quot; (non base line issues).</Description>
+        <Description>This filter set shows all issues for which Baseline Tag is not set to "true" (non base line issues).</Description>
         <EnabledFolders>b968f72f-cc12-03b5-976e-ad4c13920c21</EnabledFolders>
         <EnabledFolders>5b50bb77-071d-08ed-fdba-1213fa90ac5a</EnabledFolders>
         <EnabledFolders>d5f55910-5f0d-a775-e91f-191d1f5608a4</EnabledFolders>
@@ -348,17 +352,18 @@
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Baseline:&quot;yes&quot;</query>
+            <query>Baseline:"yes"</query>
             <action>hide</action>
         </Filter>
     </FilterSet>
-    <FilterSet disableEdit="false" enabled="false" id="6530c109-a264-4c74-ba9e-aee0337755cf" type="user">
-        <Title>Audited to Fix</Title>
-        <Description>This filter set shows all issues for which Analysis tag is set (audited)  This excludes issues for which Analysis tag  has been set to  &quot;not an issue&quot;  (False Positive).     This view can be used by developers to get an overview of the issues that needs to be fixed.</Description>
+    <FilterSet type="user" id="6530c109-a264-4c74-ba9e-aee0337755cf" enabled="true" disableEdit="false">
+        <Title>Developer (Audited to Fix)</Title>
+        <Description>This filter set shows Audited issues that are Exploitable and therefore need to be addressed as a priority. It excludes issues for which the Analysis tag has been set to "Not an issue" (False Positives). This view can be used by developers to get an overview of the issues that need to be fixed. It should be the Default filter set.</Description>
         <EnabledFolders>b968f72f-cc12-03b5-976e-ad4c13920c21</EnabledFolders>
         <EnabledFolders>5b50bb77-071d-08ed-fdba-1213fa90ac5a</EnabledFolders>
         <EnabledFolders>d5f55910-5f0d-a775-e91f-191d1f5608a4</EnabledFolders>
         <EnabledFolders>bb824e8d-b401-40be-13bd-5d156696a685</EnabledFolders>
+        <EnabledFolders>fd2fb536-d19c-4821-8f2d-c8095f299eca</EnabledFolders>
         <Filter>
             <actionParam>b968f72f-cc12-03b5-976e-ad4c13920c21</actionParam>
             <query>[fortify priority order]:critical</query>
@@ -381,18 +386,23 @@
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Analysis:&quot;not an issue&quot;</query>
+            <query>Analysis:"not an issue"</query>
             <action>hide</action>
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Analysis:!i</query>
+            <query>audited:!"true"</query>
+            <action>hide</action>
+        </Filter>
+        <Filter>
+            <actionParam>true</actionParam>
+            <query>Analysis:!exploitable</query>
             <action>hide</action>
         </Filter>
     </FilterSet>
-    <FilterSet disableEdit="false" enabled="false" id="ecb7c4c8-6fa9-47c0-84a9-fed44f8b5563" type="user">
+    <FilterSet type="user" id="ecb7c4c8-6fa9-47c0-84a9-fed44f8b5563" enabled="false" disableEdit="false">
         <Title>Not an Issue (Not Reviewed)</Title>
-        <Description>This filter set shows all issues for which Analysis tag is set to &quot;not an issue&quot; (false positive) and reviewed tag is not set (false positives not reviewed by CISO).        This view can be used by CISO to  get an overview of the false positives that needs to be reviewed.</Description>
+        <Description>This filter set shows all issues for which Analysis tag is set to "not an issue" (False Positives) and the Reviewed tag is not set (i.e. False positives not reviewed by Security Team). This view can be used by the Security Team to get an overview of the False Positives that needs to be reviewed.</Description>
         <EnabledFolders>b968f72f-cc12-03b5-976e-ad4c13920c21</EnabledFolders>
         <EnabledFolders>5b50bb77-071d-08ed-fdba-1213fa90ac5a</EnabledFolders>
         <EnabledFolders>d5f55910-5f0d-a775-e91f-191d1f5608a4</EnabledFolders>
@@ -419,18 +429,18 @@
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Analysis:!&quot;not an issue&quot;</query>
+            <query>Analysis:!"not an issue"</query>
             <action>hide</action>
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Reviewed:&quot;yes&quot;</query>
+            <query>Reviewed:"yes"</query>
             <action>hide</action>
         </Filter>
     </FilterSet>
-    <FilterSet disableEdit="false" enabled="false" id="3635fd97-301b-46a7-bfc7-4bb9a22a7f62" type="user">
+    <FilterSet type="user" id="3635fd97-301b-46a7-bfc7-4bb9a22a7f62" enabled="false" disableEdit="false">
         <Title>Not an Issue (Reviewed)</Title>
-        <Description>This filter set shows all issues for which Analysis tag is set to &quot;not an issue&quot; (false positive) and reviewed tag is set to True (false positives reviewed by CISO) .   This view can be used by CISO or any one to  get an overview of the false positives that have been previously reviewed.</Description>
+        <Description>This filter set shows all issues for which Analysis tag is set to "not an issue" (False Positives) and the Reviewed tag is set to True (False Positives reviewed by Security Team). This view can be used by the Security Team or any one to get an overview of the False Positives that have been previously reviewed.</Description>
         <EnabledFolders>b968f72f-cc12-03b5-976e-ad4c13920c21</EnabledFolders>
         <EnabledFolders>5b50bb77-071d-08ed-fdba-1213fa90ac5a</EnabledFolders>
         <EnabledFolders>d5f55910-5f0d-a775-e91f-191d1f5608a4</EnabledFolders>
@@ -457,13 +467,47 @@
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Analysis:!&quot;not an issue&quot;</query>
+            <query>Analysis:!"not an issue"</query>
             <action>hide</action>
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>Reviewed:!&quot;yes&quot;</query>
+            <query>Reviewed:!"yes"</query>
             <action>hide</action>
+        </Filter>
+    </FilterSet>
+    <FilterSet type="user" id="f527f48c-5bb3-4d35-a329-5ce57281888f" enabled="false" disableEdit="false">
+        <Title>Noise Candidates</Title>
+        <Description>This filter set is used to collate issues that might not be relvant into a "Noise" folder so they can be reviewed/manipulated en-masse. This is an example filter set and should be reviewed before use. It currently includes: issues from the "Code Quality" kingdom, issues from the "poor style" and "j2ee" cataegories as well as issues with a taint from the command line.</Description>
+        <EnabledFolders>b968f72f-cc12-03b5-976e-ad4c13920c21</EnabledFolders>
+        <EnabledFolders>5b50bb77-071d-08ed-fdba-1213fa90ac5a</EnabledFolders>
+        <EnabledFolders>d5f55910-5f0d-a775-e91f-191d1f5608a4</EnabledFolders>
+        <EnabledFolders>bb824e8d-b401-40be-13bd-5d156696a685</EnabledFolders>
+        <EnabledFolders>fd2fb536-d19c-4821-8f2d-c8095f299eca</EnabledFolders>
+        <Filter>
+            <actionParam>b968f72f-cc12-03b5-976e-ad4c13920c21</actionParam>
+            <query>[fortify priority order]:critical</query>
+            <action>setFolder</action>
+        </Filter>
+        <Filter>
+            <actionParam>5b50bb77-071d-08ed-fdba-1213fa90ac5a</actionParam>
+            <query>[fortify priority order]:high</query>
+            <action>setFolder</action>
+        </Filter>
+        <Filter>
+            <actionParam>d5f55910-5f0d-a775-e91f-191d1f5608a4</actionParam>
+            <query>[fortify priority order]:medium</query>
+            <action>setFolder</action>
+        </Filter>
+        <Filter>
+            <actionParam>bb824e8d-b401-40be-13bd-5d156696a685</actionParam>
+            <query>[fortify priority order]:low</query>
+            <action>setFolder</action>
+        </Filter>
+        <Filter>
+            <actionParam>fd2fb536-d19c-4821-8f2d-c8095f299eca</actionParam>
+            <query>kingdom:code quality OR category:poor style OR category:j2ee OR taint:args, environment, number, property</query>
+            <action>setFolder</action>
         </Filter>
     </FilterSet>
 </FilterTemplate>

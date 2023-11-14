@@ -94,7 +94,7 @@ if (!propertiesFile.exists()) {
 }
 props.load(propertiesFile.newDataInputStream())
 
-project.archivesBaseName = 'iwa-web'
+project.archivesBaseName = 'iwa-java'
 group = 'com.microfocus.example'
 version = ''
 description = 'IWA (Insecure Web App) Pharmacy Direct - an insecure web application for use in Fortify demonstrations'

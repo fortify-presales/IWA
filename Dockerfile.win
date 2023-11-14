@@ -1,3 +1,4 @@
+#FROM eclipse-temurin:11-windowsservercore
 FROM openjdk:8-nanoserver-1809
 
 LABEL maintainer="kevin.lee@microfocus.com"

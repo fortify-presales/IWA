@@ -53,6 +53,11 @@ An up-to-date version of the running application can be found at [https://iwa.on
 In order to execute example scenarios for yourself, it is recommended that you "fork" a copy of this repository into
 your own GitHub account. The process of "forking" is described in detail in the [GitHub documentation](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) - you can start the process by clicking on the "Fork" button at the top right.
 
+## Build Requirements
+
+In order to successfully build and run the application you will need to have [Java JDK 11](https://openjdk.org/projects/jdk/11) 
+installed and on your path.
+
 ## Building the Application
 
 To build the application using Maven, execute the following from the command line:
