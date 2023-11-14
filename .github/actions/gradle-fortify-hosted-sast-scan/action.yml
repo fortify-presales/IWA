@@ -67,9 +67,9 @@ runs:
       shell: bash
       run: |
         fcli --version
-        fcli ssc session login --url $SSC_URI --ci-token --session github-actions
+        fcli ssc session login --url $SSC_URL --ci-token $SSC_TOKEN --session github-actions
       env:
-        SSC_URI: ${{ inputs.ssc_url }}
+        SSC_URL: ${{ inputs.ssc_url }}
         SSC_TOKEN: ${{ inputs.ssc_token }}
     # Create a new Fortify SSC Application Version for GitHub branch
     #- name: Create SSC Application Version

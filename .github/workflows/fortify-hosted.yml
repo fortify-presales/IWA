@@ -124,7 +124,7 @@ jobs:
         uses: ./.github/actions/gradle-fortify-hosted-sast-scan
         with:
           working_directory: ${{ env.BASE_DIR }}
-          ssc_url: ${{ vars.FORTIFY_HOSTED_API_URL }}
+          ssc_url: ${{ vars.FORTIFY_HOSTED_BASE_URL }}
           ssc_token: ${{ secrets.FORTIFY_HOSTED_SSC_TOKEN }}
           scsast_client_auth_token: ${{ secrets.FORTIFY_HOSTED_SCSAST_CLIENT_AUTH_TOKEN }}
           ssc_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
