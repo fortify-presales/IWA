@@ -1,15 +1,13 @@
 
 # Create GitHub Action Repository Variables for your version of the application:
-#   FOD_BASE_URL should be FoD BASE URL for your tenant (e.g. https://emea.fortify.com)
-#   FOD_API_URI should be FoD API URI for your tenant (e.g. https://api.emea,fortify.com)
-#   FOD_PARENT_RELEASE_NAME is the FoD release name corresponding to the parent branch of any newly created branch, this is typically "main"
+#   FORTIFY_HOSTED_BASE_URL should be Fortify BASE URL for your tenant (e.g. https://ssc.uat.fortifyhosted.net)
+#   FORTIFY_HOSTED_PARENT_RELEASE_NAME is the Fortify release name corresponding to the parent branch of any newly created branch, this is typically "main"
 # Create GitHub Action Secrets for your version of the application:
-#   FOD_CLIENT_ID should be an API Key obtained from your FoD tenant.
-#   FOD_CLIENT_SECRET should be the secret for the API Key obtained for your FoD tenant.
+#   FORTIFY_HOSTED_CLIENT_ID should be an API Key obtained from your Fortify tenant.
+#   FORTIFY_HOSTED_CLIENT_SECRET should be the secret for the API Key obtained for your Fortify tenant.
 # Helpful hints:
-#   API Key credentials can be obtained from your FoD tenant, under Administration -> Settings -> API
+#   API Key credentials can be obtained from your Fortify tenant, under Administration -> Settings -> API
 #   It is recommended to create credentials with 'Security Lead' Role selected.
-#   "Automated Audit preference" should be configured for the release's Static Scan Settings.
 
 name: DevSecOps with Fortify Hosted
 
@@ -34,7 +32,7 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
-      runFoDSASTScan:
+      runFortifySASTScan:
         description: 'Carry out SAST scan using Fortify Hosted'
         required: false
         default: 'true'
@@ -42,7 +40,7 @@ on:
         description: 'Carry out SCA scan using Debricked'
         required: false
         default: 'false'
-      runFoDDASTScan:
+      runFortifyDASTScan:
         description: 'Carry out DAST scan using Fortify Hosted'
         required: false
         default: 'false'
@@ -52,7 +50,7 @@ env:
   DEFAULT_APP_NAME: "IWA-Java"
   # some insecure variables to be picked up by fortify scan
   AWS_REGION: US_WEST_2
-  AWS_ACCESS_KEY_ID: AKIAIOSFODNN7EXAMPLE
+  AWS_ACCESS_KEY_ID: AKIAIOSFORTIFY_HOSTEDNN7EXAMPLE
   AWS_SECRET_ACCESS_KEY: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 
 jobs:
@@ -105,9 +103,9 @@ jobs:
 
     # TBD
 
-  FoD-SAST-Scan:
+  Fortify-SAST-Scan:
     runs-on: ubuntu-latest
-    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runFoDSASTScan == 'true') }}
+    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runFortifySASTScan == 'true') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3.3.0
@@ -124,20 +122,20 @@ jobs:
           default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
           default_fortify_release_name: 'main'
           app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
-      #- name: Gradle FoD SAST scan
+      #- name: Gradle Fortify SAST scan
       #  id: gradle-fod-sast-scan
       #  uses: ./.github/actions/gradle-fod-sast-scan
       #  with:
       #    working_directory: ${{ env.BASE_DIR }}
-      #    fod_api_uri: ${{ vars.FOD_API_URI }}
-      #    fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
-      #    fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
+      #    fod_api_uri: ${{ vars.FORTIFY_HOSTED_API_URI }}
+      #    fod_client_id: ${{ secrets.FORTIFY_HOSTED_CLIENT_ID }}
+      #    fod_client_secret: ${{ secrets.FORTIFY_HOSTED_CLIENT_SECRET }}
       #    fod_app_name: ${{ steps.fod-app-and-rel-name.outputs.app_name }}
       #    fod_release_name: ${{ steps.fod-app-and-rel-name.outputs.release_name }}
 
-  FoD-DAST-Scan:
+  Fortify-DAST-Scan:
     runs-on: ubuntu-latest
-    if: ${{ (github.event.inputs.runFoDDASTScan == 'true') }}
+    if: ${{ (github.event.inputs.runFortifyDASTScan == 'true') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3.3.0
@@ -154,7 +152,7 @@ jobs:
   Security-Gate:
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    needs: [ Debricked-SCA,FoD-SAST-Scan,FoD-DAST-Scan ]
+    needs: [ Debricked-SCA,Fortify-SAST-Scan,Fortify-DAST-Scan ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3.3.0
@@ -165,12 +163,12 @@ jobs:
           default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
           default_fortify_release_name: 'main'
           app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
-      #- name: Verify FoD Security Policy
+      #- name: Verify Fortify Security Policy
       #  uses: ./.github/actions/verify-fod-security-policy
       #  with:
-      #    fod_api_uri: ${{ vars.FOD_API_URI }}
-      #    fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
-      #    fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
+      #    fod_api_uri: ${{ vars.FORTIFY_HOSTED_API_URI }}
+      #    fod_client_id: ${{ secrets.FORTIFY_HOSTED_CLIENT_ID }}
+      #    fod_client_secret: ${{ secrets.FORTIFY_HOSTED_CLIENT_SECRET }}
       #    fod_app_name: ${{ steps.fod-app-and-rel-name.outputs.app_name }}
       #    fod_release_name: ${{ steps.fod-app-and-rel-name.outputs.release_name }}
 

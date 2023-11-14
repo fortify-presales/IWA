@@ -92,7 +92,7 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
       - run: ./gradlew dependencies > .debricked-gradle-dependencies.txt
-      - uses: debricked/vulnerable-functionality/java/gradle@v0
+      - uses: debricked/vulnerable-functionality/java/gradle@v0.5.0
       - uses: debricked/actions/scan@v1
         env:
           DEBRICKED_TOKEN: ${{ secrets.DEBRICKED_TOKEN }}
