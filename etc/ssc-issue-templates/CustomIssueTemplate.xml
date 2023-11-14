@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<FilterTemplate version="1.2" disableEdit="false" id="e54cefcf-d341-452f-ada2-d1317e323a8f" objectVersion="4" publishVersion="1">
+<FilterTemplate version="1.2" disableEdit="false" id="e54cefcf-d341-452f-ada2-d1317e323a8f" objectVersion="3" publishVersion="1">
     <Name>Custom Issue Template</Name>
-    <Description>Custom Issue Template</Description>
+    <Description>An example Custom Issue Template with Baseline and Review tags/filters and Noise folder</Description>
     <FolderDefinition id="b968f72f-cc12-03b5-976e-ad4c13920c21" color="ca3f37">
         <name>Critical</name>
         <description>This folder provides a comprehensive list of issues in the application with a high impact and high likelihood.</description>
@@ -23,7 +23,7 @@
         <description>This folder is used to identify issues which might be deemed as Noise so they can be manipulated/reviewed en-masse.</description>
     </FolderDefinition>
     <DefaultFolder folderID="bb824e8d-b401-40be-13bd-5d156696a685"/>
-    <TagDefinition id="87f2364f-dcd4-49e6-861d-f8d3f351686b" type="user" extensible="false" hidden="false" restriction="RESTRICTED" objectVersion="2" valueType="LIST">
+    <TagDefinition id="87f2364f-dcd4-49e6-861d-f8d3f351686b" type="user" extensible="false" hidden="false" objectVersion="1" valueType="LIST">
         <name>Analysis</name>
         <Description>The analysis tag must be set for an issue to be counted as 'Audited.' Fortify recommends that the auditor set the analysis tag as the final action during an issue audit.</Description>
         <value id="0" Description="" hidden="false">Not an Issue</value>
@@ -31,7 +31,6 @@
         <value id="2" Description="" hidden="false">Bad Practice</value>
         <value id="3" Description="" hidden="false">Suspicious</value>
         <value id="4" Description="" hidden="false">Exploitable</value>
-        <value id="5" Description="Not Predicted" hidden="false">Not Predicted</value>
     </TagDefinition>
     <TagDefinition id="b4656239-4d81-4277-9950-a9d3cb79d694" type="user" extensible="false" hidden="false" objectVersion="0" valueType="LIST">
         <name>Baseline</name>
@@ -64,6 +63,7 @@
         <EnabledFolders>5b50bb77-071d-08ed-fdba-1213fa90ac5a</EnabledFolders>
         <EnabledFolders>d5f55910-5f0d-a775-e91f-191d1f5608a4</EnabledFolders>
         <EnabledFolders>bb824e8d-b401-40be-13bd-5d156696a685</EnabledFolders>
+        <EnabledFolders>fd2fb536-d19c-4821-8f2d-c8095f299eca</EnabledFolders>
         <Filter>
             <actionParam>b968f72f-cc12-03b5-976e-ad4c13920c21</actionParam>
             <query>[fortify priority order]:critical</query>
@@ -478,7 +478,7 @@
     </FilterSet>
     <FilterSet type="user" id="f527f48c-5bb3-4d35-a329-5ce57281888f" enabled="false" disableEdit="false">
         <Title>Noise Candidates</Title>
-        <Description>This filter set is used to collate issues that might not be relvant into a "Noise" folder so they can be reviewed/manipulated en-masse. This is an example filter set and should be reviewed before use. It currently includes: issues from the "Code Quality" kingdom, issues from the "poor style" and "j2ee" cataegories as well as issues with a taint from the command line.</Description>
+        <Description>This filter set is used to collate issues that might not be relvant into a "Noise" folder so they can be reviewed/manipulated en-masse. This is an example filter set and should be reviewed before use. It currently includes: issues from the "Code Quality" kingdom, issues from the "poor style" and "j2ee" and "mass assignment" categories.</Description>
         <EnabledFolders>b968f72f-cc12-03b5-976e-ad4c13920c21</EnabledFolders>
         <EnabledFolders>5b50bb77-071d-08ed-fdba-1213fa90ac5a</EnabledFolders>
         <EnabledFolders>d5f55910-5f0d-a775-e91f-191d1f5608a4</EnabledFolders>
@@ -506,7 +506,7 @@
         </Filter>
         <Filter>
             <actionParam>fd2fb536-d19c-4821-8f2d-c8095f299eca</actionParam>
-            <query>kingdom:code quality OR category:poor style OR category:j2ee OR taint:args, environment, number, property</query>
+            <query>kingdom:code quality OR category:poor style OR category:j2ee OR category:mass assignment</query>
             <action>setFolder</action>
         </Filter>
     </FilterSet>

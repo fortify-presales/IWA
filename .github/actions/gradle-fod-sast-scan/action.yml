@@ -1,5 +1,5 @@
-name: "Node FoD SAST Scan"
-description: "Runs a Fortify on Demand Scan of a Node JS application"
+name: "Gradle FoD SAST Scan"
+description: "Runs a Fortify on Demand Scan of a Gradle application"
 inputs:
   working_directory:
     required: false
@@ -32,7 +32,7 @@ inputs:
 outputs:
   fod_scan_id:
     description: "FoD Scan Id"
-    value: ${{ steps.fod-app-name.outputs.app_name }}
+    value: ${{ steps.fod-sast-scan.outputs.fod_scan_id }}
 runs:
   using: "composite"
   steps:

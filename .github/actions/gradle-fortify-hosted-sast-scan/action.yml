@@ -1,0 +1,120 @@
+name: "Gradle FoD SAST Scan"
+description: "Runs a Fortify on Demand Scan of a Gradle application"
+inputs:
+  working_directory:
+    required: false
+    description: "Relative directory (from root of repository) from where to run commands"
+    default: "."
+  ssc_url:
+    required: false
+    description: "Fortify SSC URL"
+    default: "https://ssc.uat.fortifyhosted.net"
+  ssc_token:
+    required: true
+    description: "Fortify SSC Token (CIToken)"
+  scsast_client_auth_token:
+    required: true
+    description: "Fortify ScanCentral SAST Client Authentication Token"
+  ssc_app_name:
+    required: true
+    description: "SSC Application Name"
+  ssc_appver_name:
+    required: true
+    description: "SSC Application Version Name"
+  ssc_parent_appver_name:
+    required: false
+    description: "SSC Parent Application Version Name"
+    default: "main"
+  ssc_sensor_ver:
+    required: false
+    description: "SSC Sensor Version"
+    default: "23.1"
+  gradle_version:
+    required: false
+    description: "Version of Gradle to use"
+    default: "7.3"
+outputs:
+  scsast_scan_id:
+    description: "ScanCentral SAST Scan/Job Id"
+    value: ${{ steps.scancentral-sast-scan.outputs.scsast_scan_id }}
+runs:
+  using: "composite"
+  steps:
+    # Java is required to run the various Fortify utilities.
+    # Setup JDK 11 on host
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+    # Install appropriate version of Gradle
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: ${{ inputs.gradle_version }}
+    # Install Fortify tools
+    - name: Setup Fortify tools
+      uses: fortify/github-action/setup@v1
+      with:
+        export-path: true
+        fcli: latest
+        sc-client: latest
+        fod-uploader: skip
+        vuln-exporter: v2
+        bugtracker-utility: skip
+    # Login to Fortify on Demand fcli session
+    - name: Login fcli
+      working-directory: ${{ env.BASE_DIR }}
+      shell: bash
+      run: |
+        fcli --version
+        fcli ssc session login --url $SSC_URI --ci-token --session github-actions
+      env:
+        SSC_URI: ${{ inputs.ssc_url }}
+        SSC_TOKEN: ${{ inputs.ssc_token }}
+    # Create a new Fortify SSC Application Version for GitHub branch
+    #- name: Create SSC Application Version
+    #  working-directory: ${{ env.BASE_DIR }}
+    #  shell: bash
+    #  run: |
+    #    fcli ssc av list -q "application.name='$SSC_APP_NAME'" --session github-actions
+    #    echo fcli ssc av create "${SSC_APP_NAME}:${SSC_APPVER_NAME}" --description "Created automatically from GitHub" --auto-required-attrs --skip-if-exists -o expr="{versionId}" --session github-actions
+    #    APPVER_ID=$(fcli ssc av create "${SSC_APP_NAME}:${SSC_APPVER_NAME}" --description "Created automatically from GitHub" --auto-required-attrs --skip-if-exists -o expr="{versionId}" --session github-actions)
+    #    echo "::debug::Created SSC_APPVER_ID=${APPVER_ID}"
+    #    echo "SSC_APPVER_ID=${APPVER_ID}" >> $GITHUB_OUTPUT
+    #  id: create_ssc_release
+    #  env:
+    #    SSC_APP_NAME: ${{ inputs.ssc_app_name }}
+    #    SSC_APPVER_NAME: ${{ inputs.ssc_appver_name }}
+    #    SSC_PARENT_APPVER_NAME: ${{ inputs.ssc_parent_appver_name }}
+    # Create upload package using ScanCentral "package" action
+    - name: Package Code + Dependencies
+      uses: fortify/github-action/package@v1
+      env:
+        EXTRA_PACKAGE_OPTS: -bt gradle -bf build.gradle -bc "clean build -x test" -oss
+        PACKAGE_FILE: "package"
+    # Start ScanCentral SAST scan and wait until results complete.
+    - name: Perform ScanCentral SAST scan
+      id: scancentral-sast-scan
+      working-directory: ${{ env.BASE_DIR }}
+      shell: bash
+      run: |
+        fcli sc-sast scan start --sensor-version ${SSC_SENSOR_VER} --appversion "${SSC_APPVER_NAME}" -p $PACKAGE_FILE --upload --store curScan --session github-actions
+        sleep 5
+        echo "scsast_scan_id=$(fcli util var get ::curScan::)" >> $GITHUB_OUTPUT
+        fcli sc-sast scan wait-for ::curScan:: --session github-actions
+      env:
+        PACKAGE_FILE: "package.zip"
+        SSC_APPVER_NAME: ${{ format('{0}:{1}', inputs.ssc_app_name, inputs.ssc_appver_name) }}
+        SSC_SENSOR_VER: ${{ inputs.ssc_sensor_ver }}
+    # Export SSC vulnerability data to GitHub
+    - name: Export SSC vulnerability data to GitHub
+      uses: fortify/github-action/ssc-export@v1
+      env:
+        SSC_URL: ${{ inputs.ssc_url }}
+        SSC_TOKEN: ${{ inputs.ssc_token }}
+        SSC_APPVERSION: ${{ format('{0}:{1}', inputs.ssc_app_name, inputs.ssc_appver_name) }}
+    # Logout/Close Fortify on Demand fcli session
+    - name: Logout fcli
+      shell: bash
+      run: |
+        fcli ssc session logout --session github-actions

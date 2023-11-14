@@ -60,27 +60,11 @@ installed and on your path.
 
 ## Building the Application
 
-To build the application using Maven, execute the following from the command line:
+To build the application using Gradle, execute the following from the command line:
 
 ```PowerShell
-mvn clean verify
+.\gradlew clean build -x test
 ```
-
-You can also use Gradle if you prefer:
-
-```PowerShell
-.\gradlew clean build
-```
-
-
-To build a WAR file for deployment to an application server such as [Apache Tomcat](http://tomcat.apache.org/)
-execute the following:
-
-```PowerShell
-mvn -Pwar clean package
-```
-
-This will create a WAR file (called `iwa.war`) in the `target` directory.
 
 ## Running the Application
 
@@ -89,12 +73,6 @@ There are a number of ways of running the application depending on the scenario(
 ### Development (IDE/command line)
 
 To run (and test) locally in development mode, execute the following from the command line:
-
-```PowerShell
-mvn spring-boot:run
-```
-
-or
 
 ```PowerShell
 .\gradlew bootRun
@@ -119,14 +97,12 @@ The JAR file can be built into a [Docker](https://www.docker.com/) image using t
 following commands:
 
 ```PowerShell
-mvn -Pjar clean package
 docker build -t iwa -f Dockerfile .
 ```
 
 or on Windows:
 
 ```PowerShell
-mvn -Pjar clean package
 docker build -t iwa -f Dockerfile.win .
 ```
 
@@ -156,7 +132,7 @@ SSC_URL=http://[YOUR-SSC-SERVER]
 SSC_USERNAME=admin
 SSC_PASSWORD=password
 SSC_AUTH_TOKEN=XXX
-SSC_APP_NAME=IWAPharmacyDirect
+SSC_APP_NAME=IWA-Java
 SSC_APP_VER_NAME=main
 # ScanCentral SAST/DAST
 SCANCENTRAL_CTRL_URL=http://[YOUR-SCANCENTRAL-SERVER]/scancentral-ctrl
@@ -186,14 +162,14 @@ via [Fortify SCA](https://www.microfocus.com/en-us/products/static-code-analysis
 .\bin\fortify-sast.ps1 -SkipSSC
 ```
 
-This script runs a `sourceanalyzer` translation and scan on the project's source code. It creates a Fortify Project Results file called `IWAPharmacyDirect.fpr`
+This script runs a `sourceanalyzer` translation and scan on the project's source code. It creates a Fortify Project Results file called `IWA-Java.fpr`
 which you can open using the Fortify `auditworkbench` tool:
 
 ```PowerShell
-auditworkbench.cmd .\IWAPharmacyDirect.fpr
+auditworkbench.cmd .\IWA-Java.fpr
 ```
 
-It also creates a PDF report called `IWAPharmacyDirect.pdf` and optionally
+It also creates a PDF report called `IWA-Java.pdf` and optionally
 uploads the results to [Fortify Software Security Center](https://www.microfocus.com/en-us/products/software-security-assurance-sdlc/overview) (SSC).
 
 In order to upload to SSC you will need to have entries in the `.env` similar to the following:
@@ -201,7 +177,7 @@ In order to upload to SSC you will need to have entries in the `.env` similar to
 ```
 SSC_URL=http://localhost:8080/ssc
 SSC_AUTH_TOKEN=28145aad-c40d-426d-942b-f6d6aec9c56f
-SSC_APP_NAME=IWAPharmacyDirect
+SSC_APP_NAME=IWA-Java
 SSC_APP_VER_NAME=main
 ```
 
@@ -221,7 +197,7 @@ In order to use ScanCentral SAST you will need to have entries in the `.env` sim
 ```
 SSC_URL=http://localhost:8080/ssc
 SSC_AUTH_TOKEN=6b16aa46-35d7-4ea6-98c1-8b780851fb37
-SSC_APP_NAME=IWAPharmacyDirect
+SSC_APP_NAME=IWA-Java
 SSC_APP_VER_NAME=main
 SCANCENTRAL_CTRL_URL=http://localhost:8080/scancentral-ctrl
 SCANCENTRAL_CTRL_TOKEN=96846342-1349-4e36-b94f-11ed96b9a1e3
@@ -238,7 +214,7 @@ you need to package and upload the source code to Fortify on Demand. To package 
 you can use the `scancentral` command utility as following:
 
 ```PowerShell
-scancentral package -bt mvn -bf pom.xml --output fod.zip
+scancentral package -bt gradle -bf build.gradle -bt "clean build -x test" --output fod.zip
 ```
 
 You can then upload this manually using the Fortify on Demand UI or you can use the PowerShell script [fortify-fod.ps1](bin/fortify-fod.ps1) 
