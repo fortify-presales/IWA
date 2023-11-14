@@ -67,7 +67,7 @@ runs:
       shell: bash
       run: |
         fcli --version
-        fcli sc-sast session login --ssc-url $SSC_URL --ssc-ci-token $SSC_TOKEN --client-auth-token $SCSAST_CLIENT_AUTH_TOKEN--session github-actions
+        fcli sc-sast session login --ssc-url $SSC_URL --ssc-ci-token $SSC_TOKEN --client-auth-token $SCSAST_CLIENT_AUTH_TOKEN --session github-actions
       env:
         SSC_URL: ${{ inputs.ssc_url }}
         SSC_TOKEN: ${{ inputs.ssc_token }}
