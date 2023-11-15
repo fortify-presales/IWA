@@ -115,14 +115,14 @@ jobs:
           default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
           default_fortify_release_name: ${{ github.ref_name }}
           app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
-      - name: Print App and Release Name
-        shell: bash
-        run: |
-          echo "SSC App Name: ${SSC_APP_NAME}"
-          echo "SSC App Version Name: ${SSC_APPVER_NAME}"
-        env:
-          SSC_APP_NAME: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
-          SSC_APPVER_NAME: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
+      #- name: Print App and Release Name
+      #  shell: bash
+      #  run: |
+      #    echo "SSC App Name: ${SSC_APP_NAME}"
+      #    echo "SSC App Version Name: ${SSC_APPVER_NAME}"
+      #  env:
+      #    SSC_APP_NAME: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
+      #    SSC_APPVER_NAME: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
       - name: Gradle Fortify Hosted SAST scan
         id: gradle-fortify-hosted-sast-scan
         uses: ./.github/actions/gradle-fortify-hosted-sast-scan

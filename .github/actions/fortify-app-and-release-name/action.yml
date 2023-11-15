@@ -45,21 +45,6 @@ runs:
       id: fortify-release-name
       shell: bash
       run: |
-        echo "Branch name: ${GIT_BRANCH_NAME}"
+        echo "Git branch name: ${GIT_BRANCH_NAME}"
         echo "::debug::release_name=${GIT_BRANCH_NAME}"         
         echo "release_name=${GIT_BRANCH_NAME}" >> $GITHUB_OUTPUT
-    #- name: Get Fortify Release Name
-    #  id: fortify-release-name
-    #  shell: bash
-    #  run: |
-    #    if [[ $GITHUB_REF == *"refs/pull/"* ]]; then
-    #      BRANCH_NAME="$(echo ${GITHUB_REF#refs/pull/})"
-    #      PR_NUMBER="$(echo ${BRANCH_NAME%/merge})"
-    #      BRANCH_NAME="[PR]${SOURCE_BRANCH}#${PR_NUMBER}"
-    #    else
-    #      BRANCH_NAME="$(echo ${GITHUB_REF#refs/heads/})"
-    #    fi
-    #    echo "::debug::release_name=${BRANCH_NAME}"
-    #    echo "release_name=${BRANCH_NAME}" >> $GITHUB_OUTPUT
-    #  env:
-    #    SOURCE_BRANCH: ${{ github.head_ref }}
