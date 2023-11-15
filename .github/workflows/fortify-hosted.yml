@@ -45,10 +45,6 @@ on:
 # Global environment variables
 env:
   DEFAULT_APP_NAME: "IWA-Java"
-  # some insecure variables to be picked up by fortify scan
-  AWS_REGION: US_WEST_2
-  AWS_ACCESS_KEY_ID: AKIAIOSFORTIFY_HOSTEDNN7EXAMPLE
-  AWS_SECRET_ACCESS_KEY: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 
 jobs:
 
@@ -119,16 +115,24 @@ jobs:
           default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
           default_fortify_release_name: 'main'
           app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
-      - name: Gradle Fortify Hosted SAST scan
-        id: gradle-fortify-hosted-sast-scan
-        uses: ./.github/actions/gradle-fortify-hosted-sast-scan
-        with:
-          working_directory: ${{ env.BASE_DIR }}
-          ssc_url: ${{ vars.FORTIFY_HOSTED_BASE_URL }}
-          ssc_token: ${{ secrets.FORTIFY_HOSTED_SSC_TOKEN }}
-          scsast_client_auth_token: ${{ secrets.FORTIFY_HOSTED_SCSAST_CLIENT_AUTH_TOKEN }}
-          ssc_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
-          ssc_appver_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
+      - name: Test App and Release Name
+        shell: bash
+        run: |
+          echo "SSC App Name = ${SSC_APP_NAME}"
+          echo "SSC App Ver Name = ${SSC_APPVER_NAME}"
+        env:
+          SSC_APP_NAME: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
+          SSC_APPVER_NAME: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
+      #- name: Gradle Fortify Hosted SAST scan
+      #  id: gradle-fortify-hosted-sast-scan
+      #  uses: ./.github/actions/gradle-fortify-hosted-sast-scan
+      #  with:
+      #    working_directory: ${{ env.BASE_DIR }}
+      #    ssc_url: ${{ vars.FORTIFY_HOSTED_BASE_URL }}
+      #    ssc_token: ${{ secrets.FORTIFY_HOSTED_SSC_TOKEN }}
+      #    scsast_client_auth_token: ${{ secrets.FORTIFY_HOSTED_SCSAST_CLIENT_AUTH_TOKEN }}
+      #    ssc_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
+      #    ssc_appver_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
 
   Fortify-DAST-Scan:
     runs-on: ubuntu-latest
