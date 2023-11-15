@@ -98,7 +98,7 @@ jobs:
 
   Fortify-SAST-Scan:
     runs-on: ubuntu-latest
-    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runFoDSASTScan == 'true') }}
+    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runFortifySASTScan == 'true') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3.3.0
