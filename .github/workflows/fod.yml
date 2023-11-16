@@ -1,7 +1,7 @@
 
 # Create GitHub Action Repository Variables for your version of the application:
 #   FOD_BASE_URL should be FoD BASE URL for your tenant (e.g. https://emea.fortify.com)
-#   FOD_API_URI should be FoD API URI for your tenant (e.g. https://api.emea,fortify.com)
+#   FOD_API_URL should be FoD API URI for your tenant (e.g. https://api.emea,fortify.com)
 #   FOD_PARENT_RELEASE_NAME is the FoD release name corresponding to the parent branch of any newly created branch, this is typically "main"
 # Create GitHub Action Secrets for your version of the application:
 #   FOD_CLIENT_ID should be an API Key obtained from your FoD tenant.
@@ -131,7 +131,7 @@ jobs:
         with:
           working_directory: ${{ env.BASE_DIR }}
           fod_url: ${{ vars.FOD_URI }}
-          fod_api_url: ${{ vars.FOD_API_URI }}
+          fod_api_url: ${{ vars.FOD_API_URL }}
           fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
           fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
           fod_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
@@ -170,7 +170,7 @@ jobs:
       - name: Verify FoD Security Policy
         uses: ./.github/actions/verify-fod-securlty-policy
         with:
-          fod_api_url: ${{ vars.FOD_API_URI }}
+          fod_api_url: ${{ vars.FOD_API_URL }}
           fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
           fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
           fod_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}

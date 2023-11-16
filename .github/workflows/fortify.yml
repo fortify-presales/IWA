@@ -1,12 +1,12 @@
 
 # Create GitHub Action Repository Variables for your version of the application:
-#   FORTIFY_HOSTED_BASE_URL should be the Fortify Hosted Base URL for your tenant (e.g. https://ssc.uat.fortifyhosted.net)
-#   FORTIFY_HOSTED_PARENT_APPVER_NAME is the Fortify SSC Application Version Name name corresponding to the parent branch of any newly created branch, this is typically "main"
+#   FORTIFY_BASE_URL should be the Fortify Base URL (e.g. https://ssc.uat.fortifyhosted.net)
+#   FORTIFY_PARENT_APPVER_NAME is the Fortify SSC Application Version Name corresponding to the parent branch of any newly created branch, this is typically "main"
 # Create GitHub Action Secrets for your version of the application:
-#   FORTIFY_HOSTED_SSC_TOKEN should be an SSC Authorization token (CIToken) obtained from your Fortify tenant.
-#   FORTIFY_HOSTED_SCSAST_CLIENT_AUTH_TOKEN should be the ScanCentral SAST Client Authentication token for your Fortify tenant.
+#   FORTIFY_SSC_TOKEN should be an SSC Authorization token (CIToken) obtained from your Fortify tenant.
+#   FORTIFY_SCSAST_CLIENT_AUTH_TOKEN should be the ScanCentral SAST Client Authentication token for your Fortify tenant.
 
-name: DevSecOps with Fortify Hosted
+name: DevSecOps with Fortify
 
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
@@ -30,7 +30,7 @@ on:
   workflow_dispatch:
     inputs:
       runFortifySASTScan:
-        description: 'Carry out SAST scan using Fortify Hosted'
+        description: 'Carry out SAST scan using Fortify'
         required: false
         default: 'true'
 #      runDebrickedScan:
@@ -38,7 +38,7 @@ on:
 #        required: false
 #        default: 'false'
       runFortifyDASTScan:
-        description: 'Carry out DAST scan using Fortify Hosted'
+        description: 'Carry out DAST scan using Fortify'
         required: false
         default: 'false'
 
@@ -123,14 +123,14 @@ jobs:
       #  env:
       #    SSC_APP_NAME: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
       #    SSC_APPVER_NAME: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
-      - name: Gradle Fortify Hosted SAST scan
-        id: gradle-fortify-hosted-sast-scan
-        uses: ./.github/actions/gradle-fortify-hosted-sast-scan
+      - name: Gradle Fortify SAST scan
+        id: gradle-fortify-sast-scan
+        uses: ./.github/actions/gradle-fortify-sast-scan
         with:
           working_directory: ${{ env.BASE_DIR }}
-          ssc_url: ${{ vars.FORTIFY_HOSTED_BASE_URL }}
-          ssc_token: ${{ secrets.FORTIFY_HOSTED_SSC_TOKEN }}
-          scsast_client_auth_token: ${{ secrets.FORTIFY_HOSTED_SCSAST_CLIENT_AUTH_TOKEN }}
+          ssc_url: ${{ vars.FORTIFY_BASE_URL }}
+          ssc_token: ${{ secrets.FORTIFY_SSC_TOKEN }}
+          scsast_client_auth_token: ${{ secrets.FORTIFY_SCSAST_CLIENT_AUTH_TOKEN }}
           ssc_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
           ssc_appver_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
 
@@ -167,9 +167,9 @@ jobs:
       #- name: Verify Fortify Security Policy
       #  uses: ./.github/actions/verify-fod-security-policy
       #  with:
-      #    fod_api_uri: ${{ vars.FORTIFY_HOSTED_API_URI }}
-      #    fod_client_id: ${{ secrets.FORTIFY_HOSTED_CLIENT_ID }}
-      #    fod_client_secret: ${{ secrets.FORTIFY_HOSTED_CLIENT_SECRET }}
+      #    fod_api_uri: ${{ vars.FORTIFY_API_URI }}
+      #    fod_client_id: ${{ secrets.FORTIFY_CLIENT_ID }}
+      #    fod_client_secret: ${{ secrets.FORTIFY_CLIENT_SECRET }}
       #    fod_app_name: ${{ steps.fod-app-and-rel-name.outputs.app_name }}
       #    fod_release_name: ${{ steps.fod-app-and-rel-name.outputs.release_name }}
 
