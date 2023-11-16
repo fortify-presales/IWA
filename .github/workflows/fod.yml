@@ -130,7 +130,8 @@ jobs:
         uses: ./.github/actions/gradle-fod-sast-scan
         with:
           working_directory: ${{ env.BASE_DIR }}
-          fod_api_uri: ${{ vars.FOD_API_URI }}
+          fod_url: ${{ vars.FOD_URI }}
+          fod_api_url: ${{ vars.FOD_API_URI }}
           fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
           fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
           fod_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
@@ -167,9 +168,9 @@ jobs:
           default_fortify_release_name: 'main'
           app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
       - name: Verify FoD Security Policy
-        uses: ./.github/actions/verify-fod-security-policy
+        uses: ./.github/actions/verify-fod-securlty-policy
         with:
-          fod_api_uri: ${{ vars.FOD_API_URI }}
+          fod_api_url: ${{ vars.FOD_API_URI }}
           fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
           fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
           fod_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}

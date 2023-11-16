@@ -5,10 +5,14 @@ inputs:
     required: false
     description: "Relative directory (from root of repository) from where to run commands"
     default: "."
-  fod_api_uri:
+  fod_url:
     required: false
     description: "FoD API URI"
-    default: "https://api.emea.fortify.com"
+    default: "https://ams.fortify.com"
+  fod_api_url:
+    required: false
+    description: "FoD API URI"
+    default: "https://api.ams.fortify.com"
   fod_client_id:
     required: true
     description: "FoD API Client Id"
@@ -29,6 +33,10 @@ inputs:
     required: false
     description: "Version of Gradle to use"
     default: "7.3"
+  gradle_build_command:
+    required: false
+    description: "Gradle build command(s) to use"
+    default: "clean build -x test"
 outputs:
   fod_scan_id:
     description: "FoD Scan Id"
@@ -55,7 +63,7 @@ runs:
         fcli: latest
         sc-client: latest
         fod-uploader: skip
-        vuln-exporter: v2
+        vuln-exporter: latest
         bugtracker-utility: skip
     # Login to Fortify on Demand fcli session
     - name: Login fcli
@@ -65,7 +73,7 @@ runs:
         fcli --version
         fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET --session github-actions
       env:
-        FOD_API_URI: ${{ inputs.fod_api_uri }}
+        FOD_API_URI: ${{ inputs.fod_api_url }}
         FOD_CLIENT_ID: ${{ inputs.fod_client_id }}
         FOD_CLIENT_SECRET: ${{ inputs.fod_client_secret }}
     # Create a new Fortify on Demand release for GitHub branch
@@ -87,8 +95,10 @@ runs:
     - name: Package Code + Dependencies
       uses: fortify/github-action/package@v1
       env:
-        EXTRA_PACKAGE_OPTS: -bt gradle -bf build.gradle -bc "clean build -x test" -oss
+        EXTRA_PACKAGE_OPTS: -bt gradle -bf "${BUILD_FILE}" -bc "${BUILD_COMMAND}" -oss
         PACKAGE_FILE: "package"
+        BUILD_FILE: "build.gradle"
+        BUILD_COMMAND: ${{ inputs.gradle_build_command }}
     # Start Fortify on Demand SAST scan and wait until results complete.
     - name: Perform FoD SAST scan
       id: fod-sast-scan
@@ -108,7 +118,6 @@ runs:
       uses: fortify/github-action/fod-export@v1
       env:
         FOD_URL: "https://emea.fortify.com"
-        FOD_API_URI: ${{ inputs.fod_api_uri }}
         FOD_CLIENT_ID: ${{ inputs.fod_client_id }}
         FOD_CLIENT_SECRET: ${{ inputs.fod_client_secret }}
         FOD_RELEASE: ${{ format('{0}:{1}', inputs.fod_app_name, inputs.fod_release_name) }}
