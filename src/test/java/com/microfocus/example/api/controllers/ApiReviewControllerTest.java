@@ -11,6 +11,7 @@ import com.microfocus.example.payload.request.ReviewRequest;
 import com.microfocus.example.service.ProductService;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
@@ -156,13 +157,14 @@ class ApiReviewControllerTest {
         doNothing().when(productService).deleteReviewById((UUID) any());
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/api/v3/reviews/{id}",
                 UUID.randomUUID());
+        String timestamp = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new java.util.Date());
         MockMvcBuilders.standaloneSetup(apiReviewController)
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
                 .andExpect(MockMvcResultMatchers.content()
-                        .string("{\"success\":true,\"timestamp\":\"2023-04-07 11:41:56\",\"errors\":null}"));
+                        .string("{\"success\":true,\"timestamp\":\"" + timestamp + "\",\"errors\":null}"));
     }
 
     /**
@@ -188,13 +190,14 @@ class ApiReviewControllerTest {
         MockHttpServletRequestBuilder deleteResult = MockMvcRequestBuilders.delete("/api/v3/reviews/{id}",
                 UUID.randomUUID());
         deleteResult.characterEncoding("Encoding");
+        String timestamp = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new java.util.Date());
         MockMvcBuilders.standaloneSetup(apiReviewController)
                 .build()
                 .perform(deleteResult)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
                 .andExpect(MockMvcResultMatchers.content()
-                        .string("{\"success\":true,\"timestamp\":\"2023-04-07 11:41:56\",\"errors\":null}"));
+                        .string("{\"success\":true,\"timestamp\":\"" + timestamp + "\",\"errors\":null}"));
     }
 
     /**

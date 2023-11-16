@@ -11,6 +11,7 @@ import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.service.UserService;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -220,13 +221,14 @@ class ApiUserControllerTest {
         doNothing().when(userService).deleteUserById((UUID) any());
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/api/v3/users/{id}",
                 UUID.randomUUID());
+        String timestamp = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new java.util.Date());
         MockMvcBuilders.standaloneSetup(apiUserController)
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
                 .andExpect(MockMvcResultMatchers.content()
-                        .string("{\"success\":true,\"timestamp\":\"2023-04-07 11:49:16\",\"errors\":null}"));
+                        .string("{\"success\":true,\"timestamp\":\"" + timestamp + "\",\"errors\":null}"));
     }
 
     /**

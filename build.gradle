@@ -14,8 +14,9 @@ ext {
     tymeleafLayoutDialectVersion = '2.3.0'
     springdocOpenApiVersion = '1.4.3'
     junitVersion = '4.12'
-    junitJupiterVersion = '5.8.1'
+    junitJupiterVersion = '5.7.0'
     junitPlatformVersion = '1.7.1'
+    mockitoVersion = '4.11.0'
 }
 
 repositories {
@@ -67,6 +68,7 @@ dependencies {
             replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
         }
     }
+    implementation "org.mockito:mockito-bom:${mockitoVersion}"
     testImplementation "org.hibernate.validator:hibernate-validator:6.1.0.Final"
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}") {
         exclude group: "com.vaadin.external.google", module:"android-json"
@@ -76,10 +78,12 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
     testImplementation "org.junit.jupiter:junit-jupiter-params:${junitJupiterVersion}"
     testImplementation "org.junit.platform:junit-platform-engine:${junitPlatformVersion}"
+    //#testImplementation "org.mockito:mockito-inline:${mockitoVersion}"
+    //testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitJupiterVersion}"
     testRuntimeOnly "org.junit.platform:junit-platform-commons:${junitPlatformVersion}"
-
+    testRuntimeOnly "org.codehaus.groovy:groovy:3.0.8"
 }
 
 apply plugin: 'io.spring.dependency-management'

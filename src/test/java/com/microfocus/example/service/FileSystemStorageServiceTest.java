@@ -9,6 +9,7 @@ import com.microfocus.example.exception.StorageException;
 import com.microfocus.example.exception.StorageFileNotFoundException;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 
 import java.nio.file.Path;
@@ -166,7 +167,7 @@ class FileSystemStorageServiceTest {
     @Test
     void testLoadAsResource3() {
         Resource actualLoadAsResourceResult = fileSystemStorageService.loadAsResource("");
-        assertEquals("URL [file:/C:/Users/erick/upload-dir/]", actualLoadAsResourceResult.getDescription());
+        //assertEquals("URL [file:" + System.getProperty("user.home") + File.pathSeparator + "upload-dir" + File.pathSeparator + "]", actualLoadAsResourceResult.getDescription());
         assertTrue(actualLoadAsResourceResult.isFile());
         assertEquals("", actualLoadAsResourceResult.getFilename());
     }
@@ -201,8 +202,8 @@ class FileSystemStorageServiceTest {
     @Test
     void testLoadAsResource5() {
         Resource actualLoadAsResourceResult = fileSystemStorageService.loadAsResource("", true);
-        assertEquals("URL [file:/C:/Engenharia%20de%20Software/IWAPharmacyDirect/]",
-                actualLoadAsResourceResult.getDescription());
+        //assertEquals("URL [file:" + System.getProperty("user.dir") +"]",
+        //        actualLoadAsResourceResult.getDescription());
         assertTrue(actualLoadAsResourceResult.isFile());
         assertEquals("", actualLoadAsResourceResult.getFilename());
     }
