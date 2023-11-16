@@ -78,15 +78,15 @@ runs:
         FOD_CLIENT_SECRET: ${{ inputs.fod_client_secret }}
     # Create a new Fortify on Demand release for GitHub branch
     - name: Create FoD release
+      id: create-release
       working-directory: ${{ env.BASE_DIR }}
       shell: bash
       run: |
         fcli fod release list --app "$FOD_APP_NAME" --session github-actions
         echo fcli fod release create "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" --description "Created automatically from GitHub" --copy-from "${FOD_APP_NAME}:${FOD_PARENT_RELEASE_NAME}" --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions
         RELID=$(fcli fod release create "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" --description "Created automatically from GitHub" --copy-from "${FOD_APP_NAME}:${FOD_PARENT_RELEASE_NAME}" --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions)
-        echo "::debug::Created FOD_RELEASE_ID=${RELID}"
-        echo "FOD_RELEASE_ID=${RELID}" >> $GITHUB_OUTPUT
-      id: create_fod_release
+        echo "::debug::Created/Using fod_release_id=${RELID}"
+        echo "release_id=${RELID}" >> $GITHUB_OUTPUT
       env:
         FOD_APP_NAME: ${{ inputs.fod_app_name }}
         FOD_RELEASE_NAME: ${{ inputs.fod_release_name }}
@@ -117,10 +117,11 @@ runs:
     - name: Export FoD vulnerability data to GitHub
       uses: fortify/github-action/fod-export@v1
       env:
-        FOD_URL: "https://emea.fortify.com"
+        FOD_URL: ${{ inputs.fod_url }}
         FOD_CLIENT_ID: ${{ inputs.fod_client_id }}
         FOD_CLIENT_SECRET: ${{ inputs.fod_client_secret }}
-        FOD_RELEASE: ${{ format('{0}:{1}', inputs.fod_app_name, inputs.fod_release_name) }}
+        #FOD_RELEASE: ${{ format('{0}:{1}', inputs.fod_app_name, inputs.fod_release_name) }}
+        FOD_RELEASE: ${{ steps.create-release.outputs.release_id }}
     # Logout/Close Fortify on Demand fcli session
     - name: Logout fcli
       shell: bash
