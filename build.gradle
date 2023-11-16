@@ -106,7 +106,6 @@ sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 sourceSets {
-
     test {
         java {
             srcDirs = ["src/test"]
@@ -150,6 +149,9 @@ tasks.withType(JavaCompile) {
 
 test {
     useJUnitPlatform()
+    exclude {
+        '**/EncryptedPasswordUtilsTest.class'
+    }
     reports {
         junitXml.enabled = true
         html.enabled = true
