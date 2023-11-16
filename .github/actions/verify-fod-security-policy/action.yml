@@ -1,9 +1,9 @@
 name: "Verify FoD Security Policy"
 description: "Verify that the security policy in Fortify on Demand has been met for the release"
 inputs:
-  fod_api_uri:
+  fod_api_url:
     required: false
-    description: "FoD API URI"
+    description: "FoD API URL"
     default: "https://api.emea.fortify.com"
   fod_client_id:
     required: true
@@ -41,9 +41,9 @@ runs:
       shell: bash
       run: |
         fcli --version
-        fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET --session github-actions
+        fcli fod session login --url $FOD_API_URL --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET --session github-actions
       env:
-        FOD_API_URI: ${{ inputs.fod_api_uri }}
+        FOD_API_URL: ${{ inputs.fod_api_url }}
         FOD_CLIENT_ID: ${{ inputs.fod_client_id }}
         FOD_CLIENT_SECRET: ${{ inputs.fod_client_secret }}
     # Run script to check the Security Policy of the Fortify on Demand Release to determine success/failure
