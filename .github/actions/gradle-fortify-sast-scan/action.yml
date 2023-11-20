@@ -109,7 +109,7 @@ runs:
         SSC_SENSOR_VER: ${{ inputs.ssc_sensor_ver }}
     # Export SSC vulnerability data to GitHub
     - name: Export SSC vulnerability data to GitHub
-      uses: fortify/github-action/ssc-export@v1
+      uses: fortify/github-action/ssc-export@216b39a5305fb43380cfa8529d877b68ad493bae
       env:
         SSC_URL: ${{ inputs.ssc_url }}
         SSC_TOKEN: ${{ inputs.ssc_token }}
