@@ -92,27 +92,27 @@ runs:
         FOD_RELEASE_NAME: ${{ inputs.fod_release_name }}
         FOD_PARENT_RELEASE_NAME: ${{ inputs.fod_parent_release_name }}
     # Create FoD upload package using ScanCentral "package" action
-    #- name: Package Code + Dependencies
-    #  uses: fortify/github-action/package@v1
-    #  env:
-    #    EXTRA_PACKAGE_OPTS: -bt gradle -bf "${BUILD_FILE}" -bc "${BUILD_COMMAND}" -oss
-    #    PACKAGE_FILE: "package"
-    #    BUILD_FILE: "build.gradle"
-    #    BUILD_COMMAND: ${{ inputs.gradle_build_command }}
+    - name: Package Code + Dependencies
+      uses: fortify/github-action/package@v1
+      env:
+        EXTRA_PACKAGE_OPTS: -bt gradle -bf "${BUILD_FILE}" -bc "${BUILD_COMMAND}" -oss
+        PACKAGE_FILE: "package"
+        BUILD_FILE: "build.gradle"
+        BUILD_COMMAND: ${{ inputs.gradle_build_command }}
     # Start Fortify on Demand SAST scan and wait until results complete.
-    #- name: Perform FoD SAST scan
-    #  id: fod-sast-scan
-    #  working-directory: ${{ env.BASE_DIR }}
-    #  shell: bash
-    #  run: |
-    #    fcli fod sast-scan start --release "${FOD_RELEASE_NAME}" --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions
-    #    sleep 10
-    #    echo "fod_scan_id=$(fcli util var get ::curScan::)" >> $GITHUB_OUTPUT
-    #    fcli fod sast-scan wait-for ::curScan:: --session github-actions
-    #  env:
-    #    PACKAGE_FILE: "package.zip"
-    #    FOD_RELEASE_NAME: ${{ format('{0}:{1}', inputs.fod_app_name, inputs.fod_release_name) }}
-    #    FOD_SCAN_NOTES: "Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+    - name: Perform FoD SAST scan
+      id: fod-sast-scan
+      working-directory: ${{ env.BASE_DIR }}
+      shell: bash
+      run: |
+        fcli fod sast-scan start --release "${FOD_RELEASE_NAME}" --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions
+        sleep 10
+        echo "fod_scan_id=$(fcli util var get ::curScan::)" >> $GITHUB_OUTPUT
+        fcli fod sast-scan wait-for ::curScan:: --session github-actions
+      env:
+        PACKAGE_FILE: "package.zip"
+        FOD_RELEASE_NAME: ${{ format('{0}:{1}', inputs.fod_app_name, inputs.fod_release_name) }}
+        FOD_SCAN_NOTES: "Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
     # Export FoD vulnerability data to GitHub
     - name: Export FoD vulnerability data to GitHub
       #uses: fortify/github-action/fod-export@v1
