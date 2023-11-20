@@ -94,19 +94,19 @@ runs:
         EXTRA_PACKAGE_OPTS: -bt gradle -bf build.gradle -bc "clean build -x test" -oss
         PACKAGE_FILE: "package"
     # Start ScanCentral SAST scan and wait until results complete.
-    #- name: Perform ScanCentral SAST scan
-    #  id: scancentral-sast-scan
-    #  working-directory: ${{ env.BASE_DIR }}
-    #  shell: bash
-    #  run: |
-    #    fcli sc-sast scan start --sensor-version ${SSC_SENSOR_VER} --publish-to "${SSC_APPVER_NAME}" -p $PACKAGE_FILE --store curScan --session github-actions
-    #    sleep 5
-    #    echo "scsast_scan_id=$(fcli util var get ::curScan::)" >> $GITHUB_OUTPUT
-    #    fcli sc-sast scan wait-for ::curScan:: --session github-actions
-    #  env:
-    #    PACKAGE_FILE: "package.zip"
-    #    SSC_APPVER_NAME: ${{ format('{0}:{1}', inputs.ssc_app_name, inputs.ssc_appver_name) }}
-    #    SSC_SENSOR_VER: ${{ inputs.ssc_sensor_ver }}
+    - name: Perform ScanCentral SAST scan
+      id: scancentral-sast-scan
+      working-directory: ${{ env.BASE_DIR }}
+      shell: bash
+      run: |
+        fcli sc-sast scan start --sensor-version ${SSC_SENSOR_VER} --publish-to "${SSC_APPVER_NAME}" -p $PACKAGE_FILE --store curScan --session github-actions
+        sleep 5
+        echo "scsast_scan_id=$(fcli util var get ::curScan::)" >> $GITHUB_OUTPUT
+        fcli sc-sast scan wait-for ::curScan:: --session github-actions
+      env:
+        PACKAGE_FILE: "package.zip"
+        SSC_APPVER_NAME: ${{ format('{0}:{1}', inputs.ssc_app_name, inputs.ssc_appver_name) }}
+        SSC_SENSOR_VER: ${{ inputs.ssc_sensor_ver }}
     # Export SSC vulnerability data to GitHub
     - name: Export SSC vulnerability data to GitHub
       uses: kadraman/github-action/ssc-export@fve-space-issues
@@ -118,4 +118,4 @@ runs:
     - name: Logout fcli
       shell: bash
       run: |
-        fcli ssc session logout --session github-actions
+        fcli sc-sast session logout --no-revoke-token --session github-actions
