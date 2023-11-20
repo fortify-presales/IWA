@@ -121,8 +121,8 @@ runs:
         FOD_URL: ${{ inputs.fod_url }}
         FOD_CLIENT_ID: ${{ inputs.fod_client_id }}
         FOD_CLIENT_SECRET: ${{ inputs.fod_client_secret }}
-        #FOD_RELEASE: ${{ format('{0}:{1}', inputs.fod_app_name, inputs.fod_release_name) }}
-        FOD_RELEASE: ${{ steps.create-release.outputs.release_id }}
+        FOD_RELEASE: ${{ format('{0}:{1}', inputs.fod_app_name, inputs.fod_release_name) }}
+        #FOD_RELEASE: ${{ steps.create-release.outputs.release_id }}
     # Logout/Close Fortify on Demand fcli session
     - name: Logout fcli
       shell: bash
