@@ -11,7 +11,7 @@
 #   It is recommended to create credentials with 'Security Lead' Role selected.
 #   "Automated Audit preference" should be configured for the release's Static Scan Settings.
 
-name: DevSecOps with Fortify on Demand
+name: DevSecOps with Fortify (on Demand)
 
 on:
   # Triggers the workflow on push or pull request events but only for the main branch

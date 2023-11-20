@@ -1,0 +1,44 @@
+
+# Create GitHub Action Secrets for your version of the application:
+#   DEBRICKEN_TOKEN should be an API Access Token from your Debricked tenant.
+
+name: SCA with Debricked
+
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    paths:
+      - 'build.gradle'
+    branches:
+      - '**'        # matches every branch
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      runDebrickedScan:
+        description: 'Carry out SCA scan using Debricked'
+        required: true
+        default: 'true'
+
+# Global environment variables
+env:
+  DEFAULT_APP_NAME: "IWA-Java"
+
+jobs:
+
+  Debricked-SCA:
+    runs-on: ubuntu-latest
+    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runDebrickedScan == 'true') }}
+    steps:
+      - uses: actions/checkout@v3.3.0
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - run: ./gradlew dependencies > .debricked-gradle-dependencies.txt
+      - uses: debricked/vulnerable-functionality/java/gradle@v0.5.0
+      - uses: debricked/actions/scan@v1
+        env:
+          DEBRICKED_TOKEN: ${{ secrets.DEBRICKED_TOKEN }}
