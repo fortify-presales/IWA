@@ -115,7 +115,8 @@ runs:
         FOD_SCAN_NOTES: "Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
     # Export FoD vulnerability data to GitHub
     - name: Export FoD vulnerability data to GitHub
-      uses: fortify/github-action/fod-export@v1
+      #uses: fortify/github-action/fod-export@v1
+      uses: kadraman/github-action/fod-export@03846edc79992722936cd56a8ef510e32127a3cf # fve-space-issues
       env:
         FOD_URL: ${{ inputs.fod_url }}
         FOD_CLIENT_ID: ${{ inputs.fod_client_id }}
