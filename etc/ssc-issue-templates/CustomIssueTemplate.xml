@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<FilterTemplate version="1.2" disableEdit="false" id="e54cefcf-d341-452f-ada2-d1317e323a8f" objectVersion="3" publishVersion="1">
+<FilterTemplate version="1.2" disableEdit="false" id="e54cefcf-d341-452f-ada2-d1317e323a8f" objectVersion="5" publishVersion="1">
     <Name>Custom Issue Template</Name>
     <Description>An example Custom Issue Template with Baseline and Review tags/filters and Noise folder</Description>
     <FolderDefinition id="b968f72f-cc12-03b5-976e-ad4c13920c21" color="ca3f37">
@@ -32,7 +32,7 @@
         <value id="3" Description="" hidden="false">Suspicious</value>
         <value id="4" Description="" hidden="false">Exploitable</value>
     </TagDefinition>
-    <TagDefinition id="b4656239-4d81-4277-9950-a9d3cb79d694" type="user" extensible="false" hidden="false" objectVersion="0" valueType="LIST">
+    <TagDefinition id="b4656239-4d81-4277-9950-a9d3cb79d694" type="user" extensible="false" hidden="false" restriction="RESTRICTED" objectVersion="0" valueType="LIST">
         <name>Baseline</name>
         <Description>The baseline tag is used to tag all issues present in an initial scan, in order to differentiate between issues already present before Fortify was implemented on the project, and issues introduced afterwards.</Description>
         <value id="0" hidden="false">yes</value>
@@ -391,7 +391,7 @@
         </Filter>
         <Filter>
             <actionParam>true</actionParam>
-            <query>audited:!"true"</query>
+            <query>Reviewed:!"yes"</query>
             <action>hide</action>
         </Filter>
         <Filter>
