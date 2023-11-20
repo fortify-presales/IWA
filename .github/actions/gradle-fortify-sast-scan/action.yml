@@ -109,7 +109,7 @@ runs:
     #    SSC_SENSOR_VER: ${{ inputs.ssc_sensor_ver }}
     # Export SSC vulnerability data to GitHub
     - name: Export SSC vulnerability data to GitHub
-      uses: kadraman/github-action/fod-export@fve-space-issues
+      uses: kadraman/github-action/ssc-export@fve-space-issues
       env:
         SSC_URL: ${{ inputs.ssc_url }}
         SSC_TOKEN: ${{ inputs.ssc_token }}
