@@ -23,3 +23,6 @@
 # Ignore Gradle build output directory
 build
 
+/.debricked.multiprojects.txt
+/.gradle.debricked.lock
+/.gradle-init-script.debricked.groovy

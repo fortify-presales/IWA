@@ -41,7 +41,7 @@ on:
       runFoDOSSScan:
         description: 'Carry out OSS scan using Fortify on Demand (via Debricked)'
         required: false
-        default: 'false'
+        default: 'true'
       runFoDDASTScan:
         description: 'Carry out DAST scan using Fortify on Demand'
         required: false
