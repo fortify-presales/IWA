@@ -92,8 +92,9 @@ runs:
     - name: Create dependencies lock file + package
       shell: bash
       run: |
-        rm -f .gradle.debricked.lock package.zip
-        ./gradlew dependencies > .gradle.debricked.lock
+        rm -f package.zip
+        curl -L https://github.com/debricked/cli/releases/latest/download/cli_linux_x86_64.tar.gz | tar -xz debricked
+        ./debricked resolve
         zip package *.lock
     # Start Fortify on Demand OSS scan and wait until results complete.
     - name: Perform FoD OSS scan

@@ -2,7 +2,7 @@
 # Create GitHub Action Secrets for your version of the application:
 #   DEBRICKEN_TOKEN should be an API Access Token from your Debricked tenant.
 
-name: SCA with Debricked
+name: OSS SCA with Debricked
 
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
