@@ -85,7 +85,7 @@ public class ProductController extends AbstractBaseController {
         return CONTROLLER_NAME;
     }
 
-    @Value("${spring.profiles.active:Unknown}")
+    @Value("${spring.profiles.active:default}")
     private String activeProfile;
 
     @GetMapping("/xss")
