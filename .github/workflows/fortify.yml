@@ -1,7 +1,7 @@
 
 # Create GitHub Action Repository Variables for your version of the application:
 #   FORTIFY_BASE_URL should be the Fortify Base URL (e.g. https://ssc.uat.fortifyhosted.net)
-#   FORTIFY_PARENT_APPVER_NAME is the Fortify SSC Application Version Name corresponding to the parent branch of any newly created branch, this is typically "main"
+#   FORTIFY_PARENT_APPVER_NAME is the Fortify SSC Application Version Name corresponding to the parent branch of any newly created branch, this is typically "main" or "develop"
 # Create GitHub Action Secrets for your version of the application:
 #   FORTIFY_SSC_TOKEN should be an SSC Authorization token (CIToken) obtained from your Fortify tenant.
 #   FORTIFY_SCSAST_CLIENT_AUTH_TOKEN should be the ScanCentral SAST Client Authentication token for your Fortify tenant.
@@ -9,7 +9,7 @@
 name: DevSecOps with Fortify (Hosted)
 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
+  # Triggers the workflow on push or pull request events but only for the main or develop branches
   push:
     paths-ignore:
       - '.github/**/**'
@@ -24,7 +24,7 @@ on:
     branches:
       - '**'        # matches every branch
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -33,10 +33,10 @@ on:
         description: 'Carry out SAST scan using Fortify'
         required: false
         default: 'true'
-#      runDebrickedScan:
-#        description: 'Carry out SCA scan using Debricked'
-#        required: false
-#        default: 'false'
+      runSonatypeScan:
+        description: 'Carry out SCA scan using Sonatype Nexus IQ'
+        required: false
+        default: 'false'
       runFortifyDASTScan:
         description: 'Carry out DAST scan using Fortify'
         required: false
@@ -72,21 +72,18 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build
 
-# TODO: changed to FoD OSS Scan
-#  Debricked-SCA:
-#    runs-on: ubuntu-latest
-#    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runDebrickedScan == 'true') }}
-#    steps:
-#      - uses: actions/checkout@v3.3.0
-#      - uses: actions/setup-java@v3
-#        with:
-#          distribution: 'temurin'
-#          java-version: '11'
-#      - run: ./gradlew dependencies > .debricked-gradle-dependencies.txt
-#      - uses: debricked/vulnerable-functionality/java/gradle@v0
-#      - uses: debricked/actions/scan@v1
-#        env:
-#          DEBRICKED_TOKEN: ${{ secrets.DEBRICKED_TOKEN }}
+  Sonatype-SCA:
+    runs-on: ubuntu-latest
+    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runSonatypeScan == 'true') }}
+    steps:
+      - uses: actions/checkout@v3.3.0
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - run: ./gradlew dependencies > .debricked-gradle-dependencies.txt
+
+    # TODO: Sonatype Nexus IQ scan
 
   Quality-Gate:
     runs-on: ubuntu-latest
