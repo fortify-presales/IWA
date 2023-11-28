@@ -62,7 +62,7 @@ runs:
           echo "::debug::release_name=${GIT_BRANCH_NAME}"         
           echo "release_name=${GIT_BRANCH_NAME}" >> $GITHUB_OUTPUT
           CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          PARENT_BRANCH=(git show-branch -a 2>/dev/null | grep '\*' | grep -v "CURRENT_BRANCH" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//')
+          PARENT_BRANCH=$(git show-branch -a 2>/dev/null | grep '\*' | grep -v "CURRENT_BRANCH" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//')
           echo "PARENT_BRANCH=${PARENT_BRANCH}"
           echo "::debug::parent_release_name=${PARENT_BRANCH}"         
           echo "parent_release_name=${PARENT_BRANCH}" >> $GITHUB_OUTPUT
