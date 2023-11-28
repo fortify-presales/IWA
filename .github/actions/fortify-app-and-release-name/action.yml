@@ -44,6 +44,8 @@ runs:
     - name: Check if PR
       id: PR
       uses: 8BitJonny/gh-get-current-pr@2.2.0
+      with:
+        sha: ${{ github.event.pull_request.head.sha }}
     - name: Set Fortify Release Name
       id: fortify-release-name
       shell: bash
