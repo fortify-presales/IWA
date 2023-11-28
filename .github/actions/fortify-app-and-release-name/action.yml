@@ -51,8 +51,8 @@ runs:
       shell: bash
       run: |
         if [[ $IS_PR == true ]]; then
-          echo "::debug::release_name=${GIT_BRANCH_NAME}#PR_NUMBER"         
-          echo "release_name=${GIT_BRANCH_NAME}#PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "::debug::release_name=${GIT_BRANCH_NAME}#${PR_NUMBER}"         
+          echo "release_name=${GIT_BRANCH_NAME}#{PR_NUMBER}" >> $GITHUB_OUTPUT
         else
           echo "::debug::release_name=${GIT_BRANCH_NAME}"         
           echo "release_name=${GIT_BRANCH_NAME}" >> $GITHUB_OUTPUT
