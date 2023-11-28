@@ -1,8 +1,8 @@
 
 # Create GitHub Action Repository Variables for your version of the application:
-#   FOD_BASE_URL should be FoD BASE URL for your tenant (e.g. https://emea.fortify.com)
-#   FOD_API_URL should be FoD API URL for your tenant (e.g. https://api.emea,fortify.com)
-#   FOD_PARENT_RELEASE_NAME is the FoD release name corresponding to the parent branch of any newly created branch, this is typically "main"
+#   FOD_BASE_URL should be FoD BASE URL for your tenant (e.g. https://ams.fortify.com)
+#   FOD_API_URL should be FoD API URL for your tenant (e.g. https://api.ams,fortify.com)
+#   FOD_PARENT_RELEASE_NAME is the FoD release name corresponding to the parent branch of any newly created branch, this is typically "main" or "develop"
 # Create GitHub Action Secrets for your version of the application:
 #   FOD_CLIENT_ID should be an API Key obtained from your FoD tenant.
 #   FOD_CLIENT_SECRET should be the secret for the API Key obtained for your FoD tenant.
@@ -14,7 +14,7 @@
 name: DevSecOps with Fortify on Demand
 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
+  # Triggers the workflow on push or pull request events but only for the main or develop branches
   push:
     paths-ignore:
       - '.github/**/**'
@@ -29,7 +29,7 @@ on:
     branches:
       - '**'        # matches every branch
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -112,6 +112,7 @@ jobs:
           fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
           fod_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
           fod_release_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
+          fod_parent_release_name: ${{ vars.FOD_PARENT_RELEASE_NAME }}
 
   Quality-Gate:
     runs-on: ubuntu-latest
@@ -152,6 +153,7 @@ jobs:
           fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
           fod_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
           fod_release_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
+          fod_parent_release_name: ${{ vars.FOD_PARENT_RELEASE_NAME }}
 
   FoD-DAST-Scan:
     runs-on: ubuntu-latest
