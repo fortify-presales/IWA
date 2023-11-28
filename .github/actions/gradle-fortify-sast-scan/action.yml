@@ -24,7 +24,7 @@ inputs:
   ssc_parent_appver_name:
     required: false
     description: "SSC Parent Application Version Name"
-    default: "develop"
+    default: "dev"
   ssc_sensor_ver:
     required: false
     description: "SSC Sensor Version"
