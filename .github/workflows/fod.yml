@@ -112,7 +112,7 @@ jobs:
           fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
           fod_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
           fod_release_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
-          fod_parent_release_name: ${{ vars.FOD_PARENT_RELEASE_NAME }}
+          fod_parent_release_name: ${{ steps.fortify-app-and-rel-name.outputs.parent_release_name }}
 
   Quality-Gate:
     runs-on: ubuntu-latest
@@ -153,7 +153,7 @@ jobs:
           fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
           fod_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
           fod_release_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
-          fod_parent_release_name: ${{ vars.FOD_PARENT_RELEASE_NAME }}
+          fod_parent_release_name: ${{ steps.fortify-app-and-rel-name.outputs.parent_release_name }}
 
   FoD-DAST-Scan:
     runs-on: ubuntu-latest

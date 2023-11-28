@@ -18,6 +18,9 @@ outputs:
   release_name:
     description: "Fortify Release Name"
     value: ${{ steps.fortify-release-name.outputs.release_name }}
+  parent_release_name:
+    description: "Fortify Release Name"
+    value: ${{ steps.fortify-release-name.outputs.parent_release_name }}
 runs:
   using: "composite"
   steps:
@@ -52,10 +55,17 @@ runs:
       run: |
         if [[ $IS_PR == true ]]; then
           echo "::debug::release_name=${GIT_BRANCH_NAME}#${PR_NUMBER}"         
-          echo "release_name=${GIT_BRANCH_NAME}#{PR_NUMBER}" >> $GITHUB_OUTPUT
+          echo "release_name=${GIT_BRANCH_NAME}#${PR_NUMBER}" >> $GITHUB_OUTPUT
+          echo "::debug::parent_release_name=${GIT_BRANCH_NAME}"         
+          echo "parent_release_name=${GIT_BRANCH_NAME}" >> $GITHUB_OUTPUT
         else
           echo "::debug::release_name=${GIT_BRANCH_NAME}"         
           echo "release_name=${GIT_BRANCH_NAME}" >> $GITHUB_OUTPUT
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          PARENT_BRANCH=(git show-branch -a 2>/dev/null | grep '\*' | grep -v "CURRENT_BRANCH" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//')
+          echo "PARENT_BRANCH=${PARENT_BRANCH}"
+          echo "::debug::parent_release_name=${PARENT_BRANCH}"         
+          echo "parent_release_name=${PARENT_BRANCH}" >> $GITHUB_OUTPUT
         fi
       env:
         IS_PR: ${{ steps.PR.outputs.pr_found }}
