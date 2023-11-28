@@ -58,4 +58,3 @@ runs:
       env:
         IS_PR: ${{ steps.PR.outputs.pr_found }}
         PR_NUMBER: ${{ steps.PR.outputs.number }}
-        PR_RELEASE_NAME: ${{ format
