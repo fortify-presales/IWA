@@ -41,10 +41,21 @@ runs:
     - name: Git branch name
       id: git-branch-name
       uses: EthanSK/git-branch-name-action@v1
+    - name: Check if PR
+      id: PR
+      uses: 8BitJonny/gh-get-current-pr@2.2.0
     - name: Set Fortify Release Name
       id: fortify-release-name
       shell: bash
       run: |
-        echo "Git branch name: ${GIT_BRANCH_NAME}"
-        echo "::debug::release_name=${GIT_BRANCH_NAME}"         
-        echo "release_name=${GIT_BRANCH_NAME}" >> $GITHUB_OUTPUT
+        if [[ $IS_PR == true ]]; then
+          echo "::debug::release_name=${GIT_BRANCH_NAME}#PR_NUMBER"         
+          echo "release_name=${GIT_BRANCH_NAME}#PR_NUMBER" >> $GITHUB_OUTPUT
+        else
+          echo "::debug::release_name=${GIT_BRANCH_NAME}"         
+          echo "release_name=${GIT_BRANCH_NAME}" >> $GITHUB_OUTPUT
+        fi
+      env:
+        IS_PR: ${{ steps.PR.outputs.pr_found }}
+        PR_NUMBER: ${{ steps.PR.outputs.number }}
+        PR_RELEASE_NAME: ${{ format
