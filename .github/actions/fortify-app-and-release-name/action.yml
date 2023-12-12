@@ -41,17 +41,23 @@ runs:
         APP_NAME_POSTFIX: ${{ inputs.app_name_postfix }}
         DEFAULT_APP_NAME: ${{ format('{0}={1}', 'app_name', inputs.default_fortify_app_name) }}
         OVERRIDE_APP_NAME: ${{ format('{0}={1} {2}', 'app_name', inputs.default_fortify_app_name, inputs.app_name_postfix) }}
+    #- name: Git branch name
+    #  id: git-branch-name
+    #  uses: EthanSK/git-branch-name-action@v1
     - name: Set Fortify Release Name
       id: fortify-release-name
       shell: bash
       run: |
-        echo "GIT_BRANCH_NAME::${GIT_BRANCH_NAME}"
+        echo "GitHub Event::${GITHUB_EVENT_NAME}"
+
+        GIT_BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+        echo "GIT_BRANCH_NAME is ${GIT_BRANCH_NAME}"
         echo "::debug::release_name=${GIT_BRANCH_NAME}"         
         echo "release_name=${GIT_BRANCH_NAME}" >> $GITHUB_OUTPUT
-        git rev-parse --abbrev-ref HEAD
-        CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-        git show-branch -a 2>/dev/null | grep '\*' | grep -v "CURRENT_BRANCH" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//'
-        PARENT_BRANCH=$(git show-branch -a 2>/dev/null | grep '\*' | grep -v "CURRENT_BRANCH" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//')
-        echo "PARENT_BRANCH=${PARENT_BRANCH}"
+        
+        PARENT_BRANCH=$(git show-branch -a 2>/dev/null | grep '\*' | grep -v "${GIT_BRANCH_NAME}" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//')
+        echo "PARENT_BRANCH is ${PARENT_BRANCH}"
         echo "::debug::parent_release_name=${PARENT_BRANCH}"         
         echo "parent_release_name=${PARENT_BRANCH}" >> $GITHUB_OUTPUT
+      env:
+        GITHUB_EVENT_NAME: ${{ github.event_name }}
