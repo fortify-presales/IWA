@@ -41,16 +41,19 @@ runs:
         APP_NAME_POSTFIX: ${{ inputs.app_name_postfix }}
         DEFAULT_APP_NAME: ${{ format('{0}={1}', 'app_name', inputs.default_fortify_app_name) }}
         OVERRIDE_APP_NAME: ${{ format('{0}={1} {2}', 'app_name', inputs.default_fortify_app_name, inputs.app_name_postfix) }}
-    #- name: Git branch name
-    #  id: git-branch-name
-    #  uses: EthanSK/git-branch-name-action@v1
+    - name: Git branch name
+      id: git-branch-name
+      uses: EthanSK/git-branch-name-action@v1
     - name: Set Fortify Release Name
       id: fortify-release-name
       shell: bash
       run: |
-        echo "GitHub Event::${GITHUB_EVENT_NAME}"
-
-        GIT_BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+        echo "GitHub Event is ${GITHUB_EVENT_NAME}"
+        echo "GitHub Ref is ${GITHUB_REF}"
+        echo "GitHub Head Ref is ${GITHUB_HEAD_REF}"
+        
+        
+        #GIT_BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
         echo "GIT_BRANCH_NAME is ${GIT_BRANCH_NAME}"
         echo "::debug::release_name=${GIT_BRANCH_NAME}"         
         echo "release_name=${GIT_BRANCH_NAME}" >> $GITHUB_OUTPUT
@@ -61,3 +64,5 @@ runs:
         echo "parent_release_name=${PARENT_BRANCH}" >> $GITHUB_OUTPUT
       env:
         GITHUB_EVENT_NAME: ${{ github.event_name }}
+        GITHUB_REF: ${{ github.ref }}
+        GITHUB_HEAD_REF: ${{ github.head_ref }}
