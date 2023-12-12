@@ -25,7 +25,9 @@ runs:
   using: "composite"
   steps:
     - name: Check Out Source Code
-      uses: actions/checkout@v3.3.0
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     - name: Set Fortify App Name
       id: fortify-app-name
       shell: bash
@@ -64,6 +66,7 @@ runs:
         git show-branch -a 2>/dev/null | grep '\*' | grep -v "${GIT_BRANCH_NAME}"
         
         PARENT_BRANCH=$(git show-branch -a 2>/dev/null | grep '\*' | grep -v "${GIT_BRANCH_NAME}" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//')
+        
         echo "PARENT_BRANCH is ${PARENT_BRANCH}"
         echo "::debug::parent_release_name=${PARENT_BRANCH}"         
         echo "parent_release_name=${PARENT_BRANCH}" >> $GITHUB_OUTPUT
