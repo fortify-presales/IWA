@@ -13,8 +13,8 @@ Import-Module $PSScriptRoot\modules\FortifyFunctions.psm1
 
 # Import local environment specific settings
 $EnvSettings = $(ConvertFrom-StringData -StringData (Get-Content ".\.env" | Where-Object {-not ($_.StartsWith('#'))} | Out-String))
-$AppName = $EnvSettings['SSC_APP_NAME']
-$AppVersion = $EnvSettings['SSC_APP_VER_NAME']
+$AppName = $EnvSettings['FOD_APP_NAME']
+$AppVersion = $EnvSettings['FOD_REL_NAME']
 $FoDApiUrl = $EnvSettings['FOD_API_URL']
 $FoDUser = $EnvSettings['FOD_USER']
 $FoDPassword = $EnvSettings['FOD_PASSWORD']
@@ -51,16 +51,19 @@ if ($ReBuild -or (-not $PackageExists))
 }
 
 # Check Package exists
-if (-not ($PackageExists)) {
+if (-not ($PackageExists) -and (-not $ReBuild)) {
     throw "ScanCentral package $PackageName does not exist, try the '-Rebuild' option"
 }
 
+
+Write-Host "Logging into $FoDApiUrl as $($FoDTenant)\$($FoDUser)"
+& fcli fod session login --url "$FoDApiUrl" --user "$FoDUser" --password "$FoDPassword" --tenant "$FoDTenant" --session iwa-fcli
 Write-Host "Uploading $PackageName to $FoDApiUrl ..."
-& fcli fod session login --url $FoDApiUrl --user $FoDUser --password $FoDPassword --tenant $FoDTenant --session iwa-fcli
-& fcli fod scan start-sast "$($AppName):$($AppVersion)" --notes "fcli scan" -f $PackageName --store curScan --session iwa-fcli
+& fcli fod sast-scan start --release "$($AppName):$($AppVersion)" --notes "Initiated from fcli" -f $PackageName --store curScan --session iwa-fcli
 Start-Sleep -s 5
 Write-Host "Waiting until the scan has finished ..."
-& fcli fod scan wait-for ::curScan:: --session iwa-fcli
+& fcli fod sast-scan wait-for ::curScan:: --session iwa-fcli
+Write-Host "Logging out"
 & fcli fod session logout --session iwa-fcli
 
 Write-Host "Scan complete".
