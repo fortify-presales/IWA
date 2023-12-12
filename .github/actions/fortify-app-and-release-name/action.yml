@@ -50,6 +50,9 @@ runs:
       run: |
         echo "GitHub Event is ${GITHUB_EVENT_NAME}"
         echo "GitHub Ref is ${GITHUB_REF}"
+        echo "GitHub Base Ref is ${GITHUB_BASE_REF}"
+
+        echo "GitHub Ref Name is ${GITHUB_REF_NAME}"
         echo "GitHub Head Ref is ${GITHUB_HEAD_REF}"
         
         
@@ -58,6 +61,8 @@ runs:
         echo "::debug::release_name=${GIT_BRANCH_NAME}"         
         echo "release_name=${GIT_BRANCH_NAME}" >> $GITHUB_OUTPUT
         
+        git show-branch -a 2>/dev/null | grep '\*' | grep -v "${GIT_BRANCH_NAME}"
+        
         PARENT_BRANCH=$(git show-branch -a 2>/dev/null | grep '\*' | grep -v "${GIT_BRANCH_NAME}" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//')
         echo "PARENT_BRANCH is ${PARENT_BRANCH}"
         echo "::debug::parent_release_name=${PARENT_BRANCH}"         
@@ -65,4 +70,6 @@ runs:
       env:
         GITHUB_EVENT_NAME: ${{ github.event_name }}
         GITHUB_REF: ${{ github.ref }}
+        GITHUB_BASE_REF: ${{github.base_ref }}
+        GITHUB_REF_NAME: ${{ github.ref_name }}
         GITHUB_HEAD_REF: ${{ github.head_ref }}
