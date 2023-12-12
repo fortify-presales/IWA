@@ -166,7 +166,7 @@ jobs:
         uses: ./.github/actions/fortify-app-and-release-name
         with:
           default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
-          default_fortify_release_name: 'main'
+          default_fortify_release_name: ${{ github.ref_name }}
           app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
 
       # TBD
@@ -183,7 +183,7 @@ jobs:
         uses: ./.github/actions/fortify-app-and-release-name
         with:
           default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
-          default_fortify_release_name: 'main'
+          default_fortify_release_name: ${{ github.ref_name }}
           app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
       - name: Verify FoD Security Policy
         uses: ./.github/actions/verify-fod-security-policy
