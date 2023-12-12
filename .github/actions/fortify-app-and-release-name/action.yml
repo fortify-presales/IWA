@@ -18,11 +18,16 @@ outputs:
   release_name:
     description: "Fortify Release Name"
     value: ${{ steps.fortify-release-name.outputs.release_name }}
+  parent_release_name:
+    description: "Fortify Parent Release Name"
+    value: ${{ steps.fortify-release-name.outputs.parent_release_name }}
 runs:
   using: "composite"
   steps:
     - name: Check Out Source Code
-      uses: actions/checkout@v3.3.0
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     - name: Set Fortify App Name
       id: fortify-app-name
       shell: bash
@@ -41,10 +46,39 @@ runs:
     - name: Git branch name
       id: git-branch-name
       uses: EthanSK/git-branch-name-action@v1
+    - name: Check if PR
+      id: PR
+      uses: 8BitJonny/gh-get-current-pr@2.2.0
+      with:
+        sha: ${{ github.event.pull_request.head.sha }}
     - name: Set Fortify Release Name
       id: fortify-release-name
       shell: bash
       run: |
-        echo "Git branch name: ${GIT_BRANCH_NAME}"
-        echo "::debug::release_name=${GIT_BRANCH_NAME}"         
-        echo "release_name=${GIT_BRANCH_NAME}" >> $GITHUB_OUTPUT
+        echo "GitHub Event:    ${GITHUB_EVENT_NAME}"
+        echo "GitHub Ref:      ${GITHUB_REF}"
+        echo "GitHub Base Ref: ${GITHUB_BASE_REF}"
+        echo "GitHub Ref Name: ${GITHUB_REF_NAME}"
+        echo "GitHub Head Ref: ${GITHUB_HEAD_REF}"
+         if [[ $IS_PR == true || $GITHUB_EVENT_NAME == 'pull_request' ]]; then
+          echo "::debug::release_name=${GITHUB_HEAD_REF}"         
+          echo "release_name=${GITHUB_HEAD_REF}" >> $GITHUB_OUTPUT
+          echo "::debug::parent_release_name=${GITHUB_BASE_REF}"         
+          echo "parent_release_name=${GITHUB_BASE_REF}" >> $GITHUB_OUTPUT
+        else
+          echo "::debug::release_name=${GITHUB_REF_NAME}"         
+          echo "release_name=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          PARENT_BRANCH=$(git show-branch -a 2>/dev/null | grep '\*' | grep -v "${GITHUB_REF_NAME}" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//')
+          echo "PARENT_BRANCH=${PARENT_BRANCH}"
+          echo "::debug::parent_release_name=${PARENT_BRANCH}"         
+          echo "parent_release_name=${PARENT_BRANCH}" >> $GITHUB_OUTPUT
+        fi
+      env:
+        GITHUB_EVENT_NAME: ${{ github.event_name }}
+        GITHUB_REF: ${{ github.ref }}
+        GITHUB_BASE_REF: ${{github.base_ref }}
+        GITHUB_REF_NAME: ${{ github.ref_name }}
+        GITHUB_HEAD_REF: ${{ github.head_ref }}
+        IS_PR: ${{ steps.PR.outputs.pr_found }}
+        PR_NUMBER: ${{ steps.PR.outputs.number }}
