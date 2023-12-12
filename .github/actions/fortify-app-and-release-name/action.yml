@@ -68,8 +68,8 @@ runs:
         else
           echo "::debug::release_name=${GITHUB_REF_NAME}"         
           echo "release_name=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
-          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          PARENT_BRANCH=$(git show-branch -a 2>/dev/null | grep '\*' | grep -v "${GITHUB_REF_NAME}" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//')
+          #PARENT_BRANCH=$(git show-branch -a 2>/dev/null | grep '\*' | grep -v "${GITHUB_REF_NAME}" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//')
+          PARENT_BRANCH=$(git show-branch -a 2>/dev/null | sed "s/].*//" | grep "\*" | grep -v "${GITHUB_REF_NAME}" | head -n1 | sed "s/^.*\[//" | sed "s/origin\///")
           echo "PARENT_BRANCH=${PARENT_BRANCH}"
           echo "::debug::parent_release_name=${PARENT_BRANCH}"         
           echo "parent_release_name=${PARENT_BRANCH}" >> $GITHUB_OUTPUT
