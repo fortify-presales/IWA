@@ -43,14 +43,6 @@ runs:
         APP_NAME_POSTFIX: ${{ inputs.app_name_postfix }}
         DEFAULT_APP_NAME: ${{ format('{0}={1}', 'app_name', inputs.default_fortify_app_name) }}
         OVERRIDE_APP_NAME: ${{ format('{0}={1} {2}', 'app_name', inputs.default_fortify_app_name, inputs.app_name_postfix) }}
-    - name: Git branch name
-      id: git-branch-name
-      uses: EthanSK/git-branch-name-action@v1
-    - name: Check if PR
-      id: PR
-      uses: 8BitJonny/gh-get-current-pr@2.2.0
-      with:
-        sha: ${{ github.event.pull_request.head.sha }}
     - name: Set Fortify Release Name
       id: fortify-release-name
       shell: bash
@@ -62,7 +54,7 @@ runs:
         echo "GitHub Head Ref: ${GITHUB_HEAD_REF}"
         echo "GitHub PR Base Ref: ${GITHUB_PR_BASE_REF}"
         echo "GitHub PR Head Ref: ${GITHUB_PR_HEAD_REF}"
-         if [[ $IS_PR == true || $GITHUB_EVENT_NAME == 'pull_request' ]]; then
+         if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
           echo "::debug::release_name=${GITHUB_PR_HEAD_REF}"         
           echo "release_name=${GITHUB_PR_HEAD_REF}" >> $GITHUB_OUTPUT
           echo "::debug::parent_release_name=${GITHUB_PR_BASE_REF}"         
@@ -83,5 +75,3 @@ runs:
         GITHUB_HEAD_REF: ${{ github.head_ref }}
         GITHUB_PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
         GITHUB_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
-        IS_PR: ${{ steps.PR.outputs.pr_found }}
-        PR_NUMBER: ${{ steps.PR.outputs.number }}
