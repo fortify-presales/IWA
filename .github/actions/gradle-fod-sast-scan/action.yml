@@ -28,7 +28,7 @@ inputs:
   fod_parent_release_name:
     required: false
     description: "FoD Parent Release Name"
-    default: "dev"
+    default: "main"
   gradle_version:
     required: false
     description: "Version of Gradle to use"
