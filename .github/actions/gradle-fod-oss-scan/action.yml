@@ -53,7 +53,7 @@ runs:
         gradle-version: ${{ inputs.gradle_version }}
     # Install Fortify tools
     - name: Setup Fortify tools
-      uses: fortify/github-action/setup@v1
+      uses: fortify/github-action/setup@v1.1.0
       with:
         export-path: true
         fcli: latest

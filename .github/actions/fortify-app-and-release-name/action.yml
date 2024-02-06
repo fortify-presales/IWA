@@ -18,6 +18,9 @@ outputs:
   release_name:
     description: "Fortify Release Name"
     value: ${{ steps.fortify-release-name.outputs.release_name }}
+  parent_release_name:
+    description: "Fortify Parent Release Name"
+    value: ${{ steps.fortify-release-name.outputs.parent_release_name }}
 runs:
   using: "composite"
   steps:
@@ -38,13 +41,20 @@ runs:
         APP_NAME_POSTFIX: ${{ inputs.app_name_postfix }}
         DEFAULT_APP_NAME: ${{ format('{0}={1}', 'app_name', inputs.default_fortify_app_name) }}
         OVERRIDE_APP_NAME: ${{ format('{0}={1} {2}', 'app_name', inputs.default_fortify_app_name, inputs.app_name_postfix) }}
-    - name: Git branch name
-      id: git-branch-name
-      uses: EthanSK/git-branch-name-action@v1
+    - name: Get branch names.
+      id: branch-names
+      uses: tj-actions/branch-names@v8
     - name: Set Fortify Release Name
       id: fortify-release-name
       shell: bash
       run: |
-        echo "Git branch name: ${GIT_BRANCH_NAME}"
-        echo "::debug::release_name=${GIT_BRANCH_NAME}"         
-        echo "release_name=${GIT_BRANCH_NAME}" >> $GITHUB_OUTPUT
+        echo "Git current branch name: ${CURRENT_BRANCH}"
+        echo "::debug::release_name=${CURRENT_BRANCH}"         
+        echo "release_name=${CURRENT_BRANCH}" >> $GITHUB_OUTPUT
+        echo "Git parent branch name: ${PARENT_BRANCH}"
+        echo "::debug::parent_release_name=${PARENT_BRANCH}"         
+        echo "parent_release_name=${PARENT_BRANCH}" >> $GITHUB_OUTPUT
+      env:
+        CURRENT_BRANCH: ${{ steps.branch-names.outputs.current_branch }}
+        #PARENT_BRANCH: ${{ steps.branch-names.outputs.ref_branch }}
+        PARENT_BRANCH: "main" # hardcoded for now until we find a consistent way of calculating it

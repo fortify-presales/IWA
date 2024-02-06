@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<FilterTemplate version="1.2" disableEdit="false" id="e54cefcf-d341-452f-ada2-d1317e323a8f" objectVersion="5" publishVersion="1">
+<FilterTemplate version="1.2" disableEdit="false" id="e54cefcf-d341-452f-ada2-d1317e323a8f" objectVersion="6" publishVersion="1">
     <Name>Custom Issue Template</Name>
     <Description>An example Custom Issue Template with Baseline and Review tags/filters and Noise folder</Description>
     <FolderDefinition id="b968f72f-cc12-03b5-976e-ad4c13920c21" color="ca3f37">
@@ -32,7 +32,7 @@
         <value id="3" Description="" hidden="false">Suspicious</value>
         <value id="4" Description="" hidden="false">Exploitable</value>
     </TagDefinition>
-    <TagDefinition id="b4656239-4d81-4277-9950-a9d3cb79d694" type="user" extensible="false" hidden="false" restriction="RESTRICTED" objectVersion="0" valueType="LIST">
+    <TagDefinition id="b4656239-4d81-4277-9950-a9d3cb79d694" type="user" extensible="false" hidden="false" objectVersion="0" valueType="LIST">
         <name>Baseline</name>
         <Description>The baseline tag is used to tag all issues present in an initial scan, in order to differentiate between issues already present before Fortify was implemented on the project, and issues introduced afterwards.</Description>
         <value id="0" hidden="false">yes</value>
@@ -506,8 +506,52 @@
         </Filter>
         <Filter>
             <actionParam>fd2fb536-d19c-4821-8f2d-c8095f299eca</actionParam>
-            <query>kingdom:code quality OR category:poor style OR category:j2ee OR category:mass assignment</query>
+            <query>kingdom:code quality OR category:poor style OR category:j2ee OR category:mass assignment OR taint:args</query>
             <action>setFolder</action>
+        </Filter>
+    </FilterSet>
+    <FilterSet type="user" id="359396b6-f46a-4319-9563-4cfa5b58b655" enabled="false" disableEdit="false">
+        <Title>Security Gate</Title>
+        <Description>This filter set shows issues that are Exploitable and therefore need to be addressed as a priority. It excludes issues for which the Analysis tag has been set to "Not an issue" (False Positives). This view can be used in a pipeline as a Security Gate.</Description>
+        <EnabledFolders>b968f72f-cc12-03b5-976e-ad4c13920c21</EnabledFolders>
+        <EnabledFolders>5b50bb77-071d-08ed-fdba-1213fa90ac5a</EnabledFolders>
+        <EnabledFolders>d5f55910-5f0d-a775-e91f-191d1f5608a4</EnabledFolders>
+        <EnabledFolders>bb824e8d-b401-40be-13bd-5d156696a685</EnabledFolders>
+        <EnabledFolders>fd2fb536-d19c-4821-8f2d-c8095f299eca</EnabledFolders>
+        <Filter>
+            <actionParam>b968f72f-cc12-03b5-976e-ad4c13920c21</actionParam>
+            <query>[fortify priority order]:critical</query>
+            <action>setFolder</action>
+        </Filter>
+        <Filter>
+            <actionParam>5b50bb77-071d-08ed-fdba-1213fa90ac5a</actionParam>
+            <query>[fortify priority order]:high</query>
+            <action>setFolder</action>
+        </Filter>
+        <Filter>
+            <actionParam>d5f55910-5f0d-a775-e91f-191d1f5608a4</actionParam>
+            <query>[fortify priority order]:medium</query>
+            <action>setFolder</action>
+        </Filter>
+        <Filter>
+            <actionParam>bb824e8d-b401-40be-13bd-5d156696a685</actionParam>
+            <query>[fortify priority order]:low</query>
+            <action>setFolder</action>
+        </Filter>
+        <Filter>
+            <actionParam>true</actionParam>
+            <query>Analysis:"not an issue"</query>
+            <action>hide</action>
+        </Filter>
+        <Filter>
+            <actionParam>true</actionParam>
+            <query>Analysis:!exploitable</query>
+            <action>hide</action>
+        </Filter>
+        <Filter>
+            <actionParam>true</actionParam>
+            <query>[fortify priority order]:medium OR [fortify priority order]:low</query>
+            <action>hide</action>
         </Filter>
     </FilterSet>
 </FilterTemplate>
