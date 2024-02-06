@@ -43,9 +43,9 @@ runs:
         APP_NAME_POSTFIX: ${{ inputs.app_name_postfix }}
         DEFAULT_APP_NAME: ${{ format('{0}={1}', 'app_name', inputs.default_fortify_app_name) }}
         OVERRIDE_APP_NAME: ${{ format('{0}={1} {2}', 'app_name', inputs.default_fortify_app_name, inputs.app_name_postfix) }}
-    #- name: Git branch name
-    #  id: git-branch-name
-    #  uses: EthanSK/git-branch-name-action@v1
+    - name: Git branch name
+      id: git-branch-name
+      uses: EthanSK/git-branch-name-action@v1
     - name: Check if PR
       id: PR
       uses: 8BitJonny/gh-get-current-pr@2.2.0
