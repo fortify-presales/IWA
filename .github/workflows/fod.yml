@@ -169,17 +169,17 @@ jobs:
           default_fortify_release_name: ${{ github.ref_name }}
           app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
       - name: FoD DAST scan
-      id: fod-dast-scan
-      uses: ./.github/actions/fod-dast-scan
-      with:
-        working_directory: ${{ env.BASE_DIR }}
-        fod_url: ${{ vars.FOD_URL }}
-        fod_api_url: ${{ vars.FOD_API_URL }}
-        fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
-        fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
-        fod_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
-        fod_release_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
-        fod_parent_release_name: ${{ steps.fortify-app-and-rel-name.outputs.parent_release_name }}
+        id: fod-dast-scan
+        uses: ./.github/actions/fod-dast-scan
+        with:
+          working_directory: ${{ env.BASE_DIR }}
+          fod_url: ${{ vars.FOD_URL }}
+          fod_api_url: ${{ vars.FOD_API_URL }}
+          fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
+          fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
+          fod_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
+          fod_release_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
+          fod_parent_release_name: ${{ steps.fortify-app-and-rel-name.outputs.parent_release_name }}
 
   Security-Gate:
     runs-on: ubuntu-latest
