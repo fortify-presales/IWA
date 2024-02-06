@@ -43,12 +43,13 @@ public class UserUtils {
     public static final String USER_INFO_FILE = "user_info.json";
     public static final String NEWSLETTER_USER_FILE = "newsletter_registration.json";
     public static final String DEFAULT_ROLE = "guest";
+    public static final String DEFAULT_USER_PASSWORD = "changeme";
 
     public static void writeUser(String username, String password) throws IOException {
         JsonFactory jsonFactory = new JsonFactory();
 
         File dataFile = new File(getFilePath(USER_INFO_FILE));
-        if (dataFile.createNewFile()){
+        if (dataFile.createNewFile()) {
             log.debug("Created: " + getFilePath(USER_INFO_FILE));
         }
 
@@ -93,8 +94,7 @@ public class UserUtils {
             JsonGenerator jGenerator = jsonFactory.createGenerator(fos, JsonEncoding.UTF8);
             jGenerator.writeStartArray();
 
-            for (Object jsonObject : jsonArray)
-            {
+            for (Object jsonObject : jsonArray) {
                 jGenerator.writeStartObject();
                 JSONObject person = (JSONObject) jsonObject;
                 jGenerator.writeFieldName("firstName");
@@ -126,17 +126,40 @@ public class UserUtils {
             jGenerator.close();
         }
 
+        serializeUser(email, DEFAULT_USER_PASSWORD);
+
     }
 
     public void logZipContents(String fName)
             throws IOException, SecurityException, IllegalStateException, NoSuchElementException {
         ZipFile zf = new ZipFile(fName);
         @SuppressWarnings("unchecked")
-		Enumeration<ZipEntry> e = (Enumeration<ZipEntry>) zf.entries();
+        Enumeration<ZipEntry> e = (Enumeration<ZipEntry>) zf.entries();
         while (e.hasMoreElements()) {
             log.info(e.nextElement().toString());
         }
         zf.close();
+    }
+
+    public static void serializeUser(String username, String password) throws IOException {
+
+        File dataFile = new File(getFilePath(USER_INFO_FILE));
+        if (dataFile.createNewFile()) {
+            log.debug("Created: " + getFilePath(USER_INFO_FILE));
+        }
+        UserObj userObj = new UserObj(username, password);
+
+        FileOutputStream fos = new FileOutputStream(dataFile);
+        ObjectOutputStream os = new ObjectOutputStream(fos);
+        os.writeObject(userObj);
+    }
+
+    public static UserObj deserializeUser() throws IOException, ClassNotFoundException {
+        File dataFile = new File(getFilePath(USER_INFO_FILE));
+
+        FileInputStream fis = new FileInputStream(dataFile);
+        ObjectInputStream is = new ObjectInputStream(fis);
+        return (UserObj)is.readObject();
     }
 
     private static String getFilePath(String relativePath) {
@@ -144,3 +167,4 @@ public class UserUtils {
     }
 
 }
+

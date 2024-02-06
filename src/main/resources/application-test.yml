@@ -3,14 +3,15 @@ server:
   error:
     include-message: always
     include-binding-errors: always
-    include-stacktrace: on_trace_param
+    include-stacktrace: on_param
     include-exception: true
     whitelabel:
       enabled: false
 
 spring:
-  profiles:
-    active: test
+  config:
+    activate:
+      on-profile: "test"
   main:
     allow-bean-definition-overriding: true
     banner-mode: "off"

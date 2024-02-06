@@ -3,16 +3,16 @@ plugins {
     id 'java'
     id 'war'
     id 'maven-publish'
-    id "org.springframework.boot" version "2.1.8.RELEASE"
+    id "org.springframework.boot" version "2.7.17"
     id "com.microsoft.azure.azurewebapp" version "1.2.0"
 }
 
 ext {
-    springBootVersion = '2.1.8.RELEASE'
+    springBootVersion = '2.7.17'
     springSecurityVersion = '3.0.4.RELEASE'
     jacksonVersion = '2.13.0'
-    tymeleafLayoutDialectVersion = '2.3.0'
-    springdocOpenApiVersion = '1.4.3'
+    tymeleafLayoutDialectVersion = '3.2.1'
+    springdocOpenApiVersion = '1.7.0'
     junitVersion = '4.12'
     junitJupiterVersion = '5.7.0'
     junitPlatformVersion = '1.7.1'
@@ -45,7 +45,7 @@ dependencies {
     implementation "org.webjars:font-awesome:5.15.2"
     implementation "org.webjars:chartjs:2.9.4"
     implementation "org.webjars.npm:axios:0.21.1"
-    implementation "org.springdoc:springdoc-openapi-ui:${springdocOpenApiVersion}"
+    implementation ("org.springdoc:springdoc-openapi-ui:${springdocOpenApiVersion}")
     implementation "org.springdoc:springdoc-openapi-security:${springdocOpenApiVersion}"
     implementation "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
     implementation "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
@@ -69,6 +69,7 @@ dependencies {
         }
     }
     implementation "org.mockito:mockito-bom:${mockitoVersion}"
+    implementation "org.hibernate.validator:hibernate-validator:6.1.0.Final"
     testImplementation "org.hibernate.validator:hibernate-validator:6.1.0.Final"
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}") {
         exclude group: "com.vaadin.external.google", module:"android-json"
@@ -161,7 +162,7 @@ bootJar {
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
 bootRun {
-    systemProperty "spring.profiles.active", "dev"
+    systemProperty "spring.profiles.active", "default,dev"
 }
 
 task writeClasspath() {

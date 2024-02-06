@@ -74,7 +74,7 @@ public class UserService {
     @Autowired
     private OrderRepository orderRepository;
 
-    @Value("${spring.profiles.active:Unknown}")
+    @Value("${spring.profiles.active:default}")
     private String activeProfile;
 
     @Value("${app.data.page-size:25}")

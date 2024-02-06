@@ -21,7 +21,7 @@ ARG JAR_FILE=target/iwa.jar
 COPY ${JAR_FILE} app.jar
 
 # JAVA_OPTS to be passed in
-ENV JAVA_OPTS="-Xmx512m -Xss256k"
+ENV JAVA_OPTS="-Xmx512m -Xss256k -Dspring.profile.active=default"
 
 # Run the jar file
 # Uncomment if not using WebInspect Agent

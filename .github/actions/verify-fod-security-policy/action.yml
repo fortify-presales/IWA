@@ -4,7 +4,7 @@ inputs:
   fod_api_url:
     required: false
     description: "FoD API URL"
-    default: "https://api.emea.fortify.com"
+    default: "https://api.ams.fortify.com"
   fod_client_id:
     required: true
     description: "FoD API Client Id"
@@ -28,7 +28,7 @@ runs:
         java-version: '11'
     # Install Fortify tools
     - name: Setup Fortify tools
-      uses: fortify/github-action/setup@v1
+      uses: fortify/github-action/setup@v1.1.0
       with:
         export-path: true
         fcli: latest
@@ -47,19 +47,26 @@ runs:
         FOD_CLIENT_ID: ${{ inputs.fod_client_id }}
         FOD_CLIENT_SECRET: ${{ inputs.fod_client_secret }}
     # Run script to check the Security Policy of the Fortify on Demand Release to determine success/failure
-    # We will just print a message in this example
     - name: Verify Security Policy
       id: verify-security-policy
       shell: bash
       run: |
         fcli fod release get "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" -o expr="Critical:\t{critical}\nHigh:\t\t{high}\nMedium:\t\t{medium}\nLow:\t\t{low}" --session github-actions
-        echo "### FoD Issue Summary" >> $GITHUB_STEP_SUMMARY
-        echo "| Critical | High | Medium | Low |" >> $GITHUB_STEP_SUMMARY
+        read -r RATING ISPASSED <<<$(fcli fod release get "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" -o expr="{rating}" --session github-actions)
+        echo "### Fortify on Demand Summary" >> $GITHUB_STEP_SUMMARY
+        echo ":bar_chart: ***Security Rating: ${RATING}/5**" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| **Critical** | **High** | **Medium** | **Low** |" >> $GITHUB_STEP_SUMMARY
         echo "| -------- | ---- | ------ | --- |" >> $GITHUB_STEP_SUMMARY
         ISSUES=$(fcli fod release get "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" -o expr="|{critical}|{high}|{medium}|{low}" --session github-actions)
         echo "${ISSUES}" >> $GITHUB_STEP_SUMMARY
-        #if [ $(fcli fod release get "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" -o expr="{isPassed}" --session github-actions) = 'true' ]; then echo "Security policy: passed" >> $GITHUB_STEP_SUMMARY; else echo "Security policy: failed" >> $GITHUB_STEP_SUMMARY; fi
-        # TODO: add to summary output
+        echo "" >> $GITHUB_STEP_SUMMARY
+        # Example failure condition
+        if [ $ISPASSED ]; then
+          echo ":white_check_mark: **The release has ***PASSED*** the designated security policy.**" >> $GITHUB_STEP_SUMMARY
+        else
+          echo ":x: **The release has ***FAILED*** the designated security policy.**" >> $GITHUB_STEP_SUMMARY
+        fi
       env:
         FOD_APP_NAME: ${{ inputs.fod_app_name }}
         FOD_RELEASE_NAME: ${{ inputs.fod_release_name }}
