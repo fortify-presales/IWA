@@ -39,7 +39,7 @@ on:
         required: false
         default: 'true'
       runFoDOSSScan:
-        description: 'Carry out OSS scan using Fortify on Demand (via Debricked)'
+        description: 'Carry out OSS scan using Fortify on Demand'
         required: false
         default: 'true'
       runFoDDASTScan:

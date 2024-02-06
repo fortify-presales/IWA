@@ -56,4 +56,5 @@ runs:
         echo "parent_release_name=${PARENT_BRANCH}" >> $GITHUB_OUTPUT
       env:
         CURRENT_BRANCH: ${{ steps.branch-names.outputs.current_branch }}
-        PARENT_BRANCH: ${{ steps.branch-names.outputs.ref_branch }}
+        #PARENT_BRANCH: ${{ steps.branch-names.outputs.ref_branch }}
+        PARENT_BRANCH: "main" # hardcoded for now until we find a consistent way of calculating it
