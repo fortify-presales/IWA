@@ -38,7 +38,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
@@ -69,20 +68,20 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthenticationEntryPointJwt unauthorizedHandler;
 
+    @Autowired
+    private PasswordConfiguration passwordEncoder;
+
     @Bean
     public AuthenticationTokenFilter authenticationJwtTokenFilter() {
         return new AuthenticationTokenFilter();
     }
 
-    @Autowired
-    private SessionRegistry sessionRegistry;
-
-    @Value("${spring.profiles.active:Unknown}")
+    @Value("${spring.profiles.active:default}")
     private String activeProfile;
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder.passwordEncoder());
     }
 
     @Bean
@@ -197,8 +196,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .logoutSuccessUrl("/login?logout")
                     .permitAll();
 
-            httpSecurity.sessionManagement().maximumSessions(10)
-                    .sessionRegistry(sessionRegistry())
+            httpSecurity.sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                    .maximumSessions(10)
                     .expiredUrl("/login?expire");
 
         }
@@ -207,7 +207,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         public DaoAuthenticationProvider authenticationProvider() {
             DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
             authProvider.setUserDetailsService(userDetailsService());
-            authProvider.setPasswordEncoder(passwordEncoder());
+            authProvider.setPasswordEncoder(passwordEncoder.passwordEncoder());
             return authProvider;
         }
 
@@ -231,11 +231,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
             return new DefaultHttpFirewall();
         }
 
-    }
-
-    @Bean("WebSecurityConfigurationPasswordEncoder")
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
 }

@@ -3,7 +3,7 @@ server:
   error:
     include-message: always
     include-binding-errors: always
-    include-stacktrace: on_trace_param
+    include-stacktrace: on_param
     include-exception: false
     whitelabel:
       enabled: false
@@ -11,8 +11,9 @@ server:
     context-path: /
 
 spring:
-  profiles:
-    active: prod
+  config:
+    activate:
+      on-profile: "default"
   main:
     allow-bean-definition-overriding: true
     banner-mode: "off"
@@ -42,7 +43,7 @@ spring:
     hibernate:
       ddl-auto: none
     properties:
-      hiberate:
+      hibernate:
         # h2 database dialect
         dialect: org.hibernate.dialect.H2Dialect
   mvc:

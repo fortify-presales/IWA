@@ -2,7 +2,7 @@
 # Create GitHub Action Repository Variables for your version of the application:
 #   FOD_BASE_URL should be FoD BASE URL for your tenant (e.g. https://ams.fortify.com)
 #   FOD_API_URL should be FoD API URL for your tenant (e.g. https://api.ams,fortify.com)
-#   FOD_PARENT_RELEASE_NAME is the FoD release name corresponding to the parent branch of any newly created branch, this is typically "main" or "develop"
+#   FOD_PARENT_RELEASE_NAME is the FoD release name corresponding to the parent branch of any newly created branch, this is typically "main" or "dev"
 # Create GitHub Action Secrets for your version of the application:
 #   FOD_CLIENT_ID should be an API Key obtained from your FoD tenant.
 #   FOD_CLIENT_SECRET should be the secret for the API Key obtained for your FoD tenant.
@@ -49,7 +49,7 @@ on:
 
 # Global environment variables
 env:
-  DEFAULT_APP_NAME: "IWA-Java"
+  DEFAULT_APP_NAME: "IWA-Pharmacy Direct"
   # some insecure variables to be picked up by fortify scan
   AWS_REGION: US_WEST_2
   AWS_ACCESS_KEY_ID: AKIAIOSFODNN7EXAMPLE

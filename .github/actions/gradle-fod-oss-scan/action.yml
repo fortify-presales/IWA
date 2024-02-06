@@ -28,7 +28,7 @@ inputs:
   fod_parent_release_name:
     required: false
     description: "FoD Parent Release Name"
-    default: "develop"
+    default: "main"
   gradle_version:
     required: false
     description: "Version of Gradle to use"
@@ -53,7 +53,7 @@ runs:
         gradle-version: ${{ inputs.gradle_version }}
     # Install Fortify tools
     - name: Setup Fortify tools
-      uses: fortify/github-action/setup@v1
+      uses: fortify/github-action/setup@v1.1.0
       with:
         export-path: true
         fcli: latest

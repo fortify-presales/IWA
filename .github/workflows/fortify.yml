@@ -1,7 +1,7 @@
 
 # Create GitHub Action Repository Variables for your version of the application:
 #   FORTIFY_BASE_URL should be the Fortify Base URL (e.g. https://ssc.uat.fortifyhosted.net)
-#   FORTIFY_PARENT_APPVER_NAME is the Fortify SSC Application Version Name corresponding to the parent branch of any newly created branch, this is typically "main" or "develop"
+#   FORTIFY_PARENT_APPVER_NAME is the Fortify SSC Application Version Name corresponding to the parent branch of any newly created branch, this is typically "main" or "dev"
 # Create GitHub Action Secrets for your version of the application:
 #   FORTIFY_SSC_TOKEN should be an SSC Authorization token (CIToken) obtained from your Fortify tenant.
 #   FORTIFY_SCSAST_CLIENT_AUTH_TOKEN should be the ScanCentral SAST Client Authentication token for your Fortify tenant.
@@ -9,7 +9,7 @@
 name: DevSecOps with Fortify (Hosted)
 
 on:
-  # Triggers the workflow on push or pull request events but only for the main or develop branches
+  # Triggers the workflow on push or pull request events but only for the main or dev branches
   push:
     paths-ignore:
       - '.github/**/**'
@@ -24,7 +24,7 @@ on:
     branches:
       - '**'        # matches every branch
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, dev ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -44,7 +44,7 @@ on:
 
 # Global environment variables
 env:
-  DEFAULT_APP_NAME: "IWA-Java"
+  DEFAULT_APP_NAME: "IWA-Pharmacy Direct"
 
 jobs:
 
