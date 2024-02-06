@@ -43,9 +43,9 @@ runs:
         APP_NAME_POSTFIX: ${{ inputs.app_name_postfix }}
         DEFAULT_APP_NAME: ${{ format('{0}={1}', 'app_name', inputs.default_fortify_app_name) }}
         OVERRIDE_APP_NAME: ${{ format('{0}={1} {2}', 'app_name', inputs.default_fortify_app_name, inputs.app_name_postfix) }}
-    - name: Git branch name
-      id: git-branch-name
-      uses: EthanSK/git-branch-name-action@v1
+    #- name: Git branch name
+    #  id: git-branch-name
+    #  uses: EthanSK/git-branch-name-action@v1
     - name: Check if PR
       id: PR
       uses: 8BitJonny/gh-get-current-pr@2.2.0
@@ -60,15 +60,16 @@ runs:
         echo "GitHub Base Ref: ${GITHUB_BASE_REF}"
         echo "GitHub Ref Name: ${GITHUB_REF_NAME}"
         echo "GitHub Head Ref: ${GITHUB_HEAD_REF}"
+        echo "GitHub PR Base Ref: ${GITHUB_PR_BASE_REF}"
+        echo "GitHub PR Head Ref: ${GITHUB_PR_HEAD_REF}"
          if [[ $IS_PR == true || $GITHUB_EVENT_NAME == 'pull_request' ]]; then
-          echo "::debug::release_name=${GITHUB_HEAD_REF}"         
-          echo "release_name=${GITHUB_HEAD_REF}" >> $GITHUB_OUTPUT
-          echo "::debug::parent_release_name=${GITHUB_BASE_REF}"         
-          echo "parent_release_name=${GITHUB_BASE_REF}" >> $GITHUB_OUTPUT
+          echo "::debug::release_name=${GITHUB_PR_HEAD_REF}"         
+          echo "release_name=${GITHUB_PR_HEAD_REF}" >> $GITHUB_OUTPUT
+          echo "::debug::parent_release_name=${GITHUB_PR_BASE_REF}"         
+          echo "parent_release_name=${GITHUB_PR_BASE_REF}" >> $GITHUB_OUTPUT
         else
           echo "::debug::release_name=${GITHUB_REF_NAME}"         
           echo "release_name=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
-          #PARENT_BRANCH=$(git show-branch -a 2>/dev/null | grep '\*' | grep -v "${GITHUB_REF_NAME}" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//')
           PARENT_BRANCH=$(git show-branch -a 2>/dev/null | sed "s/].*//" | grep "\*" | grep -v "${GITHUB_REF_NAME}" | head -n1 | sed "s/^.*\[//" | sed "s/origin\///")
           echo "PARENT_BRANCH=${PARENT_BRANCH}"
           echo "::debug::parent_release_name=${PARENT_BRANCH}"         
@@ -80,5 +81,7 @@ runs:
         GITHUB_BASE_REF: ${{github.base_ref }}
         GITHUB_REF_NAME: ${{ github.ref_name }}
         GITHUB_HEAD_REF: ${{ github.head_ref }}
+        GITHUB_PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+        GITHUB_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
         IS_PR: ${{ steps.PR.outputs.pr_found }}
         PR_NUMBER: ${{ steps.PR.outputs.number }}
