@@ -12,7 +12,7 @@ echo "Redeploying application ..."
 pushd /usr/share/repos/IWAPharmacyDirect
 git pull --force
 docker-compose down
-mvn clean package
+./gradlew clean build
 docker build . --tag iwa:latest
 docker-compose up -d
 popd
