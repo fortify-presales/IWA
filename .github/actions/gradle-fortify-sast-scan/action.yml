@@ -5,30 +5,30 @@ inputs:
     required: false
     description: "Relative directory (from root of repository) from where to run commands"
     default: "."
-  fod_url:
+  ssc_url:
     required: false
-    description: "FoD API URI"
-    default: "https://ams.fortify.com"
-  fod_api_url:
+    description: "Fortify SSC URL"
+    default: "https://ssc.uat.fortifyhosted.net"
+  ssc_token:
+    required: true
+    description: "Fortify SSC Token (CIToken)"
+  scsast_client_auth_token:
+    required: true
+    description: "Fortify ScanCentral SAST Client Authentication Token"
+  ssc_app_name:
+    required: true
+    description: "SSC Application Name"
+  ssc_appver_name:
+    required: true
+    description: "SSC Application Version Name"
+  ssc_parent_appver_name:
     required: false
-    description: "FoD API URI"
-    default: "https://api.ams.fortify.com"
-  fod_client_id:
-    required: true
-    description: "FoD API Client Id"
-  fod_client_secret:
-    required: true
-    description: "FoD API Client Secret"
-  fod_app_name:
-    required: true
-    description: "FoD Application Name"
-  fod_release_name:
-    required: true
-    description: "FoD Release Name"
-  fod_parent_release_name:
-    required: false
-    description: "FoD Parent Release Name"
+    description: "SSC Parent Application Version Name"
     default: "main"
+  ssc_sensor_ver:
+    required: false
+    description: "SSC Sensor Version"
+    default: "23.1"
   gradle_version:
     required: false
     description: "Version of Gradle to use"
@@ -38,9 +38,9 @@ inputs:
     description: "Gradle build command(s) to use"
     default: "clean build -x test"
 outputs:
-  fod_scan_id:
-    description: "FoD Scan Id"
-    value: ${{ steps.fod-sast-scan.outputs.fod_scan_id }}
+  scsast_scan_id:
+    description: "ScanCentral SAST Scan/Job Id"
+    value: ${{ steps.scancentral-sast-scan.outputs.scsast_scan_id }}
 runs:
   using: "composite"
   steps:
@@ -57,80 +57,70 @@ runs:
         gradle-version: ${{ inputs.gradle_version }}
     # Install Fortify tools
     - name: Setup Fortify tools
-      uses: fortify/github-action/setup@v1.1.0
+      uses: fortify/github-action/setup@v1
       with:
         export-path: true
         fcli: latest
         sc-client: latest
         fod-uploader: skip
         vuln-exporter: latest
+        vuln-exporter: v2
         bugtracker-utility: skip
     # Login to Fortify on Demand fcli session
     - name: Login fcli
       working-directory: ${{ env.BASE_DIR }}
       shell: bash
       run: |
-        scancentral --version
         fcli --version
-        fcli fod session login --url $FOD_API_URI --client-id $FOD_CLIENT_ID --client-secret $FOD_CLIENT_SECRET --session github-actions
+        fcli sc-sast session login --ssc-url $SSC_URL --ssc-ci-token $SSC_TOKEN --client-auth-token $SCSAST_CLIENT_AUTH_TOKEN --session github-actions
       env:
-        FOD_API_URI: ${{ inputs.fod_api_url }}
-        FOD_CLIENT_ID: ${{ inputs.fod_client_id }}
-        FOD_CLIENT_SECRET: ${{ inputs.fod_client_secret }}
-    # Create a new Fortify on Demand release for GitHub branch
-    - name: Create FoD release
-      id: create-release
-      working-directory: ${{ env.BASE_DIR }}
-      shell: bash
-      run: |
-        fcli fod release list --app "$FOD_APP_NAME" --session github-actions
-        echo fcli fod release create "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" --description "Created automatically from GitHub" --copy-from "${FOD_APP_NAME}:${FOD_PARENT_RELEASE_NAME}" --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions
-        RELID=$(fcli fod release create "${FOD_APP_NAME}:${FOD_RELEASE_NAME}" --description "Created automatically from GitHub" --copy-from "${FOD_APP_NAME}:${FOD_PARENT_RELEASE_NAME}" --status Development --skip-if-exists -o expr="{releaseId}" --session github-actions)
-        echo "::debug::Created/Using fod_release_id=${RELID}"
-        echo "release_id=${RELID}" >> $GITHUB_OUTPUT
-      env:
-        FOD_APP_NAME: ${{ inputs.fod_app_name }}
-        FOD_RELEASE_NAME: ${{ inputs.fod_release_name }}
-        FOD_PARENT_RELEASE_NAME: ${{ inputs.fod_parent_release_name }}
-    # Create FoD upload package using ScanCentral "package" action
+        SSC_URL: ${{ inputs.ssc_url }}
+        SSC_TOKEN: ${{ inputs.ssc_token }}
+        SCSAST_CLIENT_AUTH_TOKEN: ${{ inputs.scsast_client_auth_token }}
+    # Create a new Fortify SSC Application Version for GitHub branch
+    #- name: Create SSC Application Version
+    #  working-directory: ${{ env.BASE_DIR }}
+    #  shell: bash
+    #  run: |
+    #    fcli ssc av list -q "application.name='$SSC_APP_NAME'" --session github-actions
+    #    echo fcli ssc av create "${SSC_APP_NAME}:${SSC_APPVER_NAME}" --description "Created automatically from GitHub" --auto-required-attrs --skip-if-exists -o expr="{versionId}" --session github-actions
+    #    APPVER_ID=$(fcli ssc av create "${SSC_APP_NAME}:${SSC_APPVER_NAME}" --description "Created automatically from GitHub" --auto-required-attrs --skip-if-exists -o expr="{versionId}" --session github-actions)
+    #    echo "::debug::Created SSC_APPVER_ID=${APPVER_ID}"
+    #    echo "SSC_APPVER_ID=${APPVER_ID}" >> $GITHUB_OUTPUT
+    #  id: create_ssc_release
+    #  env:
+    #    SSC_APP_NAME: ${{ inputs.ssc_app_name }}
+    #    SSC_APPVER_NAME: ${{ inputs.ssc_appver_name }}
+    #    SSC_PARENT_APPVER_NAME: ${{ inputs.ssc_parent_appver_name }}
+    # Create upload package using ScanCentral "package" action
     - name: Package Code + Dependencies
-      uses: fortify/github-action/package@v1.1.0
+      uses: fortify/github-action/package@v1
       env:
-        EXTRA_PACKAGE_OPTS: -bt gradle -bf "${BUILD_FILE}" -bc "${BUILD_COMMAND}"
+        EXTRA_PACKAGE_OPTS: -bt gradle -bf build.gradle -bc "clean build -x test" -oss
         PACKAGE_FILE: "package"
-        BUILD_FILE: "build.gradle"
-        BUILD_COMMAND: ${{ inputs.gradle_build_command }}
-    #- name: 'Upload Artifact'
-    #  uses: actions/upload-artifact@v4
-    #  with:
-    #    name: "package"
-    #    path: package.zip
-    # Start Fortify on Demand SAST scan and wait until results complete.
-    - name: Perform FoD SAST scan
-      id: fod-sast-scan
+    # Start ScanCentral SAST scan and wait until results complete.
+    - name: Perform ScanCentral SAST scan
+      id: scancentral-sast-scan
       working-directory: ${{ env.BASE_DIR }}
       shell: bash
       run: |
-        fcli fod sast-scan start --release "${FOD_RELEASE_NAME}" --notes "${FOD_SCAN_NOTES}" -f $PACKAGE_FILE --store curScan --session github-actions
-        sleep 10
-        echo "fod_scan_id=$(fcli util var get ::curScan::)" >> $GITHUB_OUTPUT
-        fcli fod sast-scan wait-for ::curScan:: --session github-actions
+        fcli sc-sast scan start --sensor-version ${SSC_SENSOR_VER} --publish-to "${SSC_APPVER_NAME}" -p $PACKAGE_FILE --store curScan --session github-actions
+        sleep 5
+        echo "scsast_scan_id=$(fcli util var get ::curScan::)" >> $GITHUB_OUTPUT
+        fcli sc-sast scan wait-for ::curScan:: --session github-actions
       env:
         PACKAGE_FILE: "package.zip"
-        FOD_RELEASE_NAME: ${{ format('{0}:{1}', inputs.fod_app_name, inputs.fod_release_name) }}
-        FOD_SCAN_NOTES: "Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-    # Export FoD vulnerability data to GitHub
-    - name: Export FoD vulnerability data to GitHub
-      #uses: fortify/github-action/fod-export@v1.1.0
-      uses: kadraman/github-action/fod-export@fve-space-issues
+        SSC_APPVER_NAME: ${{ format('{0}:{1}', inputs.ssc_app_name, inputs.ssc_appver_name) }}
+        SSC_SENSOR_VER: ${{ inputs.ssc_sensor_ver }}
+    # Export SSC vulnerability data to GitHub
+    - name: Export SSC vulnerability data to GitHub
+      uses: kadraman/github-action/ssc-export@fve-space-issues
       env:
-        FOD_URL: ${{ inputs.fod_url }}
-        FOD_CLIENT_ID: ${{ inputs.fod_client_id }}
-        FOD_CLIENT_SECRET: ${{ inputs.fod_client_secret }}
-        FOD_RELEASE: ${{ format('{0}:{1}', inputs.fod_app_name, inputs.fod_release_name) }}
-        #FOD_RELEASE: ${{ steps.create-release.outputs.release_id }}
+        SSC_URL: ${{ inputs.ssc_url }}
+        SSC_TOKEN: ${{ inputs.ssc_token }}
+        SSC_APPVERSION: ${{ format('{0}:{1}', inputs.ssc_app_name, inputs.ssc_appver_name) }}
     # Logout/Close Fortify on Demand fcli session
     - name: Logout fcli
       shell: bash
       run: |
-        fcli fod session logout --session github-actions
+        fcli sc-sast session logout --no-revoke-token --session github-actions

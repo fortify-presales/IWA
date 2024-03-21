@@ -58,3 +58,4 @@ runs:
         CURRENT_BRANCH: ${{ steps.branch-names.outputs.current_branch }}
         #PARENT_BRANCH: ${{ steps.branch-names.outputs.ref_branch }}
         PARENT_BRANCH: "main" # hardcoded for now until we find a consistent way of calculating it
+        PARENT_BRANCH: "main" # hardcoded for now until we find a consistent way of calculating it
