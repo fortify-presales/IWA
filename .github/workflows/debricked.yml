@@ -12,7 +12,7 @@ on:
     branches:
       - '**'        # matches every branch
   pull_request:
-    branches: [ main, dev ]
+    branches: [ main, develop ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -24,7 +24,7 @@ on:
 
 # Global environment variables
 env:
-  DEFAULT_APP_NAME: "IWA-Pharmacy Direct"
+  DEFAULT_APP_NAME: "IWA-PharmacyDirect"
 
 jobs:
 
