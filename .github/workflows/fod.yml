@@ -49,7 +49,7 @@ on:
 
 # Global environment variables
 env:
-  DEFAULT_APP_NAME: "IWA-Java"
+  DEFAULT_APP_NAME: "IWA-Pharmacy Direct"
   # some insecure variables to be picked up by fortify scan
   AWS_REGION: US_WEST_2
   AWS_ACCESS_KEY_ID: AKIAIOSFODNN7EXAMPLE
