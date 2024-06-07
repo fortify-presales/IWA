@@ -85,7 +85,7 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitJupiterVersion}"
     testRuntimeOnly "org.junit.platform:junit-platform-commons:${junitPlatformVersion}"
-    testRuntimeOnly "org.codehaus.groovy:groovy:3.0.8"
+   // testRuntimeOnly "org.codehaus.groovy:groovy:3.0.8"
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -100,9 +100,9 @@ if (!propertiesFile.exists()) {
 }
 props.load(propertiesFile.newDataInputStream())
 
-project.archivesBaseName = 'iwa-java'
+project.archivesBaseName = 'iwa'
 group = 'com.microfocus.example'
-version = ''
+version = '1.0'
 description = 'IWA (Insecure Web App) Pharmacy Direct - an insecure web application for use in Fortify demonstrations'
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
@@ -151,9 +151,12 @@ tasks.withType(JavaCompile) {
 
 test {
     useJUnitPlatform()
-    exclude {
-        '**/EncryptedPasswordUtilsTest.class'
+    include {
+        '**/*.class'
     }
+    //exclude {
+    //    '**/EncryptedPasswordUtilsTest.class'
+    //}
     reports {
         junitXml.enabled = true
         html.enabled = true

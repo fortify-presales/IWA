@@ -1,6 +1,6 @@
 FROM openjdk:11-jdk-slim
 
-LABEL maintainer="kevin.lee@microfocus.com"
+LABEL maintainer="klee2@opentext.com"
 
 # Add a volume pointing to /tmp
 VOLUME /tmp

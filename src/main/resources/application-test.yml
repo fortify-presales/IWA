@@ -7,6 +7,8 @@ server:
     include-exception: true
     whitelabel:
       enabled: false
+  servlet:
+    context-path: /
 
 spring:
   config:
@@ -46,12 +48,26 @@ spring:
         # h2 database dialect
         dialect: org.hibernate.dialect.H2Dialect
   mvc:
-    favicon:
-      enabled: false
+#    favicon:
+#      enabled: false
     throw-exception-if-no-handler-found: true
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
+  mail:
+    default-encoding: UTF-8
+    host: smtp.sendgrid.net
+    username: apikey
+    password: # Enter SendGrid API Password here
+    port: 587
+    test-connection: false
+    debug: true
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 logging:
   level:
@@ -62,7 +78,8 @@ logging:
 
 app:
   name: IWA Pharmacy Direct
-  version: 1.0
+  url: https://iwa.onfortify.com
+  version: 1.1
   currency: GBP
   invalidPasswordList: "/invalid-password-list.txt"
   data:
@@ -76,3 +93,7 @@ app:
   mail:
     from-address: no-reply@iwa.onfortify.com
     from-name: IWAPharmacyDirect
+  twilio:
+    phone-number: # Enter Twilio phone number
+    sid: # Enter Twilio account SID
+    auth-token: # Enter Twilio authentication token

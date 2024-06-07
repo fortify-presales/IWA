@@ -110,6 +110,15 @@ jobs:
           default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
           default_fortify_release_name: ${{ github.ref_name }}
           app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
+      # Uncomment below to debug FoD App/Release names   
+      #- name: Print App and Release Name
+      #  shell: bash
+      #  run: |
+      #    echo "FoD App Name: ${FOD_APP_NAME}"
+      #    echo "FoD Release Name: ${FOD_RELEASE_NAME}"
+      #  env:
+      #    FOD_APP_NAME: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
+      #    FOD_RELEASE_NAME: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}          
       - name: Gradle FoD SAST scan
         id: gradle-fod-sast-scan
         uses: fortify-presales/github-actions/gradle-fod-sast-scan@main

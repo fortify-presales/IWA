@@ -1,6 +1,6 @@
 FROM eclipse-temurin:11-windowsservercore
 
-LABEL maintainer="kevin.lee@microfocus.com"
+LABEL maintainer="klee2@opentext.com"
 
 # Add a volume pointing to C:\Data
 VOLUME C:\\data
