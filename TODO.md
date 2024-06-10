@@ -16,7 +16,6 @@
 
 #### Configuration
 
-- [ ] Tidy up Maven pom.xml
 - [X] Provide alternate Gradle build scripts
 - [X] Include log4j dependency vulnerabilities (by using affected version of log4j)
 - [ ] Azure Resource Manager deployment
@@ -29,4 +28,8 @@
 #### Documentation
 
 - [X] Add Vulnerabilities file to illustrate security vulnerabilities aligned to OWASP Top Ten
-- [ ] Migrate documentation to Gradle use instead of Maven
+- [X] Migrate documentation to Gradle use instead of Maven
+
+#### Misc
+
+- [ ] Update samples directory
