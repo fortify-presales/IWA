@@ -1,7 +1,7 @@
 
 # Create GitHub Action Repository Variables for your version of the application:
 #   FORTIFY_BASE_URL should be the Fortify Base URL (e.g. https://ssc.uat.fortifyhosted.net)
-#   FORTIFY_PARENT_APPVER_NAME is the Fortify SSC Application Version Name corresponding to the parent branch of any newly created branch, this is typically "main" or "dev"
+#   FORTIFY_PARENT_APPVER_NAME is the Fortify SSC Application Version Name corresponding to the parent branch of any newly created branch, this is typically "main" or "develop"
 # Create GitHub Action Secrets for your version of the application:
 #   FORTIFY_SSC_TOKEN should be an SSC Authorization token (CIToken) obtained from your Fortify tenant.
 #   FORTIFY_SCSAST_CLIENT_AUTH_TOKEN should be the ScanCentral SAST Client Authentication token for your Fortify tenant.
@@ -122,7 +122,7 @@ jobs:
           java-version: '11'
       - name: Fortify App and Release Name
         id: fortify-app-and-rel-name
-        uses: fortify-presales/github-actions/fortify-app-and-release-name
+        uses: fortify-presales/github-actions/fortify-app-and-release-name@main
         with:
           default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
           default_fortify_release_name: ${{ github.ref_name }}
@@ -191,7 +191,7 @@ jobs:
           java-version: '11'
       - name: Fortify App and Release Name
         id: fortify-app-and-rel-name
-        uses: fortify-presales/github-actions/fortify-app-and-release-name
+        uses: fortify-presales/github-actions/fortify-app-and-release-name@main
         with:
           default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
           default_fortify_release_name: ${{ github.ref_name }}
@@ -215,7 +215,7 @@ jobs:
           java-version: '11'
       - name: Fortify App and Release Name
         id: fortify-app-and-rel-name
-        uses: fortify-presales/github-actions/fortify-app-and-release-name
+        uses: fortify-presales/github-actions/fortify-app-and-release-name@main
         with:
           default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
           default_fortify_release_name: ${{ github.ref_name }}
