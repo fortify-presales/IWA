@@ -71,7 +71,7 @@ jobs:
       # Build / Test with Gradle
       - name: Build with Gradle
         run: ./gradlew clean build test
-           # Publish test results
+      # Publish test results
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()

@@ -1,10 +1,7 @@
-
 plugins {
     id 'java'
-    id 'war'
     id 'maven-publish'
     id "org.springframework.boot" version "2.7.17"
-    id "com.microsoft.azure.azurewebapp" version "1.2.0"
 }
 
 ext {
@@ -61,10 +58,9 @@ dependencies {
     implementation "com.github.cliftonlabs:json-simple:2.3.1"
     implementation "org.seleniumhq.selenium:selenium-java:4.0.0-rc-2"
     implementation "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-log4j2:${log4jVersion}"
     implementation "org.apache.tika:tika-core:1.18"
     implementation "org.json:json:20201115"
-    //implementation(platform("org.apache.logging.log4j:log4j-bom:2.17.1"))
+    implementation "org.springframework.boot:spring-boot-starter-log4j2:${log4jVersion}"
     modules {
         module("org.springframework.boot:spring-boot-starter-logging") {
             replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
@@ -91,10 +87,16 @@ dependencies {
 
 apply plugin: 'io.spring.dependency-management'
 
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    exclude module: 'spring-boot-starter-logging'
+}
+
 def props = new Properties()
 def propertiesFile = project.file('.env')
 if (!propertiesFile.exists()) {
     props.setProperty('APP_NAME', 'iwa')
+    props.setProperty('APP_VER_NAME', '1.0')
     Writer writer = new FileWriter(propertiesFile, false)
     props.store(writer, "Change these variables to relevant values. Don't commit this file to source control.")
     writer.close()
@@ -109,32 +111,14 @@ sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 sourceSets {
+    main {
+        java.srcDirs = ['src/main/java','src/iac']
+        resources.srcDirs= ['src/main/resources']
+    }
     test {
-        java {
-            srcDirs = ["src/test"]
-        }
-    }
-}
-
-azurewebapp {
-    subscription = props.getProperty("AZURE_SUBSCRIPTION_ID") // e.g. '17d2722b-256e-47e5-84b8-5b01f509a42c'
-    resourceGroup = props.getProperty("AZURE_RESOURCE_GROUP") // e.g. 'iwa-fortify-rg'
-    appName = props.getProperty("AZURE_APP_NAME") // e.g. 'fortify-iwa-app'
-    pricingTier = 'B1'
-    region = props.getProperty("AZURE_REGION") // e.g. 'eastus'
-    runtime {
-        //os = 'Windows'
-        os = 'Linux'
-        webContainer = 'Tomcat 9.0'
-        //webContainer = 'Java SE'
-        javaVersion = 'Java 1.8'
-    }
-    appSettings {
-        key1=value1
-    }
-    auth {
-        type = 'azure_cli' // support azure_cli, oauth2, device_code and service_principal
-    }
+        java.srcDirs = ['src/test/java']
+	    resources.srcDirs = ['src/test/resources']	
+    } 
 }
 
 publishing {
@@ -145,19 +129,15 @@ publishing {
     }
 }
 
-
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
 test {
     useJUnitPlatform()
-    include {
-        '**/*.class'
+    filter {
+        excludeTestsMatching "*EncryptedPasswordUtilsTest"
     }
-    //exclude {
-    //    '**/EncryptedPasswordUtilsTest.class'
-    //}
     reports {
         junitXml.enabled = true
         html.enabled = true
@@ -168,6 +148,10 @@ bootJar {
 }
 bootRun {
     systemProperty "spring.profiles.active", "default,dev"
+}
+
+tasks.named('wrapper') {
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 task writeClasspath() {

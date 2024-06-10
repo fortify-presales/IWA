@@ -28,8 +28,8 @@ class EncryptedPasswordUtilsTest {
     @Ignore
     @Test
     void testDecryptPassword() {
-        //String dec = EncryptedPasswordUtils.decryptPassword(EncryptedPasswordUtils.encryptPassword(TEST_PASSWORD_STRING));
-        //assertNotNull(dec);
+        String dec = EncryptedPasswordUtils.decryptPassword(EncryptedPasswordUtils.encryptPassword(TEST_PASSWORD_STRING));
+        assertNotNull(dec);
     }
 
     /**
@@ -40,7 +40,7 @@ class EncryptedPasswordUtilsTest {
         String enc1 = EncryptedPasswordUtils.encryptPassword(TEST_PASSWORD_STRING);
         String enc2 = EncryptedPasswordUtils.encryptPassword(TEST_PASSWORD_STRING);
         String enc3 = EncryptedPasswordUtils.encryptPassword("Password456!");
-        //assertTrue(EncryptedPasswordUtils.matches(enc1, enc2));
+        assertTrue(EncryptedPasswordUtils.matches(enc1, enc2));
         assertFalse(EncryptedPasswordUtils.matches(enc2, enc3));
     }
 }

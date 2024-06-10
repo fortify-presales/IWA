@@ -2,6 +2,7 @@
 # Create GitHub Action Repository Variables for your version of the application:
 #   FORTIFY_BASE_URL should be the Fortify Base URL (e.g. https://ssc.uat.fortifyhosted.net)
 #   FORTIFY_PARENT_APPVER_NAME is the Fortify SSC Application Version Name corresponding to the parent branch of any newly created branch, this is typically "main" or "develop"
+#   FORTIFY_SCANCENTRAL_VERSION is the version of ScanCentral SAST Sensors being used
 # Create GitHub Action Secrets for your version of the application:
 #   FORTIFY_SSC_TOKEN should be an SSC Authorization token (CIToken) obtained from your Fortify tenant.
 #   FORTIFY_SCSAST_CLIENT_AUTH_TOKEN should be the ScanCentral SAST Client Authentication token for your Fortify tenant.
@@ -63,14 +64,22 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      # Install appropriate version of Gradle
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: ${{ env.GRADLE_VERSION }}
       # Build / Test with Gradle
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew clean build test
+      # Publish test results
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            build/test-results/**/*.xml
+            build/test-results/**/*.trx
+            build/test-results/**/*.json     
 
   Sonatype-SCA:
     runs-on: ubuntu-latest
@@ -103,7 +112,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-    # TBD
+      # TBD
 
   Fortify-SAST-Scan:
     runs-on: ubuntu-latest
@@ -126,7 +135,7 @@ jobs:
         with:
           default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
           default_fortify_release_name: ${{ github.ref_name }}
-          app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
+          app_name_postfix: ""
       # Uncomment below to debug SSC App/App Version names   
       #- name: Print App and Release Name
       #  shell: bash
@@ -135,10 +144,8 @@ jobs:
       #    echo "SSC App Version Name: ${SSC_APPVER_NAME}"
       #  env:
       #    SSC_APP_NAME: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
-      #    SSC_APPVER_NAME: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
-
-      #
-      # TODO: make sure release exists and move to separate action
+      #    SSC_APPVER_NAME: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}      
+      # TODO: make sure release exists 
       #
       - name: Run ScanCentral SAST Scan
         uses: fortify/github-action@v1
@@ -151,7 +158,7 @@ jobs:
           # EXTRA_SC_SAST_LOGIN_OPTS: --socket-timeout=60s
           SSC_APPVERSION: ${{ format('{0}:{1}', steps.fortify-app-and-rel-name.outputs.app_name, steps.fortify-app-and-rel-name.outputs.release_name) }}
           # EXTRA_PACKAGE_OPTS: -bf custom-pom.xml
-          SC_SAST_SENSOR_VERSION: 23.2
+          SC_SAST_SENSOR_VERSION: ${{ vars.SCANCENTRAL_VERSION }}
           DO_WAIT: true
           #DO_EXPORT: true
           # TOOL_DEFINITIONS: https://ftfy.mycompany.com/tool-definitions/v1/tool-definitions.yaml.zip
@@ -189,13 +196,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: Fortify App and Release Name
-        id: fortify-app-and-rel-name
-        uses: fortify-presales/github-actions/fortify-app-and-release-name@main
-        with:
-          default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
-          default_fortify_release_name: ${{ github.ref_name }}
-          app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
       # TBD
 
   Security-Gate:
@@ -213,13 +213,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: Fortify App and Release Name
-        id: fortify-app-and-rel-name
-        uses: fortify-presales/github-actions/fortify-app-and-release-name@main
-        with:
-          default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
-          default_fortify_release_name: ${{ github.ref_name }}
-          app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
       # TBD
 
   Release-To-Prod:
@@ -232,4 +225,4 @@ jobs:
         with:
           # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
           fetch-depth: 2
-    # TBD
+      # TBD
