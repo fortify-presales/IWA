@@ -40,7 +40,7 @@ on:
         required: false
         default: 'false'
       deployApp:
-        description: 'Deploy App to Azure'
+        description: 'Deploy App'
         required: false
         default: 'true'        
 
@@ -142,7 +142,7 @@ jobs:
         with:
           # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
           fetch-depth: 2
-      - name: Deploy to Azure
+      - name: Deploy App
         shell: bash
         run: |
           echo "Simulating deployment"

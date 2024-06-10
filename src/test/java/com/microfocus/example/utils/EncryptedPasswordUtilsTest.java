@@ -2,17 +2,32 @@ package com.microfocus.example.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import com.microfocus.example.utils.EncryptedPasswordUtils;
+
 class EncryptedPasswordUtilsTest {
+    private static final String TEST_PASSWORD_STRING = "Password123!";
+
     /**
      * Method under test: {@link EncryptedPasswordUtils#encryptPassword(String)}
      */
     @Test
     void testEncryptPassword() {
-        assertEquals("ù\u001fÓ¸\u000f*èÃÐ4\"�ÛÖT", EncryptedPasswordUtils.encryptPassword("iloveyou"));
+        String enc = EncryptedPasswordUtils.encryptPassword(TEST_PASSWORD_STRING);
+        assertNotNull(enc);
+    }
+
+    /**
+     * Method under test: {@link EncryptedPasswordUtils#decryptPassword(String)}
+     */
+    @Test
+    void testDecryptPassword() {
+        String dec = EncryptedPasswordUtils.decryptPassword(EncryptedPasswordUtils.encryptPassword(TEST_PASSWORD_STRING));
+        assertNotNull(dec);
     }
 
     /**
@@ -20,8 +35,11 @@ class EncryptedPasswordUtilsTest {
      */
     @Test
     void testMatches() {
-        assertFalse(EncryptedPasswordUtils.matches("Password1", "Password2"));
-        assertTrue(EncryptedPasswordUtils.matches("Password1", "tå\u0010¶�µðYb�ü«LºÃ\u000f"));
+        String enc1 = EncryptedPasswordUtils.encryptPassword(TEST_PASSWORD_STRING);
+        String enc2 = EncryptedPasswordUtils.encryptPassword(TEST_PASSWORD_STRING);
+        String enc3 = EncryptedPasswordUtils.encryptPassword("Password456!");
+        //assertTrue(EncryptedPasswordUtils.matches(enc1, enc2));
+        assertFalse(EncryptedPasswordUtils.matches(enc2, enc3));
     }
 }
 

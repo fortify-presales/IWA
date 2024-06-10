@@ -28,6 +28,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Encrypted Password Utilities using BCryptPasswordEncoder
@@ -51,8 +52,21 @@ public class EncryptedPasswordUtils {
 			e.printStackTrace();
 			return null;
 		}
-    	
         return new String(encrypted);
+    }
+
+	public static String decryptPassword(String encoded) {
+    	byte[] decrypted = null;
+    	try {
+			Cipher desCipher = Cipher.getInstance("DES");
+			desCipher.init(Cipher.DECRYPT_MODE, keySpec);
+			decrypted = desCipher.doFinal(encoded.getBytes());
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+        return new String(decrypted, StandardCharsets.UTF_8);
     }
 
     public static boolean matches(String password1, String password2) {
@@ -68,7 +82,6 @@ public class EncryptedPasswordUtils {
 			e.printStackTrace();
 			return false;
 		}
-    	
         return encPassword1.equals(password2);
     }
 
