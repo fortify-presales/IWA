@@ -27,7 +27,7 @@ $ScanCentralEmail = $EnvSettings['SCANCENTRAL_EMAIL']
 
 $ScanSwitches = "-Dcom.fortify.sca.Phase0HigherOrder.Languages=javascript,typescript -Dcom.fortify.sca.EnableDOMModeling=true -Dcom.fortify.sca.follow.imports=true -Dcom.fortify.sca.exclude.unimported.node.modules=true"
 $BuildVersion = $(git log --format="%H" -n 1)
-$BuildLabel = "iwa-web-cli"
+$BuildLabel = "iwa-cli"
 $FilterFile =  Join-Path ".\etc" -ChildPath "sast-filters" | Join-Path -ChildPath "example-filter.txt"
 $CustomRules = Join-Path ".\etc" -ChildPath "sast-custom-rules" | Join-Path -ChildPath "example-custom-rules.xml"
 $ScanArgs = @(

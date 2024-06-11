@@ -1,4 +1,3 @@
-version: '3'
 services:
   iwa:
     image: iwa:latest
