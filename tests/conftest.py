@@ -13,6 +13,7 @@ def chrome_browser():
     options.add_argument("--ignore-certificate-errors")
     options.add_argument("--disable-popup-blocking")
     options.add_argument("--incognito")
+    options.add_argument("--headless=new")
     # comment out below if not using FAST proxy
     #chrome_options.add_argument('--proxy-server=%s' % FAST_PROXY)
 

@@ -13,21 +13,22 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
-      runFAST:
-        description: 'Run Fortify ScanCentral FAST'
+      runFortifyFAST:
+        description: 'Run Fortify ScanCentral FAST Scan'
         required: false
         default: 'true'            
 
 # Global environment variables
 env:
   DEFAULT_APP_NAME: "IWA"
+  DEFAULT_PYTHON_VERSION: "3.12.3"
   DEFAULT_FAST_PORT: 8087
 
 jobs:
 
-  FAST-Scan:
+  Fortify-FAST-Scan:
     runs-on: ubuntu-latest
-    if: ${{ (github.event.inputs.runFAST == 'true') }}
+    if: ${{ (github.event.inputs.runFortifyFAST == 'true') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -56,10 +57,18 @@ jobs:
       #    SCANCENTRAL_DAST_API: ${{ vars.FORTIFY_SCDAST_API_URL }}
       #    SSC_CI_TOKEN: ${{ secrets.FORTIFY_SSC_TOKEN }}
       #    SCANCENTRAL_DAST_CICD_TOKEN: ${{ vars.FORTIFY_SCDAST_CICD_TOKEN }}
-      - name: Set up Python 3.12
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+          install-chromedriver: true
+        id: setup-chrome
+      - run: |
+          ${{ steps.setup-chrome.outputs.chrome-path }} --version
+      - name: Set up Python
         uses: actions/setup-python@v1
         with:
-          python-version: 3.12.3
+          python-version: ${{ env.DEFAULT_PYTHON_VERSION }}
       - name: Install pipenv
         run: pip install pipenv
       - name: Run Selenium Tests
@@ -81,4 +90,3 @@ jobs:
           SCANCENTRAL_DAST_API: ${{ vars.FORTIFY_SCDAST_API_URL }}
           SSC_CI_TOKEN: ${{ secrets.FORTIFY_SSC_TOKEN }}
           SCANCENTRAL_DAST_CICD_TOKEN: ${{ vars.FORTIFY_SCDAST_CICD_TOKEN }}          
-      # TBD 
