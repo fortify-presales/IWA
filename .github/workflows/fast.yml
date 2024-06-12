@@ -76,7 +76,8 @@ jobs:
         shell: bash
         run: |
           echo "Stopping FAST Container"
-          docker exec $CONTAINER_NAME Fast -p ${FAST_PORT} -s
+          CONTAINER_NAME="fortify-fast"
+          docker exec $CONTAINER_NAME fast -p ${FAST_PORT} -s
         env:
           FAST_PORT: ${{ env.DEFAULT_FAST_PORT }}
           SCANCENTRAL_DAST_API: ${{ vars.FORTIFY_SCDAST_API_URL }}
