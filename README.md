@@ -337,6 +337,9 @@ should be set to a compatible version for your Chrome browser as downloaded from
 You will also need to have installed the `Selenium`, `PyTest` and `python-dotenv` Python modules:
 
 ```
+pipenv shell
+pipenv install --dev
+
 pip install selenium
 pip install pytest
 pip install python-dotenv

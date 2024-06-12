@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple/"
+verify_ssl = true
+name = "pip_conf_index_global"
+
+[packages]
+
+[dev-packages]
+pytest = "*"
+selenium = "*"
+webdriver-manager = "*"
+pytest-selenium = "*"
+pytest-xdist = "*"
+
+[requires]
+python_version = "3.12"
+python_full_version = "3.12.4"
