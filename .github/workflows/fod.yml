@@ -21,6 +21,7 @@ on:
       - 'bin/**'
       - 'data/**'
       - 'etc/**'
+      - 'tests/**'
       - 'README.md'
       - 'LICENSE'
     branches:

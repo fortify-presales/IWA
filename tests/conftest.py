@@ -16,7 +16,7 @@ def chrome_browser():
     options.add_argument("--incognito")
     options.add_argument("--headless=new")
     # comment out below if not using FAST proxy
-    options.add_argument('--proxy-server=http://35.176.81.197:8087')
+    options.add_argument('--proxy-server=http://127.0.0.1:8087')
 
     # Use this line instead of the prev if you wish to download the ChromeDriver binary on the fly
     driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),
