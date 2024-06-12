@@ -35,28 +35,20 @@ jobs:
         with:
           # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
           fetch-depth: 2
-      #- name: Start FAST Container
-      #  shell: bash
-      #  run: |
-      #    echo "Starting FAST Container"
-      #    CONTAINER_NAME="fortify-fast"
-      #    IMAGE_NAME="fortifydocker/fortify-fast:24.2.ubuntu.2204"
-      #    mkdir -p "$HOME/.fast/certs"
-      #    docker run --name $CONTAINER_NAME \
-      #        -p ${FAST_PORT}:8087 \
-      #        -v "$HOME/.fast/certs:/etc/fast/certs" \
-      #        --rm \
-       #       $IMAGE_NAME \
-      #        -p ${FAST_PORT} \
-      #        -u ${SCANCENTRAL_DAST_API} \
-      #        -CIToken ${SSC_CI_TOKEN}> \
-      #        -CICDToken ${SCANCENTRAL_DAST_CICD_TOKEN}
-      #    docker ps -a
-      #  env:
-      #    FAST_PORT: ${{ env.DEFAULT_FAST_PORT }}
-      #    SCANCENTRAL_DAST_API: ${{ vars.FORTIFY_SCDAST_API_URL }}
-      #    SSC_CI_TOKEN: ${{ secrets.FORTIFY_SSC_TOKEN }}
-      #    SCANCENTRAL_DAST_CICD_TOKEN: ${{ vars.FORTIFY_SCDAST_CICD_TOKEN }}
+      - name: Start FAST Container
+        shell: bash
+        run: |
+          echo "Starting FAST Container"
+          CONTAINER_NAME="fortify-fast"
+          IMAGE_NAME="fortifydocker/fortify-fast:24.2.ubuntu.2204"
+          mkdir -p "$HOME/.fast/certs"
+          docker run --name $CONTAINER_NAME -p ${FAST_PORT}:8087 -v "$HOME/.fast/certs:/etc/fast/certs" --rm $IMAGE_NAME -p ${FAST_PORT} -u ${SCANCENTRAL_DAST_API} -CIToken ${SSC_CI_TOKEN} -CICDToken ${SCANCENTRAL_DAST_CICD_TOKEN} -n "IWA FAST Scan"
+          docker ps -a
+        env:
+          FAST_PORT: ${{ env.DEFAULT_FAST_PORT }}
+          SCANCENTRAL_DAST_API: ${{ vars.FORTIFY_SCDAST_API_URL }}
+          SSC_CI_TOKEN: ${{ secrets.FORTIFY_SSC_TOKEN }}
+          SCANCENTRAL_DAST_CICD_TOKEN: ${{ vars.FORTIFY_SCDAST_CICD_TOKEN }}
       - name: Install Chrome
         uses: browser-actions/setup-chrome@v1
         with:
@@ -84,7 +76,7 @@ jobs:
         shell: bash
         run: |
           echo "Stopping FAST Container"
-          docker exec $CONTAINER_NAME fast -p ${FAST_PORT} -s
+          docker exec $CONTAINER_NAME Fast -p ${FAST_PORT} -s
         env:
           FAST_PORT: ${{ env.DEFAULT_FAST_PORT }}
           SCANCENTRAL_DAST_API: ${{ vars.FORTIFY_SCDAST_API_URL }}
