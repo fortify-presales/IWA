@@ -42,7 +42,7 @@ jobs:
           CONTAINER_NAME="fortify-fast"
           IMAGE_NAME="fortifydocker/fortify-fast:24.2.ubuntu.2204"
           mkdir -p "$HOME/.fast/certs"
-          docker run --name $CONTAINER_NAME -p ${FAST_PORT}:8087 -v "$HOME/.fast/certs:/etc/fast/certs" --rm $IMAGE_NAME -p ${FAST_PORT} -u ${SCANCENTRAL_DAST_API} -CIToken ${SSC_CI_TOKEN} -CICDToken ${SCANCENTRAL_DAST_CICD_TOKEN} -n "IWA FAST Scan"
+          docker run --name $CONTAINER_NAME -d -p ${FAST_PORT}:8087 -v "$HOME/.fast/certs:/etc/fast/certs" --rm $IMAGE_NAME -p ${FAST_PORT} -u ${SCANCENTRAL_DAST_API} -CIToken ${SSC_CI_TOKEN} -CICDToken ${SCANCENTRAL_DAST_CICD_TOKEN} -n "IWA FAST Scan"
           docker ps -a
         env:
           FAST_PORT: ${{ env.DEFAULT_FAST_PORT }}
