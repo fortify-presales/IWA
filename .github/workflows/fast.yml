@@ -55,26 +55,19 @@ jobs:
           chrome-version: stable
           install-chromedriver: true
         id: setup-chrome
-      - run: |
-          ${{ steps.setup-chrome.outputs.chrome-path }} --version
+      #- run: |
+      #    ${{ steps.setup-chrome.outputs.chrome-path }} --version
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.DEFAULT_PYTHON_VERSION }}
-          cache: 'pipenv'
-      - name: Install pipenv
-        run: |
-          python -m pip install --upgrade pipenv wheel
-      - name: Run Selenium Tests
-        run: |
-          pipenv install --dev
-          pipenv shell
-          pytest -v -s    
-        env:
-          FAST_PORT: ${{ env.DEFAULT_FAST_PORT }}
-          SCANCENTRAL_DAST_API: ${{ vars.FORTIFY_SCDAST_API_URL }}
-          SSC_CI_TOKEN: ${{ secrets.FORTIFY_SSC_TOKEN }}
-          SCANCENTRAL_DAST_CICD_TOKEN: ${{ vars.FORTIFY_SCDAST_CICD_TOKEN }}        
+      - name: Install dependencies
+        run: pip install pytest pytest-md pytest-emoji
+      - uses: pavelzw/pytest-action@v2
+        with:
+          emoji: false
+          verbose: false
+          job-summary: true     
       - name: Stop FAST Container
         shell: bash
         run: |

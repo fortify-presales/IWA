@@ -309,41 +309,37 @@ Logout Condition:
 [STATUSCODE]401
 ```
 
-### FAST Using ScanCentral DAST and FAST proxy
+### FAST Using ScanCentral DAST and FAST proxy (Windows)
 
-_The Fortify FAST Proxy allows you to capture traffic from an automated test run and then use the traffic
+The Fortify FAST Proxy allows you to capture traffic from an automated test run and then use the traffic
 as a workflow for a ScanCentral DAST execution. In order to carry out the example here you will need
-to have installed `WIRCServerSetup64-ProxyOnly.msi` which is available in the `Dynamic_Addons.zip` of the
-ScanCentral DAST installation media._
+to have installed WebInspect locally `WIRCServerSetup64-ProxyOnly.msi` which is available in the `Dynamic_Addons.zip` of the
+ScanCentral DAST installation media.
 
-There is an example [Selenium](https://www.selenium.dev/) Python test script provided [test_add_to_cart.py](`.\src\test\python\test_add_to_cart.py`) that can be used to execute a simple 
+There is some example [Selenium](https://www.selenium.dev/) which can used can be used to execute a simple 
 functional test of the running application. There are also a couple of PowerShell scripts [start_fast_proxy.ps1](`.\bin\start_fast_proxy.ps1`) and [stop_fast_proxy.ps1](`.\bin\stop_fast_proxy.ps1`) that can
 be used to start/stop the FAST Proxy. In order to use these scripts you will need to have entries in the `.env` file similar to the following:
 
 ```
-APP_URL=https://iwa.onfortify.com
+APP_URL=http://iwa.example.com
 SSC_AUTH_TOKEN_BASE64=MmYyMTA5MzYtN2Q5Ny00NmM1LWI5NTUtYThkZWI2YmJlMDUy
-SSCANCENTRAL_DAST_API=http://localhost:5001/api/
+SSCANCENTRAL_DAST_API=http://scancentral-dast-api.example.com/api/
 SCANCENTRAL_DAST_CICD_IDENTIFIER=c3c3df60-de68-45b8-89c0-4c07b53392e7
 FAST_EXE=C:\\Program Files\\Micro Focus WIRC Server\\Fast.exe
+FAST_EXE=C:\\Program Files\\Fortify\\Fortify WebInspect\\Fast.exe
 FAST_PORT=8087
 FAST_PROXY=127.0.0.1:8087
-CHROME_WEBDRIVER_PATH=C:/Tools/selenium/chromedriver.exe
 ```
 
-The `SSC_AUTH_TOKEN_BASE64` is the (first) encoded token shown in SSC not the (second) decoded token. The `CHROME_WEBDRIVER_PATH`
-should be set to a compatible version for your Chrome browser as downloaded from [here](https://chromedriver.chromium.org/downloads).
-
-You will also need to have installed the `Selenium`, `PyTest` and `python-dotenv` Python modules:
+The `SSC_AUTH_TOKEN_BASE64` is the (first) encoded token shown in SSC not the (second) decoded token. 
+Then carry out the following from the command line:
 
 ```
+python -m pip install --upgrade pipenv wheel
 pipenv shell
 pipenv install --dev
-
-pip install selenium
-pip install pytest
-pip install python-dotenv
 ```
+
 Make sure the application is running and then execute the following in a terminal window:
 
 ```PowerShell
@@ -353,12 +349,16 @@ Make sure the application is running and then execute the following in a termina
 Then in another terminal window execute the following:
 
 ```PowerShell
-pytest
+pytest -v -s
+```
+
+And then finally:
+
+```
 .\bin\stop_fast_proxy.ps1
 ```
 
-The FAST executable from the first terminal should terminate and then a scan execute in your
-ScanCentral DAST environment.
+The FAST executable from the first terminal should terminate and then a scan execute in your ScanCentral DAST environment.
 
 ## Build and Pipeline Integrations
 
