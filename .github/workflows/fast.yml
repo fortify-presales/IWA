@@ -62,11 +62,11 @@ jobs:
         with:
           python-version: ${{ env.DEFAULT_PYTHON_VERSION }}
       - name: Install dependencies
-        run: pip install pytest pytest-md pytest-emoji
+        run: pip install pytest selenium webdriver-manager pytest-selenium pytest-xdist pytest-md pytest-emoji
       - uses: pavelzw/pytest-action@v2
         with:
-          emoji: false
-          verbose: false
+          emoji: true
+          verbose: true
           job-summary: true     
       - name: Stop FAST Container
         shell: bash
