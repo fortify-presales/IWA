@@ -63,7 +63,8 @@ jobs:
           python-version: ${{ env.DEFAULT_PYTHON_VERSION }}
           cache: 'pipenv'
       - name: Install pipenv
-        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+        run: |
+          python -m pip install --upgrade pipenv wheel
       - name: Run Selenium Tests
         run: |
           pipenv install --dev
