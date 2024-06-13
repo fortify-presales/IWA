@@ -73,11 +73,11 @@ jobs:
         run: |
           echo "Stopping FAST Container"
           CONTAINER_NAME="fortify-fast"
-          docker logs $CONTAINER_NAME
+          #docker logs $CONTAINER_NAME
           docker exec $CONTAINER_NAME fast -p ${FAST_PORT} -s
           docker stop $CONTAINER_NAME
         env:
           FAST_PORT: ${{ env.DEFAULT_FAST_PORT }}
           SCANCENTRAL_DAST_API: ${{ vars.FORTIFY_SCDAST_API_URL }}
           SSC_CI_TOKEN: ${{ secrets.FORTIFY_SSC_TOKEN }}
-          SCANCENTRAL_DAST_CICD_TOKEN: ${{ vars.FORTIFY_SCDAST_CICD_TOKEN }}          
+          SCANCENTRAL_DAST_CICD_TOKEN: ${{ vars.FORTIFY_SCDAST_CICD_TOKEN }}    

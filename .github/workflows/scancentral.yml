@@ -5,7 +5,7 @@
 #   FORTIFY_SCANCENTRAL_VERSION is the version of ScanCentral SAST Sensors being used
 # Create GitHub Action Secrets for your version of the application:
 #   FORTIFY_SSC_TOKEN should be an SSC Authorization token (CIToken) obtained from your Fortify tenant.
-#   FORTIFY_SCSAST_CLIENT_AUTH_TOKEN should be the ScanCentral SAST Client Authentication token for your Fortify tenant.
+#   FORTIFY_CLIENT_AUTH_TOKEN should be the ScanCentral SAST Client Authentication token for your Fortify tenant.
 
 name: DevSecOps with Fortify ScanCentral
 
@@ -153,9 +153,9 @@ jobs:
         with:
           sast-scan: true
         env:
-          SSC_URL: ${{ vars.SSC_URL }}
-          SSC_TOKEN: ${{ secrets.SSC_TOKEN }}
-          SC_SAST_TOKEN: ${{ secrets.CLIENT_AUTH_TOKEN }}
+          SSC_URL: ${{ vars.FORTIFY_SSC_URL }}
+          SSC_TOKEN: ${{ secrets.FORTIFY_SSC_TOKEN }}
+          SC_SAST_TOKEN: ${{ secrets.FORTIFY_CLIENT_AUTH_TOKEN }}
           # EXTRA_SC_SAST_LOGIN_OPTS: --socket-timeout=60s
           SSC_APPVERSION: ${{ format('{0}:{1}', steps.fortify-app-and-rel-name.outputs.app_name, steps.fortify-app-and-rel-name.outputs.release_name) }}
           # EXTRA_PACKAGE_OPTS: -bf custom-pom.xml
