@@ -58,15 +58,17 @@ jobs:
       - run: |
           ${{ steps.setup-chrome.outputs.chrome-path }} --version
       - name: Set up Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.DEFAULT_PYTHON_VERSION }}
+          cache: 'pipenv'
       - name: Install pipenv
-        run: pip install pipenv
+        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
       - name: Run Selenium Tests
         run: |
           pipenv install --dev
-          pipenv run pytest -v -s    
+          pipenv shell
+          pytest -v -s    
         env:
           FAST_PORT: ${{ env.DEFAULT_FAST_PORT }}
           SCANCENTRAL_DAST_API: ${{ vars.FORTIFY_SCDAST_API_URL }}
