@@ -253,23 +253,25 @@ execute the scan and upload the results to SSC:
 
 ### DAST using Fortify ScanCentral DAST
 
-To carry out a ScanCentral DAST scan you should first "run" the application using one of the steps described above.
-Then you can start a scan using the provided PowerShell script [fortify-scancentral-dast.ps1](bin\fortify-scancentral-dast.ps1).
-It can be invoked via the following from a PowerShell prompt:
+You can invoke a Fortify on Demand dynamic scan using the [FCLI](https://github.com/fortify/fcli) utility.
+For example:
 
-```PowerShell
-.\bin\fortify-scancentral-dast.ps1 -ApiUri 'SCANCENTRAL_DAST_API' -Username 'SSC_USERNAME' -Password 'SSC_PASSWORD' `
-    -CiCdToken 'CICD_TOKEN_ID'
-``` 
-
-where `SCANCENTRAL_DAST_API` is the URL of the ScanCentral DAST API configured in SSC and
-`SSC_USERNAME` and `SSC_PASSWORD` are the login credentials of a Software Security Center user who is permitted to
-run scans. Finally, `CICD_TOKEN_ID` is the "CICD identifier" of the "Scan Settings" you have previously created from the UI.
+```
+fcli sc-dast session login --ssc-url http://YOUR_SSC.DOMAIN -t YOUR_SSC_CI_TOKEN
+fcli sc-dast scan -n "IWA-UI - FCLI" -s YOUR_SCAN_SETTINGS_ID --store curScan
+fcli sc-dast scan wait-fod ::curScan::
+```
 
 ### DAST using Fortify on Demand
 
-You can invoke a Fortify on Demand dynamic scan using the [PowerShellForFOD](https://github.com/fortify-community-plugins/PowerShellForFOD) PowerShell module.
-For examples on how to achieve this see [here](https://github.com/fortify-community-plugins/PowerShellForFOD/blob/master/USAGE.md#starting-a-dynamic-scan).
+You can invoke a Fortify on Demand dynamic scan using the [FCLI](https://github.com/fortify/fcli) utility.
+For example:
+
+```
+fcli fod session login --url https://ams.fortify.com --client-id YOUR_CLIENT_ID --client-secret YOUR_CLIENT_SECRET
+fcli fod dast-scan start --release YOUR_APP:YOUR_RELEASE --store curScan
+fcli fod dast-scan wait-for ::curScan::
+```
 
 ### API Security Testing using Fortify WebInspect and Postman
 
@@ -288,13 +290,18 @@ newman run .\etc\IWA-API-Dev-Workflow.postman_collection.json --environment .\et
 In order to use this collection with WebInspect you will need to make sure newman is on the path and then you can run:
 
 ```PowerShell
-& "C:\Program Files\Fortify\Fortify WebInspect\WI.exe" -pwc .\etc\IWA-API-Dev-Workflow.postman_collection.json -pec .\etc\IWA-API-Dev.postman_environment.json -ep ".\IWA-API.fpr"
+& "C:\Program Files\Fortify\Fortify WebInspect\WI.exe" -pwc .\etc\IWA-API-Workflow.postman_collection.json -pec .\etc\IWA-API-Dev.postman_environment.json -ep ".\IWA-API.fpr"
 ```
 
 ### API Security Testing using ScanCentral DAST and Postman
 
-You can also import the Postman collections into ScanCentral DAST and run the resultant setup using the [fortify-scancentral-dast.ps1](bin\fortify-scancentral-dast.ps1)
-script and the relevant CICD Identifier. You will need to use the following
+Import the following Postman collections into ScanCentral DAST:
+
+ - `etc\IWA-API-Prod.postman_environment.json`      - as Environment 
+ - `etc\IWA-API-Auth.postman_collection.json`       - as Authentication Collection
+ - `etc\IWA-API-Workflow.postman_collection.json`   - as Workflow collection
+
+You will then need the following settings for the Dynamic Token Generation
 
 Response Token:
 ```
@@ -302,12 +309,14 @@ Response Token:
 ```
 Request Token:
 ```
-Authorization:\sBearer\s(?<{0}>[^\r\n]*)\r?\n
+Authorization:\sBearer\s(?<BearerTokenValue>[^\r\n]*)\r?\n
 ```
 Logout Condition:
 ```
 [STATUSCODE]401
 ```
+
+The scan can be run from the ScanCentral DAST UI or via saving the settings and using the `fcli sc-dast scan` command.
 
 ### FAST Using ScanCentral DAST and FAST proxy (Windows)
 
