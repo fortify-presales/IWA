@@ -16,5 +16,6 @@ if ([string]::IsNullOrEmpty($FastExe)) { throw "FAST executable path has not bee
 if ([string]::IsNullOrEmpty($FastPort)) { throw "FAST port has not been set" }
 
 Write-Host Stopping FAST Proxy...
-Write-Host "$FastExe" -p $FastPort -s
-& "$FastExe" -p $FastPort -s
+Write-Host "$FastExe -p $FastPort -s"
+Write-Host ""
+& "$FastExe" -p $FastPort -s 

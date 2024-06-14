@@ -22,6 +22,6 @@ if ([string]::IsNullOrEmpty($SSCAuthToken)) { throw "SSC Authentication Token ha
 if ([string]::IsNullOrEmpty($SCDastCICDIdentifier)) { throw "ScanCentral DAST CICD Identifier has not been set" }
 
 Write-Host Starting FAST Proxy...
-Write-Host "$FastExe" -CIToken $SSCAuthToken -CICDToken $SCDastCICDIdentifier -u $SCDastAPIUrl -p $FastPort -n "FAST-Demo"
+Write-Host "$FastExe -CIToken $SSCAuthToken -CICDToken $SCDastCICDIdentifier -u $SCDastAPIUrl -p $FastPort -n '"'FAST-Demo'"'"
 Write-Host ""
 & "$FastExe" -CIToken $SSCAuthToken -CICDToken $SCDastCICDIdentifier -u $SCDastAPIUrl -p $FastPort -n "FAST-Demo"
