@@ -1,65 +1,13 @@
 {
 	"info": {
-		"_postman_id": "dc549d2a-0dfb-40bb-a01f-a78aa23fa90e",
+		"_postman_id": "6ab9c9ef-ac4b-44d4-ace9-d26aa6ba4a25",
 		"name": "IWA-API-Workflow",
 		"description": "An example collection for security testing of IWA (Insecure Web Application) REST API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13859659"
+		"_exporter_id": "13859659",
+		"_collection_link": "https://mfdemouk.postman.co/workspace/My-Workspace~c71e9c5c-d86a-44e4-8a78-9b4f1d507064/collection/13859659-6ab9c9ef-ac4b-44d4-ace9-d26aa6ba4a25?action=share&source=collection_link&creator=13859659"
 	},
 	"item": [
-		{
-			"name": "Authentication",
-			"item": [
-				{
-					"name": "Sign In",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"pm.test(\"Access token returned\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.accessToken).exist;\r",
-									"    console.log('Saving JWT access token in environment: ' + jsonData.accessToken)\r",
-									"    pm.environment.set('jwt_token', jsonData.accessToken)\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"{{username}}\",\r\n  \"password\": \"{{password}}\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/v3/site/sign-in",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"v3",
-								"site",
-								"sign-in"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
 		{
 			"name": "Products",
 			"item": [
@@ -83,12 +31,10 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"type": "text",
 								"value": "application/json"
 							},
 							{
 								"key": "",
-								"type": "text",
 								"value": "",
 								"disabled": true
 							}
@@ -133,13 +79,11 @@
 						"header": [
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
+								"value": "application/json"
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
+								"value": "application/json"
 							}
 						],
 						"body": {
@@ -180,12 +124,10 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"type": "text",
 								"value": "application/json"
 							},
 							{
 								"key": "",
-								"type": "text",
 								"value": "",
 								"disabled": true
 							}
@@ -239,12 +181,10 @@
 						"header": [
 							{
 								"key": "Accept",
-								"type": "text",
 								"value": "application/json"
 							},
 							{
 								"key": "Content-Type",
-								"type": "text",
 								"value": "application/json"
 							}
 						],
@@ -292,12 +232,10 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"type": "text",
 								"value": "application/json"
 							},
 							{
 								"key": "",
-								"type": "text",
 								"value": "",
 								"disabled": true
 							}
@@ -337,12 +275,10 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"type": "text",
 								"value": "application/json"
 							},
 							{
 								"key": "",
-								"type": "text",
 								"value": "",
 								"disabled": true
 							}
@@ -387,8 +323,7 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
+								"value": "application/json"
 							}
 						],
 						"url": {
@@ -440,7 +375,6 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"type": "text",
 								"value": "application/json"
 							}
 						],

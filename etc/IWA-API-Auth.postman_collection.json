@@ -1,10 +1,11 @@
 {
 	"info": {
-		"_postman_id": "213ed9b7-cf6b-461e-95c8-513532c1a3f7",
+		"_postman_id": "eda1e993-4db3-4738-b896-32422f5b16fa",
 		"name": "IWA-API-Auth",
 		"description": "An example collection for authenticating against IWA (Insecure Web Application) REST API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13859659"
+		"_exporter_id": "13859659",
+		"_collection_link": "https://mfdemouk.postman.co/workspace/My-Workspace~c71e9c5c-d86a-44e4-8a78-9b4f1d507064/collection/13859659-eda1e993-4db3-4738-b896-32422f5b16fa?action=share&source=collection_link&creator=13859659"
 	},
 	"item": [
 		{

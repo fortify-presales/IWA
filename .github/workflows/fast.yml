@@ -42,8 +42,7 @@ jobs:
           CONTAINER_NAME="fortify-fast"
           IMAGE_NAME="fortifydocker/fortify-fast:24.2.ubuntu.2204"
           mkdir -p "$HOME/.fast/certs"
-          docker run --name $CONTAINER_NAME -d -p ${FAST_PORT}:8087 -v "$HOME/.fast/certs:/etc/fast/certs" --rm $IMAGE_NAME -p ${FAST_PORT} -u ${SCANCENTRAL_DAST_API} -CIToken ${SSC_CI_TOKEN} -CICDToken ${SCANCENTRAL_DAST_CICD_TOKEN} -n "IWA FAST Scan"
-          docker ps -a
+          docker run -d --name $CONTAINER_NAME -p ${FAST_PORT}:8087 -v "$HOME/.fast/certs:/etc/fast/certs" --rm $IMAGE_NAME -p ${FAST_PORT} -u ${SCANCENTRAL_DAST_API} -CIToken ${SSC_CI_TOKEN} -CICDToken ${SCANCENTRAL_DAST_CICD_TOKEN} -n "IWA FAST Scan"
         env:
           FAST_PORT: ${{ env.DEFAULT_FAST_PORT }}
           SCANCENTRAL_DAST_API: ${{ vars.FORTIFY_SCDAST_API_URL }}
@@ -73,9 +72,9 @@ jobs:
         run: |
           echo "Stopping FAST Container"
           CONTAINER_NAME="fortify-fast"
-          #docker logs $CONTAINER_NAME
           docker exec $CONTAINER_NAME fast -p ${FAST_PORT} -s
-          docker stop $CONTAINER_NAME
+          sleep 5
+          docker logs $CONTAINER_NAME
         env:
           FAST_PORT: ${{ env.DEFAULT_FAST_PORT }}
           SCANCENTRAL_DAST_API: ${{ vars.FORTIFY_SCDAST_API_URL }}
