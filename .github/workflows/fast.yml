@@ -28,16 +28,21 @@ env:
 
 jobs:
 
-  Run-FAST-Container:
+  Run-FAST-Scan:
     runs-on: ubuntu-latest
     if: ${{ (github.event.inputs.runFortifyFAST == 'true') }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
+          fetch-depth: 2
       - name: Start FAST Container
         shell: bash
         run: |
           echo "Starting FAST Container"
           mkdir -p "$HOME/.fast/certs"
-          docker run --name $CONTAINER_NAME -p ${FAST_PORT}:8087 -v "$HOME/.fast/certs:/etc/fast/certs" --rm $IMAGE_NAME -p ${FAST_PORT} -u ${SCANCENTRAL_DAST_API} -CIToken ${SSC_CI_TOKEN} -CICDToken ${SCANCENTRAL_DAST_CICD_TOKEN} -n "IWA FAST Scan"
+          docker run --name $CONTAINER_NAME -d -p ${FAST_PORT}:8087 -v "$HOME/.fast/certs:/etc/fast/certs" --rm $IMAGE_NAME -k -p ${FAST_PORT} -u ${SCANCENTRAL_DAST_API} -CIToken ${SSC_CI_TOKEN} -CICDToken ${SCANCENTRAL_DAST_CICD_TOKEN} -n "IWA FAST Scan"
         env:
           IMAGE_NAME: ${{ env.DEFAULT_IMAGE_NAME }}
           CONTAINER_NAME: ${{ env.DEFAULT_CONTAINER_NAME }}
@@ -45,20 +50,6 @@ jobs:
           SCANCENTRAL_DAST_API: ${{ vars.FORTIFY_SCDAST_API_URL }}
           SSC_CI_TOKEN: ${{ secrets.FORTIFY_SSC_TOKEN }}
           SCANCENTRAL_DAST_CICD_TOKEN: ${{ vars.FORTIFY_SCDAST_CICD_TOKEN }}
-
-  Run-Tests:
-    runs-on: ubuntu-latest
-    if: ${{ (github.event.inputs.runFortifyFAST == 'true') }}
-    steps:
-      # hack to wait until FAST-Proxy container has started
-      - name: Sleep for 30 seconds
-        run: sleep 30s
-        shell: bash
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
-          fetch-depth: 2
       - name: Install Chrome
         uses: browser-actions/setup-chrome@v1
         with:
@@ -78,12 +69,6 @@ jobs:
           emoji: true
           verbose: true
           job-summary: true  
-          
-  Stop-FAST-Container:
-    runs-on: ubuntu-latest
-    if: ${{ (github.event.inputs.runFortifyFAST == 'true') }}
-    needs: [Run-Tests]
-    steps:          
       - name: Stop FAST Container
         shell: bash
         run: |
