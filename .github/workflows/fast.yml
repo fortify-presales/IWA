@@ -22,32 +22,43 @@ on:
 env:
   DEFAULT_APP_NAME: "IWA"
   DEFAULT_PYTHON_VERSION: "3.12.3"
+  DEFAULT_IMAGE_NAME: "fortifydocker/fortify-fast:24.2.ubuntu.2204"
+  DEFAULT_CONTAINER_NAME: "fortify-fast"
   DEFAULT_FAST_PORT: 8087
 
 jobs:
 
-  Fortify-FAST-Scan:
+  Run-FAST-Container:
     runs-on: ubuntu-latest
     if: ${{ (github.event.inputs.runFortifyFAST == 'true') }}
     steps:
+      - name: Start FAST Container
+        shell: bash
+        run: |
+          echo "Starting FAST Container"
+          mkdir -p "$HOME/.fast/certs"
+          docker run --name $CONTAINER_NAME -p ${FAST_PORT}:8087 -v "$HOME/.fast/certs:/etc/fast/certs" --rm $IMAGE_NAME -p ${FAST_PORT} -u ${SCANCENTRAL_DAST_API} -CIToken ${SSC_CI_TOKEN} -CICDToken ${SCANCENTRAL_DAST_CICD_TOKEN} -n "IWA FAST Scan"
+        env:
+          IMAGE_NAME: ${{ env.DEFAULT_IMAGE_NAME }}
+          CONTAINER_NAME: ${{ env.DEFAULT_CONTAINER_NAME }}
+          FAST_PORT: ${{ env.DEFAULT_FAST_PORT }}
+          SCANCENTRAL_DAST_API: ${{ vars.FORTIFY_SCDAST_API_URL }}
+          SSC_CI_TOKEN: ${{ secrets.FORTIFY_SSC_TOKEN }}
+          SCANCENTRAL_DAST_CICD_TOKEN: ${{ vars.FORTIFY_SCDAST_CICD_TOKEN }}
+
+  Run-Tests:
+    runs-on: ubuntu-latest
+    if: ${{ (github.event.inputs.runFortifyFAST == 'true') }}
+    steps:
+      # hack to wait until FAST-Proxy container has started
+      - name: Sleep for 30 seconds
+        run: sleep 30s
+        shell: bash
       - name: Checkout
         uses: actions/checkout@v4
         with:
           # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
           fetch-depth: 2
-      - name: Start FAST Container
-        shell: bash
-        run: |
-          echo "Starting FAST Container"
-          CONTAINER_NAME="fortify-fast"
-          IMAGE_NAME="fortifydocker/fortify-fast:24.2.ubuntu.2204"
-          mkdir -p "$HOME/.fast/certs"
-          docker run -d --name $CONTAINER_NAME -p ${FAST_PORT}:8087 -v "$HOME/.fast/certs:/etc/fast/certs" --rm $IMAGE_NAME -p ${FAST_PORT} -u ${SCANCENTRAL_DAST_API} -CIToken ${SSC_CI_TOKEN} -CICDToken ${SCANCENTRAL_DAST_CICD_TOKEN} -n "IWA FAST Scan"
-        env:
-          FAST_PORT: ${{ env.DEFAULT_FAST_PORT }}
-          SCANCENTRAL_DAST_API: ${{ vars.FORTIFY_SCDAST_API_URL }}
-          SSC_CI_TOKEN: ${{ secrets.FORTIFY_SSC_TOKEN }}
-          SCANCENTRAL_DAST_CICD_TOKEN: ${{ vars.FORTIFY_SCDAST_CICD_TOKEN }}
       - name: Install Chrome
         uses: browser-actions/setup-chrome@v1
         with:
@@ -66,16 +77,21 @@ jobs:
         with:
           emoji: true
           verbose: true
-          job-summary: true     
+          job-summary: true  
+          
+  Stop-FAST-Container:
+    runs-on: ubuntu-latest
+    if: ${{ (github.event.inputs.runFortifyFAST == 'true') }}
+    needs: [Run-Tests]
+    steps:          
       - name: Stop FAST Container
         shell: bash
         run: |
           echo "Stopping FAST Container"
-          CONTAINER_NAME="fortify-fast"
-          docker exec $CONTAINER_NAME fast -p ${FAST_PORT} -s
-          sleep 5
           docker logs $CONTAINER_NAME
+          docker exec $CONTAINER_NAME fast -p ${FAST_PORT} -s
         env:
+          CONTAINER_NAME: ${{ env.DEFAULT_CONTAINER_NAME }}
           FAST_PORT: ${{ env.DEFAULT_FAST_PORT }}
           SCANCENTRAL_DAST_API: ${{ vars.FORTIFY_SCDAST_API_URL }}
           SSC_CI_TOKEN: ${{ secrets.FORTIFY_SSC_TOKEN }}
