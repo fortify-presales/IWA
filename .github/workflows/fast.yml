@@ -50,7 +50,7 @@ jobs:
           FAST_PORT: ${{ env.DEFAULT_FAST_PORT }}
           SCANCENTRAL_DAST_API: ${{ vars.FORTIFY_SCDAST_API_URL }}
           SSC_CI_TOKEN: ${{ secrets.FORTIFY_SSC_TOKEN }}
-          SCANCENTRAL_DAST_CICD_TOKEN: ${{ vars.FORTIFY_SCDAST_CICD_TOKEN }}
+          SCANCENTRAL_DAST_CICD_TOKEN: ${{ vars.FORTIFY_SCDAST_FAST_CICD_TOKEN }}
       - name: Install Chrome
         uses: browser-actions/setup-chrome@v1
         with:
