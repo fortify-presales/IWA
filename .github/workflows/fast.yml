@@ -43,7 +43,7 @@ jobs:
           echo "Starting FAST Container"
           mkdir -p "$HOME/.fast/certs"
           docker run --name $CONTAINER_NAME -d -p ${FAST_PORT}:8087 -v "$HOME/.fast/certs:/etc/fast/certs" --rm $IMAGE_NAME -k -p ${FAST_PORT} -u ${SCANCENTRAL_DAST_API} -CIToken ${SSC_CI_TOKEN} -CICDToken ${SCANCENTRAL_DAST_CICD_TOKEN} -n "IWA FAST Scan"
-          docker logs
+          docker logs $CONTAINER_NAME
         env:
           IMAGE_NAME: ${{ env.DEFAULT_IMAGE_NAME }}
           CONTAINER_NAME: ${{ env.DEFAULT_CONTAINER_NAME }}
