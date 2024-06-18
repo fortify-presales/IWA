@@ -325,17 +325,15 @@ as a workflow for a ScanCentral DAST execution. In order to carry out the exampl
 to have installed WebInspect locally `WIRCServerSetup64-ProxyOnly.msi` which is available in the `Dynamic_Addons.zip` of the
 ScanCentral DAST installation media.
 
-There is some example [Selenium](https://www.selenium.dev/) which can used can be used to execute a simple 
+There are some example [Selenium](https://www.selenium.dev/) which can used can be used to execute a simple 
 functional test of the running application. There are also a couple of PowerShell scripts [start_fast_proxy.ps1](`.\bin\start_fast_proxy.ps1`) and [stop_fast_proxy.ps1](`.\bin\stop_fast_proxy.ps1`) that can
 be used to start/stop the FAST Proxy. In order to use these scripts you will need to have entries in the `.env` file similar to the following:
 
 ```
-APP_URL=http://iwa.example.com
+APP_URL=http://localhost:8888
 SSC_AUTH_TOKEN_BASE64=MmYyMTA5MzYtN2Q5Ny00NmM1LWI5NTUtYThkZWI2YmJlMDUy
 SSCANCENTRAL_DAST_API=http://scancentral-dast-api.example.com/api/
 SCANCENTRAL_DAST_CICD_IDENTIFIER=c3c3df60-de68-45b8-89c0-4c07b53392e7
-FAST_EXE=C:\\Program Files\\Micro Focus WIRC Server\\Fast.exe
-FAST_EXE=C:\\Program Files\\Fortify\\Fortify WebInspect\\Fast.exe
 FAST_PORT=8087
 FAST_PROXY=127.0.0.1:8087
 ```

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "861af85c75d48d6faa2dc3505c33bf8915154daba29a6deaa76059ed7a0eb809"
+            "sha256": "ed81fc8c1b705c915f406f1580b60fb1fa6a91f62a1b403f2af390dc07bb94dd"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -406,6 +406,7 @@
                 "sha256:e324ee90a023d808f1959c46bcbc04446a10ced277783dc6ee09987c37ec10ca",
                 "sha256:f7b63ef50f1b690dddf550d03497b66d609393b40b564ed0d674909a68ebf16a"
             ],
+            "index": "pip_conf_index_global",
             "markers": "python_version >= '3.8'",
             "version": "==1.0.1"
         },
@@ -443,11 +444,11 @@
         },
         "tenacity": {
             "hashes": [
-                "sha256:3649f6443dbc0d9b01b9d8020a9c4ec7a1ff5f6f3c6c8a036ef371f573fe9185",
-                "sha256:953d4e6ad24357bceffbc9707bc74349aca9d245f68eb65419cf0c249a1949a2"
+                "sha256:28522e692eda3e1b8f5e99c51464efcc0b9fc86933da92415168bc1c4e2308fa",
+                "sha256:54b1412b878ddf7e1f1577cd49527bad8cdef32421bd599beac0c6c3f10582fd"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==8.3.0"
+            "version": "==8.4.1"
         },
         "trio": {
             "hashes": [
@@ -478,11 +479,11 @@
                 "socks"
             ],
             "hashes": [
-                "sha256:450b20ec296a467077128bff42b73080516e71b56ff59a60a02bef2232c4fa9d",
-                "sha256:d0570876c61ab9e520d776c38acbbb5b05a776d3f9ff98a5c8fd5162a444cf19"
+                "sha256:a448b2f64d686155468037e1ace9f2d2199776e17f0a46610480d311f73e3472",
+                "sha256:dd505485549a7a552833da5e6063639d0d177c04f23bc3864e41e5dc5f612168"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==2.2.1"
+            "version": "==2.2.2"
         },
         "webdriver-manager": {
             "hashes": [

@@ -21,6 +21,7 @@ on:
 # Global environment variables
 env:
   DEFAULT_APP_NAME: "IWA"
+  DEFAULT_APP_URL: "https://iwa.onfortify.com"
   DEFAULT_PYTHON_VERSION: "3.12.3"
   DEFAULT_IMAGE_NAME: "fortifydocker/fortify-fast:24.2.ubuntu.2204"
   DEFAULT_CONTAINER_NAME: "fortify-fast"
@@ -69,7 +70,9 @@ jobs:
         with:
           emoji: true
           verbose: true
-          job-summary: true  
+          job-summary: true
+        env:
+          APP_URL: ${{ env.DEFAULT_APP_URL }}  
       - name: Stop FAST Container
         shell: bash
         run: |

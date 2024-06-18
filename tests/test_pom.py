@@ -2,13 +2,24 @@ import pytest
 from tests.pages.login_page import LoginPage
 from tests.pages.search_page import SearchPage
 
+from dotenv import load_dotenv
+import sys, os
+
+directory_path = os.getcwd()
+env_file = str(directory_path) + os.sep + '.env'
+
+load_dotenv(env_file)
+APP_URL = os.getenv('APP_URL')
+if not APP_URL:
+    APP_URL = 'https://iwa.onfortify.com'
+print('APP_URL: %s' %APP_URL)
 
 @pytest.mark.login
 def test_login_functionality(chrome_browser):
     """
     Test the login functionality of the IWA website
     """
-    url = "https://iwa.onfortify.com/login"
+    url = '%s/login' % APP_URL
     login_page = LoginPage(chrome_browser)
     profile_title = "IWA Pharmacy Direct - User Profile"
 
@@ -33,7 +44,7 @@ def test_search_functionality(chrome_browser):
     """
     Test the search functionality of the IWA website
     """
-    url = "https://iwa.onfortify.com/products"
+    url = '%s/products' % APP_URL
     search_term = "alphadex"
     search_page = SearchPage(chrome_browser)
 
