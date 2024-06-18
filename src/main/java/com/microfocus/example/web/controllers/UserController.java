@@ -418,7 +418,7 @@ public class UserController extends AbstractBaseController {
     public String newReview(@RequestParam("pid") Optional<UUID> pid,
                             Model model, Principal principal) {
         UUID productId = (pid.isPresent() ? pid.get() : null);
-        if (pid.isEmpty() || !productService.productExistsById(productId)) {
+        if (!pid.isPresent() || !productService.productExistsById(productId)) {
             model.addAttribute("message", "The product id '" + productId.toString() + "' is invalid!");
             model.addAttribute("alertClass", "alert-danger");
             this.setModelDefaults(model, principal, "product-not-found");

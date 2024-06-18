@@ -257,9 +257,9 @@ public class ProductService {
     public Review newReviewFromNewReviewForm(NewReviewForm newReviewForm) {
         Review rtmp = new Review();
         Optional<User> optionalUser = userRepository.findById(newReviewForm.getUserId());
-        if (optionalUser.isEmpty()) throw new UserNotFoundException("Cannot find user for product review.");
+        if (!optionalUser.isPresent()) throw new UserNotFoundException("Cannot find user for product review.");
         Optional<Product> optionalProduct = productRepository.findById(newReviewForm.getProductId());
-        if (optionalProduct.isEmpty()) throw new ProductNotFoundException("Cannot find product for product review");
+        if (!optionalProduct.isPresent()) throw new ProductNotFoundException("Cannot find product for product review");
         rtmp.setProduct(optionalProduct.get());
         rtmp.setUser(optionalUser.get());
         rtmp.setComment(newReviewForm.getComment());
