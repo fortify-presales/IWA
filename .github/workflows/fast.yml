@@ -26,6 +26,7 @@ env:
   DEFAULT_IMAGE_NAME: "fortifydocker/fortify-fast:24.2.ubuntu.2204"
   DEFAULT_CONTAINER_NAME: "fortify-fast"
   DEFAULT_FAST_PORT: 8087
+  DEFAULT_FAST_PROXY: "127.0.0.1:8087"
 
 jobs:
 
@@ -38,9 +39,20 @@ jobs:
         with:
           # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
           fetch-depth: 2
+      - name: Make envfile
+        uses: SpicyPizza/create-envfile@v2.0
+        with:
+          envkey_APP_NAME: ${{ env.DEFAULT_APP_NAME }}
+          envkey_APP_URL: ${{ env.DEFAULT_APP_URL }}
+          envkey_FAST_PORT: ${{ env.DEFAULT_FAST_PORT }}
+          envkey_FAST_PROXY: ${{ env.DEFAULT_FAST_PROXY }}
+          file_name: .env
+          fail_on_empty: false
+          sort_keys: false        
       - name: Start FAST Container
         shell: bash
         run: |
+          cat .env
           echo "Starting FAST Container"
           mkdir -p "$HOME/.fast/certs"
           docker run --name $CONTAINER_NAME -d -p ${FAST_PORT}:8087 -v "$HOME/.fast/certs:/etc/fast/certs" --rm $IMAGE_NAME -k -p ${FAST_PORT} -u ${SCANCENTRAL_DAST_API} -CIToken ${SSC_CI_TOKEN} -CICDToken ${SCANCENTRAL_DAST_CICD_TOKEN} -n "IWA FAST Scan"
@@ -63,7 +75,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ env.DEFAULT_PYTHON_VERSION }}
+          python-version: ${{ env.DEFAULT_PYTHON_VERSION }} 
       - name: Install dependencies
         run: pip install pytest selenium webdriver-manager pytest-selenium pytest-xdist pytest-md pytest-emoji
       - uses: pavelzw/pytest-action@v2
