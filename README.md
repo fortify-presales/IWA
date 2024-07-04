@@ -318,7 +318,7 @@ Logout Condition:
 
 The scan can be run from the ScanCentral DAST UI or via saving the settings and using the `fcli sc-dast scan` command.
 
-### FAST Using ScanCentral DAST and FAST proxy (Windows)
+### FAST Using ScanCentral DAST and FAST proxy
 
 The Fortify FAST Proxy allows you to capture traffic from an automated test run and then use the traffic
 as a workflow for a ScanCentral DAST execution. In order to carry out the example here you will need
