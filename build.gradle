@@ -9,6 +9,7 @@ ext {
     springSecurityVersion = '3.0.4.RELEASE'
     jacksonVersion = '2.13.0'
     tymeleafLayoutDialectVersion = '3.2.1'
+    itextVersion = '7.2.5'
     springdocOpenApiVersion = '1.7.0'
     junitVersion = '4.12'
     junitJupiterVersion = '5.7.0'
@@ -38,13 +39,14 @@ dependencies {
     implementation "org.apache.commons:commons-email:1.4"
     implementation "com.google.guava:guava:30.1.1-jre"
     implementation "com.h2database:h2:1.4.197"
+    implementation "com.itextpdf:itext7-core:${itextVersion}"
     implementation "org.passay:passay:1.5.0"
     implementation "org.webjars:bootstrap:4.5.3"
     implementation "org.webjars:jquery:3.5.1"
     implementation "org.webjars:font-awesome:5.15.2"
     implementation "org.webjars:chartjs:2.9.4"
     implementation "org.webjars.npm:axios:0.21.1"
-    implementation ("org.springdoc:springdoc-openapi-ui:${springdocOpenApiVersion}")
+    implementation "org.springdoc:springdoc-openapi-ui:${springdocOpenApiVersion}"
     implementation "org.springdoc:springdoc-openapi-security:${springdocOpenApiVersion}"
     implementation "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
     implementation "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
@@ -109,6 +111,9 @@ project.archivesBaseName = 'iwa'
 group = 'com.microfocus.example'
 version = '1.0'
 description = 'IWA (Insecure Web App) Pharmacy Direct - an insecure web application for use in Fortify demonstrations'
+// A JDK 1.8 is needed if the WebInspect Runtime Agent is being used
+//sourceCompatibility = JavaVersion.VERSION_1_8
+//targetCompatibility = JavaVersion.VERSION_1_8
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 

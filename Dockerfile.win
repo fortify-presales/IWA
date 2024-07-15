@@ -1,4 +1,6 @@
 FROM eclipse-temurin:11-windowsservercore
+# A JDK 1.8 is needed if the WebInspect Runtime Agent is being used
+#FROM openjdk:openjdk:8u342-windowsservercore
 
 LABEL maintainer="klee2@opentext.com"
 

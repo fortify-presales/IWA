@@ -1,4 +1,4 @@
-![Continuous Inspection](https://github.com/fortify-presales/IWAPharmacyDirect/workflows/Continuous%20Inspection/badge.svg)
+[![DevSecOps with Fortify on Demand](https://github.com/fortify-presales/IWA/actions/workflows/fod.yml/badge.svg)](https://github.com/fortify-presales/IWA/actions/workflows/fod.yml)
 
 # IWA (Insecure Web App) Pharmacy Direct
 
