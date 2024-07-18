@@ -54,8 +54,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -244,6 +248,28 @@ public class ApiSiteController {
                 user.getUsername(),
                 user.getEmail(),
                 roles));
+    }
+
+    @Operation(summary = "Sign out", description = "Sign out from the system", tags = {"site"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation =  ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
+    })
+    @PostMapping(value = {"/sign-out"}, produces = {"application/json"})
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<ApiStatusResponse> signOut(HttpSession session, HttpServletRequest request) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {    
+             new SecurityContextLogoutHandler().logout(request, null, auth);
+        }
+        SecurityContextHolder.getContext().setAuthentication(null);
+
+        ApiStatusResponse apiStatusResponse = new ApiStatusResponse();
+        return new ResponseEntity<>(apiStatusResponse, HttpStatus.OK);
     }
 
     @Operation(summary = "Refresh Token", description = "Refresh users JWT access token", tags = {"site"})

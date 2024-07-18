@@ -27,3 +27,4 @@ build
 /.gradle.debricked.lock
 /.gradle-init-script.debricked.groovy
 .vscode/settings.json
+.history

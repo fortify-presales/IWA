@@ -9,15 +9,15 @@
 *   [Building the Application](#building-the-application)
 *   [Running the Application](#running-the-application)
 *   [Application Security Testing Integrations](#application-security-testing-integrations)
-    * [SAST using Fortify SCA command line](#static-analysis-using-fortify-sca-command-line)
-    * [SAST using Fortify ScanCentral SAST](#static-analysis-using-fortify-scancentral-sast)
-    * [Open Source Susceptibility Analysis using Sonatype Nexus IQ](#open-source-susceptibility-analysis-using-sonatype-nexus-iq)
-    * [SAST using Fortify on Demand](#static-analysis-using-fortify-on-demand)
-    * [DAST using Fortify WebInspect](#dynamic-analysis-using-fortify-webinspect)
-    * [DAST using Fortify ScanCentral DAST](#dynamic-analysis-using-fortify-scancentral-dast)
-    * [DAST using Fortify on Demand](#dynamic-analysis-using-fortify-on-demand)
+    * [SAST using Fortify SCA command line](#sast-using-fortify-sca-command-line)
+    * [SAST using Fortify ScanCentral SAST](#sast-using-fortify-scancentral-sast)
+    * [SAST using Fortify on Demand](#sast-using-fortify-on-demand)
+    * [DAST using Fortify WebInspect](#dast-using-fortify-webinspect)
+    * [DAST using Fortify ScanCentral DAST](#dast-using-fortify-scancentral-dast)
+    * [DAST using Fortify on Demand](#dast-using-fortify-on-demand)
     * [API Security Testing using Fortify WebInspect and Postman](#api-security-testing-using-fortify-webinspect-and-postman)
     * [API Security Testing using ScanCentral DAST](#api-security-testing-using-scancentral-dast-and-postman)
+    * [API Security Testing using Fortify on Demand](#api-security-testing-using-fortify-on-demand)
     * [FAST Using ScanCentral DAST and FAST proxy](#fast-using-scancentral-dast-and-fast-proxy)
 *   [Build and Pipeline Integrations](#build-and-pipeline-integrations)
     * [Jenkins Pipeline](#jenkins-pipeline)
@@ -264,7 +264,10 @@ fcli sc-dast scan wait-fod ::curScan::
 
 ### DAST using Fortify on Demand
 
-You can invoke a Fortify on Demand dynamic scan using the [FCLI](https://github.com/fortify/fcli) utility.
+Fortify on Demands provides two means of carrying out DAST scanning: traditional DAST and _DAST Automated_.
+In this section we will using _DAST Automated_ as this is more suitable of command and pipeline integration.
+
+You can invoke a Fortify on Demand _DAST Automated_ scan using the [FCLI](https://github.com/fortify/fcli) utility.
 For example:
 
 ```
@@ -272,6 +275,8 @@ fcli fod session login --url https://ams.fortify.com --client-id YOUR_CLIENT_ID 
 fcli fod dast-scan start --release YOUR_APP:YOUR_RELEASE --store curScan
 fcli fod dast-scan wait-for ::curScan::
 ```
+
+TBD: how to upload login macros and/or workflows.
 
 ### API Security Testing using Fortify WebInspect and Postman
 
@@ -317,6 +322,14 @@ Logout Condition:
 ```
 
 The scan can be run from the ScanCentral DAST UI or via saving the settings and using the `fcli sc-dast scan` command.
+
+### API Security Testing using Fortify on Demand
+
+An API scan can be carried out using the following "combined" Postman collection:
+
+ - `etc\IWA-API-Prod-Combined.postman_environment.json`
+
+This can be used with either traditional DAST or _DAST Automated_.
 
 ### FAST Using ScanCentral DAST and FAST proxy
 

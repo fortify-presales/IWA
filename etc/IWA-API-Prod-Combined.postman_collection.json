@@ -1,15 +1,15 @@
 {
 	"info": {
-		"_postman_id": "3fe1086c-833d-4658-aabe-a41a0feca2f5",
-		"name": "IWA-API-Workflow",
-		"description": "An example collection for security testing of IWA (Insecure Web Application) REST API",
+		"_postman_id": "ee24c3f6-e1a7-4d25-8d60-fb7f568a7326",
+		"name": "IWA-API-Combined",
+		"description": "An example collection for security testing of IWA (Insecure Web Application) REST API\n\nThis is a combined collection for use with FoD that doesn't depend on environment or authentication collections.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "13859659",
-		"_collection_link": "https://mfdemouk.postman.co/workspace/My-Workspace~c71e9c5c-d86a-44e4-8a78-9b4f1d507064/collection/13859659-3fe1086c-833d-4658-aabe-a41a0feca2f5?action=share&source=collection_link&creator=13859659"
+		"_collection_link": "https://mfdemouk.postman.co/workspace/My-Workspace~c71e9c5c-d86a-44e4-8a78-9b4f1d507064/collection/13859659-ee24c3f6-e1a7-4d25-8d60-fb7f568a7326?action=share&source=collection_link&creator=13859659"
 	},
 	"item": [
 		{
-			"name": "Authentication",
+			"name": "Authentication Start",
 			"item": [
 				{
 					"name": "Sign In",
@@ -25,7 +25,7 @@
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData.accessToken).exist;\r",
 									"    console.log('Saving JWT access token in environment: ' + jsonData.accessToken)\r",
-									"    pm.collectionVariables.set('jwt_token', jsonData.accessToken)\r",
+									"    pm.environment.set('c_jwt_token', jsonData.accessToken)\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -38,7 +38,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"{{username}}\",\r\n  \"password\": \"{{password}}\"\r\n}",
+							"raw": "{\r\n  \"username\": \"{{c_username}}\",\r\n  \"password\": \"{{c_password}}\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -46,9 +46,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v3/site/sign-in",
+							"raw": "{{c_base_url}}/api/v3/site/sign-in",
 							"host": [
-								"{{base_url}}"
+								"{{c_base_url}}"
 							],
 							"path": [
 								"api",
@@ -56,7 +56,8 @@
 								"site",
 								"sign-in"
 							]
-						}
+						},
+						"description": "Sign in to the server, retrieve access token and store in variable \"jwt_token\""
 					},
 					"response": []
 				}
@@ -76,7 +77,8 @@
 									"    pm.response.to.have.status(200);\r",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -94,9 +96,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v3/products",
+							"raw": "{{c_base_url}}/api/v3/products",
 							"host": [
-								"{{base_url}}"
+								"{{c_base_url}}"
 							],
 							"path": [
 								"api",
@@ -121,10 +123,11 @@
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData.id).exist;\r",
 									"    console.log('Saving product id in collection variable: ' + jsonData.id)\r",
-									"    pm.collectionVariables.set('product_id', jsonData.id)\r",
+									"    pm.collectionVariables.set('c_product_id', jsonData.id)\r",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -145,9 +148,9 @@
 							"raw": "{\r\n  \"code\": \"SWA000-A000-00000\",\r\n  \"name\": \"Test Product\",\r\n  \"summary\": \"Its summary of at least 10 characters xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\r\n  \"description\": \"Its detailed description of at least 40 characters xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\r\n  \"available\": true,\r\n  \"price\": 10.50,\r\n  \"inStock\": true,\r\n  \"timeToStock\": 10,\r\n  \"rating\": 3,\r\n  \"onSale\": true,\r\n  \"salePrice\": 20.0\r\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v3/products",
+							"raw": "{{c_base_url}}/api/v3/products",
 							"host": [
-								"{{base_url}}"
+								"{{c_base_url}}"
 							],
 							"path": [
 								"api",
@@ -169,7 +172,8 @@
 									"    pm.response.to.have.status(200);\r",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -187,15 +191,15 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v3/products/{{product_id}}",
+							"raw": "{{c_base_url}}/api/v3/products/{{c_product_id}}",
 							"host": [
-								"{{base_url}}"
+								"{{c_base_url}}"
 							],
 							"path": [
 								"api",
 								"v3",
 								"products",
-								"{{product_id}}"
+								"{{c_product_id}}"
 							]
 						}
 					},
@@ -214,10 +218,11 @@
 									"pm.test(\"Product id returned\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData.id).exist;\r",
-									"    pm.expect(jsonData.id).equals(pm.collectionVariables.get(\"product_id\"))\r",
+									"    pm.expect(jsonData.id).equals(pm.collectionVariables.get(\"c_product_id\"))\r",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						},
 						{
@@ -226,7 +231,8 @@
 								"exec": [
 									""
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -247,15 +253,15 @@
 							"raw": "{\r\n  \"code\": \"SWA000-A000-00002\",\r\n  \"name\": \"Updated Product\",\r\n  \"summary\": \"Its summary of at least 10 characters xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\r\n  \"description\": \"Its updated description of at least 40 characters xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\r\n  \"available\": true,\r\n  \"onSale\": true,\r\n  \"price\": 11.50,\r\n  \"inStock\": false,\r\n  \"timeToStock\": 10,\r\n  \"rating\": 3,\r\n  \"salePrice\": 8.50\r\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v3/products/{{product_id}}",
+							"raw": "{{c_base_url}}/api/v3/products/{{c_product_id}}",
 							"host": [
-								"{{base_url}}"
+								"{{c_base_url}}"
 							],
 							"path": [
 								"api",
 								"v3",
 								"products",
-								"{{product_id}}"
+								"{{c_product_id}}"
 							]
 						}
 					},
@@ -274,10 +280,11 @@
 									"pm.test(\"Product id returned\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData.id).exist;\r",
-									"    pm.expect(jsonData.id).equals(pm.collectionVariables.get(\"product_id\"))\r",
+									"    pm.expect(jsonData.id).equals(pm.collectionVariables.get(\"c_product_id\"))\r",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -295,15 +302,15 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v3/products/{{product_id}}",
+							"raw": "{{c_base_url}}/api/v3/products/{{c_product_id}}",
 							"host": [
-								"{{base_url}}"
+								"{{c_base_url}}"
 							],
 							"path": [
 								"api",
 								"v3",
 								"products",
-								"{{product_id}}"
+								"{{c_product_id}}"
 							]
 						}
 					},
@@ -320,7 +327,8 @@
 									"    pm.response.to.have.status(200);\r",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -338,15 +346,15 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v3/products/{{product_id}}",
+							"raw": "{{c_base_url}}/api/v3/products/{{c_product_id}}",
 							"host": [
-								"{{base_url}}"
+								"{{c_base_url}}"
 							],
 							"path": [
 								"api",
 								"v3",
 								"products",
-								"{{product_id}}"
+								"{{c_product_id}}"
 							]
 						}
 					},
@@ -368,7 +376,8 @@
 									"    pm.response.to.have.status(200);\r",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -381,9 +390,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v3/messages",
+							"raw": "{{c_base_url}}/api/v3/messages",
 							"host": [
-								"{{base_url}}"
+								"{{c_base_url}}"
 							],
 							"path": [
 								"api",
@@ -410,21 +419,12 @@
 									"    pm.response.to.have.status(200);\r",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{jwt_token}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [
 							{
@@ -433,9 +433,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v3/users",
+							"raw": "{{c_base_url}}/api/v3/users",
 							"host": [
-								"{{base_url}}"
+								"{{c_base_url}}"
 							],
 							"path": [
 								"api",
@@ -447,6 +447,46 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Authentication End",
+			"item": [
+				{
+					"name": "Sign Out",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{c_base_url}}/api/v3/site/sign-out",
+							"host": [
+								"{{c_base_url}}"
+							],
+							"path": [
+								"api",
+								"v3",
+								"site",
+								"sign-out"
+							]
+						},
+						"description": "Sign in to the server, retrieve access token and store in variable \"jwt_token\""
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"auth": {
@@ -454,7 +494,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "{{jwt_token}}",
+				"value": "{{c_jwt_token}}",
 				"type": "string"
 			}
 		]
@@ -473,7 +513,6 @@
 			"listen": "test",
 			"script": {
 				"type": "text/javascript",
-				"packages": {},
 				"exec": [
 					""
 				]
@@ -482,28 +521,28 @@
 	],
 	"variable": [
 		{
-			"key": "base_url",
+			"key": "c_base_url",
 			"value": "https://iwa.onfortify.com",
 			"type": "string"
 		},
 		{
-			"key": "username",
-			"value": "admin@localhost.com",
+			"key": "c_username",
+			"value": "user1@localhost.com",
 			"type": "string"
 		},
 		{
-			"key": "product_id",
-			"value": ""
+			"key": "c_password",
+			"value": "password",
+			"type": "string"
 		},
 		{
-			"key": "jwt_token",
+			"key": "c_jwt_token",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"key": "password",
-			"value": "password",
-			"type": "string"
+			"key": "c_product_id",
+			"value": ""
 		}
 	]
 }
