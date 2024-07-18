@@ -11,19 +11,20 @@ name: DevSecOps with Fortify ScanCentral
 
 on:
   # Triggers the workflow on push or pull request events but only for the main or dev branches
-  push:
-    paths-ignore:
-      - '.github/**/**'
-      - 'bin/**'
-      - 'data/**'
-      - 'etc/**'
-      - 'tests/**'
-      - 'README.md'
-      - 'LICENSE'
-    branches:
-      - '**'        # matches every branch
-  pull_request:
-    branches: [ main, develop ]
+  # Commented out as we only want FoD workflow to trigger automatically
+  #push:
+  #  paths-ignore:
+  #    - '.github/**/**'
+  #    - 'bin/**'
+  #    - 'data/**'
+  #    - 'etc/**'
+  #    - 'tests/**'
+  #    - 'README.md'
+  #    - 'LICENSE'
+  #  branches:
+  #    - '**'        # matches every branch
+  #pull_request:
+  #  branches: [ main, develop ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
