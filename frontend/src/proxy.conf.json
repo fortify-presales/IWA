@@ -1,0 +1,10 @@
+{
+    "/api": {
+      "target": "https://iwa.onfortify.com/api/v3",
+      "secure": true,
+      "changeOrigin": true,
+      "pathRewrite": {
+        "^/api": ""
+      }
+    }
+  }

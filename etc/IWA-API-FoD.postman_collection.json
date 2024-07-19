@@ -1,0 +1,420 @@
+{
+	"info": {
+		"_postman_id": "fde6ec8c-22ba-4686-843c-2ae10a35f6b9",
+		"name": "IWA-API-FoD",
+		"description": "An example collection for security testing of IWA (Insecure Web Application) REST API\n\nThis is a combined collection for use with FoD that doesn't depend on environment or authentication collections.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13859659",
+		"_collection_link": "https://mfdemouk.postman.co/workspace/My-Workspace~c71e9c5c-d86a-44e4-8a78-9b4f1d507064/collection/13859659-fde6ec8c-22ba-4686-843c-2ae10a35f6b9?action=share&source=collection_link&creator=13859659"
+	},
+	"item": [
+		{
+			"name": "Setup",
+			"item": [
+				{
+					"name": "Sign In",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Access token returned\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.accessToken).exist;\r",
+									"    console.log('Saving JWT access token in environment: ' + jsonData.accessToken)\r",
+									"    pm.collectionVariables.set('c_jwt_token', jsonData.accessToken)\r",
+									"    pm.collectionVariables.set('c_user_id', jsonData.id)\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"{{c_username}}\",\r\n  \"password\": \"{{c_password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{c_base_url}}/api/v3/site/sign-in",
+							"host": [
+								"{{c_base_url}}"
+							],
+							"path": [
+								"api",
+								"v3",
+								"site",
+								"sign-in"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Get All Products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{c_base_url}}/api/v3/products",
+							"host": [
+								"{{c_base_url}}"
+							],
+							"path": [
+								"api",
+								"v3",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{c_base_url}}/api/v3/products",
+							"host": [
+								"{{c_base_url}}"
+							],
+							"path": [
+								"api",
+								"v3",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product Image",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{c_base_url}}/api/v3/products/{{c_product_id}}/image",
+							"host": [
+								"{{c_base_url}}"
+							],
+							"path": [
+								"api",
+								"v3",
+								"products",
+								"{{c_product_id}}",
+								"image"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Products by Keywords",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{c_base_url}}/api/v3/products?keywords=alpha&limit=100",
+							"host": [
+								"{{c_base_url}}"
+							],
+							"path": [
+								"api",
+								"v3",
+								"products"
+							],
+							"query": [
+								{
+									"key": "keywords",
+									"value": "alpha"
+								},
+								{
+									"key": "limit",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reviews by Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{c_base_url}}/api/v3/reviews?pid={{c_product_id}}",
+							"host": [
+								"{{c_base_url}}"
+							],
+							"path": [
+								"api",
+								"v3",
+								"reviews"
+							],
+							"query": [
+								{
+									"key": "pid",
+									"value": "{{c_product_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cleanup",
+			"item": [
+				{
+					"name": "Sign Out",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{c_base_url}}/api/v3/site/sign-out",
+							"host": [
+								"{{c_base_url}}"
+							],
+							"path": [
+								"api",
+								"v3",
+								"site",
+								"sign-out"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{c_jwt_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "c_base_url",
+			"value": "https://iwa.onfortify.com",
+			"type": "string"
+		},
+		{
+			"key": "c_username",
+			"value": "user1@localhost.com",
+			"type": "string"
+		},
+		{
+			"key": "c_password",
+			"value": "password",
+			"type": "string"
+		},
+		{
+			"key": "c_jwt_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "c_user_id",
+			"value": ""
+		},
+		{
+			"key": "c_product_id",
+			"value": "eec467c8-5de9-4c7c-8541-7b31614d31a0",
+			"type": "string"
+		}
+	]
+}
