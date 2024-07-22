@@ -1,0 +1,31 @@
+<div>
+    <div class="site-section bg-light">
+      <div class="container">
+        <div class="row">
+          <div class="title-section text-center col-12">
+            <h2 class="text-uppercase">New Products</h2>
+          </div>
+        </div>
+        <div class="row">
+          <div *ngFor="let product of products" class="col-sm-6 col-lg-4 text-center item mb-4">
+            <span *ngIf="product.onSale" class="tag">Sale</span>
+            <a [routerLink]="['/products/',product.id]">
+              <span *ngIf="product.image">
+                <img [attr.src]="'/assets/img/products/' + product.image" alt="Image" class="img-fluid">
+              </span>
+              <span *ngIf="!product.image">
+                <img [attr.src]="'/assets/img/awaiting-image-sm.png'" alt="Image" class="img-fluid">
+              </span>
+            </a>
+            <h3 class="text-dark"><a [routerLink]="['/products/',product.id]">{{ product.name }}</a></h3>
+            <p *ngIf="product.onSale" class="price">
+              <del>{{ product.price | currency }}</del> &mdash; {{ product.salePrice | currency }}
+            </p>
+            <p *ngIf="!product.onSale" class="price">
+              {{ product.price | currency }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

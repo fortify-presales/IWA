@@ -12,7 +12,8 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'user', component: UserComponent },
-  { path: '', redirectTo: 'home', pathMatch: 'full' }
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'products', loadChildren: () => import('./products/products.module').then(m => m.ProductsModule) }
 ];
 
 @NgModule({

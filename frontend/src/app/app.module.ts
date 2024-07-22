@@ -15,6 +15,7 @@ import { LoginComponent } from './login/login.component';
 import { ProfileComponent } from './profile/profile.component';
 import { RegisterComponent } from './register/register.component';
 import { UserComponent } from './user/user.component';
+import { ProductsModule } from './products/products.module';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { UserComponent } from './user/user.component';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    ProductsModule,
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

@@ -1,0 +1,105 @@
+<div *ngIf="product$ | async as product">
+
+    <div class="bg-light py-3">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 mb-0"><a [routerLink]="'/products'">Shop</a> <span class="mx-2 mb-0">/</span> <strong class="text-black"> {{ product.name }} </strong></div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="site-section-sm">
+  
+      <div class="container">
+  
+        <div class="row">
+  
+          <div class="col-md-5 mr-auto">
+            <div class="border text-center">
+              <span *ngIf="product.image">
+                <img [attr.src]="'/assets/img/products/' + product.image" alt="Image" class="img-fluid">
+              </span>
+              <span *ngIf="!product.image">
+                <img [attr.src]="'/img/awaiting-image-sm.png'" alt="Image" class="img-fluid">
+              </span>
+            </div>
+            <div class="mt-4">
+                <h5>Product Information</h5>
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <th scope="row">Code:</th>
+                        <td><span>{{ product.code }}</span></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Manufacturer:</th>
+                        <td>Unknown</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Contents:</th>
+                        <td>Unspecified</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Date First Available:</th>
+                        <td><span>22 Jul 2024</span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <a [routerLink]="'/products/' + product.id + '/download/datasheet.pdf'">
+                                <i class="fas fa-download fa-fw"></i> Download Datasheet
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+          </div>
+
+          <div class="col-md-6 item-entry">
+            <h2 class="text-black">{{ product.name }}</h2>
+            <span class="product-rating mb-4">
+                <span *ngFor="let in of range(1, product.rating)">
+                    <i class="fas fa-star" style="color: cornflowerblue"> </i>
+                </span>
+                <span *ngFor="let in of range(product.rating, 6)">
+                    <i class="fas fa-star" style="color: gray"> </i>
+                </span>
+                <span class="product-reviews pl-2"><a href="#reviews-start">Customer Reviews</a>&nbsp;(<span id="review-count">0</span>)</span>
+            </span>
+  
+            <h6 class="mt-2">Summary</h6>
+            <p>{{ product.summary }}</p>
+            <h6>Description</h6>
+            <p>{{ product.description }}</p>
+            <h4 class="price pt-2 pb-4 item-price">
+              <span *ngIf="product.onSale" class="price">
+                <del>{{ product.price | currency }}</del> &minus; {{ product.salePrice | currency }}
+              </span>
+              <span *ngIf="!product.onSale" class="price">
+                {{ product.price | currency }}
+              </span>
+              <span *ngIf="product.inStock" class="alert alert-success">In Stock</span>
+              <span *ngIf="!product.inStock" class="alert alert-danger">Out of Stock | In stock in {{ product.timeToStock } days</span>
+            </h4>
+  
+            <!--app-shopping-cart-add [pid]="product.id" [inStock]="product.inStock"></app-shopping-cart-add-->
+  
+          </div>
+
+          <span id="reviews-start"></span>
+          <div class="product-reviews rows">
+            <h4>Customer Reviews</h4>
+            <div class="review-data"></div>
+          </div>
+  
+        </div>
+  
+        <!--p>
+          <button (click)="gotoProducts(product)">Back</button>
+        </p-->
+  
+      </div>
+  
+    </div>
+  
+  
+  </div>
+  
