@@ -62,7 +62,7 @@
                 <span *ngFor="let in of range(product.rating, 6)">
                     <i class="fas fa-star" style="color: gray"> </i>
                 </span>
-                <span class="product-reviews pl-2"><a href="#reviews-start">Customer Reviews</a>&nbsp;(<span id="review-count">0</span>)</span>
+                <span class="product-reviews pl-2"><a [routerLink]="[]" fragment="reviews">Customer Reviews</a>&nbsp;<app-product-review-count [pid]="product.id"></app-product-review-count></span>
             </span>
   
             <h6 class="mt-2">Summary</h6>
@@ -77,18 +77,15 @@
                 {{ product.price | currency }}
               </span>
               <span *ngIf="product.inStock" class="alert alert-success">In Stock</span>
-              <span *ngIf="!product.inStock" class="alert alert-danger">Out of Stock | In stock in {{ product.timeToStock } days</span>
+              <span *ngIf="!product.inStock" class="alert alert-danger">Out of Stock | In stock in {{ product.timeToStock }} days</span>
             </h4>
   
             <!--app-shopping-cart-add [pid]="product.id" [inStock]="product.inStock"></app-shopping-cart-add-->
   
           </div>
 
-          <span id="reviews-start"></span>
-          <div class="product-reviews rows">
-            <h4>Customer Reviews</h4>
-            <div class="review-data"></div>
-          </div>
+          <span id="reviews"></span>
+          <app-product-reviews [pid]="product.id"></app-product-reviews>
   
         </div>
   

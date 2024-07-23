@@ -26,7 +26,6 @@ export class ProductsComponent implements OnInit {
     this.route.queryParamMap.subscribe(params => {
       const keywordsParam = params.get('keywords');
       if (keywordsParam != null) {
-        console.log("keywordsParam=%s", keywordsParam);
         this.keywordsInput = keywordsParam;
         this.search(keywordsParam);
       }

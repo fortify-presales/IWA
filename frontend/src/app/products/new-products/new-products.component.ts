@@ -30,9 +30,6 @@ export class NewProductsComponent implements OnInit {
 
   gotoProducts(product: Product) {
     const productId = product ? product.id : null;
-    // Pass along the product id if available
-    // so that the ProductList component can select that hero.
-    // Include a junk 'foo' property for fun.
     this.router.navigate(['/products', { id: productId, foo: 'foo' }]);
   }
 
