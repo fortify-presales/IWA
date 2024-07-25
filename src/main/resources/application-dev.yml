@@ -15,20 +15,6 @@ spring:
   main:
     allow-bean-definition-overriding: true
     banner-mode: "off"
-  thymeleaf:
-    cache: false
-    check-template: true
-    check-template-location: true
-    enabled: true
-    encoding: UTF-8
-    # excluded-view-names:
-    mode: HTML
-    prefix: classpath:/templates/
-    suffix: .html
-    # template-resolver-order:
-    # view-names:
-    servlet:
-      content-type: text/html
   datasource:
     # h2 database
     driver-class-name: org.h2.Driver

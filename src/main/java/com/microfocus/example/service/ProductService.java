@@ -34,13 +34,6 @@ import com.microfocus.example.repository.OrderRepository;
 import com.microfocus.example.repository.ProductRepository;
 import com.microfocus.example.repository.ReviewRepository;
 import com.microfocus.example.repository.UserRepository;
-import com.microfocus.example.web.form.NewReviewForm;
-import com.microfocus.example.web.form.OrderForm;
-import com.microfocus.example.web.form.ReviewForm;
-import com.microfocus.example.web.form.admin.AdminNewProductForm;
-import com.microfocus.example.web.form.admin.AdminOrderForm;
-import com.microfocus.example.web.form.admin.AdminProductForm;
-import com.microfocus.example.web.form.admin.AdminReviewForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,44 +150,6 @@ public class ProductService {
         return productRepository.save(ptmp);
     }
 
-    public Product saveProductFromAdminProductForm(AdminProductForm adminProductForm) throws ProductNotFoundException {
-        Optional<Product> optionalProduct = productRepository.findByCode(adminProductForm.getCode());
-        if (optionalProduct.isPresent()) {
-            Product ptmp = optionalProduct.get();
-            ptmp.setName(adminProductForm.getName());
-            ptmp.setSummary(adminProductForm.getSummary());
-            ptmp.setDescription(adminProductForm.getDescription());
-            ptmp.setImage(adminProductForm.getImage());
-            ptmp.setPrice(adminProductForm.getPrice());
-            ptmp.setOnSale(adminProductForm.getOnSale());
-            ptmp.setSalePrice(adminProductForm.getSalePrice());
-            ptmp.setInStock(adminProductForm.getInStock());
-            ptmp.setTimeToStock(adminProductForm.getTimeToStock());
-            ptmp.setRating(adminProductForm.getRating());
-            ptmp.setAvailable(adminProductForm.getAvailable());
-            return productRepository.save(ptmp);
-        } else {
-            throw new ProductNotFoundException("Product not found: " + adminProductForm.getCode());
-        }
-    }
-
-    public Product newProductFormAdminNewProductForm(AdminNewProductForm productForm) {
-        Product ptmp = new Product();
-        ptmp.setCode(productForm.getCode());
-        ptmp.setName(productForm.getName());
-        ptmp.setSummary(productForm.getSummary());
-        ptmp.setDescription(productForm.getDescription());
-        ptmp.setPrice(productForm.getPrice());
-        ptmp.setOnSale(productForm.getOnSale() != null ? productForm.getOnSale() : false);
-        ptmp.setSalePrice(productForm.getSalePrice());
-        ptmp.setInStock(productForm.getInStock() != null ? productForm.getInStock() : false);
-        ptmp.setTimeToStock(productForm.getTimeToStock());
-        ptmp.setImage(productForm.getImage());
-        ptmp.setAvailable(productForm.getAvailable() != null ? productForm.getAvailable() : false);
-        Product newProduct = productRepository.save(ptmp);
-        return newProduct;
-    }
-
     //
     // Reviews
     //
@@ -241,46 +196,6 @@ public class ProductService {
         reviewRepository.deleteById(id);
     }
 
-    public Review saveReviewFromAdminReviewForm(AdminReviewForm adminReviewForm) throws ReviewNotFoundException {
-        Optional<Review> optionalReview = reviewRepository.findById(adminReviewForm.getId());
-        if (optionalReview.isPresent()) {
-            Review rtmp = optionalReview.get();
-            rtmp.setComment(adminReviewForm.getComment());
-            rtmp.setRating(adminReviewForm.getRating());
-            rtmp.setVisible(adminReviewForm.getVisible());
-            return rtmp;
-        } else {
-            throw new ReviewNotFoundException("Review not found: " + adminReviewForm.getId());
-        }
-    }
-
-    public Review newReviewFromNewReviewForm(NewReviewForm newReviewForm) {
-        Review rtmp = new Review();
-        Optional<User> optionalUser = userRepository.findById(newReviewForm.getUserId());
-        if (!optionalUser.isPresent()) throw new UserNotFoundException("Cannot find user for product review.");
-        Optional<Product> optionalProduct = productRepository.findById(newReviewForm.getProductId());
-        if (!optionalProduct.isPresent()) throw new ProductNotFoundException("Cannot find product for product review");
-        rtmp.setProduct(optionalProduct.get());
-        rtmp.setUser(optionalUser.get());
-        rtmp.setComment(newReviewForm.getComment());
-        rtmp.setRating(newReviewForm.getRating());
-        rtmp.setReviewDate(newReviewForm.getReviewDate());
-        rtmp.setVisible(newReviewForm.getVisible());
-        return reviewRepository.save(rtmp);
-    }
-
-    public Review saveReviewFromUserReviewForm(ReviewForm reviewForm) throws ReviewNotFoundException {
-        Optional<Review> optionalReview = reviewRepository.findById(reviewForm.getId());
-        if (optionalReview.isPresent()) {
-            Review rtmp = optionalReview.get();
-            rtmp.setComment(reviewForm.getComment());
-            rtmp.setRating(reviewForm.getRating());
-            return reviewRepository.save(rtmp);
-        } else {
-            throw new ReviewNotFoundException("Review not found: " + reviewForm.getId());
-        }
-    }
-
     public Review saveReviewFromApi(UUID reviewId, ReviewRequest review) {
         Review rtmp = new Review();
         // are we creating a new review or updating an existing review?
@@ -311,22 +226,6 @@ public class ProductService {
     // Orders
     //
 
-    public Order newOrderFromOrderForm(OrderForm orderForm) {
-        Order otmp = new Order();
-        otmp.setUser(orderForm.getUser());
-        otmp.setCart(orderForm.getCart());
-        otmp.setAmount(orderForm.getAmount());
-        otmp.setOrderDate(new Date());
-        Random r = new Random();
-        int low = 10;
-        int high = 100;
-        int result = r.nextInt(high-low) + low;
-        String formatted = String.format("%03d", result);
-        otmp.setOrderNum("OID-P100-"+formatted);
-        Order newOrder = orderRepository.saveAndFlush(otmp);
-        return newOrder;
-    }
-
     public Optional<Order> findOrderById(UUID id) {
         return orderRepository.findById(id);
     }
@@ -346,22 +245,6 @@ public class ProductService {
 
     public void deleteOrderById(UUID id) {
         orderRepository.deleteById(id);
-    }
-
-    public Order saveOrderFromAdminOrderForm(AdminOrderForm adminOrderForm) throws OrderNotFoundException {
-        Optional<Order> optionalOrder = orderRepository.findById(adminOrderForm.getId());
-        if (optionalOrder.isPresent()) {
-            Order otmp = optionalOrder.get();
-            otmp.setOrderNum(adminOrderForm.getOrderNum());
-            otmp.setOrderDate(adminOrderForm.getOrderDate());
-            otmp.setAmount(adminOrderForm.getAmount());
-            otmp.setCart(adminOrderForm.getCart());
-            otmp.setShipped(adminOrderForm.getShipped());
-            otmp.setShippedDate(adminOrderForm.getShippedDate());
-            return otmp;
-        } else {
-            throw new ProductNotFoundException("Order not found: " + adminOrderForm.getOrderNum());
-        }
     }
 
     public boolean orderExistsById(UUID id) {

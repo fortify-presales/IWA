@@ -22,7 +22,6 @@ package com.microfocus.example.repository;
 import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.Order;
 import com.microfocus.example.entity.Product;
-import com.microfocus.example.web.form.MessageForm;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,9 +47,6 @@ public interface OrderRepositoryCustom {
 
     List<Order> findOrdersByKeywords(String keywords, int offset, int limit);
 
-
     //public Order save(OrderRequest order);
-
-    //public Order save(OrderForm order);
 
 }

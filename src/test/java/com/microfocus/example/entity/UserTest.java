@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
 
 import org.junit.jupiter.api.Test;
@@ -22,18 +21,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.microfocus.example.entity.Authority;
-import com.microfocus.example.entity.CustomUserDetails;
-import com.microfocus.example.entity.User;
-
 class UserTest {
     /**
      * Method under test: {@link User#passwordEncoder()}
      */
-    @Ignore("TODO: Complete this test.")					
     @Test
     void testPasswordEncoder() {
-        //assertFalse((new User()).passwordEncoder().upgradeEncoding("secret"));
+        assertFalse((new User()).passwordEncoder().upgradeEncoding("secret"));
     }
 
     /**

@@ -3,7 +3,6 @@ package com.microfocus.example.service;
 import com.microfocus.example.BaseIntegrationTest;
 import com.microfocus.example.DataSeeder;
 import com.microfocus.example.entity.Product;
-import com.microfocus.example.web.form.admin.AdminProductForm;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;

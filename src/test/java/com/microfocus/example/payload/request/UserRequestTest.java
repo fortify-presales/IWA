@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.microfocus.example.entity.User;
-import com.microfocus.example.payload.request.UserRequest;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -14,17 +13,15 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.UUID;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
 class UserRequestTest {
     /**
      * Method under test: {@link UserRequest#passwordEncoder()}
      */
-    @Ignore("TODO: Complete this test.")					
     @Test
     void testPasswordEncoder() {
-        //assertFalse((new UserRequest()).passwordEncoder().upgradeEncoding("secret"));
+        assertFalse((new UserRequest()).passwordEncoder().upgradeEncoding("secret"));
     }
 
     /**

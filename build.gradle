@@ -2,21 +2,24 @@ plugins {
     id 'java'
     id 'maven-publish'
     id "org.springframework.boot" version "2.7.17"
+    id 'com.github.node-gradle.node' version '7.0.2'
+
 }
 
 ext {
     springBootVersion = '2.7.17'
     springSecurityVersion = '3.0.4.RELEASE'
     jacksonVersion = '2.13.0'
-    tymeleafLayoutDialectVersion = '3.2.1'
-    itextVersion = '7.2.5'
     springdocOpenApiVersion = '1.7.0'
     junitVersion = '4.12'
     junitJupiterVersion = '5.7.0'
     junitPlatformVersion = '1.7.1'
-    seleniumVersion = '4.21.0'
     mockitoVersion = '4.11.0'
-    log4jVersion = '2.4.13'
+}
+
+node {
+    download.set(true)
+    version.set('20.15.1')
 }
 
 repositories {
@@ -28,24 +31,15 @@ repositories {
 
 dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-security:${springBootVersion}"
-    implementation "org.thymeleaf.extras:thymeleaf-extras-springsecurity5:${springSecurityVersion}"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-mail:${springBootVersion}"
-    implementation "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:${tymeleafLayoutDialectVersion}"
     implementation "org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
     implementation "org.apache.commons:commons-email:1.4"
     implementation "com.google.guava:guava:30.1.1-jre"
     implementation "com.h2database:h2:1.4.197"
-    implementation "com.itextpdf:itext7-core:${itextVersion}"
     implementation "org.passay:passay:1.5.0"
-    implementation "org.webjars:bootstrap:4.5.3"
-    implementation "org.webjars:jquery:3.5.1"
-    implementation "org.webjars:font-awesome:5.15.2"
-    implementation "org.webjars:chartjs:2.9.4"
-    implementation "org.webjars.npm:axios:0.21.1"
     implementation "org.springdoc:springdoc-openapi-ui:${springdocOpenApiVersion}"
     implementation "org.springdoc:springdoc-openapi-security:${springdocOpenApiVersion}"
     implementation "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
@@ -60,9 +54,10 @@ dependencies {
     implementation "org.apache.maven.wagon:wagon-http:3.4.1"
     implementation "com.github.cliftonlabs:json-simple:2.3.1"
     implementation "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-log4j2"
     implementation "org.apache.tika:tika-core:1.18"
     implementation "org.json:json:20201115"
-    implementation "org.springframework.boot:spring-boot-starter-log4j2:${log4jVersion}"
+    implementation(platform("org.apache.logging.log4j:log4j-bom:2.17.1"))
     modules {
         module("org.springframework.boot:spring-boot-starter-logging") {
             replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
@@ -79,14 +74,10 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
     testImplementation "org.junit.jupiter:junit-jupiter-params:${junitJupiterVersion}"
     testImplementation "org.junit.platform:junit-platform-engine:${junitPlatformVersion}"
-    testImplementation "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
-    testImplementation "org.seleniumhq.selenium:selenium-java:${seleniumVersion}"
-    //#testImplementation "org.mockito:mockito-inline:${mockitoVersion}"
-    //testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitJupiterVersion}"
     testRuntimeOnly "org.junit.platform:junit-platform-commons:${junitPlatformVersion}"
-   // testRuntimeOnly "org.codehaus.groovy:groovy:3.0.8"
+    testRuntimeOnly "org.codehaus.groovy:groovy:3.0.8"
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -111,15 +102,13 @@ project.archivesBaseName = 'iwa'
 group = 'com.microfocus.example'
 version = '1.0'
 description = 'IWA (Insecure Web App) Pharmacy Direct - an insecure web application for use in Fortify demonstrations'
-// A JDK 1.8 is needed if the WebInspect Runtime Agent is being used
-//sourceCompatibility = JavaVersion.VERSION_1_8
-//targetCompatibility = JavaVersion.VERSION_1_8
+
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 sourceSets {
     main {
-        java.srcDirs = ['src/main/java','src/iac']
+        java.srcDirs = ['src/main/java','src/main/webapp','src/main/iac']
         resources.srcDirs= ['src/main/resources']
     }
     test {
@@ -137,7 +126,7 @@ publishing {
 }
 
 tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
+    //options.encoding = 'UTF-8'
 }
 
 test {
@@ -168,4 +157,21 @@ task writeClasspath() {
         new File(buildDir, "classpath.txt").text = files.collect { it.path }.join(';')
         //files.forEach{ f -> print("$f.path;")}
     }
+}
+
+task npmRunBuild(type: NpmTask) {
+    args = ['run', 'build']
+    dependsOn npmInstall
+
+    inputs.files(fileTree('node_modules'))
+    inputs.files(fileTree('src/main/webapp'))
+    inputs.file('angular.json')
+    inputs.file('package.json')
+    inputs.file('tsconfig.json')
+    inputs.file('tsconfig.app.json')
+    outputs.dir(layout.buildDirectory.dir('resources/main/static'))
+}
+
+processResources {
+    dependsOn npmRunBuild
 }

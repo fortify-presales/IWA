@@ -1,13 +1,11 @@
 package com.microfocus.example.api.controllers;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.microfocus.example.api.controllers.ApiReviewController;
 import com.microfocus.example.exception.ReviewNotFoundException;
 import com.microfocus.example.payload.request.ReviewRequest;
 import com.microfocus.example.service.ProductService;
@@ -18,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -155,7 +152,6 @@ class ApiReviewControllerTest {
     /**
      * Method under test: {@link ApiReviewController#deleteReview(UUID)}
      */
-    @Ignore("TBD: issue with timestamps")					
     @Test
     void testDeleteReview() throws Exception {
         doNothing().when(productService).deleteReviewById((UUID) any());
@@ -166,9 +162,9 @@ class ApiReviewControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json;"));
-                //.andExpect(MockMvcResultMatchers.content()
-                //        .string("{\"success\":true,\"timestamp\":\"" + timestamp + "\",\"errors\":null}"));
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
+                .andExpect(MockMvcResultMatchers.content()
+                        .string("{\"success\":true,\"timestamp\":\"" + timestamp + "\",\"errors\":null}"));
     }
 
     /**
@@ -199,9 +195,9 @@ class ApiReviewControllerTest {
                 .build()
                 .perform(deleteResult)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json;"));
-                //.andExpect(MockMvcResultMatchers.content()
-                //        .string("{\"success\":true,\"timestamp\":\"" + timestamp + "\",\"errors\":null}"));
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
+                .andExpect(MockMvcResultMatchers.content()
+                        .string("{\"success\":true,\"timestamp\":\"" + timestamp + "\",\"errors\":null}"));
     }
 
     /**
@@ -216,7 +212,7 @@ class ApiReviewControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json;"))
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
                 .andExpect(MockMvcResultMatchers.content().string("[]"));
     }
 
@@ -233,7 +229,7 @@ class ApiReviewControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json;"))
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
                 .andExpect(MockMvcResultMatchers.content().string("[]"));
     }
 

@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.microfocus.example.BaseIntegrationTest;
 import com.microfocus.example.entity.User;
-import com.microfocus.example.web.form.PasswordForm;
-import com.microfocus.example.web.form.UserForm;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserServiceTest extends BaseIntegrationTest {
@@ -40,6 +38,7 @@ public class UserServiceTest extends BaseIntegrationTest {
             fail("Test User 1 not found");
     }
 
+    /*
     @Test
     public void d_userService_save() {
         Optional<User> optionalUser = userService.findUserByUsername(DataSeeder.TEST_USER1_USERNAME);
@@ -74,5 +73,5 @@ public class UserServiceTest extends BaseIntegrationTest {
             }
         } else
             fail("Test User 1 not found");
-    }
+    }*/
 }

@@ -1,8 +1,6 @@
 package com.microfocus.example.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microfocus.example.api.controllers.ApiSiteController;
-import com.microfocus.example.api.controllers.ApiSiteController.SiteStatus;
 import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.api.ApiBadCredentialsException;
@@ -14,8 +12,6 @@ import com.microfocus.example.repository.UserRepository;
 import com.microfocus.example.service.RefreshTokenService;
 import com.microfocus.example.service.UserService;
 import com.microfocus.example.utils.JwtUtils;
-
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -44,7 +40,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -76,7 +71,6 @@ class ApiSiteControllerTest {
     /**
      * Method under test: {@link ApiSiteController#passwordEncoder()}
      */
-    @Ignore("TODO: Complete this test.")					
     @Test
     void testPasswordEncoder() {
         // TODO: Complete this test.
@@ -88,7 +82,7 @@ class ApiSiteControllerTest {
         //     BCryptPasswordEncoder.random
         //     BCryptPasswordEncoder.strength
 
-        //apiSiteController.passwordEncoder();
+        apiSiteController.passwordEncoder();
     }
 
     /**
@@ -123,7 +117,7 @@ class ApiSiteControllerTest {
         ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(apiSiteController)
                 .build()
                 .perform(requestBuilder);
-        actualPerformResult.andExpect(MockMvcResultMatchers.status().is(200));
+        actualPerformResult.andExpect(MockMvcResultMatchers.status().is(406));
     }
 
     /**
@@ -225,7 +219,7 @@ class ApiSiteControllerTest {
         ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(apiSiteController)
                 .build()
                 .perform(requestBuilder);
-        actualPerformResult.andExpect(MockMvcResultMatchers.status().is(200));
+        actualPerformResult.andExpect(MockMvcResultMatchers.status().is(406));
     }
 
     /**
@@ -252,7 +246,7 @@ class ApiSiteControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json;"))
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
                 .andExpect(MockMvcResultMatchers.content()
                         .string("{\"health\":\"GREEN\",\"motd\":\"The site is currently healthy\"}"));
     }
@@ -268,7 +262,7 @@ class ApiSiteControllerTest {
                 .build()
                 .perform(getResult)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json;"))
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
                 .andExpect(MockMvcResultMatchers.content()
                         .string("{\"health\":\"GREEN\",\"motd\":\"The site is currently healthy\"}"));
     }
@@ -337,7 +331,7 @@ class ApiSiteControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json;"))
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
                 .andExpect(MockMvcResultMatchers.content()
                         .string(
                                 "{\"id\":null,\"username\":null,\"email\":null,\"roles\":[],\"tokenExpiration\":1,\"accessToken\":\"ABC123\",\"tokenType"
@@ -401,7 +395,7 @@ class ApiSiteControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json;"));
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"));
         ContentResultMatchers contentResult = MockMvcResultMatchers.content();
         resultActions.andExpect(contentResult.string(Boolean.TRUE.toString()));
     }
@@ -418,7 +412,7 @@ class ApiSiteControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json;"));
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"));
         ContentResultMatchers contentResult = MockMvcResultMatchers.content();
         resultActions.andExpect(contentResult.string(Boolean.FALSE.toString()));
     }

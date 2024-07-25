@@ -35,10 +35,6 @@ import com.microfocus.example.repository.RoleRepository;
 import com.microfocus.example.repository.UserRepository;
 import com.microfocus.example.utils.EncryptedPasswordUtils;
 import com.microfocus.example.utils.UserUtils;
-import com.microfocus.example.web.form.*;
-import com.microfocus.example.web.form.admin.AdminNewUserForm;
-import com.microfocus.example.web.form.admin.AdminPasswordForm;
-import com.microfocus.example.web.form.admin.AdminUserForm;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
@@ -130,11 +126,6 @@ public class UserService {
         return userRepository.existsById(id);
     }
 
-    public User registerUser(RegisterUserForm newUser) throws UsernameTakenException, EmailAddressTakenException {
-        User u = _registerUser(newUser.getUsername(), newUser.getEmail(), newUser.getFirstName(), newUser.getLastName(), newUser.getPassword(), newUser.getPhone());
-        return u;
-    }
-
     public RegisterUserResponse registerUser(RegisterUserRequest newUser) throws UsernameTakenException, EmailAddressTakenException {
         User u = _registerUser(newUser.getUsername(), newUser.getEmail(), newUser.getFirstName(), newUser.getLastName(), newUser.getPassword(), newUser.getPhone());
         RegisterUserResponse registeredUser = new RegisterUserResponse(u.getUsername(), u.getPassword(),
@@ -220,104 +211,6 @@ public class UserService {
         }
     }
 
-    public User saveUserFromUserForm(UserForm userForm) throws InvalidPasswordException, UserNotFoundException {
-        Optional<User> optionalUser = userRepository.findUserByUsername(userForm.getUsername());
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            if (!EncryptedPasswordUtils.matches(userForm.getPassword(), user.getPassword())) {
-                throw new InvalidPasswordException("Password is incorrect");
-            }
-            user.setFirstName(userForm.getFirstName());
-            user.setLastName(userForm.getLastName());
-            user.setEmail(userForm.getEmail());
-            user.setPhone(userForm.getPhone());
-            user.setAddress(userForm.getAddress());
-            user.setCity(userForm.getCity());
-            user.setState(userForm.getState());
-            user.setZip(userForm.getZip());
-            user.setCountry(userForm.getCountry());
-            user.setMfa(userForm.getMfa());
-            return userRepository.saveAndFlush(user);
-        } else {
-            throw new UserNotFoundException("Username not found: " + userForm.getUsername());
-        }
-    }
-
-    public User saveUserFromAdminUserForm(AdminUserForm adminUserForm) throws UserNotFoundException {
-        Optional<User> optionalUser = userRepository.findUserByUsername(adminUserForm.getUsername());
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            user.setId(adminUserForm.getId());
-            user.setUsername(adminUserForm.getUsername());
-            user.setFirstName(adminUserForm.getFirstName());
-            user.setLastName(adminUserForm.getLastName());
-            user.setEmail(adminUserForm.getEmail());
-            user.setPhone(adminUserForm.getPhone());
-            user.setAddress(adminUserForm.getAddress());
-            user.setCity(adminUserForm.getCity());
-            user.setState(adminUserForm.getState());
-            user.setZip(adminUserForm.getZip());
-            user.setCountry(adminUserForm.getCountry());
-            user.setEnabled(adminUserForm.getEnabled());
-            user.setMfa(adminUserForm.getMfa());
-            return userRepository.saveAndFlush(user);
-        } else {
-            throw new UserNotFoundException("Username not found: " + adminUserForm.getUsername());
-        }
-    }
-
-    public User updateUserPasswordFromPasswordForm(UUID id, PasswordForm passwordForm) {
-        if (passwordForm.getPassword().equals(passwordForm.getConfirmPassword())) {
-            Optional<User> optionalUser = userRepository.findById(id);
-            if (optionalUser.isPresent()) {
-                User user = optionalUser.get();
-                user.setPassword(EncryptedPasswordUtils.encryptPassword(passwordForm.getPassword()));
-                return user;
-            } else {
-                throw new UserNotFoundException("Username not found: " + passwordForm.getUsername());
-            }
-        } else {
-            throw new InvalidPasswordException("Password and Confirm Password fields do not match");
-        }
-    }
-
-    public User updateUserPasswordFromAdminPasswordForm(UUID id, AdminPasswordForm adminPasswordForm) {
-        if (adminPasswordForm.getPassword().equals(adminPasswordForm.getConfirmPassword())) {
-            Optional<User> optionalUser = userRepository.findById(id);
-            if (optionalUser.isPresent()) {
-                User user = optionalUser.get();
-                user.setPassword(EncryptedPasswordUtils.encryptPassword(adminPasswordForm.getPassword()));
-                return user;
-            } else {
-                throw new UserNotFoundException("Username not found: " + adminPasswordForm.getUsername());
-            }
-        } else {
-            throw new InvalidPasswordException("Password and Confirm Password fields do not match");
-        }
-    }
-
-    public User addUserFromAdminNewUserForm(AdminNewUserForm adminNewUserForm) {
-        Set<Authority> authorities = new HashSet<Authority>();
-        authorities.add(roleRepository.findByName("ROLE_USER").get());
-        User utmp = new User();
-        utmp.setUsername(adminNewUserForm.getUsername());
-        utmp.setFirstName(adminNewUserForm.getFirstName());
-        utmp.setLastName(adminNewUserForm.getLastName());
-        utmp.setPassword(EncryptedPasswordUtils.encryptPassword(adminNewUserForm.getPassword()));
-        utmp.setEmail(adminNewUserForm.getEmail());
-        utmp.setPhone(adminNewUserForm.getPhone());
-        utmp.setAddress(adminNewUserForm.getAddress());
-        utmp.setCity(adminNewUserForm.getCity());
-        utmp.setState(adminNewUserForm.getState());
-        utmp.setZip(adminNewUserForm.getZip());
-        utmp.setCountry(adminNewUserForm.getCountry());
-        utmp.setEnabled(adminNewUserForm.getEnabled());
-        utmp.setMfa(adminNewUserForm.getMfa());
-        utmp.setDateCreated(new Date());
-        utmp.setAuthorities(authorities);
-        return userRepository.saveAndFlush(utmp);
-    }
-
     //
     // User Roles
     //
@@ -375,10 +268,6 @@ public class UserService {
     }
 
     public Message saveMessage(Message message) {
-        return messageRepository.save(message);
-    }
-
-    public Message saveMessage(MessageForm message) {
         return messageRepository.save(message);
     }
 
@@ -443,10 +332,6 @@ public class UserService {
     }
 
     /*
-    public Message saveOrder(MessageForm message) {
-        return messageRepository.save(message);
-    }
-
 
     public Message saveMessageFromApi(UUID messageId, MessageRequest message) throws MessageNotFoundException, UserNotFoundException {
         Message mtmp = new Message();

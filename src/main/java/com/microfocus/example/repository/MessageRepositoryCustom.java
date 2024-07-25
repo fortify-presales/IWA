@@ -22,7 +22,6 @@ package com.microfocus.example.repository;
 import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.Product;
 import com.microfocus.example.payload.request.MessageRequest;
-import com.microfocus.example.web.form.MessageForm;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +42,5 @@ public interface MessageRepositoryCustom {
     public void markMessageAsReadById(UUID messageId);
 
     //public Message save(MessageRequest message);
-
-    public Message save(MessageForm message);
 
 }

@@ -1,0 +1,147 @@
+<div class="site-navbar py-2">
+
+    <div class="search-wrap">
+      <div class="container">
+        <a href="#" class="search-close js-search-close"><span class="icon-close2"></span></a>
+        <form action="/products" method="GET">
+          <input type="text" class="form-control" name="keywords" id="nav-keywords" placeholder="Search keyword(s) and hit enter...">
+        </form>
+      </div>
+    </div>
+  
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="logo">
+          <div class="site-logo">
+            <a class="navbar-brand js-logo-clone" href="/">
+              <img src="/assets/img/logo.png" alt="IWA Pharmacy Direct">
+            </a>
+          </div>
+        </div>
+        <div class="main-nav d-none d-lg-block">
+          <nav class="site-navigation text-right text-md-center" role="navigation">
+            <ul class="site-menu js-clone-nav d-none d-lg-block">
+              <li class="has-children">
+                <a [routerLink]="'/products'" routerLinkActive="active">Shop</a>
+                <ul class="dropdown">
+                  <li class="has-children">
+                    <a [routerLink]="'/products'">Health &amp; wellbeing</a>
+                    <ul class="dropdown">
+                      <li><a [routerLink]="'/products'">First aid</a></li>
+                      <li><a [routerLink]="'/products'">Health conditions</a></li>
+                      <li><a [routerLink]="'/products'">Stop smoking</a></li>
+                    </ul>
+                  </li>
+                  <li class="has-children">
+                    <a [routerLink]="'/products'">Medicines &amp; treatments</a>
+                    <ul class="dropdown">
+                      <li><a [routerLink]="'/products'">Allergy &amp; hayfever</a></li>
+                      <li><a [routerLink]="'/products'">Children's medicines</a></li>
+                      <li><a [routerLink]="'/products'">Cough, cold &amp; flu</a></li>
+                      <li><a [routerLink]="'/products'">Pain relief</a></li>
+                    </ul>
+                  </li>
+                  <li class="has-children">
+                    <a [routerLink]="'/products'">Vitamins &amp; supplements</a>
+                    <ul class="dropdown">
+                      <li><a [routerLink]="'/products'">Everyday vitamins &amp; supplements</a></li>
+                      <li><a [routerLink]="'/products'">Children's vitamins &amp; supplements</a></li>
+                      <li><a [routerLink]="'/products'">Mens supplements</a></li>
+                      <li><a [routerLink]="'/products'">Womens supplements</a></li>
+                    </ul>
+                  </li>
+                  <li><a [routerLink]="'/products'">Weight management</a></li>
+                  <li><a [routerLink]="'/products'">Toiletries</a></li>
+                </ul>
+              </li>
+              <li class="has-children">
+                <a [routerLink]="'/prescriptions'">Prescriptions</a>
+                <ul class="dropdown">
+                  <li>
+                    <a [routerLink]="'/prescriptions'">One-off prescriptions</a>
+                    <a [routerLink]="'/prescriptions'">Repeat prescriptions</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="has-children">
+                <a [routerLink]="'/services'">Services</a>
+                <ul class="dropdown">
+                  <li>
+                    <a [routerLink]="'/services'">Flu vaccinations</a>
+                    <a [routerLink]="'/services'">Stop smoking</a>
+                    <a [routerLink]="'/services'">Travel vaccinations</a>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <a [routerLink]="'/advice'">Advice</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+  
+        <div class="site-top-icons">
+          <ul>
+            <li>
+              <a href="#" class="icons-btn d-inline-block js-search-open">
+                <span class="icon-search"></span>
+              </a>
+            </li>
+            <li>
+              <div class="has-children">
+                <a *ngIf="!isLoggedIn" [routerLink]="'/login'"  class="icons-menu d-inline-block">
+                  <span class="icon-account_circle"></span>
+                  <span class="my-account-text">My Account</span>
+                </a>
+                <ul *ngIf="!isLoggedIn" class="dropdown">
+                  <li>
+                    <a [routerLink]="'/login'">
+                      <i class="fas fa-sign-in-alt fa-fw"></i> Login
+                    </a>
+                  </li>
+                  <li>
+                    <a class="nav-link" target="_blank" href="{{ apiDocsUrl }}">
+                      <i class="fas fa-code fa-fw"></i> API Explorer
+                    </a>
+                  </li>
+                </ul>
+                <a *ngIf="isLoggedIn" [routerLink]="'/profile'" class="icons-menu d-inline-block">
+                  <span class="icon-account_circle"></span>
+                  <span class="my-account-text">{{ username }}</span>
+                </a>
+                <ul *ngIf="isLoggedIn" class="dropdown">
+                  <li>
+                    <a [routerLink]="'/profile'"><i class="fas fa-home fa-fw"></i> Profile </a>
+                  </li>
+                  <li>
+                    <a class="nav-link" target="_blank" href="{{apiDocsUrl}}"><i class="fas fa-code fa-fw"></i> API Explorer </a>
+                  </li>
+                  <li *ngIf="isLoggedIn">
+                    <a class="nav-link" (click)="logout()"><i class="fas fa-sign-out-alt fa-fw"></i> Logout </a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li>
+              <a [routerLink]="['/cart']" class="icons-btn d-inline-block bag">
+                <span class="icon-shopping-bag"></span>
+                <!--app-shopping-cart-count
+                  [count]="cartCount"
+                  (change)="cartCountChange($event)">
+                </app-shopping-cart-count-->
+              </a>
+            </li>
+            <li>
+              <a href="#" class="site-menu-toggle js-menu-toggle ml-3 d-inline-block d-lg-none">
+                <span class="icon-menu"></span>
+              </a>
+            </li>
+          </ul>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+  
+  
+  

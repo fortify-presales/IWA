@@ -17,20 +17,6 @@ spring:
   main:
     allow-bean-definition-overriding: true
     banner-mode: "off"
-  thymeleaf:
-    cache: false
-    check-template: true
-    check-template-location: true
-    enabled: true
-    encoding: UTF-8
-    # excluded-view-names:
-    mode: HTML
-    prefix: classpath:/templates/
-    suffix: .html
-    # template-resolver-order:
-    # view-names:
-    servlet:
-      content-type: text/html
   datasource:
     # h2 database
     driver-class-name: org.h2.Driver
@@ -50,6 +36,8 @@ spring:
 #    favicon:
 #      enabled: false
     throw-exception-if-no-handler-found: true
+  thymeleaf:
+    check-template-location: false  
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
@@ -77,6 +65,7 @@ springdoc:
   api-docs:
     path: /v3/api-docs
   swagger-ui:
+#    use-root-path: true
 #    url: /v3/api-docs
     path: /swagger-ui.html
     display-request-duration: true

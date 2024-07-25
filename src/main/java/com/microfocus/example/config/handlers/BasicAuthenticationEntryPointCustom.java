@@ -61,7 +61,7 @@ public class BasicAuthenticationEntryPointCustom extends BasicAuthenticationEntr
                 .withErrors(errors)
                 .build();
         ResponseEntity<ApiStatusResponse> apiError = new ResponseEntity<ApiStatusResponse>(apiStatusResponse, HttpStatus.UNAUTHORIZED);
-        response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         String jsonString = mapper.writeValueAsString(apiError.getBody());
