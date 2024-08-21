@@ -221,25 +221,13 @@ public class UserService {
     }
 
     public User saveUserFromUserForm(UserForm userForm) throws InvalidPasswordException, UserNotFoundException {
-        Optional<User> optionalUser = userRepository.findUserByUsername(userForm.getUsername());
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            if (!EncryptedPasswordUtils.matches(userForm.getPassword(), user.getPassword())) {
-                throw new InvalidPasswordException("Password is incorrect");
-            }
-            user.setFirstName(userForm.getFirstName());
-            user.setLastName(userForm.getLastName());
-            user.setEmail(userForm.getEmail());
-            user.setPhone(userForm.getPhone());
-            user.setAddress(userForm.getAddress());
-            user.setCity(userForm.getCity());
-            user.setState(userForm.getState());
-            user.setZip(userForm.getZip());
-            user.setCountry(userForm.getCountry());
-            user.setMfa(userForm.getMfa());
-            return userRepository.saveAndFlush(user);
+        if (userExistsById(userForm.getId())) {
+            userRepository.updateProfile(userForm.getId(), userForm.getFirstName(), userForm.getLastName(),
+                userForm.getEmail(), userForm.getPhone(), userForm.getAddress(), userForm.getCity(), 
+                userForm.getState(), userForm.getZip(), userForm.getCountry(), userForm.getMfa());
+            return userRepository.findById(userForm.getId()).get();
         } else {
-            throw new UserNotFoundException("Username not found: " + userForm.getUsername());
+            throw new UserNotFoundException("User with id: '" + userForm.getUsername() + "' not found");
         }
     }
 

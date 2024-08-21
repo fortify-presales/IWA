@@ -57,7 +57,7 @@ spring:
     default-encoding: UTF-8
     host: smtp.sendgrid.net
     username: apikey
-    password: # Enter SendGrid API Password here
+    password: # SendGrid API Password here
     port: 587
     test-connection: false
     debug: true
@@ -116,6 +116,6 @@ app:
     from-address: no-reply@iwa.onfortify.com
     from-name: IWAPharmacyDirect
   twilio:
-    phone-number: # Enter Twilio phone number
-    sid: # Enter Twilio account SID
-    auth-token: # Enter Twilio authentication token
+    phone-number: # Twilio phone number
+    sid: # Twilio account SID
+    auth-token: # Twilio authentication token

@@ -21,7 +21,6 @@ package com.microfocus.example.repository;
 
 import com.microfocus.example.entity.Authority;
 import com.microfocus.example.entity.AuthorityType;
-import com.microfocus.example.entity.Product;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.UserLockedOutException;
 import javax.persistence.Query;

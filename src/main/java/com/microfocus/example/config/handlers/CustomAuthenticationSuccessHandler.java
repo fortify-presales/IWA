@@ -127,8 +127,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                     targetUrl = targetUrl.replace("/verify", "");
                 } else if (targetPath.endsWith("/register")) {
                     targetUrl = targetUrl.replace("/register", "/");
-                } else if (targetPath.equals("/")) {
-                    targetUrl = targetUrl + "user";
+                } else if (targetPath.matches("\\/user\\/\\w*") || targetPath.equals("/")) {
+                    targetUrl = USER_HOME_URL;
                 }
 
             }

@@ -54,7 +54,7 @@ dependencies {
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names:${jacksonVersion}"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
-    implementation "com.twilio.sdk:twilio:8.17.0"
+    implementation "com.twilio.sdk:twilio:10.2.0"
     implementation "org.apache.httpcomponents:httpclient:4.5.12"
     implementation "io.jsonwebtoken:jjwt:0.9.1"
     implementation "org.apache.maven.wagon:wagon-http:3.4.1"

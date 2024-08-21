@@ -155,14 +155,14 @@ public class DefaultController extends AbstractBaseController{
         int otpNum = Integer.valueOf(optStr).intValue();
         // validate OTP "one-time-password" for user
         if (otpNum > 0) {
-            log.debug("Verifying otp '" + otp + "' of user with id: " + userId);
+            log.debug("Verifying OTP '{}' for user with id: {} ", otpNum, userId);
             int serverOtp = verificationService.getOtp(userId);
             if (serverOtp > 0) {
                 if (otpNum == serverOtp) {
-                    log.debug("User '" + userId + "' verified OTP successfully");
+                    log.debug("User '{}' verified OTP successfully", userId);
                     verificationService.clearOTP(userId);
                 } else {
-                    log.debug("User '" + userId + "' failed OTP verification");
+                    log.debug("User '{}' failed OTP verification", userId);
                     model.addAttribute("message", "Your OTP is incorrect, please try-again!");
                     model.addAttribute("alertClass", "alert-danger");
                     return "login_mfa";
@@ -175,6 +175,7 @@ public class DefaultController extends AbstractBaseController{
         }
         String jwtToken = jwtUtils.generateAndSetSession(request, response, authentication);
         String targetUrl = CustomAuthenticationSuccessHandler.getTargetUrl(request, response, authentication);
+        log.debug("Redirecting to {}", targetUrl);
         return "redirect:"+targetUrl;
     }
 

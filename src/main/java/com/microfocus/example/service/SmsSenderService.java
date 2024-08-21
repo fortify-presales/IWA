@@ -44,7 +44,7 @@ public class SmsSenderService {
     private String twilioAuthToken;
 
     public String sendSms(SMS sms) {
-        log.debug("Sending SMS to: " + sms.getTo());
+        log.debug("Sending SMS to: {}", sms.getTo());
 
         String smsFrom = System.getenv("TWILIO_PHONE_NUMBER");
         if (sms.getFrom() != null && !sms.getFrom().isEmpty())
@@ -59,7 +59,8 @@ public class SmsSenderService {
 
         Message message = Message.creator(new PhoneNumber(sms.getTo()),
                 new PhoneNumber(smsFrom), sms.getMessage()).create();
-
+        log.debug(message.getBody());
+        
         return message.getSid();
     }
 
