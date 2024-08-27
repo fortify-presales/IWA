@@ -2,6 +2,8 @@ package com.microfocus.example.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.Optional;
 
@@ -50,7 +52,10 @@ public class UserServiceTest extends BaseIntegrationTest {
             try {
                 userService.saveUserFromUserForm(userForm);
                 Optional<User> updatedUser = userService.findUserByUsername(DataSeeder.TEST_USER1_USERNAME);
-                updatedUser.ifPresent(user -> assertThat(user.getFirstName()).isEqualTo("Test User 1 Updated"));
+                updatedUser.ifPresent(user -> assertAll(
+                    () -> assertEquals("Test", user.getFirstName()),
+                    () -> assertEquals("User 1 Updated", user.getLastName()))
+                );
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }

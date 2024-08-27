@@ -1,9 +1,6 @@
 package com.microfocus.example.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microfocus.example.api.controllers.ApiSiteController;
-import com.microfocus.example.api.controllers.ApiSiteController.SiteStatus;
-import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.api.ApiBadCredentialsException;
 import com.microfocus.example.payload.request.LoginRequest;
@@ -18,13 +15,11 @@ import com.microfocus.example.utils.JwtUtils;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -45,7 +40,6 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 @ContextConfiguration(classes = {ApiSiteController.class})

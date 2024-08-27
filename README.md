@@ -63,7 +63,7 @@ installed and on your path.
 To build the application using Gradle, execute the following from the command line:
 
 ```PowerShell
-.\gradlew clean build -x test
+.\gradlew clean build
 ```
 
 ## Running the Application
@@ -166,10 +166,10 @@ This script runs a `sourceanalyzer` translation and scan on the project's source
 which you can open using the Fortify `auditworkbench` tool:
 
 ```PowerShell
-auditworkbench.cmd .\IWA-Java.fpr
+auditworkbench.cmd .\IWA.fpr
 ```
 
-It also creates a PDF report called `IWA-Java.pdf` and optionally
+It also creates a PDF report called `IWA.pdf` and optionally
 uploads the results to [Fortify Software Security Center](https://www.microfocus.com/en-us/products/software-security-assurance-sdlc/overview) (SSC).
 
 In order to upload to SSC you will need to have entries in the `.env` similar to the following:
@@ -177,7 +177,7 @@ In order to upload to SSC you will need to have entries in the `.env` similar to
 ```
 SSC_URL=http://localhost:8080/ssc
 SSC_AUTH_TOKEN=28145aad-c40d-426d-942b-f6d6aec9c56f
-SSC_APP_NAME=IWA-Java
+SSC_APP_NAME=IWA
 SSC_APP_VER_NAME=main
 ```
 
@@ -197,7 +197,7 @@ In order to use ScanCentral SAST you will need to have entries in the `.env` sim
 ```
 SSC_URL=http://localhost:8080/ssc
 SSC_AUTH_TOKEN=6b16aa46-35d7-4ea6-98c1-8b780851fb37
-SSC_APP_NAME=IWA-Java
+SSC_APP_NAME=IWA
 SSC_APP_VER_NAME=main
 SCANCENTRAL_CTRL_URL=http://localhost:8080/scancentral-ctrl
 SCANCENTRAL_CTRL_TOKEN=96846342-1349-4e36-b94f-11ed96b9a1e3
@@ -258,7 +258,7 @@ For example:
 
 ```
 fcli sc-dast session login --ssc-url http://YOUR_SSC.DOMAIN -t YOUR_SSC_CI_TOKEN
-fcli sc-dast scan -n "IWA-UI - FCLI" -s YOUR_SCAN_SETTINGS_ID --store curScan
+fcli sc-dast scan -n "IWA - FCLI" -s YOUR_SCAN_SETTINGS_ID --store curScan
 fcli sc-dast scan wait-fod ::curScan::
 ```
 
@@ -402,9 +402,8 @@ you will need to do for a successful invocation.
 
 ### GitHub Actions
 
-This repository includes a [GitHub Actions](https://github.com/features/actions) example
-[workflow](.github/workflows/DevSecOps.yml) that
-automates the build of the application and scans the code using either
+This repository includes a number of [GitHub Actions](https://github.com/features/actions) examples in the [.github/workflows](.github/workflows/)  that
+automate the build of the application and scans the code using either
 [Fortify on Demand](https://www.microfocus.com/en-us/products/application-security-testing) or [Fortify ScanCentral](https://www.microfocus.com/en-us/cyberres/application-security/static-code-analyzer) for SAST.
 
 ### Other Pipeline Tools

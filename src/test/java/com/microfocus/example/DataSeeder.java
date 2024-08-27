@@ -3,7 +3,6 @@ package com.microfocus.example;
 import com.microfocus.example.entity.*;
 import com.microfocus.example.utils.EncryptedPasswordUtils;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.time.Instant;
 import java.util.UUID;
 

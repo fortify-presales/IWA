@@ -1,8 +1,5 @@
 package com.microfocus.example.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-
 import com.microfocus.example.BaseIntegrationTest;
 import com.microfocus.example.DataSeeder;
 import com.microfocus.example.entity.SMS;

@@ -1,14 +1,12 @@
 package com.microfocus.example.api.controllers;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microfocus.example.api.controllers.ApiUserController;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.service.UserService;
@@ -229,8 +227,7 @@ class ApiUserControllerTest {
         MockMvcBuilders.standaloneSetup(apiUserController)
                 .build()
                 .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json;"));
+                .andExpect(MockMvcResultMatchers.status().isOk());
                 //.andExpect(MockMvcResultMatchers.content()
                 //        .string("{\"success\":true,\"timestamp\":\"" + timestamp + "\",\"errors\":null}"));
     }

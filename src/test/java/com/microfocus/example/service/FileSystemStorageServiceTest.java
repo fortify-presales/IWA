@@ -9,9 +9,6 @@ import com.microfocus.example.exception.StorageException;
 import com.microfocus.example.exception.StorageFileNotFoundException;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -27,7 +24,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.multipart.MultipartFile;
 
 @ContextConfiguration(classes = {FileSystemStorageService.class, StorageProperties.class})
 @ExtendWith(SpringExtension.class)

@@ -22,10 +22,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.microfocus.example.entity.Authority;
-import com.microfocus.example.entity.CustomUserDetails;
-import com.microfocus.example.entity.User;
-
 class UserTest {
     /**
      * Method under test: {@link User#passwordEncoder()}

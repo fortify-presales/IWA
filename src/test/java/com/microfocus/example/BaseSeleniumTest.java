@@ -1,6 +1,5 @@
 package com.microfocus.example;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.actuate.autoconfigure.web.server.LocalManagementPort;
 import org.springframework.boot.test.context.SpringBootTest;
