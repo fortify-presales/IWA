@@ -18,11 +18,12 @@ on:
   push:
     paths-ignore:
       - '.github/**/**'
+      - 'Jenkinsfile'
       - 'bin/**'
       - 'data/**'
       - 'etc/**'
       - 'tests/**'
-      - 'README.md'
+      - '*.md'
       - 'LICENSE'
     branches:
       - '**'        # matches every branch
