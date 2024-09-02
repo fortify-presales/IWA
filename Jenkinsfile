@@ -175,7 +175,7 @@ pipeline {
                             fcli tool sc-client install -t "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
                             export PATH="$PATH:$HOME/fortify/tools/bin"
                             fcli sc-sast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN} --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}" --session jenkins
-                            scancentral package -bt gradle -bf build.gradle -sargs "-scan-policy ${env.SCAN_POLICY}" -o Package.zip
+                            scancentral package -bt gradle -bf build.gradle -o Package.zip
                             fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} ${uploadArg} -p Package.zip --store curScan --session jenkins
                             fcli sc-sast scan wait-for ::curScan:: --session jenkins
                         """
@@ -281,7 +281,7 @@ pipeline {
             steps {
                 script {
                     if (params.SCANCENTRAL_DAST) {
-                        if (params.params.USE_DOCKER) {
+                        if (params.USE_DOCKER) {
                             // check if container is still running and if so stop/remove it
                             sh(script: "docker ps -aq --filter name=${dockerContainerName} > container.id")
                             if (fileExists('container.id')) {
