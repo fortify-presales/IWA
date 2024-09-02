@@ -354,9 +354,9 @@ pipeline {
             script {
                 // run summary report and logout
                 sh """
-                    fcli ssc session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN} --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}" --session jenkins
+                    fcli ssc session login --url ${env.SSC_URL} --ci-token ${SSC_CI_TOKEN} --session jenkins
                     fcli ssc action run appversion-summary --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} --filtersets "${env.SSC_FILTERSETS}" --session jenkins
-                    fcli sc-sast session --session jenkins
+                    fcli sc-sast session logout --session jenkins
                 """
                 // check if container is still running and if so stop/remove it
                 if (params.USE_DOCKER) {
