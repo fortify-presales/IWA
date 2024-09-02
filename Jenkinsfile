@@ -16,18 +16,16 @@
 // Typical node setup:
 // - Create a new Jenkins agent (or reuse one) for running Fortify Commands
 // - Install Fortify ScanCentral Client on the agent machine
-// - Install Fortify CLI (fcli) tool on the agent machine
+// - Install Fortify CLI (fcli) tool on the agent machine and add to system/agent path
 // - Apply the label "fortify" to the agent.
 // - Set the environment variable "FORTIFY_HOME" on the agent to point to the location of the Fortify ScanCentral Client installation
-// - Set the environment variable "FORTIFY_CLI_HOME" on the agent to point to the location of the Fortify FCLI installation
 //
 // Credentials setup:
 // Create the following redentials in Jenkins and enter values as follows:
 //		iwa-git-auth-id		        - Git login as Jenkins "Username with Password" credential
 //      iwa-ssc-ci-token-id         - Fortify Software Security Center "CIToken" authentication token as Jenkins Secret credential
-//      iwa-scdast-auth-id          - Fortify Scan Central DAST authentication as "Jenkins Username with Password" credential
-//      iwa-nexus-iq-token-id       - Sonatype Nexus IQ user token as Jenkins Secret credential in form of "user code:pass code"
 //      iwa-debricked-token-id      - Debricked API access token as Jenkins Secret credential
+//      iwa-nexus-iq-token-id       - Sonatype Nexus IQ user token as Jenkins Secret credential in form of "user code:pass code"
 // Note: All of the credentials should be created (with empty values if necessary) even if you are not using the capabilities.
 //
 //****************************************************************************************************
@@ -102,6 +100,18 @@ pipeline {
     }
 
     stages {
+        stage('Setup') {
+            agent any
+            steps {
+                script {
+                    sh """
+                        fcli --version
+                        fcli tool sc-client install -t "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
+                        export PATH="$PATH:$HOME/fortify/tools/bin"
+                    """
+                }
+            }
+        }
         stage('Build') {
             agent any
             steps {
@@ -161,6 +171,8 @@ pipeline {
 
                         def uploadArg = (params.UPLOAD_TO_SSC ? "--publish-to ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION}")
                         sh """
+                            fcli tool sc-client install -t "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
+                            export PATH="$PATH:$HOME/fortify/tools/bin"
                             fcli sc-sast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN} --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}" --session jenkins
                             scancentral package -bt gradle -bf build.gradle -sargs "-scan-policy ${env.SCAN_POLICY}" -o Package.zip --session jenkins
                             fcli sc-sast scan start --sensor-version ${env.SSC_SENSOR_VER} ${uploadArg} -p Package.zip --store curScan --session jenkins
@@ -221,8 +233,8 @@ pipeline {
                             enableDebugLogging: false,
                             failBuildOnNetworkError: true,
                             iqApplication: selectedApplication("${NEXUS_IQ_APP_ID}"),
-                            iqModuleExcludes: [[moduleExclude: 'target/**/*test*.*']],
-                            iqScanPatterns: [[scanPattern: 'target/**/*.jar']],
+                            iqModuleExcludes: [[moduleExclude: 'build/**/*test*.*']],
+                            iqScanPatterns: [[scanPattern: 'build/**/*.jar']],
                             iqStage: 'build',
                             jobCredentialsId: ''
                     } else if (params.DEBRICKED_SCA) {
