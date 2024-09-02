@@ -299,7 +299,7 @@ pipeline {
 
                         sh """
                             fcli sc-dast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN} --session jenkins
-                            fcli sc-dast scan start ${dastScanName} --name 'Jenkins Scan' --settings ${env.SCANCENTRAL_DAST_CICD} --start-url ${env.APP_URL} --store curScan --session jenkins
+                            fcli sc-dast scan start --name '${dastScanName}' --settings ${env.SCANCENTRAL_DAST_CICD} --start-url ${env.APP_URL} --store curScan --session jenkins
                             fcli sc-dast scan wait-for ::curScan:: -i 30s -t 6h --session jenkins
                         """
 
