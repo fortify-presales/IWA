@@ -65,6 +65,7 @@ pipeline {
     environment {
         // Application settings
         COMPONENT_NAME = "iwa"                              // Short form component name
+        COMPONENT_VERSION = "1.0"                           // Short form component version
         DOCKER_IMAGE_NAME = "iwa"                           // Docker image name
         DOCKER_IMAGE_VER = "1.0-build"                      // Docker image version
         GIT_URL = scm.getUserRemoteConfigs()[0].getUrl()    // Git Repo
@@ -140,9 +141,9 @@ pipeline {
                     // Record the test results (success)
                     junit "**/build/test-results/test/TEST-*.xml"
                     // Archive the built file
-                    archiveArtifacts "build/libs/${env.COMPONENT_NAME}.jar"
+                    archiveArtifacts "build/libs/${env.COMPONENT_NAME}-${env.COMPONENT_VERSION}.jar"
                     // Stash the deployable files
-                    stash includes: "build/libs/${env.COMPONENT_NAME}.jar", name: "${env.COMPONENT_NAME}_release"
+                    stash includes: "build/libs/${env.COMPONENT_NAME}-${env.COMPONENT_VERSION}.jar", name: "${env.COMPONENT_NAME}_release"
                 }
                 failure {
                     script {
@@ -353,7 +354,7 @@ pipeline {
             script {
                 // run summary report and logout
                 sh """
-                    fcli sc-sast session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN} --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}" --session jenkins
+                    fcli ssc session login --ssc-url ${env.SSC_URL} --ssc-ci-token ${SSC_CI_TOKEN} --client-auth-token "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}" --session jenkins
                     fcli ssc action run appversion-summary --appversion ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION} --filtersets "${env.SSC_FILTERSETS}" --session jenkins
                     fcli sc-sast session --session jenkins
                 """
