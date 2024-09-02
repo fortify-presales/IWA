@@ -126,7 +126,7 @@ pipeline {
                     env.GIT_COMMIT_ID = readFile('.git/commit-id').trim()
                     echo "Git commit id: ${env.GIT_COMMIT_ID}"
 
-                    // Run gradle to build WAR/JAR application
+                    // Run gradle to build application
                     if (isUnix()) {
                         sh './gradlew clean build'
                     } else {
@@ -169,7 +169,7 @@ pipeline {
 
                         // comment out below to use Fortify Jenkins Plugin
 
-                        def uploadArg = (params.UPLOAD_TO_SSC ? "--publish-to ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION}")
+                        def uploadArg = (params.UPLOAD_TO_SSC ? "--publish-to ${env.SSC_APP_NAME}:${env.SSC_APP_VERSION}" : "")
                         sh """
                             fcli tool sc-client install -t "${env.SCANCENTRAL_SAST_CLIENT_AUTH_TOKEN}"
                             export PATH="$PATH:$HOME/fortify/tools/bin"
