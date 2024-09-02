@@ -95,9 +95,9 @@ pipeline {
         DOCKER_OWNER = "${params.DOCKER_OWNER ?: 'fortify-presales'}" // Docker owner (in GitHub packages) to push released images to
     }
 
-    tools {
-
-    }
+    //tools {
+    //
+    //}
 
     stages {
         stage('Setup') {
