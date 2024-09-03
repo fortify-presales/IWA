@@ -25,9 +25,11 @@ import com.microfocus.example.entity.CustomUserDetails;
 import com.microfocus.example.entity.Mail;
 import com.microfocus.example.entity.SMS;
 import com.microfocus.example.exception.VerificationRequestFailedException;
+import com.microfocus.example.payload.request.EmailRequest;
 import com.microfocus.example.service.EmailSenderService;
 import com.microfocus.example.service.SmsSenderService;
 import com.microfocus.example.service.VerificationService;
+import com.microfocus.example.utils.EmailUtils;
 import com.microfocus.example.utils.JwtUtils;
 import com.microfocus.example.utils.WebUtils;
 import org.slf4j.Logger;
@@ -61,6 +63,15 @@ public class DefaultController extends AbstractBaseController{
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final String CONTROLLER_NAME = getClass().getName();
 
+    @Value("${spring.profiles.active:Unknown}")
+    private String activeProfile;
+
+    @Value("${app.mail.from-name}")
+    private String emailFromName;
+
+    @Value("${app.mail.from-address}")
+    private String emailFromAddress;
+
     @Value("${app.messages.home}")
     private String message = "Hello World";
 
@@ -72,6 +83,9 @@ public class DefaultController extends AbstractBaseController{
 
     @Autowired
     VerificationService verificationService;
+
+    @Autowired
+    EmailSenderService emailSenderService;
 
     @Autowired
     SmsSenderService smsSenderService;
@@ -118,15 +132,27 @@ public class DefaultController extends AbstractBaseController{
                 int otp = verificationService.generateOTP(userId);
                 log.debug("Generated OTP '" + String.valueOf(otp) + "' for user id: " + userId);
 
-                SMS sms = new SMS();
+                EmailRequest emailRequest = new EmailRequest(emailFromAddress, email, 
+                    "[IWA Pharmacy Direct] Your One Time Passcode", String.valueOf(otp));
+                try {
+                    log.debug("Sending OTP {} via email to {}", String.valueOf(otp), email);
+                    if (activeProfile.contains("dev")) {
+                        Thread.sleep(10000);
+                    }
+                    EmailUtils.sendEmail(emailRequest);
+                } catch (Exception ex) {
+                   log.error(ex.getLocalizedMessage());
+                }
+
+                /*SMS sms = new SMS();
                 sms.setTo(mobile);
                 sms.setMessage("Your IWA Pharmacy Direct security code is " + String.valueOf(otp));
-
                 try {
+                    log.debug("Sending OTP {} via SMS to {}", String.valueOf(otp), mobile);
                     String sid = smsSenderService.sendSms(sms);
                 } catch (Exception ex) {
                     log.error(ex.getLocalizedMessage());
-                }
+                }*/
             } catch (VerificationRequestFailedException ex) {
                 log.error(ex.getLocalizedMessage());
                 // TODO: handle

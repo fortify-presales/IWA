@@ -40,7 +40,7 @@ public class EmailUtils {
 
     @Value("${spring.mail.host}")
     public void setEmailServer(String emailServer) {
-        log.debug("setting EMAIL_SERVER to: " + emailServer);
+        log.debug("setting EMAIL_SERVER to: {}", emailServer);
         EmailUtils.EMAIL_SERVER = emailServer;
     }
 
@@ -51,6 +51,7 @@ public class EmailUtils {
 
     @Value("${spring.mail.port}")
     public void setEmailPort(int emailPort) {
+        log.debug("setting EMAIL_PORT to: {}", emailPort);
         EmailUtils.EMAIL_PORT = emailPort;
     }
 
@@ -61,6 +62,7 @@ public class EmailUtils {
 
     @Value("${spring.mail.username}")
     public void setEmailUsername(String emailUsername) {
+        log.debug("setting EMAIL_USERNAME to: {}", emailUsername);
         EmailUtils.EMAIL_USERNAME = emailUsername;
     }
 
@@ -71,6 +73,7 @@ public class EmailUtils {
 
     @Value("${spring.mail.password}")
     public void setEmailPassword(String emailPassword) {
+        log.debug("setting EMAIL_PASSWORD to: {}", emailPassword);
         EmailUtils.EMAIL_PASSWORD = emailPassword;
     }
 
@@ -83,7 +86,8 @@ public class EmailUtils {
         String password = ((passwordFromEnv == null || passwordFromEnv.isEmpty()) ?
                 EMAIL_PASSWORD : passwordFromEnv);
         server.setAuthenticator(new DefaultAuthenticator(EMAIL_USERNAME, password));
-        server.setSSLOnConnect(true);
+        server.setSSLOnConnect(false);
+        server.setStartTLSEnabled(false);
         if (request.getDebug()) {
             server.setDebug(true);
         }

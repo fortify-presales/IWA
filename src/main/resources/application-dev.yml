@@ -52,6 +52,20 @@ spring:
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
+  mail:
+    default-encoding: UTF-8
+    host: localhost
+    username: iwa@localhost.com
+    password: password
+    port: 25
+    test-connection: false
+    debug: true
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: false      
 
 logging:
   level:

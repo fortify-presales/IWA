@@ -32,9 +32,13 @@
                 <form th:action="@{/login_mfa}" method="post" class="form-login">
                     <h1 class="h3 mb-3 font-weight-normal">Two-Step Verification</h1>
 
-                    <p>
+                    <!--p>
                         For added security, please enter the One Time Passcode (OTP)
                         that has been sent to a phone number ending <span th:text="${session.mobileDigits}">XX</span>
+                    </p-->
+                    <p>
+                        For added security, please enter the One Time Passcode (OTP)
+                        that has been sent to your email address.
                     </p>
 
                     <div class="form-group">
