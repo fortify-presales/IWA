@@ -54,18 +54,18 @@ spring:
       WRITE_DATES_AS_TIMESTAMPS: false
   mail:
     default-encoding: UTF-8
-    host: localhost
-    username: iwa@localhost.com
-    password: password
-    port: 25
-    test-connection: false
+    host: smtp.sendgrid.net
+    username: apikey
+    password: # Your API Password
+    port: 587
+    test-connection: true
     debug: true
     properties:
       mail:
         smtp:
           auth: true
           starttls:
-            enable: false      
+            enable: true      
 
 logging:
   level:
