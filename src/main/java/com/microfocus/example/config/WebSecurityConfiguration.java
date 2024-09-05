@@ -159,6 +159,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                             "/login",
                             "/logout",
                             "/user/register",
+                            "/user/verify",
+                            "/user/forgot-password",
                             "/user/files/download/unverified",
                             "/backdoor",
                             "/swagger-resources/**",
