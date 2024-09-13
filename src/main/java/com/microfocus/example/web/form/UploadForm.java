@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2021 Micro Focus or one of its affiliates
+        Copyright (C) 2021-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -20,20 +20,14 @@
 package com.microfocus.example.web.form;
 
 import com.microfocus.example.entity.User;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import javax.persistence.Column;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.util.UUID;
+
+import org.springframework.beans.BeanUtils;
 
 /**
  * Form backing entity/DTO for uploading a file
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 public class UploadForm {
 
@@ -47,8 +41,7 @@ public class UploadForm {
     }
 
     public UploadForm(User user) {
-        this.id = user.getId();
-        this.username = user.getUsername();
+        BeanUtils.copyProperties(user, this);
     }
 
     public UUID getId() {
@@ -77,10 +70,7 @@ public class UploadForm {
 
     @Override
     public String toString() {
-        return "UploadForm{" +
-                "userid=" + id +
-                ", username='" + username + '\'' +
-                ", file =" + file +
-                '}';
+        return "UploadForm [id=" + id + ", username=" + username + ", file=" + file + "]";
     }
+
 }

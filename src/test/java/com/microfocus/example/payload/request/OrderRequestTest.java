@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.microfocus.example.entity.MfaType;
 import com.microfocus.example.entity.Order;
 import com.microfocus.example.entity.User;
 
@@ -85,7 +86,7 @@ class OrderRequestTest {
         UUID randomUUIDResult = UUID.randomUUID();
         user.setId(randomUUIDResult);
         user.setLastName("Doe");
-        user.setMfa(true);
+        user.setMfaType(MfaType.MFA_EMAIL);
         user.setPassword("iloveyou");
         user.setPhone("6625550144");
         user.setState("MD");

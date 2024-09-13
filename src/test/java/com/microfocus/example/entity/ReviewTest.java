@@ -52,7 +52,7 @@ class ReviewTest {
         user.setFirstName("Jane");
         user.setId(UUID.randomUUID());
         user.setLastName("Doe");
-        user.setMfa(true);
+        user.setMfaType(MfaType.MFA_EMAIL);;
         user.setPassword("iloveyou");
         user.setPhone("6625550144");
         user.setState("MD");
@@ -109,7 +109,7 @@ class ReviewTest {
         user1.setFirstName("Jane");
         user1.setId(UUID.randomUUID());
         user1.setLastName("Doe");
-        user1.setMfa(true);
+        user1.setMfaType(MfaType.MFA_EMAIL);;
         user1.setPassword("iloveyou");
         user1.setPhone("6625550144");
         user1.setState("MD");

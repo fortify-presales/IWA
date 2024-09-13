@@ -1,10 +1,12 @@
 package com.microfocus.example.service;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.microfocus.example.entity.MfaType;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.repository.UserRepositoryCustom;
 
@@ -51,7 +53,7 @@ class CustomUserDetailsServiceTest {
         user.setFirstName("Jane");
         user.setId(UUID.randomUUID());
         user.setLastName("Doe");
-        user.setMfa(true);
+        user.setMfaType(MfaType.MFA_EMAIL);
         user.setPassword("iloveyou");
         user.setPhone("4105551212");
         user.setState("MD");
@@ -73,7 +75,7 @@ class CustomUserDetailsServiceTest {
         user1.setFirstName("Jane");
         user1.setId(UUID.randomUUID());
         user1.setLastName("Doe");
-        user1.setMfa(true);
+        user1.setMfaType(MfaType.MFA_EMAIL);
         user1.setPassword("iloveyou");
         user1.setPhone("4105551212");
         user1.setState("MD");

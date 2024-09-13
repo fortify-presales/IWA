@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ import com.microfocus.example.service.EmailSenderService;
 import com.microfocus.example.service.ProductService;
 import com.microfocus.example.service.StorageService;
 import com.microfocus.example.service.UserService;
+import com.microfocus.example.service.UserValidationService;
 import com.microfocus.example.utils.WebUtils;
 import com.microfocus.example.web.form.*;
 import org.json.JSONArray;
@@ -44,6 +45,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
@@ -73,7 +75,7 @@ import java.util.stream.Stream;
 /**
  * Controller for user pages
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 @RequestMapping("/user")
 @Controller
@@ -97,6 +99,9 @@ public class UserController extends AbstractBaseController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserValidationService validationService;
 
     @Autowired
     private ProductService productService;
@@ -164,6 +169,7 @@ public class UserController extends AbstractBaseController {
         Optional<User> optionalUser = userService.findUserById(user.getId());
         if (optionalUser.isPresent()) {
             UserForm userForm = new UserForm(optionalUser.get());
+            log.debug(userForm.toString());
             model.addAttribute("userForm", userForm);
             model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
             model.addAttribute("unreadMessageCount", userService.getUserUnreadMessageCount(user.getId()));
@@ -483,6 +489,11 @@ public class UserController extends AbstractBaseController {
                                   BindingResult bindingResult, Model model,
                                   RedirectAttributes redirectAttributes,
                                   Principal principal) {
+        String err = validationService.validateUser(userForm);
+        if (!err.isEmpty()) {
+            ObjectError error = new ObjectError("global", err);
+            bindingResult.addError(error);
+        }
         if (bindingResult.hasErrors()) {
             this.setModelDefaults(model, principal, "edit-profile");
             return "user/edit-profile";
@@ -570,11 +581,17 @@ public class UserController extends AbstractBaseController {
                                BindingResult bindingResult, Model model,
                                RedirectAttributes redirectAttributes,
                                Principal principal) {
+        String err = validationService.validateUser(registerUserForm);
+        if (!err.isEmpty()) {
+            ObjectError error = new ObjectError("global", err);
+            bindingResult.addError(error);
+        }
         if (bindingResult.hasErrors()) {
             this.setModelDefaults(model, principal, "register");
             return "user/register";
         } else {
             try {
+                log.debug("Registering user {}", registerUserForm);
                 User u = userService.registerUser(registerUserForm);
                 String targetUrl = appUrl + "/user/verify?email=" + u.getEmail() + "&code=" + u.getVerifyCode();
 

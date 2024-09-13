@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -19,7 +19,10 @@
 
 package com.microfocus.example.web.form;
 
+import com.microfocus.example.entity.MfaType;
 import com.microfocus.example.entity.User;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -67,7 +70,7 @@ public class UserForm {
     private String email;
 
     @NotEmpty(message = "{user.phone.notEmpty}")
-    @Pattern(regexp = "(^\\+((?:9[679]|8[035789]|6[789]|5[90]|42|3[578]|2[1-689])|9[0-58]|8[1246]|6[0-6]|5[1-8]|4[013-9]|3[0-469]|2[70]|7|1)(?:\\W*\\d){0,13}\\d$)", message = "{user.phone.invalidFormat}")
+    //@Pattern(regexp = "^(\\+\\d{1,3}( )?)?((\\(\\d{1,3}\\))|\\d{1,3})[- .]?\\d{3,4}[- .]?\\d{4}$", message = "{user.phone.invalidFormat}")
     @Column(unique = true)
     private String phone;
 
@@ -79,26 +82,13 @@ public class UserForm {
 
     private Boolean enabled;
 
-    private Boolean mfa;
+    private MfaType mfaType;
 
     public UserForm() {
     }
 
     public UserForm(User user) {
-        this.id = user.getId();
-        this.username = user.getUsername();
-        this.password = user.getPassword();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.email = user.getEmail();
-        this.phone = user.getPhone();
-        this.address = user.getAddress();
-        this.city = user.getCity();
-        this.state = user.getState();
-        this.zip = user.getZip();
-        this.country = user.getCountry();
-        this.enabled = user.getEnabled();
-        this.mfa = user.getMfa();
+        BeanUtils.copyProperties(user, this);
     }
 
     public UUID getId() {
@@ -213,20 +203,20 @@ public class UserForm {
         this.enabled = enabled;
     }
 
-    public Boolean getMfa() {
-        return mfa;
+    public MfaType getMfaType() {
+        return mfaType;
     }
 
-    public void setMfa(Boolean mfa) {
-        this.mfa = mfa;
+    public void setMfaType(MfaType mfaType) {
+        this.mfaType = mfaType;
     }
 
     @Override
     public String toString() {
-        return "UserForm{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", email =" + email +
-                '}';
+        return "UserForm [id=" + id + ", username=" + username + ", password=" + password + ", confirmPassword="
+                + confirmPassword + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+                + ", phone=" + phone + ", address=" + address + ", city=" + city + ", state=" + state + ", zip=" + zip
+                + ", country=" + country + ", enabled=" + enabled + ", mfaType=" + mfaType + "]";
     }
+
 }

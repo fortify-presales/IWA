@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.microfocus.example.entity.MfaType;
 import com.microfocus.example.entity.User;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -38,7 +39,7 @@ class UserRequestTest {
      *   <li>{@link UserRequest#setFirstName(String)}
      *   <li>{@link UserRequest#setId(UUID)}
      *   <li>{@link UserRequest#setLastName(String)}
-     *   <li>{@link UserRequest#setMfa(Boolean)}
+     *   <li>{@link UserRequest#setMfaType(MfaType)}
      *   <li>{@link UserRequest#setPassword(String)}
      *   <li>{@link UserRequest#setPhone(String)}
      *   <li>{@link UserRequest#setState(String)}
@@ -54,7 +55,7 @@ class UserRequestTest {
      *   <li>{@link UserRequest#getFirstName()}
      *   <li>{@link UserRequest#getId()}
      *   <li>{@link UserRequest#getLastName()}
-     *   <li>{@link UserRequest#getMfa()}
+     *   <li>{@link UserRequest#getMfaType()}
      *   <li>{@link UserRequest#getPassword()}
      *   <li>{@link UserRequest#getPhone()}
      *   <li>{@link UserRequest#getState()}
@@ -75,7 +76,7 @@ class UserRequestTest {
         UUID randomUUIDResult = UUID.randomUUID();
         actualUserRequest.setId(randomUUIDResult);
         actualUserRequest.setLastName("Doe");
-        actualUserRequest.setMfa(true);
+        actualUserRequest.setMfaType(MfaType.MFA_EMAIL);
         actualUserRequest.setPassword("iloveyou");
         actualUserRequest.setPhone("6625550144");
         actualUserRequest.setState("MD");
@@ -91,7 +92,7 @@ class UserRequestTest {
         assertEquals("Jane", actualUserRequest.getFirstName());
         assertSame(randomUUIDResult, actualUserRequest.getId());
         assertEquals("Doe", actualUserRequest.getLastName());
-        assertTrue(actualUserRequest.getMfa());
+        assertEquals(MfaType.MFA_EMAIL, actualUserRequest.getMfaType());
         assertEquals("iloveyou", actualUserRequest.getPassword());
         assertEquals("6625550144", actualUserRequest.getPhone());
         assertEquals("MD", actualUserRequest.getState());
@@ -117,7 +118,7 @@ class UserRequestTest {
         UUID randomUUIDResult = UUID.randomUUID();
         user.setId(randomUUIDResult);
         user.setLastName("Doe");
-        user.setMfa(true);
+        user.setMfaType(MfaType.MFA_EMAIL);
         user.setPassword("iloveyou");
         user.setPhone("6625550144");
         user.setState("MD");
@@ -130,7 +131,7 @@ class UserRequestTest {
         assertEquals("janedoe", actualUserRequest.getUsername());
         assertEquals("MD", actualUserRequest.getState());
         assertEquals("6625550144", actualUserRequest.getPhone());
-        assertTrue(actualUserRequest.getMfa());
+        assertEquals(MfaType.MFA_EMAIL, actualUserRequest.getMfaType());
         assertEquals("Doe", actualUserRequest.getLastName());
         assertSame(randomUUIDResult, actualUserRequest.getId());
         assertEquals("Jane", actualUserRequest.getFirstName());

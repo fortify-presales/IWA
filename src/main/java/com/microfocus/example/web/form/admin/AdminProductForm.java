@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -25,12 +25,15 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+
+import org.springframework.beans.BeanUtils;
+
 import java.util.UUID;
 
 /**
  * Form backing entity/DTO for updating product
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 public class AdminProductForm {
 
@@ -78,19 +81,7 @@ public class AdminProductForm {
     }
 
     public AdminProductForm(Product product) {
-        this.id = product.getId();
-        this.code = product.getCode();
-        this.name = product.getName();
-        this.summary = product.getSummary();
-        this.description = product.getDescription();
-        this.image = product.getImage();
-        this.price = product.getPrice();
-        this.onSale = product.getOnSale();
-        this.salePrice = product.getSalePrice();
-        this.inStock = product.getInStock();
-        this.timeToStock = product.getTimeToStock();
-        this.rating = product.getRating();
-        this.available = product.getAvailable();
+        BeanUtils.copyProperties(product, this);
     }
 
     public UUID getId() {
@@ -199,7 +190,10 @@ public class AdminProductForm {
 
     @Override
     public String toString() {
-        return "ProductForm(" + id + " : " + name + " : SRP : " + price + ")";
+        return "AdminProductForm [id=" + id + ", code=" + code + ", name=" + name + ", summary=" + summary
+                + ", description=" + description + ", image=" + image + ", price=" + price + ", onSale=" + onSale
+                + ", salePrice=" + salePrice + ", inStock=" + inStock + ", timeToStock=" + timeToStock + ", rating="
+                + rating + ", available=" + available + "]";
     }
 
 }

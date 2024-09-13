@@ -79,17 +79,30 @@ To run (and test) locally in development mode, execute the following from the co
 ```
 
 Then navigate to the URL: [http://localhost:8888](http://localhost:8888). You can carry out a number of
-actions unauthenticated, but if you want to login you can do so as one of the following users:
+actions unauthenticated, but if you want to login you can do so as the following :
 
-- **user1@localhost.com/password**
-- **user2@localhost.com/password**
+- **user1/password**
   
 There is also an administrative user:
 
-- **admin@localhost.com/password**
+- **admin/password**
 
 Note if you login with `user2`, you will be subsequently asked for a Multi-Factor Authentication (MFA) code. You
 can find this code by examining the console output.
+
+### Development (email server)
+
+If you would like to use a development email server, I would recommend using (smtp4dev)[https://github.com/rnwood/smtp4dev.git].
+The easiest approach is to start it as a docker container:
+
+```
+docker run --rm -it -p 5000:80 -p 2525:25 rnwood/smtp4dev
+```
+
+Remove `--rm -it` if you want to leave smtp4dev running in the background, otherwise it will run until you hit CTRL+C.
+
+The (application-dev.yml)[./src/main/resources/application-dev.yml] file is already pre-configured to use this configuration. 
+Browse to `http://localhost:5000` to see the emails.
 
 ### Deploy (Docker Image)
 

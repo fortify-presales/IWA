@@ -41,7 +41,7 @@ create table users
     country      varchar(255) default null,
     verify_code  varchar(255) default null,
     enabled      bit       not null,
-    mfa          bit       default 0,
+    mfa_type     varchar(255) default 'MFA_NONE',
     primary key (id)
 );
 create table user_authorities

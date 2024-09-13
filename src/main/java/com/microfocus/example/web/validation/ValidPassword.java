@@ -30,8 +30,9 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Interface for custom Password Validator
- * @author Kevin A. Lee
+ * Interface for custom Password Validator.
+ * 
+ * @author kadraman
  */
 @Documented
 @Constraint(validatedBy = PasswordConstraintValidator.class)

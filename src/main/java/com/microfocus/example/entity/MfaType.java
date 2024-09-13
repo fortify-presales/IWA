@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -17,23 +17,25 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.microfocus.example.repository;
-
-import com.microfocus.example.entity.MfaType;
-import com.microfocus.example.entity.User;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-
-import java.util.UUID;
+package com.microfocus.example.entity;
 
 /**
- * Interface for User Repository
+ * Supported MFA types
  * @author Kevin A. Lee
  */
-@Repository
-public interface UserRepositoryBasic extends JpaRepository<User, UUID> {
+public enum MfaType {
+    MFA_NONE("NONE"),
+    MFA_EMAIL("EMAIL"),
+    MFA_SMS("SMS"),
+    MFA_APP("APP");
 
+    private String name;
+
+    private MfaType(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

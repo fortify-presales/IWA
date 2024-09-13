@@ -86,7 +86,7 @@ public class CustomUserDetails implements UserDetails {
         return user.getPhone();
     }
 
-    public Boolean getMfa() { return user.getMfa(); }
+    public MfaType getMfaType() { return user.getMfaType(); }
 
     public boolean isEnabled() { return user.getEnabled(); }
 

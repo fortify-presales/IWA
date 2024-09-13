@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@ package com.microfocus.example.web.form;
 import com.microfocus.example.entity.Product;
 import com.microfocus.example.entity.Review;
 import com.microfocus.example.entity.User;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
@@ -30,7 +32,7 @@ import java.util.UUID;
 /**
  * Form backing entity/DTO for updating product review
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 public class ReviewForm {
 
@@ -52,12 +54,7 @@ public class ReviewForm {
     }
 
     public ReviewForm(Review review) {
-        this.id = review.getId();
-        this.user = review.getUser();
-        this.product = review.getProduct();
-        this.comment = review.getComment();
-        this.reviewDate = review.getReviewDate();
-        this.rating = review.getRating();
+        BeanUtils.copyProperties(user, this);
     }
 
     public UUID getId() {
@@ -110,13 +107,8 @@ public class ReviewForm {
 
     @Override
     public String toString() {
-        return "ReviewForm{" +
-                "id=" + id +
-                ", user=" + user.getUsername() +
-                ", product=" + product.getName() +
-                ", comment='" + comment + '\'' +
-                ", reviewData=" + reviewDate +
-                ", rating=" + rating +
-                '}';
+        return "ReviewForm [id=" + id + ", user=" + user + ", product=" + product + ", comment=" + comment
+                + ", reviewDate=" + reviewDate + ", rating=" + rating + "]";
     }
+
 }

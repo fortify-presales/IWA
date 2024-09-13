@@ -26,6 +26,7 @@ import org.apache.commons.mail.SimpleEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -77,6 +78,7 @@ public class EmailUtils {
         EmailUtils.EMAIL_PASSWORD = emailPassword;
     }
 
+    @Async
     public static void sendEmail(EmailRequest request) throws Exception {
 
         Email server = new SimpleEmail();

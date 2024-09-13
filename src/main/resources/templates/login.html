@@ -61,7 +61,10 @@
                                 </div>
                             </div>
 
-                            <button class="btn btn-lg btn-primary btn-block" name="login-submit" id="login-submit" type="submit">Login</button>
+                            <button class="btn btn-lg btn-primary btn-block" name="login-submit" id="login-submit" type="submit">
+                                <span class="spinner spinner-border spinner-border-sm mr-3" id="spinner" role="status" aria-hidden="true"></span>
+                                Login
+                            </button>
                         </form>
 
                     </div>
@@ -71,5 +74,18 @@
             </div>
 
         </div>
+
+        <th:block layout:fragment="script">
+            <script type="text/javascript" th:inline="javascript">
+                (function ($) {
+                    $(document).ready(function () {
+                        $('#spinner').on('click', function()
+                            {
+                                $('body').addClass('busy');
+                            });
+                    });
+                })(jQuery);
+            </script>
+        </th:block>
     </body>
 </html>

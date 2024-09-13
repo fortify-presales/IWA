@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 import com.microfocus.example.entity.Message;
+import com.microfocus.example.entity.MfaType;
 import com.microfocus.example.entity.User;
 
 import java.time.LocalDate;
@@ -68,7 +69,7 @@ class MessageRequestTest {
         UUID randomUUIDResult = UUID.randomUUID();
         user.setId(randomUUIDResult);
         user.setLastName("Doe");
-        user.setMfa(true);
+        user.setMfaType(MfaType.MFA_EMAIL);
         user.setPassword("iloveyou");
         user.setPhone("6625550144");
         user.setState("MD");

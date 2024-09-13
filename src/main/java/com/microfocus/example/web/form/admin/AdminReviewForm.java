@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2021 Micro Focus or one of its affiliates
+        Copyright (C) 2021-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@ package com.microfocus.example.web.form.admin;
 import com.microfocus.example.entity.Product;
 import com.microfocus.example.entity.Review;
 import com.microfocus.example.entity.User;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Max;
@@ -32,7 +34,7 @@ import java.util.UUID;
 /**
  * Form backing entity/DTO for updating review
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 public class AdminReviewForm {
 
@@ -57,13 +59,7 @@ public class AdminReviewForm {
     }
 
     public AdminReviewForm(Review review) {
-        this.id = review.getId();
-        this.product = review.getProduct();
-        this.user = review.getUser();
-        this.reviewDate = review.getReviewDate();
-        this.comment = review.getComment();
-        this.rating = review.getRating();
-        this.visible = review.getVisible();
+        BeanUtils.copyProperties(review, this);
     }
 
     public UUID getId() {
@@ -75,7 +71,7 @@ public class AdminReviewForm {
     }
 
     public Product getProduct() {
-        return this.product;
+        return product;
     }
 
     public void setProduct(Product product) {
@@ -83,7 +79,7 @@ public class AdminReviewForm {
     }
 
     public User getUser() {
-        return this.user;
+        return user;
     }
 
     public void setUser(User user) {
@@ -124,7 +120,8 @@ public class AdminReviewForm {
 
     @Override
     public String toString() {
-        return "AdminReviewForm(" + id + " of: " + product.getName() + " by: " + user.getUsername() + " on : " + reviewDate + ")";
+        return "AdminReviewForm [id=" + id + ", product=" + product + ", user=" + user + ", reviewDate=" + reviewDate
+                + ", comment=" + comment + ", rating=" + rating + ", visible=" + visible + "]";
     }
-
+    
 }

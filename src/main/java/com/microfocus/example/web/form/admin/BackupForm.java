@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -21,7 +21,8 @@ package com.microfocus.example.web.form.admin;
 
 /**
  * Form backing entity/DTO for database backup
- * @author Kevin A. Lee
+ * 
+ * @author kadraman
  */
 public class BackupForm {
 
@@ -70,8 +71,8 @@ public class BackupForm {
 
     @Override
     public String toString() {
-        return "BackupForm{" +
-                ", id='" + id + '\'' +
-                '}';
+        return "BackupForm [id=" + id + ", status=" + status + ", profile=" + profile + ", refreshInterval="
+                + refreshInterval + "]";
     }
+    
 }

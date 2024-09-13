@@ -19,6 +19,7 @@
 
 package com.microfocus.example.payload.request;
 
+import com.microfocus.example.entity.MfaType;
 import com.microfocus.example.entity.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -76,7 +77,7 @@ public class UserRequest {
 
     private Boolean enabled;
 
-    private Boolean mfa;
+    private MfaType mfaType;
 
 
     public UserRequest() {
@@ -95,7 +96,7 @@ public class UserRequest {
         this.zip= user.getZip();
         this.country = user.getCountry();
         this.enabled = user.getEnabled();
-        this.mfa = user.getMfa();
+        this.mfaType = user.getMfaType();
     }
 
     public UUID getId() {
@@ -210,12 +211,12 @@ public class UserRequest {
         this.enabled = enabled;
     }
 
-    public Boolean getMfa() {
-        return mfa;
+    public MfaType getMfaType() {
+        return mfaType;
     }
 
-    public void setMfa(Boolean mfa) {
-        this.mfa = mfa;
+    public void setMfaType(MfaType mfaType) {
+        this.mfaType = mfaType;
     }
 
     @Override

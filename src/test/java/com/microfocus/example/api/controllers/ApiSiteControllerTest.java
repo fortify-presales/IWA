@@ -1,6 +1,7 @@
 package com.microfocus.example.api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microfocus.example.entity.MfaType;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.api.ApiBadCredentialsException;
 import com.microfocus.example.payload.request.LoginRequest;
@@ -103,7 +104,7 @@ class ApiSiteControllerTest {
         user.setFirstName("Jane");
         user.setId(UUID.randomUUID());
         user.setLastName("Doe");
-        user.setMfa(true);
+        user.setMfaType(MfaType.MFA_NONE);
         user.setPassword("iloveyou");
         user.setPhone("4105551212");
         user.setState("MD");
@@ -380,7 +381,7 @@ class ApiSiteControllerTest {
         user.setFirstName("Jane");
         user.setId(UUID.randomUUID());
         user.setLastName("Doe");
-        user.setMfa(true);
+        user.setMfaType(MfaType.MFA_EMAIL);
         user.setPassword("iloveyou");
         user.setPhone("4105551212");
         user.setState("MD");

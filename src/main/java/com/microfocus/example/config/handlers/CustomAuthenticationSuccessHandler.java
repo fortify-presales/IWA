@@ -20,6 +20,7 @@
 package com.microfocus.example.config.handlers;
 
 import com.microfocus.example.entity.CustomUserDetails;
+import com.microfocus.example.entity.MfaType;
 import com.microfocus.example.exception.VerificationRequestFailedException;
 import com.microfocus.example.service.VerificationService;
 import com.microfocus.example.utils.JwtUtils;
@@ -69,7 +70,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         HttpSession session = request.getSession(false);
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        Boolean mfa = customUserDetails.getMfa();
+        MfaType mfaType = customUserDetails.getMfaType();
         UUID userId = customUserDetails.getId();
         String mobile = customUserDetails.getMobile();
         boolean isAdmin = customUserDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
@@ -77,15 +78,28 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         if (isAdmin) {
             log.debug("User is ADMIN, bypassing verification...");
             bypassVerification(request, response, authentication);
-        } else if (!mfa || mobile.isEmpty()) {
-            log.debug("Two factor authentication is not enabled or no phone number provided, bypassing verification...");
-            bypassVerification(request, response, authentication);
         } else {
-            log.debug("Using users phone number '" + mobile + "' for verification...");
-            session.setAttribute("mobileDigits",
-                    mobile.length() > 2 ? mobile.substring(mobile.length() - 2) : mobile);
-            redirectStrategy.sendRedirect(request, response, MFA_URL);
-        }
+            switch (mfaType) {
+                case MFA_NONE:
+                    log.debug("Multi factor authentication is not enabled, bypassing verification...");
+                    bypassVerification(request, response, authentication);
+                    break;
+                case MFA_EMAIL:
+                    redirectStrategy.sendRedirect(request, response, MFA_URL);
+                    break;
+                case MFA_SMS:
+                    session.setAttribute("mobileDigits",
+                        mobile.length() > 2 ? mobile.substring(mobile.length() - 2) : mobile);
+                    redirectStrategy.sendRedirect(request, response, MFA_URL);
+                    break;
+                case MFA_APP:
+                    redirectStrategy.sendRedirect(request, response, MFA_URL);
+                    break;
+                default:
+                    log.debug("Unknown verification type, bypassing verification...");
+                    bypassVerification(request, response, authentication);
+            }
+        } 
         /*else {
             String targetUrl = getTargetUrl(request, response, authentication);
             log.debug("Redirecting to: " + targetUrl);

@@ -113,7 +113,7 @@ app:
     expiration-ms: 86400000
     refresh-ms: 86400000
   mail:
-    from-address: iwa@consultant.com
+    from-address: do-not-reply@onfortify.com
     from-name: IWAPharmacyDirect
   twilio:
     phone-number: # Twilio phone number

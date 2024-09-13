@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -19,15 +19,12 @@
 
 package com.microfocus.example.web.form;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.microfocus.example.entity.Message;
-import com.microfocus.example.entity.Product;
 import com.microfocus.example.entity.User;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -36,7 +33,7 @@ import java.util.UUID;
 /**
  * Form backing entity/DTO for updating message
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 public class MessageForm {
 
@@ -60,12 +57,7 @@ public class MessageForm {
     }
 
     public MessageForm(Message message) {
-        this.id = message.getId();
-        this.user = message.getUser();
-        this.text = message.getText();
-        this.sentDate = message.getSentDate();
-        this.readDate = message.getReadDate();
-        this.read = message.getRead();
+        BeanUtils.copyProperties(message, this);
     }
 
     public UUID getId() {
@@ -118,7 +110,8 @@ public class MessageForm {
 
     @Override
     public String toString() {
-        return "MessageForm(" + id + " : " + text.substring(0,40) + ")";
+        return "MessageForm [id=" + id + ", user=" + user + ", text=" + text + ", sentDate=" + sentDate + ", readDate="
+                + readDate + ", read=" + read + "]";
     }
 
 }

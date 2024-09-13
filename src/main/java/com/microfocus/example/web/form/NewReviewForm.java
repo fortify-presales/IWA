@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2021 Micro Focus or one of its affiliates
+        Copyright (C) 2021-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -19,9 +19,9 @@
 
 package com.microfocus.example.web.form;
 
-import com.microfocus.example.entity.Product;
 import com.microfocus.example.entity.Review;
-import com.microfocus.example.entity.User;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Max;
@@ -32,7 +32,7 @@ import java.util.UUID;
 /**
  * Form backing entity/DTO for new review
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 public class NewReviewForm {
 
@@ -69,14 +69,7 @@ public class NewReviewForm {
     }
 
     public NewReviewForm(Review review) {
-        this.id = review.getId();
-        this.productId = review.getProduct().getId();
-        this.productName = review.getProduct().getName();
-        this.userId = review.getUser().getId();
-        this.reviewDate = review.getReviewDate();
-        this.comment = review.getComment();
-        this.rating = review.getRating();
-        this.visible = review.getVisible();
+        BeanUtils.copyProperties(review, this);
     }
 
     public UUID getId() {
@@ -88,7 +81,7 @@ public class NewReviewForm {
     }
 
     public UUID getProductId() {
-        return this.productId;
+        return productId;
     }
 
     public void setProductId(UUID productId) {
@@ -96,7 +89,7 @@ public class NewReviewForm {
     }
 
     public String getProductName() {
-        return this.productName;
+        return productName;
     }
 
     public void setProductName(String productName) {
@@ -104,7 +97,7 @@ public class NewReviewForm {
     }
 
     public UUID getUserId() {
-        return this.userId;
+        return userId;
     }
 
     public void setUserId(UUID userId) {
@@ -145,15 +138,9 @@ public class NewReviewForm {
 
     @Override
     public String toString() {
-        return "NewReviewForm{" +
-                "id=" + id +
-                ", productId=" + productId +
-                ", productName=" + productName +
-                ", userId=" + userId +
-                ", reviewDate=" + reviewDate +
-                ", comment='" + comment + '\'' +
-                ", rating=" + rating +
-                ", visible=" + visible +
-                '}';
+        return "NewReviewForm [id=" + id + ", productId=" + productId + ", productName=" + productName + ", userId="
+                + userId + ", reviewDate=" + reviewDate + ", comment=" + comment + ", rating=" + rating + ", visible="
+                + visible + "]";
     }
+
 }

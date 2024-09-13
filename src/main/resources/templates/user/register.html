@@ -91,10 +91,10 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label for="phone" class="text-black">Phone <span class="text-danger">*</span></label>
+                                <label for="phone" class="text-black">Mobile <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="phone" name="phone" th:field="*{phone}" th:value="${registerUserForm.phone}" aria-describedby="phoneHelpBlock">
                                 <small id="phoneHelpBlock" class="form-text text-muted">
-                                    Mobile phone number including country code, e.g. +1707123456.
+                                    Mobile phone number including country code, e.g. +1707123456
                                 </small>
                                 <div th:if="${#fields.hasErrors('phone')}">
                                     <p class="alert alert-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></p>

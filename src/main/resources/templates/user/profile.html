@@ -48,8 +48,8 @@
                                     <input readonly th:value="${userForm.email}" type="text" class="form-control" id="email" name="email">
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="phone" class="text-black">Phone </label>
-                                    <input readonly th:value="${userForm.phone}" type="text" class="form-control" id="phone" name="phone" placeholder="Phone Number">
+                                    <label for="phone" class="text-black">Mobile </label>
+                                    <input readonly th:value="${userForm.phone}" type="text" class="form-control" id="phone" name="phone" placeholder="Mobile Number">
                                 </div>
                             </div>
 
@@ -81,12 +81,16 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <div class="form-check">
-                                    <input disabled class="form-check-input" type="checkbox" th:checked="${userForm.mfa}" id="mfa">
-                                    <label class="form-check-label" for="mfa">
-                                        Enable Two-Factor Authentication
-                                    </label>
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <div th:switch="${#strings.toString(userForm.mfaType)}">
+                                        <p th:case="'MFA_NONE'" class="text-black"> Multi-Factor Authentication is not configured for your account.</p>
+                                        <p th:case="'MFA_EMAIL'" class="text-black"><i class="fas fa-envelope fa-fw"></i>&nbsp;Your account is configured to use Multi-Factor Authentication via email.</p>
+                                        <p th:case="'MFA_SMS'" class="text-black"><i class="fas fa-sms fa-fw"></i>&nbsp;Your account is configured to use Multi-Factor Authentication via mobile phone.</p>
+                                        <p th:case="'MFA_APP'" class="text-black"><i class="fas fa-mobile fa-fw"></i>&nbsp;Your account is configured to use Multi-Factor Authentication via an Authenticator App.</p>
+                                        <!-- * for default case -->
+                                        <p th:case="*" class="text-black"><i class="fas fa-question-circle fa-fw"></i>&nbsp;Unknown Multi-Factor Autehntication configured!</p>
+                                    </div>
                                 </div>
                             </div>
 

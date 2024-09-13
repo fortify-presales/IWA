@@ -1,0 +1,13 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <div th:fragment="mfaSelector (activeItem, required, disabled)">
+        <label for="mfaType" class="text-black">Multi-Factor Authentication <span th:if="${required}" class="text-danger">*</span></label>
+        <select id="mfaType" th:disabled="${disabled}" class="form-control">
+            <option th:selected="${activeItem}=='MFA_NONE'" value="MFA_NONE">None</option>
+            <option th:selected="${activeItem}=='MFA_EMAIL'" value="MFA_EMAIL">Email</option>
+            <option th:selected="${activeItem}=='MFA_SMS'" value="MFA_SMS">SMS</option>
+            <option th:selected="${activeItem}=='MFA_APP'" value="MFA_APP">Authenticator App</option>
+        </select>
+    </div>
+</html>

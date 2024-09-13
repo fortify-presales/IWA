@@ -22,8 +22,6 @@ package com.microfocus.example.web.controllers;
 import com.microfocus.example.config.LocaleConfiguration;
 import com.microfocus.example.config.handlers.CustomAuthenticationSuccessHandler;
 import com.microfocus.example.entity.CustomUserDetails;
-import com.microfocus.example.entity.Mail;
-import com.microfocus.example.entity.SMS;
 import com.microfocus.example.exception.VerificationRequestFailedException;
 import com.microfocus.example.payload.request.EmailRequest;
 import com.microfocus.example.service.EmailSenderService;
@@ -46,8 +44,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -136,9 +132,6 @@ public class DefaultController extends AbstractBaseController{
                     "[IWA Pharmacy Direct] Your One Time Passcode", String.valueOf(otp));
                 try {
                     log.debug("Sending OTP {} via email to {}", String.valueOf(otp), email);
-                    if (activeProfile.contains("dev")) {
-                        Thread.sleep(10000);
-                    }
                     EmailUtils.sendEmail(emailRequest);
                 } catch (Exception ex) {
                    log.error(ex.getLocalizedMessage());

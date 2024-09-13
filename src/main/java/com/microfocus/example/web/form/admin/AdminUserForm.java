@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -19,16 +19,20 @@
 
 package com.microfocus.example.web.form.admin;
 
+import com.microfocus.example.entity.MfaType;
 import com.microfocus.example.entity.User;
 
 import javax.persistence.Column;
 import javax.validation.constraints.*;
+
+import org.springframework.beans.BeanUtils;
+
 import java.util.UUID;
 
 /**
  * Form backing entity/DTO for updating user profile
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 public class AdminUserForm {
 
@@ -63,25 +67,13 @@ public class AdminUserForm {
 
     private Boolean enabled;
 
-    private Boolean mfa;
+    private MfaType mfaType;
 
     public AdminUserForm() {
     }
 
     public AdminUserForm(User user) {
-        this.id = user.getId();
-        this.username = user.getUsername();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.email = user.getEmail();
-        this.phone = user.getPhone();
-        this.address = user.getAddress();
-        this.city = user.getCity();
-        this.state = user.getState();
-        this.zip = user.getZip();
-        this.country = user.getCountry();
-        this.enabled = user.getEnabled();
-        this.mfa = user.getMfa();
+       BeanUtils.copyProperties(user, this);
     }
 
     public UUID getId() {
@@ -180,20 +172,20 @@ public class AdminUserForm {
         this.enabled = enabled;
     }
 
-    public Boolean getMfa() {
-        return mfa;
+    public MfaType getMfaType() {
+        return mfaType;
     }
 
-    public void setMfa(Boolean mfa) {
-        this.mfa = mfa;
+    public void setMfaType(MfaType mfaType) {
+        this.mfaType = mfaType;
     }
 
     @Override
     public String toString() {
-        return "AdminUserForm{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", email =" + email +
-                '}';
+        return "AdminUserForm [id=" + id + ", username=" + username + ", firstName=" + firstName + ", lastName="
+                + lastName + ", email=" + email + ", phone=" + phone + ", address=" + address + ", city=" + city
+                + ", state=" + state + ", zip=" + zip + ", country=" + country + ", enabled=" + enabled + ", mfaType="
+                + mfaType + "]";
     }
+
 }

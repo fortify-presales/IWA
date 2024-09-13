@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -19,20 +19,19 @@
 
 package com.microfocus.example.web.form;
 
-import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.Order;
 import com.microfocus.example.entity.User;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.UUID;
 
 /**
  * Form backing entity/DTO for updating order
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 public class OrderForm {
 
@@ -58,14 +57,7 @@ public class OrderForm {
     }
 
     public OrderForm(Order order) {
-        this.id = order.getId();
-        this.user = order.getUser();
-        this.orderNum = order.getOrderNum();
-        this.orderDate = order.getOrderDate();
-        this.amount = order.getAmount();
-        this.cart = order.getCart();
-        this.shipped = order.getShipped();
-        this.shippedDate = order.getShippedDate();
+        BeanUtils.copyProperties(order, this);
     }
 
     public UUID getId() {
@@ -109,7 +101,7 @@ public class OrderForm {
     }
 
     public String getCart() {
-        return this.cart;
+        return cart;
     }
 
     public void setCart(String cart) {
@@ -134,7 +126,9 @@ public class OrderForm {
 
     @Override
     public String toString() {
-        return "OrderForm(" + id + " : " + orderNum + " for: " + user.getUsername() + " amount : " + amount + ")";
+        return "OrderForm [id=" + id + ", user=" + user + ", orderNum=" + orderNum + ", orderDate=" + orderDate
+                + ", amount=" + amount + ", cart=" + cart + ", shipped=" + shipped + ", shippedDate=" + shippedDate
+                + "]";
     }
 
 }

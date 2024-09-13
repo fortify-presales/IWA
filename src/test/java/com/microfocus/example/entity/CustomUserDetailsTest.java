@@ -45,7 +45,7 @@ class CustomUserDetailsTest {
         user.setFirstName("Jane");
         user.setId(UUID.randomUUID());
         user.setLastName("Doe");
-        user.setMfa(true);
+        user.setMfaType(MfaType.MFA_EMAIL);
         user.setPassword("iloveyou");
         user.setPhone("6625550144");
         user.setState("MD");
@@ -276,30 +276,31 @@ class CustomUserDetailsTest {
     }
 
     /**
-     * Method under test: {@link CustomUserDetails#getMfa()}
+     * Method under test: {@link CustomUserDetails#getMfaType()}
      */
     @Test
-    void testGetMfa() {
-        assertFalse((new CustomUserDetails(new User())).getMfa());
-        assertTrue((new CustomUserDetails(new User(UUID.randomUUID(), "janedoe", "iloveyou", "Jane", "Doe",
-                "jane.doe@example.org", "6625550144", "42 Main St", "Oxford", "MD", "21654", "GB", true, true))).getMfa());
+    void testGetMfaType() {
+        assertEquals((new CustomUserDetails(new User())).getMfaType(), MfaType.MFA_NONE);
+        assertEquals((new CustomUserDetails(new User(UUID.randomUUID(), "janedoe", "iloveyou", "Jane", "Doe",
+                "jane.doe@example.org", "6625550144", "42 Main St", "Oxford", "MD", "21654", "GB", true, MfaType.MFA_EMAIL))).getMfaType(),
+                MfaType.MFA_EMAIL);
     }
 
     /**
-     * Method under test: {@link CustomUserDetails#getMfa()}
+     * Method under test: {@link CustomUserDetails#getMfaType()}
      */
     @Test
     @Disabled("TODO: Complete this test")
-    void testGetMfa2() {
+    void TypetestGetMfa2() {
         // TODO: Complete this test.
         //   Reason: R013 No inputs found that don't throw a trivial exception.
         //   Diffblue Cover tried to run the arrange/act section, but the method under
         //   test threw
-        //   java.lang.NullPointerException: Cannot invoke "com.microfocus.example.entity.User.getMfa()" because "this.user" is null
-        //       at com.microfocus.example.entity.CustomUserDetails.getMfa(CustomUserDetails.java:89)
+        //   java.lang.NullPointerException: Cannot invoke "com.microfocus.example.entity.User.getMfaType()" because "this.user" is null
+        //       at com.microfocus.example.entity.CustomUserDetails.getMfaType(CustomUserDetails.java:89)
         //   See https://diff.blue/R013 to resolve this issue.
 
-        (new CustomUserDetails(null)).getMfa();
+        (new CustomUserDetails(null)).getMfaType();
     }
 
     /**
@@ -309,7 +310,7 @@ class CustomUserDetailsTest {
     void testIsEnabled() {
         assertFalse((new CustomUserDetails(new User())).isEnabled());
         assertTrue((new CustomUserDetails(new User(UUID.randomUUID(), "janedoe", "iloveyou", "Jane", "Doe",
-                "jane.doe@example.org", "6625550144", "42 Main St", "Oxford", "MD", "21654", "GB", true, true)))
+                "jane.doe@example.org", "6625550144", "42 Main St", "Oxford", "MD", "21654", "GB", true, MfaType.MFA_EMAIL)))
                 .isEnabled());
     }
 

@@ -1837,3 +1837,6 @@ a:hover {
     z-index: 10000000 !important;
 }
 
+#spinner { display:none; } 
+body.busy .spinner { display:block !important; }
+

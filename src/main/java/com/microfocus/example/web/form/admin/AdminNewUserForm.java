@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -19,8 +19,11 @@
 
 package com.microfocus.example.web.form.admin;
 
+import com.microfocus.example.entity.MfaType;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.web.validation.ValidPassword;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -31,7 +34,7 @@ import java.util.UUID;
 /**
  * Form backing entity/DTO for adding a new user
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 public class AdminNewUserForm {
 
@@ -77,27 +80,13 @@ public class AdminNewUserForm {
 
     private Boolean enabled;
 
-    private Boolean mfa;
+    private MfaType mfaType;
 
     public AdminNewUserForm() {
     }
 
     public AdminNewUserForm(User user) {
-        this.id = user.getId();
-        this.username = user.getUsername();
-        this.password = user.getPassword();
-        this.confirmPassword = user.getConfirmPassword();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.email = user.getEmail();
-        this.phone = user.getPhone();
-        this.address = user.getAddress();
-        this.city = user.getCity();
-        this.state = user.getState();
-        this.zip = user.getZip();
-        this.country = user.getCountry();
-        this.enabled = user.getEnabled();
-        this.mfa = user.getMfa();
+        BeanUtils.copyProperties(user, this);
     }
 
     public UUID getId() {
@@ -212,20 +201,20 @@ public class AdminNewUserForm {
         this.enabled = enabled;
     }
 
-    public Boolean getMfa() {
-        return mfa;
+    public MfaType getMfaType() {
+        return mfaType;
     }
 
-    public void setMfa(Boolean mfa) {
-        this.mfa = mfa;
+    public void setMfaType(MfaType mfaType) {
+        this.mfaType = mfaType;
     }
 
     @Override
     public String toString() {
-        return "AdminNewUserForm{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", email =" + email +
-                '}';
+        return "AdminNewUserForm [id=" + id + ", username=" + username + ", password=" + password + ", confirmPassword="
+                + confirmPassword + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+                + ", phone=" + phone + ", address=" + address + ", city=" + city + ", state=" + state + ", zip=" + zip
+                + ", country=" + country + ", enabled=" + enabled + ", mfaType=" + mfaType + "]";
     }
+
 }

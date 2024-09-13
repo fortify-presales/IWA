@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -23,12 +23,15 @@ import com.microfocus.example.entity.User;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+
+import org.springframework.beans.BeanUtils;
+
 import java.util.Optional;
 
 /**
  * Form backing entity/DTO for validating a new user
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 public class VerifyUserForm {
 
@@ -43,7 +46,7 @@ public class VerifyUserForm {
    }
 
     public VerifyUserForm(User user) {
-        this.email = user.getEmail();
+        BeanUtils.copyProperties(user, this);
     }
 
     public VerifyUserForm(Optional<String> email, Optional<String> code) {
@@ -69,9 +72,7 @@ public class VerifyUserForm {
 
     @Override
     public String toString() {
-        return "ValidateUserForm{" +
-                "email=" + email +
-                ", code=" + code +
-                '}';
+        return "VerifyUserForm [email=" + email + ", code=" + code + "]";
     }
+
 }

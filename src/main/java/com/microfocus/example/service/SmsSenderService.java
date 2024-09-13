@@ -26,6 +26,7 @@ import com.twilio.type.PhoneNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -43,6 +44,7 @@ public class SmsSenderService {
     @Value("${app.twilio.auth-token}")
     private String twilioAuthToken;
 
+    @Async
     public String sendSms(SMS sms) {
         log.debug("Sending SMS to: {}", sms.getTo());
 

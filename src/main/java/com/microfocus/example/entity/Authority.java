@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -28,7 +28,8 @@ import java.util.UUID;
 
 /**
  * Spring Security "Authority" entity
- * @author Kevin A. Lee
+ * 
+ * @author kadraman
  */
 @Entity
 @Table(name = "authorities")
@@ -75,9 +76,7 @@ public class Authority {
 
     @Override
     public String toString() {
-        return "Authority{" +
-                "id=" + id +
-                ", name=" + name +
-                '}';
+        return "Authority [id=" + id + ", name=" + name + "]";
     }
+
 }

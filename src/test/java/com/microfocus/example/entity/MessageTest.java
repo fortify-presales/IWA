@@ -57,7 +57,7 @@ class MessageTest {
         user.setFirstName("Jane");
         user.setId(UUID.randomUUID());
         user.setLastName("Doe");
-        user.setMfa(true);
+        user.setMfaType(MfaType.MFA_EMAIL);;
         user.setPassword("iloveyou");
         user.setPhone("6625550144");
         user.setState("MD");

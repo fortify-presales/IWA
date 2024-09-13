@@ -37,7 +37,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  * Custom User entity
- * @author Kevin A. Lee
+ * 
+ * @author kadraman
  */
 @Entity
 @Table(name = "users")
@@ -110,8 +111,10 @@ public class User implements Serializable {
     @JsonProperty("enabled")
     private boolean enabled;
 
-    @JsonProperty("mfa")
-    private boolean mfa;
+    @JsonProperty("mfaType")
+    @Column(name= "mfa_type")
+    @Enumerated(EnumType.STRING)
+    private MfaType mfaType;
 
     //@JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
@@ -121,10 +124,11 @@ public class User implements Serializable {
     private Set<Authority> authorities = new HashSet<>();
 
     public User() {
+        this.mfaType = MfaType.MFA_NONE;
     }
 
     public User(UUID id, String username, String password, String firstName, String lastName, String email, String phone,
-                String address, String city, String state, String zip, String country, boolean enabled, boolean mfa) {
+                String address, String city, String state, String zip, String country, boolean enabled, MfaType mfaType) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -138,7 +142,7 @@ public class User implements Serializable {
         this.zip = zip;
         this.country = country;
         this.enabled = enabled;
-        this.mfa = mfa;
+        this.mfaType = mfaType;
     }
 
     public UUID getId() {
@@ -271,12 +275,12 @@ public class User implements Serializable {
         this.enabled = enabled;
     }
 
-    public boolean getMfa() {
-        return mfa;
+    public MfaType getMfaType() {
+        return mfaType;
     }
 
-    public void setMfa(boolean mfa) {
-        this.mfa = mfa;
+    public void setMfaType(MfaType mfaType) {
+        this.mfaType = mfaType;
     }
 
     public Set<Authority> getAuthorities() {
@@ -302,10 +306,11 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", authorities=" + authorities +
-                '}';
+        return "User [id=" + id + ", username=" + username + ", password=" + password + ", confirmPassword="
+                + confirmPassword + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+                + ", phone=" + phone + ", address=" + address + ", city=" + city + ", state=" + state + ", zip=" + zip
+                + ", country=" + country + ", dateCreated=" + dateCreated + ", verifyCode=" + verifyCode + ", enabled="
+                + enabled + ", mfaType=" + mfaType + ", authorities=" + authorities + "]";
     }
+
 }

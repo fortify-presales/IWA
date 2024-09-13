@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microfocus.example.entity.MfaType;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.UserNotFoundException;
 import com.microfocus.example.service.UserService;
@@ -62,7 +63,7 @@ class ApiUserControllerTest {
         user.setFirstName("Jane");
         user.setId(UUID.randomUUID());
         user.setLastName("Doe");
-        user.setMfa(true);
+        user.setMfaType(MfaType.MFA_EMAIL);
         user.setPassword("iloveyou");
         user.setPhone("4105551212");
         user.setState("MD");
@@ -127,7 +128,7 @@ class ApiUserControllerTest {
         user.setFirstName("Jane");
         user.setId(UUID.randomUUID());
         user.setLastName("Doe");
-        user.setMfa(true);
+        user.setMfaType(MfaType.MFA_EMAIL);
         user.setPassword("iloveyou");
         user.setPhone("4105551212");
         user.setState("MD");
@@ -163,7 +164,7 @@ class ApiUserControllerTest {
         user.setFirstName("Jane");
         user.setId(UUID.randomUUID());
         user.setLastName("Doe");
-        user.setMfa(true);
+        user.setMfaType(MfaType.MFA_EMAIL);
         user.setPassword("iloveyou");
         user.setPhone("4105551212");
         user.setState("MD");
@@ -197,7 +198,7 @@ class ApiUserControllerTest {
         user.setFirstName("Jane");
         user.setId(UUID.randomUUID());
         user.setLastName("Doe");
-        user.setMfa(true);
+        user.setMfaType(MfaType.MFA_EMAIL);
         user.setPassword("iloveyou");
         user.setPhone("4105551212");
         user.setState("MD");
@@ -313,7 +314,7 @@ class ApiUserControllerTest {
         user.setFirstName("Jane");
         user.setId(UUID.randomUUID());
         user.setLastName("Doe");
-        user.setMfa(true);
+        user.setMfaType(MfaType.MFA_EMAIL);
         user.setPassword("iloveyou");
         user.setPhone("4105551212");
         user.setState("MD");
@@ -347,7 +348,7 @@ class ApiUserControllerTest {
         user.setFirstName("Jane");
         user.setId(UUID.randomUUID());
         user.setLastName("Doe");
-        user.setMfa(true);
+        user.setMfaType(MfaType.MFA_EMAIL);
         user.setPassword("iloveyou");
         user.setPhone("4105551212");
         user.setState("MD");

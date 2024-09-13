@@ -21,6 +21,7 @@ package com.microfocus.example.repository;
 
 import com.microfocus.example.entity.Authority;
 import com.microfocus.example.entity.AuthorityType;
+import com.microfocus.example.entity.MfaType;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.exception.UserLockedOutException;
 import javax.persistence.Query;
@@ -97,7 +98,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                                         results.getString("zip"),
                                         results.getString("country"),
                                         results.getBoolean("enabled"),
-                                        results.getBoolean("mfa")
+                                        MfaType.valueOf(results.getString("mfa_type"))
                                 );
                                 utmp.setCountry(results.getString("country"));
                                 utmp.setAddress(results.getString("address"));

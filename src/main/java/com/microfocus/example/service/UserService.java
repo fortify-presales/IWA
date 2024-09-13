@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -53,7 +53,8 @@ import java.util.*;
 
 /**
  * User Service to hide business logic / database persistence
- * @author Kevin A. Lee
+ * 
+ * @author kadraman
  */
 @Service
 @Transactional
@@ -163,6 +164,7 @@ public class UserService {
         if (findUserByEmail(email).isPresent()) {
             throw new EmailAddressTakenException(email);
         }
+        // also check mobile is taken?
 
         // create new user in database
         Set<Authority> authorities = new HashSet<Authority>();
@@ -213,7 +215,7 @@ public class UserService {
             user.setState(apiUser.getState());
             user.setZip(apiUser.getZip());
             user.setCountry(apiUser.getCountry());
-            user.setMfa(apiUser.getMfa());
+            user.setMfaType(apiUser.getMfaType());
             return userRepository.saveAndFlush(user);
         } else {
             throw new UserNotFoundException("Username not found: " + apiUser.getUsername());
@@ -221,13 +223,25 @@ public class UserService {
     }
 
     public User saveUserFromUserForm(UserForm userForm) throws InvalidPasswordException, UserNotFoundException {
-        if (userExistsById(userForm.getId())) {
-            userRepository.updateProfile(userForm.getId(), userForm.getFirstName(), userForm.getLastName(),
-                userForm.getEmail(), userForm.getPhone(), userForm.getAddress(), userForm.getCity(), 
-                userForm.getState(), userForm.getZip(), userForm.getCountry(), userForm.getMfa());
-            return userRepository.findById(userForm.getId()).get();
+        Optional<User> optionalUser = userRepository.findUserByUsername(userForm.getUsername());
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setId(userForm.getId());
+            user.setUsername(userForm.getUsername());
+            user.setFirstName(userForm.getFirstName());
+            user.setLastName(userForm.getLastName());
+            user.setEmail(userForm.getEmail());
+            user.setPhone(userForm.getPhone());
+            user.setAddress(userForm.getAddress());
+            user.setCity(userForm.getCity());
+            user.setState(userForm.getState());
+            user.setZip(userForm.getZip());
+            user.setCountry(userForm.getCountry());
+            user.setEnabled(userForm.getEnabled());
+            user.setMfaType(userForm.getMfaType());
+            return userRepository.saveAndFlush(user);
         } else {
-            throw new UserNotFoundException("User with id: '" + userForm.getUsername() + "' not found");
+            throw new UserNotFoundException("Username not found: " + userForm.getUsername());
         }
     }
 
@@ -247,7 +261,7 @@ public class UserService {
             user.setZip(adminUserForm.getZip());
             user.setCountry(adminUserForm.getCountry());
             user.setEnabled(adminUserForm.getEnabled());
-            user.setMfa(adminUserForm.getMfa());
+            user.setMfaType(adminUserForm.getMfaType());
             return userRepository.saveAndFlush(user);
         } else {
             throw new UserNotFoundException("Username not found: " + adminUserForm.getUsername());
@@ -300,7 +314,7 @@ public class UserService {
         utmp.setZip(adminNewUserForm.getZip());
         utmp.setCountry(adminNewUserForm.getCountry());
         utmp.setEnabled(adminNewUserForm.getEnabled());
-        utmp.setMfa(adminNewUserForm.getMfa());
+        utmp.setMfaType(adminNewUserForm.getMfaType());
         utmp.setDateCreated(new Date());
         utmp.setAuthorities(authorities);
         return userRepository.saveAndFlush(utmp);

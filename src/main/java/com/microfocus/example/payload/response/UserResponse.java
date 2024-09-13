@@ -19,6 +19,7 @@
 
 package com.microfocus.example.payload.response;
 
+import com.microfocus.example.entity.MfaType;
 import com.microfocus.example.entity.User;
 
 import java.util.UUID;
@@ -42,7 +43,7 @@ public class UserResponse {
     private String zip;
     private String country;
     private Boolean enabled;
-    private Boolean mfa;
+    private MfaType mfaType;
 
     public UserResponse() {
     }
@@ -60,7 +61,7 @@ public class UserResponse {
         this.zip= user.getZip();
         this.country = user.getCountry();
         this.enabled = user.getEnabled();
-        this.mfa = user.getMfa();
+        this.mfaType = user.getMfaType();
     }
 
     public UUID getId() {
@@ -111,8 +112,8 @@ public class UserResponse {
         return enabled;
     }
 
-    public Boolean getMfa() {
-        return mfa;
+    public MfaType getMfaType() {
+        return mfaType;
     }
 
 }

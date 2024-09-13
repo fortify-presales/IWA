@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ package com.microfocus.example.web.form;
 
 import javax.validation.constraints.NotEmpty;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -29,7 +30,8 @@ import com.microfocus.example.web.validation.ValidPassword;
 
 /**
  * Form backing entity/DTO for changing password
- * @author Kevin A. Lee
+ * 
+ * @author kadraman
  */
 public class PasswordForm {
 
@@ -51,7 +53,7 @@ public class PasswordForm {
     }
 
     public PasswordForm(User user) {
-        this.username = user.getUsername();
+        BeanUtils.copyProperties(user, this);
     }
 
     public String getUsername() {
@@ -78,10 +80,10 @@ public class PasswordForm {
         this.confirmPassword = confirmPassword;
     }
 
-     @Override
+    @Override
     public String toString() {
-        return "PasswordForm{" +
-                ", username='" + username + '\'' +
-                '}';
+        return "PasswordForm [username=" + username + ", password=" + password + ", confirmPassword=" + confirmPassword
+                + "]";
     }
+
 }

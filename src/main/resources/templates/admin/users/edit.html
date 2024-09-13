@@ -82,7 +82,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6" th:classappend="${#fields.hasErrors('phone')}? 'has-error':''">
-                                    <label for="phone" class="text-black">Phone <span class="text-danger">*</span></label>
+                                    <label for="phone" class="text-black">Mobile <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="phone" th:field="*{phone}" th:value="${adminUserForm.phone}">
                                     <div th:if="${#fields.hasErrors('phone')}">
                                         <p class="alert alert-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></p>

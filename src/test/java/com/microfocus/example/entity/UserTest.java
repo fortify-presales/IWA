@@ -48,7 +48,7 @@ class UserTest {
      *   <li>{@link User#setFirstName(String)}
      *   <li>{@link User#setId(UUID)}
      *   <li>{@link User#setLastName(String)}
-     *   <li>{@link User#setMfa(boolean)}
+     *   <li>{@link User#Type(MfaType)}
      *   <li>{@link User#setPassword(String)}
      *   <li>{@link User#setPhone(String)}
      *   <li>{@link User#setState(String)}
@@ -67,7 +67,7 @@ class UserTest {
      *   <li>{@link User#getFirstName()}
      *   <li>{@link User#getId()}
      *   <li>{@link User#getLastName()}
-     *   <li>{@link User#getMfa()}
+     *   <li>{@link User#getMfaType()}
      *   <li>{@link User#getPassword()}
      *   <li>{@link User#getPhone()}
      *   <li>{@link User#getState()}
@@ -93,7 +93,7 @@ class UserTest {
         UUID randomUUIDResult = UUID.randomUUID();
         actualUser.setId(randomUUIDResult);
         actualUser.setLastName("Doe");
-        actualUser.setMfa(true);
+        actualUser.setMfaType(MfaType.MFA_EMAIL);;
         actualUser.setPassword("iloveyou");
         actualUser.setPhone("6625550144");
         actualUser.setState("MD");
@@ -112,7 +112,7 @@ class UserTest {
         assertEquals("Jane", actualUser.getFirstName());
         assertSame(randomUUIDResult, actualUser.getId());
         assertEquals("Doe", actualUser.getLastName());
-        assertTrue(actualUser.getMfa());
+        assertEquals(actualUser.getMfaType(), MfaType.MFA_EMAIL);
         assertEquals("iloveyou", actualUser.getPassword());
         assertEquals("6625550144", actualUser.getPhone());
         assertEquals("MD", actualUser.getState());
@@ -137,7 +137,7 @@ class UserTest {
      *   <li>{@link User#setFirstName(String)}
      *   <li>{@link User#setId(UUID)}
      *   <li>{@link User#setLastName(String)}
-     *   <li>{@link User#setMfa(boolean)}
+     *   <li>{@link User#Type(MfaType)}
      *   <li>{@link User#setPassword(String)}
      *   <li>{@link User#setPhone(String)}
      *   <li>{@link User#setState(String)}
@@ -156,7 +156,7 @@ class UserTest {
      *   <li>{@link User#getFirstName()}
      *   <li>{@link User#getId()}
      *   <li>{@link User#getLastName()}
-     *   <li>{@link User#getMfa()}
+     *   <li>{@link User#getMfaType()}
      *   <li>{@link User#getPassword()}
      *   <li>{@link User#getPhone()}
      *   <li>{@link User#getState()}
@@ -168,7 +168,7 @@ class UserTest {
     @Test
     void testConstructor2() {
         User actualUser = new User(UUID.randomUUID(), "janedoe", "iloveyou", "Jane", "Doe", "jane.doe@example.org",
-                "6625550144", "42 Main St", "Oxford", "MD", "21654", "GB", true, true);
+                "6625550144", "42 Main St", "Oxford", "MD", "21654", "GB", true, MfaType.MFA_EMAIL);
         actualUser.setAddress("42 Main St");
         HashSet<Authority> authoritySet = new HashSet<>();
         actualUser.setAuthorities(authoritySet);
@@ -183,7 +183,7 @@ class UserTest {
         UUID randomUUIDResult = UUID.randomUUID();
         actualUser.setId(randomUUIDResult);
         actualUser.setLastName("Doe");
-        actualUser.setMfa(true);
+        actualUser.setMfaType(MfaType.MFA_EMAIL);
         actualUser.setPassword("iloveyou");
         actualUser.setPhone("6625550144");
         actualUser.setState("MD");
@@ -202,7 +202,7 @@ class UserTest {
         assertEquals("Jane", actualUser.getFirstName());
         assertSame(randomUUIDResult, actualUser.getId());
         assertEquals("Doe", actualUser.getLastName());
-        assertTrue(actualUser.getMfa());
+        assertEquals(actualUser.getMfaType(), MfaType.MFA_EMAIL);
         assertEquals("iloveyou", actualUser.getPassword());
         assertEquals("6625550144", actualUser.getPhone());
         assertEquals("MD", actualUser.getState());
@@ -247,7 +247,7 @@ class UserTest {
     void testFromUserDetails3() {
         User actualFromUserDetailsResult = User
                 .fromUserDetails(new CustomUserDetails(new User(UUID.randomUUID(), "janedoe", "iloveyou", "Jane", "Doe",
-                        "jane.doe@example.org", "6625550144", "42 Main St", "Oxford", "MD", "21654", "GB", true, true)));
+                        "jane.doe@example.org", "6625550144", "42 Main St", "Oxford", "MD", "21654", "GB", true, MfaType.MFA_EMAIL)));
         assertEquals("janedoe", actualFromUserDetailsResult.getUsername());
         assertTrue(actualFromUserDetailsResult.getEnabled());
         assertTrue(actualFromUserDetailsResult.getAuthorities().isEmpty());
