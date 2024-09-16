@@ -1,6 +1,5 @@
 services:
   iwa:
-    profiles: ["dev"]
     image: iwa:latest
     restart: always
     ports:
@@ -29,18 +28,28 @@ services:
     networks:
       - iwa-net
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-  smtp4dev:
-    profiles: ["dev"]
-    image: rnwood/smtp4dev:v3
-    restart: always
-    ports:
-      - '5000:80'
-      - '2525:25'
-      - '5143:143'
-    volumes:
-      - ./data/smpt4dev:/smtp4dev
+  greenmail:
+    image: greenmail/standalone:latest
     environment:
-      - ServerOptions__Urls=http://*:80
-      - ServerOptions__HostName=smtp4dev  
+      - JAVA_OPTS=-Dgreenmail.verbose
+    ports:
+      - 3025:3025 # SMTP
+      - 3110:3110 # POP3
+      - 3143:3143 # IMAP
+      - 3465:3465 # SMTPS
+      - 3993:3993 # IMAPS
+      - 3995:3995 # POP3S
+      - 8081:8080 # API
+  roundcube:
+    image: roundcube/roundcubemail:latest
+    depends_on:
+      - greenmail
+    ports:
+      - 8000:80
+    environment:
+      - ROUNDCUBEMAIL_DEFAULT_HOST=greenmail  # IMAP server - tls:// prefix for STARTTLS, ssl:// for SSL/TLS
+      - ROUNDCUBEMAIL_DEFAULT_PORT=3143       # IMAP port
+      - ROUNDCUBEMAIL_SMTP_SERVER=greenmail   # SMTP server - tls:// prefix for STARTTLS, ssl:// for SSL/TLS
+      - ROUNDCUBEMAIL_SMTP_PORT=3025          # SMTP port
 networks:
   iwa-net:

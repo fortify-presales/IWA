@@ -55,18 +55,18 @@ spring:
       WRITE_DATES_AS_TIMESTAMPS: false
   mail:
     default-encoding: UTF-8
-    host: smtp.sendgrid.net
-    username: apikey
-    password: # Your API Password
-    port: 587
+    host: greenmail
+    username: user
+    password: password
+    port: 3025
     test-connection: true
-    debug: true
+    debug: false
     properties:
       mail:
         smtp:
-          auth: true
+          auth: false
           starttls:
-            enable: true   
+            enable: false   
 
 
 #  resources:

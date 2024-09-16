@@ -57,7 +57,7 @@ spring:
     host: localhost
     username: user
     password: password
-    port: 2525
+    port: 3025
     test-connection: false
     debug: true
     properties:
