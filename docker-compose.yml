@@ -1,5 +1,6 @@
 services:
   iwa:
+    profiles: ["dev"]
     image: iwa:latest
     restart: always
     ports:
@@ -28,5 +29,18 @@ services:
     networks:
       - iwa-net
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+  smtp4dev:
+    profiles: ["dev"]
+    image: rnwood/smtp4dev:v3
+    restart: always
+    ports:
+      - '5000:80'
+      - '2525:25'
+      - '5143:143'
+    volumes:
+      - ./data/smpt4dev:/smtp4dev
+    environment:
+      - ServerOptions__Urls=http://*:80
+      - ServerOptions__HostName=smtp4dev  
 networks:
   iwa-net:
