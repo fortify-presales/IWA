@@ -1,13 +1,7 @@
 services:
-  iwa:
-    image: iwa:latest
-    restart: always
-    ports:
-      - "8080:8080"
-    networks:
-      - iwa-net
   nginx:
     image: nginx:1.15-alpine
+    container_name: nginx
     restart: always
     ports:
       - "80:80"
@@ -21,6 +15,7 @@ services:
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
   certbot:
     image: certbot/certbot
+    container_name: certbot
     restart: always
     volumes:
       - ./data/certbot/conf:/etc/letsencrypt
@@ -30,6 +25,7 @@ services:
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
   greenmail:
     image: greenmail/standalone:latest
+    container_name: greenmail
     environment:
       - JAVA_OPTS=-Dgreenmail.verbose
     ports:
@@ -40,8 +36,11 @@ services:
       - 3993:3993 # IMAPS
       - 3995:3995 # POP3S
       - 8081:8080 # API
+    networks:
+      - iwa-net
   roundcube:
     image: roundcube/roundcubemail:latest
+    container_name: roundcube
     depends_on:
       - greenmail
     ports:
@@ -51,5 +50,17 @@ services:
       - ROUNDCUBEMAIL_DEFAULT_PORT=3143       # IMAP port
       - ROUNDCUBEMAIL_SMTP_SERVER=greenmail   # SMTP server - tls:// prefix for STARTTLS, ssl:// for SSL/TLS
       - ROUNDCUBEMAIL_SMTP_PORT=3025          # SMTP port
+    networks:
+      - iwa-net
+  iwa:
+    image: iwa:latest
+    container_name: iwa
+    depends_on:
+      - greenmail
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - iwa-net
 networks:
   iwa-net:
