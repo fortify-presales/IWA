@@ -2,24 +2,30 @@
 
 #### Code
 
-- [ ] Static/Dynamic correlation source code changes
+~~- [ ] Static/Dynamic correlation source code changes~~
 - [X] Multi-Factor Authentication source code changes
 - [X] Checkout workflow for Selenium scripts 
-- [ ] Login workflow for Selenium scripts
+- [X] Login workflow for Selenium scripts
 - [X] Product search filter - presentation
 - [ ] Product search filter - implementation
 - [X] Allow login by email address instead of username
 - [X] Complete registration process with email validation
 - [X] Add API Refresh token feature
 - [ ] Allow customers to post product reviews
-- [ ] Add message when order is made
+- [ ] Add message when order is 
+- [X] Add login support for 2FA
+- [X] 2FA via Email
+- [X] 2FA via SMS
+- [ ] 2FA via Authenticator App (TOTP)
 
 #### Configuration
 
 - [X] Provide alternate Gradle build scripts
 - [X] Include log4j dependency vulnerabilities (by using affected version of log4j)
 - [ ] Azure Resource Manager deployment
-- [X] Migrate pipelines to fcli
+- [X] Migrate GitHub pipelines to fcli
+- [X] Update Jenkinsfile for fcli
+- [X] Add FAST example scripts
 
 #### Data
 

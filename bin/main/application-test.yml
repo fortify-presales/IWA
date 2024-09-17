@@ -4,7 +4,7 @@ server:
     include-message: always
     include-binding-errors: always
     include-stacktrace: on_param
-    include-exception: false
+    include-exception: true
     whitelabel:
       enabled: false
   servlet:
@@ -13,7 +13,7 @@ server:
 spring:
   config:
     activate:
-      on-profile: "default"
+      on-profile: "test"
   main:
     allow-bean-definition-overriding: true
     banner-mode: "off"
@@ -34,16 +34,17 @@ spring:
   datasource:
     # h2 database
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:iwa
+    url: jdbc:h2:mem:iwa_test
     username: sa
     password: password
     initialization-mode: always
   jpa:
-    show-sql: false
+    show-sql: true
     hibernate:
       ddl-auto: none
     properties:
-      hibernate:
+      hiberate:
+        format_sql: true
         # h2 database dialect
         dialect: org.hibernate.dialect.H2Dialect
   mvc:
@@ -55,46 +56,23 @@ spring:
       WRITE_DATES_AS_TIMESTAMPS: false
   mail:
     default-encoding: UTF-8
-    host: smtp.sendgrid.net
-    username: apikey
-    password: # Your API Password
-    port: 587
-    test-connection: true
+    host: localhost
+    username: user
+    password: password
+    port: 3025
+    test-connection: false
     debug: true
     properties:
       mail:
         smtp:
-          auth: true
+          auth: false
           starttls:
-            enable: true   
-
-
-#  resources:
-#    add-mappings: false
-
-
-springdoc:
-  api-docs:
-    path: /v3/api-docs
-  swagger-ui:
-#    url: /v3/api-docs
-    path: /swagger-ui.html
-    display-request-duration: true
-
- #   groups-order: DESC
-    disable-swagger-default-url: true
-  paths-to-match: /api/**
-#  group-configs:
-#    - group: application
-#      paths-to-match: /api/**
-#    - group: actuator
-#      paths-to-match: /actuator/**
-
+            enable: false
 
 logging:
   level:
     root: WARN
-    com.microfocus: INFO
+    com.microfocus: DEBUG
     org.springframework.web: INFO
     org.springframework.security: INFO
 
@@ -113,9 +91,9 @@ app:
     expiration-ms: 86400000
     refresh-ms: 86400000
   mail:
-    from-address: do-not-reply@onfortify.com
+    from-address: no-reply@iwa.onfortify.com
     from-name: IWAPharmacyDirect
   twilio:
-    phone-number: # Twilio phone number
-    sid: # Twilio account SID
-    auth-token: # Twilio authentication token
+    phone-number: # Enter Twilio phone number
+    sid: # Enter Twilio account SID
+    auth-token: # Enter Twilio authentication token
