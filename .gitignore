@@ -15,6 +15,7 @@
 /etc/WSD/
 /installs/
 /fortify-sca.settings
+.venv
 
 # Ignore Gradle project-specific cache directory
 .gradle
