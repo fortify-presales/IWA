@@ -191,11 +191,9 @@ jobs:
           fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
           fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
           fod_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
-          # For DAST we are choosing to create a new release each time using GitHub Run Number
-          #fod_release_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
-          fod_release_name: ${{ format('{0}#{1}', steps.fortify-app-and-rel-name.outputs.release_name, github.run_number) }}
-          #fod_parent_release_name: ${{ steps.fortify-app-and-rel-name.outputs.parent_release_name }}
-          fod_parent_release_name: "dast-web-base"
+          fod_release_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
+          #fod_release_name: ${{ format('{0}#{1}', steps.fortify-app-and-rel-name.outputs.release_name, github.run_number) }}
+          fod_parent_release_name: ${{ steps.fortify-app-and-rel-name.outputs.parent_release_name }}
 
   Security-Gate:
     runs-on: ubuntu-latest
