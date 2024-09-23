@@ -13,12 +13,15 @@ VALUES ('32e7db01-86bc-4687-9ecb-d79b265ac14f', 'user1', '$2a$10$YFhTnHpCL.Z0Ev0
 INSERT INTO users (id, username, password, first_name, last_name, email, phone, address, city, state, zip, country, date_created, enabled, mfa_type)
 VALUES ('db4cfab1-ff1d-4bca-a662-394771841383', 'user2', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32',
         'Sarah', 'Shopper', 'user2@localhost.com', '+44808123456', '1 Somewhere Street', 'London', 'Greater London', 'SW1', 'United Kingdom', CURDATE(), true, 'MFA_EMAIL');
+INSERT INTO users (id, username, password, secret, first_name, last_name, email, phone, address, city, state, zip, country, date_created, enabled, mfa_type)
+VALUES ('a730c051-b5c2-454c-b669-679f06d99731', 'user3', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32', 'IJGK2F5OH6E4CD2NK6Q4BSREMGJSJXEC',
+        'Susan', 'Shopper', 'user3@localhost.com', '+44808123456', '1 Somewhere Street', 'London', 'Greater London', 'SW1', 'United Kingdom', CURDATE(), true, 'MFA_APP');
 INSERT INTO users (id, username, password, first_name, last_name, email, phone, address, city, state, zip, country, date_created, enabled)
 VALUES ('92a82f45-7a03-42f3-80f8-ce4e9892409d', 'api', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32',
         'Api', 'User', 'api@localhost.com', '+44808123456', '1 Somewhere Street', 'London', 'Greater London', 'SW1', 'United Kingdom', CURDATE(), true);
 INSERT INTO users (id, username, password, first_name, last_name, email, phone, address, city, state, zip, country, date_created, enabled, verify_code)
-VALUES ('a730c051-b5c2-454c-b669-679f06d99731', 'user3', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32',
-        'Steve', 'Shopper', 'user3@localhost.com', '+44808123456', '1 Somewhere Street', 'London', 'Greater London', 'SW1', 'United Kingdom', CURDATE(), false, 'AwUjqPvDLVxjzTEChhQXMDMJxBlWvZoG');
+VALUES ('3f91dc76-97fc-45d5-8db0-3bee04326a86', 'user4', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32',
+        'Steve', 'Shopper', 'user4@localhost.com', '+44808123456', '1 Somewhere Street', 'London', 'Greater London', 'SW1', 'United Kingdom', CURDATE(), false, 'AwUjqPvDLVxjzTEChhQXMDMJxBlWvZoG');
 INSERT INTO user_authorities (authority_id, user_id)
 VALUES ('05970e74-c82b-4e21-b100-f8184d6e3454', 'e18c8bcc-935d-444d-a194-3a32a3b35a49');
 INSERT INTO user_authorities (authority_id, user_id)
@@ -31,6 +34,8 @@ INSERT INTO user_authorities (authority_id, user_id)
 VALUES ('6bdd6188-d659-4390-8d37-8f090d2ed69a', 'db4cfab1-ff1d-4bca-a662-394771841383');
 INSERT INTO user_authorities (authority_id, user_id)
 VALUES ('6bdd6188-d659-4390-8d37-8f090d2ed69a', 'a730c051-b5c2-454c-b669-679f06d99731');
+INSERT INTO user_authorities (authority_id, user_id)
+VALUES ('6bdd6188-d659-4390-8d37-8f090d2ed69a', '3f91dc76-97fc-45d5-8db0-3bee04326a86');
 INSERT INTO user_authorities (authority_id, user_id)
 VALUES ('dfc1d81b-4a7e-4248-80f7-8445ee5cb68e', '92a82f45-7a03-42f3-80f8-ce4e9892409d');
 INSERT INTO products (id, code, name, rating, summary, description, image, price, in_stock, time_to_stock, available)

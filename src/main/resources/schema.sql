@@ -29,6 +29,7 @@ create table users
     id           UUID not null,
     username     varchar(255) not null,
     password     varchar(255),
+    secret       varchar(255),
     date_created timestamp,
     first_name   varchar(255) not null,
     last_name    varchar(255) not null,

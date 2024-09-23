@@ -30,16 +30,27 @@
             <div class="row justify-content-center align-items-center">
 
                 <form th:action="@{/login_mfa}" method="post" class="form-login">
-                    <h1 class="h3 mb-3 font-weight-normal">Two-Step Verification</h1>
+                    <h1 class="h4 mb-3 font-weight-normal">Multi-factor Authentication</h1>
 
-                    <!--p>
-                        For added security, please enter the One Time Passcode (OTP)
-                        that has been sent to a phone number ending <span th:text="${session.mobileDigits}">XX</span>
-                    </p-->
-                    <p>
-                        For added security, please enter the One Time Passcode (OTP)
-                        that has been sent to your email address.
-                    </p>
+                    <th:block th:switch="${#strings.toString(session.otpType)}">
+                        <div th:case="'MFA_EMAIL'">
+                            <p>
+                                For added security, please enter the One Time Passcode (OTP)
+                                that has been sent to your email address.
+                            </p>
+                        </div>
+                        <div th:case="'MFA_SMS'">
+                            <p>
+                                For added security, please enter the One Time Passcode (OTP)
+                                that has been sent to a phone number ending <span th:text="${session.mobileDigits}">XX</span>.
+                            </p>
+                        </div>
+                        <div th:case="'MFA_APP'">
+                            <p>
+                                For added security, please enter the code from your Authenticator App.</span>
+                            </p>
+                        </div>
+                    </th:block> 
 
                     <div class="form-group">
                         <input type="text" id="otp" name="otp" class="form-control"
@@ -52,6 +63,11 @@
                                     th:utext="${#session.getAttribute('SPRING_SECURITY_LAST_EXCEPTION').message}">
                                 Static summary
                             </strong>
+                        </div>
+                    </div>
+                    <div th:if="${otpError}" class="pb-2">
+                        <div class="text-danger">
+                            <strong th:text="${message}">message</strong>
                         </div>
                     </div>
 

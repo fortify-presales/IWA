@@ -1,9 +1,9 @@
 INSERT INTO authorities (name, id)
 values ('ROLE_TEST', '92f90350-e795-4019-812a-afd23300343f');
-INSERT INTO users (id, username, password, first_name, last_name, email, phone, address, city, state, zip, country,
+INSERT INTO users (id, username, password, secret, first_name, last_name, email, phone, address, city, state, zip, country,
                    enabled, date_created, mfa_type)
 VALUES ('bd5b9e2f-ac55-4e34-a76d-599b7e5b3308', 'test1', '$2a$10$YFhTnHpCL.Z0Ev0j1CbEUub7sIWmN7Qd5RmnU8g5ekuoapV7Zdx32',
-        'Test', 'User 1',
+        'IJGK2F5OH6E4CD2NK6Q4BSREMGJSJXEC', 'Test', 'User 1',
         'test1@localhost',
         '+44808123456',
         '1 Somewhere Street', 'London', 'Greater London', 'SW1', 'United Kingdom',

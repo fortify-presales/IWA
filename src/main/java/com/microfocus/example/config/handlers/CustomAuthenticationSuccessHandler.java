@@ -79,6 +79,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             log.debug("User is ADMIN, bypassing verification...");
             bypassVerification(request, response, authentication);
         } else {
+            session.setAttribute("otpType", mfaType);
             switch (mfaType) {
                 case MFA_NONE:
                     log.debug("Multi factor authentication is not enabled, bypassing verification...");

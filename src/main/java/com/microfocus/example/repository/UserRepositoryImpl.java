@@ -88,6 +88,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                                 utmp = new User(results.getObject("id", UUID.class),
                                         results.getString("username"),
                                         results.getString("password"),
+                                        results.getString("secret"),
                                         results.getString("first_name"),
                                         results.getString("last_name"),
                                         results.getString("email"),

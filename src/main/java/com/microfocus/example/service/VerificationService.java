@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -32,7 +32,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Verification Service to hide business logic / database persistence for MFA
- * @author Kevin A. Lee
+ * 
+ * @author kadraman
  */
 @Service
 @Transactional

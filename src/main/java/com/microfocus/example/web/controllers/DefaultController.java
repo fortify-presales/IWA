@@ -22,6 +22,8 @@ package com.microfocus.example.web.controllers;
 import com.microfocus.example.config.LocaleConfiguration;
 import com.microfocus.example.config.handlers.CustomAuthenticationSuccessHandler;
 import com.microfocus.example.entity.CustomUserDetails;
+import com.microfocus.example.entity.MfaType;
+import com.microfocus.example.entity.SMS;
 import com.microfocus.example.exception.VerificationRequestFailedException;
 import com.microfocus.example.payload.request.EmailRequest;
 import com.microfocus.example.service.EmailSenderService;
@@ -30,6 +32,8 @@ import com.microfocus.example.service.VerificationService;
 import com.microfocus.example.utils.EmailUtils;
 import com.microfocus.example.utils.JwtUtils;
 import com.microfocus.example.utils.WebUtils;
+import com.warrenstrange.googleauth.GoogleAuthenticator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,33 +126,35 @@ public class DefaultController extends AbstractBaseController{
         if (model.containsAttribute("otp")) {
             log.debug("OTP already set, revalidating");
         } else {
-            // create an otp
             try {
                 // generate OTP "one-time-password" for user
                 int otp = verificationService.generateOTP(userId);
-                log.debug("Generated OTP '" + String.valueOf(otp) + "' for user id: " + userId);
-
-                EmailRequest emailRequest = new EmailRequest(emailFromAddress, email, 
-                    "[IWA Pharmacy Direct] Your One Time Passcode", String.valueOf(otp));
-                try {
-                    log.debug("Sending OTP {} via email to {}", String.valueOf(otp), email);
-                    EmailUtils.sendEmail(emailRequest);
-                } catch (Exception ex) {
-                   log.error(ex.getLocalizedMessage());
+                switch (loggedInUser.getMfaType()) {
+                    case MFA_EMAIL:
+                        log.debug("Generated OTP '" + String.valueOf(otp) + "' for user id: " + userId);
+                        EmailRequest emailRequest = new EmailRequest(emailFromAddress, email, 
+                            "[IWA Pharmacy Direct] Your One Time Passcode", String.valueOf(otp));
+                        log.debug("Sending OTP {} via email to {}", String.valueOf(otp), email);
+                        EmailUtils.sendEmail(emailRequest);
+                        break;
+                    case MFA_SMS:
+                        SMS sms = new SMS();
+                        sms.setTo(mobile);
+                        sms.setMessage("Your IWA Pharmacy Direct security code is " + String.valueOf(otp));
+                        log.debug("Sending OTP {} via SMS to {}", String.valueOf(otp), mobile);
+                        String sid = smsSenderService.sendSms(sms);
+                        break;
+                    case MFA_APP:
+                        log.debug("Using Authenticator App to validate TOTP");
+                        break;
+                    default:
+                        log.error("Unknown MFA Type");
                 }
-
-                /*SMS sms = new SMS();
-                sms.setTo(mobile);
-                sms.setMessage("Your IWA Pharmacy Direct security code is " + String.valueOf(otp));
-                try {
-                    log.debug("Sending OTP {} via SMS to {}", String.valueOf(otp), mobile);
-                    String sid = smsSenderService.sendSms(sms);
-                } catch (Exception ex) {
-                    log.error(ex.getLocalizedMessage());
-                }*/
             } catch (VerificationRequestFailedException ex) {
                 log.error(ex.getLocalizedMessage());
                 // TODO: handle
+            } catch (Exception ex) {
+                log.error(ex.getLocalizedMessage());
             }
         }
         return "login_mfa";
@@ -158,36 +164,54 @@ public class DefaultController extends AbstractBaseController{
     public String otpLogin(HttpServletRequest request, HttpServletResponse response,
                            @RequestParam("otp") Optional<String> otp,
                            Model model, Principal principal) {
+        HttpSession session = request.getSession(true);
         Authentication authentication = (Authentication) principal;
         CustomUserDetails loggedInUser = (CustomUserDetails) ((Authentication) principal).getPrincipal();
         String userId = loggedInUser.getId().toString();
-        String optStr = Optional.of(otp).get().orElse(null);
+        String otpStr = Optional.of(otp).get().orElse(null);
 
-        if (optStr == null || optStr.isEmpty()) {
+        if (otpStr == null || otpStr.isEmpty()) {
             log.error("insufficient parameters");
             model.addAttribute("message", "Please supply a One Time Passcode (OTP).");
             model.addAttribute("alertClass", "alert-danger");
-            this.setModelDefaults(model, null, "optLogin");
+            this.setModelDefaults(model, null, "login_mfa");
             return "login_mfa";
         }
 
-        int otpNum = Integer.valueOf(optStr).intValue();
+        int otpNum = Integer.valueOf(otpStr).intValue();
         // validate OTP "one-time-password" for user
         if (otpNum > 0) {
             log.debug("Verifying OTP '{}' for user with id: {} ", otpNum, userId);
-            int serverOtp = verificationService.getOtp(userId);
-            if (serverOtp > 0) {
-                if (otpNum == serverOtp) {
-                    log.debug("User '{}' verified OTP successfully", userId);
-                    verificationService.clearOTP(userId);
+
+            // if 
+            if (loggedInUser.getMfaType().equals(MfaType.MFA_APP)) {
+                String secret = loggedInUser.getSecret();
+                log.debug("Validating TOTP {} with user secret {}", otpNum, secret);
+                GoogleAuthenticator gAuth = new com.warrenstrange.googleauth.GoogleAuthenticator();
+                if (gAuth.authorize(secret, otpNum)) {
+                    log.debug("User '{}' verified TOTP successfully", userId);
                 } else {
-                    log.debug("User '{}' failed OTP verification", userId);
-                    model.addAttribute("message", "Your OTP is incorrect, please try-again!");
+                    log.debug("User '{}' failed TOTP verification", userId);
+                    model.addAttribute("message", "Your code is incorrect, please try-again!");
                     model.addAttribute("alertClass", "alert-danger");
                     return "login_mfa";
                 }
             } else {
-                // TODO: fail
+                log.debug("Validating OTP...");
+                int serverOtp = verificationService.getOtp(userId);
+                if (serverOtp > 0) {
+                    if (otpNum == serverOtp) {
+                        log.debug("User '{}' verified OTP successfully", userId);
+                        verificationService.clearOTP(userId);
+                    } else {
+                        log.debug("User '{}' failed OTP verification", userId);
+                        model.addAttribute("message", "Your OTP is incorrect, please try-again!");
+                        model.addAttribute("alertClass", "alert-danger");
+                        return "login_mfa";
+                    }
+                } else {
+                    // TODO: fail
+                }
             }
         } else {
             // TODO: fail

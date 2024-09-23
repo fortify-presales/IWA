@@ -74,6 +74,9 @@ public class User implements Serializable {
     @Transient
     private String confirmPassword;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String secret;
+
     @NotEmpty(message = "{user.firstname.notEmpty}")
     @Size(min = 2, max = 40, message = "{user.firstname.invalidLength}")
     @Column(name = "first_name")
@@ -127,11 +130,12 @@ public class User implements Serializable {
         this.mfaType = MfaType.MFA_NONE;
     }
 
-    public User(UUID id, String username, String password, String firstName, String lastName, String email, String phone,
+    public User(UUID id, String username, String password, String secret, String firstName, String lastName, String email, String phone,
                 String address, String city, String state, String zip, String country, boolean enabled, MfaType mfaType) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.secret = secret;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -177,6 +181,15 @@ public class User implements Serializable {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    @JsonIgnore
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
     }
 
     public String getFirstName() {

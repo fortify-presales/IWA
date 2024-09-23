@@ -281,7 +281,7 @@ class CustomUserDetailsTest {
     @Test
     void testGetMfaType() {
         assertEquals((new CustomUserDetails(new User())).getMfaType(), MfaType.MFA_NONE);
-        assertEquals((new CustomUserDetails(new User(UUID.randomUUID(), "janedoe", "iloveyou", "Jane", "Doe",
+        assertEquals((new CustomUserDetails(new User(UUID.randomUUID(), "janedoe", "iloveyou","123456", "Jane", "Doe",
                 "jane.doe@example.org", "6625550144", "42 Main St", "Oxford", "MD", "21654", "GB", true, MfaType.MFA_EMAIL))).getMfaType(),
                 MfaType.MFA_EMAIL);
     }
@@ -309,7 +309,7 @@ class CustomUserDetailsTest {
     @Test
     void testIsEnabled() {
         assertFalse((new CustomUserDetails(new User())).isEnabled());
-        assertTrue((new CustomUserDetails(new User(UUID.randomUUID(), "janedoe", "iloveyou", "Jane", "Doe",
+        assertTrue((new CustomUserDetails(new User(UUID.randomUUID(), "janedoe", "iloveyou","123456", "Jane", "Doe",
                 "jane.doe@example.org", "6625550144", "42 Main St", "Oxford", "MD", "21654", "GB", true, MfaType.MFA_EMAIL)))
                 .isEnabled());
     }

@@ -167,7 +167,7 @@ class UserTest {
      */
     @Test
     void testConstructor2() {
-        User actualUser = new User(UUID.randomUUID(), "janedoe", "iloveyou", "Jane", "Doe", "jane.doe@example.org",
+        User actualUser = new User(UUID.randomUUID(), "janedoe", "iloveyou", "123456", "Jane", "Doe", "jane.doe@example.org",
                 "6625550144", "42 Main St", "Oxford", "MD", "21654", "GB", true, MfaType.MFA_EMAIL);
         actualUser.setAddress("42 Main St");
         HashSet<Authority> authoritySet = new HashSet<>();
@@ -246,7 +246,7 @@ class UserTest {
     @Test
     void testFromUserDetails3() {
         User actualFromUserDetailsResult = User
-                .fromUserDetails(new CustomUserDetails(new User(UUID.randomUUID(), "janedoe", "iloveyou", "Jane", "Doe",
+                .fromUserDetails(new CustomUserDetails(new User(UUID.randomUUID(), "janedoe", "iloveyou", "123456", "Jane", "Doe",
                         "jane.doe@example.org", "6625550144", "42 Main St", "Oxford", "MD", "21654", "GB", true, MfaType.MFA_EMAIL)));
         assertEquals("janedoe", actualFromUserDetailsResult.getUsername());
         assertTrue(actualFromUserDetailsResult.getEnabled());
@@ -309,5 +309,6 @@ class UserTest {
         User.fromUserDetails(
                 new org.springframework.security.core.userdetails.User("janedoe", "iloveyou", grantedAuthorityList));
     }
+
 }
 

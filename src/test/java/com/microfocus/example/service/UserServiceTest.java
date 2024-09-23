@@ -3,6 +3,7 @@ package com.microfocus.example.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.Optional;
@@ -17,6 +18,8 @@ import com.microfocus.example.BaseIntegrationTest;
 import com.microfocus.example.entity.User;
 import com.microfocus.example.web.form.PasswordForm;
 import com.microfocus.example.web.form.UserForm;
+
+import com.warrenstrange.googleauth.GoogleAuthenticator;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserServiceTest extends BaseIntegrationTest {
@@ -79,5 +82,18 @@ public class UserServiceTest extends BaseIntegrationTest {
             }
         } else
             fail("Test User 1 not found");
+    }
+
+    @Test
+    public void a_userService_validateSecret() {
+        Optional<User> u = userService.findUserById(DataSeeder.TEST_USER1_ID);
+        if (u.isPresent())
+            assertThat(u.get().getUsername()).isEqualTo(DataSeeder.TEST_USER1_USERNAME);
+        else
+            fail("Test User 1 not found");
+        GoogleAuthenticator gAuth = new GoogleAuthenticator();
+        String secretKey = u.get().getSecret();
+        int code = gAuth.getTotpPassword(secretKey);
+        assertTrue(gAuth.authorize(u.get().getSecret(), code));
     }
 }

@@ -39,6 +39,8 @@ import com.microfocus.example.web.form.*;
 import com.microfocus.example.web.form.admin.AdminNewUserForm;
 import com.microfocus.example.web.form.admin.AdminPasswordForm;
 import com.microfocus.example.web.form.admin.AdminUserForm;
+import com.warrenstrange.googleauth.GoogleAuthenticator;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
@@ -479,4 +481,8 @@ public class UserService {
     public void markMessageAsReadById(UUID id) { messageRepository.markMessageAsReadById(id); }
 
     */
+
+    private String generateSecretKey() {
+        return new GoogleAuthenticator().createCredentials().getKey();
+    }
 }
