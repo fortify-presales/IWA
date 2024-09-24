@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -21,6 +21,11 @@ package com.microfocus.example.entity;
 
 import java.util.Map;
 
+/**
+ * A user SMS
+ * 
+ * @author kadraman
+ */
 public class SMS {
 
     private String from;
@@ -79,11 +84,8 @@ public class SMS {
 
     @Override
     public String toString() {
-        return "SMS{" +
-                "from='" + from + '\'' +
-                ", to='" + to + '\'' +
-                ", subject='" + subject + '\'' +
-                ", message='" + message + '\'' +
-                '}';
+        return "SMS [from=" + from + ", to=" + to + ", subject=" + subject + ", message=" + message + ", props=" + props
+                + "]";
     }
+
 }

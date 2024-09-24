@@ -20,8 +20,9 @@
 package com.microfocus.example.entity;
 
 /**
- * Supported MFA types
- * @author Kevin A. Lee
+ * Supported Multi-factor Authentication types
+ * 
+ * @author kadraman
  */
 public enum MfaType {
     MFA_NONE("NONE"),

@@ -19,10 +19,6 @@
 
 package com.microfocus.example.repository;
 
-import com.microfocus.example.entity.Authority;
-import com.microfocus.example.entity.Product;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 /**
  * Interface for Role Repository
  * @author Kevin A. Lee

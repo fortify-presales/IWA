@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 
 package com.microfocus.example.config;
 
-import com.microfocus.example.web.controllers.admin.AdminDefaultController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,7 +34,8 @@ import java.util.Collections;
 
 /**
  * Configure web browser favicon configuration for custom location
- * @author Kevin A. Lee
+ * 
+ * @author kadraman
  */
 @Configuration
 public class FaviconConfiguration {

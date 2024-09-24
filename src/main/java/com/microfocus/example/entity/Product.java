@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -30,7 +30,8 @@ import java.util.UUID;
 
 /**
  * Product entity
- * @author Kevin A. Lee
+ * 
+ * @author kadraman
  */
 @Entity
 @Table(name = "products")
@@ -221,7 +222,10 @@ public class Product implements Serializable {
 
     @Override
     public String toString() {
-        return "Product(" + id + " : " + name + " : SRP : " + price + ")";
+        return "Product [id=" + id + ", code=" + code + ", name=" + name + ", summary=" + summary + ", description="
+                + description + ", image=" + image + ", price=" + price + ", onSale=" + onSale + ", salePrice="
+                + salePrice + ", inStock=" + inStock + ", timeToStock=" + timeToStock + ", rating=" + rating
+                + ", available=" + available + "]";
     }
 
 }

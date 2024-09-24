@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -320,10 +320,10 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "User [id=" + id + ", username=" + username + ", password=" + password + ", confirmPassword="
-                + confirmPassword + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
-                + ", phone=" + phone + ", address=" + address + ", city=" + city + ", state=" + state + ", zip=" + zip
-                + ", country=" + country + ", dateCreated=" + dateCreated + ", verifyCode=" + verifyCode + ", enabled="
-                + enabled + ", mfaType=" + mfaType + ", authorities=" + authorities + "]";
+                + confirmPassword + ", secret=" + secret + ", firstName=" + firstName + ", lastName=" + lastName
+                + ", email=" + email + ", phone=" + phone + ", address=" + address + ", city=" + city + ", state="
+                + state + ", zip=" + zip + ", country=" + country + ", dateCreated=" + dateCreated + ", verifyCode="
+                + verifyCode + ", enabled=" + enabled + ", mfaType=" + mfaType + ", authorities=" + authorities + "]";
     }
 
 }

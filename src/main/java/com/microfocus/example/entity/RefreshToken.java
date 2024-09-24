@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ import java.util.UUID;
 /**
  * A JWT refresh token.
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 @Entity
 @Table(name = "refresh_tokens")
@@ -88,7 +88,7 @@ public class RefreshToken implements Serializable {
 
     @Override
     public String toString() {
-        return "RefreshToken(" + id + " for: " + user.getUsername() + " expires on: " + expiryDate.toString() + ")";
+        return "RefreshToken [id=" + id + ", user=" + user + ", expiryDate=" + expiryDate + "]";
     }
 
 }

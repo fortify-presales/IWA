@@ -19,8 +19,8 @@
 
 package com.microfocus.example.web.form;
 
+import com.microfocus.example.entity.MfaType;
 import com.microfocus.example.entity.User;
-import com.microfocus.example.web.validation.ValidPassword;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Bean;
@@ -33,13 +33,13 @@ import javax.validation.constraints.Size;
 import java.util.UUID;
 
 /**
- * Form backing entity/DTO for register a new user
+ * Form backing entity/DTO for updating user profile
  *
  * @author kadraman
  */
-public class RegisterUserForm {
+public class SecurityForm {
 
-    @Bean("RegisterUserFormPasswordEncoder")
+    @Bean("SecurityFormPasswordEncoder")
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -50,22 +50,12 @@ public class RegisterUserForm {
     @Size(min = 2, max = 10, message = "{user.username.invalidLength}")
     private String username;
 
-    @ValidPassword
+    @NotEmpty(message = "{user.password.notEmpty}")
     private String password;
-
-    @ValidPassword
-    private String confirmPassword;
-
-    @NotEmpty(message = "{user.firstName.notEmpty}")
-    @Size(min = 2, max = 40, message = "{user.firstName.invalidLength}")
-    private String firstName;
-
-    @NotEmpty(message = "{user.firstName.notEmpty}")
-    @Size(min = 2, max = 40, message = "{user.firstName.invalidLength}")
-    private String lastName;
 
     @NotEmpty(message = "{user.email.notEmpty}")
     @Email(message = "{user.email.invalidFormat")
+    @Column(unique = true)
     private String email;
 
     @NotEmpty(message = "{user.phone.notEmpty}")
@@ -73,19 +63,12 @@ public class RegisterUserForm {
     @Column(unique = true)
     private String phone;
 
-    private String address;
-    private String city;
-    private String state;
-    private String zip;
-    private String country;
+    private MfaType mfaType;
 
-    private Boolean enabled;
-
-    public RegisterUserForm() {
-        this.username = "";
+    public SecurityForm() {
     }
 
-    public RegisterUserForm(User user) {
+    public SecurityForm(User user) {
         BeanUtils.copyProperties(user, this);
     }
 
@@ -113,30 +96,6 @@ public class RegisterUserForm {
         this.password = password;
     }
 
-    public String getConfirmPassword() {
-        return confirmPassword;
-    }
-
-    public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -153,60 +112,18 @@ public class RegisterUserForm {
         this.phone = phone;
     }
 
-    public String getAddress() {
-        return address;
+    public MfaType getMfaType() {
+        return mfaType;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getZip() {
-        return zip;
-    }
-
-    public void setZip(String zip) {
-        this.zip = zip;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
+    public void setMfaType(MfaType mfaType) {
+        this.mfaType = mfaType;
     }
 
     @Override
     public String toString() {
-        return "RegisterUserForm [id=" + id + ", username=" + username + ", password=" + password + ", confirmPassword="
-                + confirmPassword + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
-                + ", phone=" + phone + ", address=" + address + ", city=" + city + ", state=" + state + ", zip=" + zip
-                + ", country=" + country + ", enabled=" + enabled + "]";
+        return "SecurityForm [id=" + id + ", username=" + username + ", password=" + password + ", email=" + email
+                + ", phone=" + phone + ", mfaType=" + mfaType + "]";
     }
 
 }

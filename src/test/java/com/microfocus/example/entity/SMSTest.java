@@ -42,8 +42,7 @@ class SMSTest {
         assertSame(stringObjectMap, actualSms.getProps());
         assertEquals("Hello from the Dreaming Spires", actualSms.getSubject());
         assertEquals("alice.liddell@example.org", actualSms.getTo());
-        assertEquals("SMS{from='jane.doe@example.org', to='alice.liddell@example.org', subject='Hello from the Dreaming"
-                + " Spires', message='Not all who wander are lost'}", actualToStringResult);
+        assertEquals("SMS [from=jane.doe@example.org, to=alice.liddell@example.org, subject=Hello from the Dreaming Spires, message=Not all who wander are lost, props={}]", actualToStringResult);
     }
 
     /**
@@ -79,8 +78,7 @@ class SMSTest {
         assertSame(stringObjectMap, actualSms.getProps());
         assertEquals("Hello from the Dreaming Spires", actualSms.getSubject());
         assertEquals("alice.liddell@example.org", actualSms.getTo());
-        assertEquals("SMS{from='jane.doe@example.org', to='alice.liddell@example.org', subject='Hello from the Dreaming"
-                + " Spires', message='Not all who wander are lost'}", actualToStringResult);
+        assertEquals("SMS [from=jane.doe@example.org, to=alice.liddell@example.org, subject=Hello from the Dreaming Spires, message=Not all who wander are lost, props={}]", actualToStringResult);
     }
 }
 

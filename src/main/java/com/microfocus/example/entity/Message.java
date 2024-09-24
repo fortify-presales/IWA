@@ -37,7 +37,7 @@ import java.util.UUID;
 /**
  * A user message.
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 @Entity
 @Table(name = "messages")

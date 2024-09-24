@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ import java.util.Optional;
 /**
  * Default (root) controllers
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 @SessionAttributes({"currentUser", "currentUserId"})
 @Controller
@@ -170,51 +170,47 @@ public class DefaultController extends AbstractBaseController{
         String userId = loggedInUser.getId().toString();
         String otpStr = Optional.of(otp).get().orElse(null);
 
-        if (otpStr == null || otpStr.isEmpty()) {
-            log.error("insufficient parameters");
-            model.addAttribute("message", "Please supply a One Time Passcode (OTP).");
-            model.addAttribute("alertClass", "alert-danger");
-            this.setModelDefaults(model, null, "login_mfa");
-            return "login_mfa";
-        }
-
-        int otpNum = Integer.valueOf(otpStr).intValue();
-        // validate OTP "one-time-password" for user
-        if (otpNum > 0) {
-            log.debug("Verifying OTP '{}' for user with id: {} ", otpNum, userId);
-
-            // if 
-            if (loggedInUser.getMfaType().equals(MfaType.MFA_APP)) {
-                String secret = loggedInUser.getSecret();
-                log.debug("Validating TOTP {} with user secret {}", otpNum, secret);
-                GoogleAuthenticator gAuth = new com.warrenstrange.googleauth.GoogleAuthenticator();
-                if (gAuth.authorize(secret, otpNum)) {
-                    log.debug("User '{}' verified TOTP successfully", userId);
-                } else {
-                    log.debug("User '{}' failed TOTP verification", userId);
-                    model.addAttribute("message", "Your code is incorrect, please try-again!");
-                    model.addAttribute("alertClass", "alert-danger");
-                    return "login_mfa";
-                }
-            } else {
-                log.debug("Validating OTP...");
-                int serverOtp = verificationService.getOtp(userId);
-                if (serverOtp > 0) {
-                    if (otpNum == serverOtp) {
-                        log.debug("User '{}' verified OTP successfully", userId);
-                        verificationService.clearOTP(userId);
+        try {
+            int otpNum = Integer.valueOf(otpStr).intValue();
+            // validate OTP "one-time-password" for user
+            if (otpNum > 0) {
+                log.debug("Verifying (T)OTP '{}' for user with id: {} ", otpNum, userId);
+                if (loggedInUser.getMfaType().equals(MfaType.MFA_APP)) {
+                    String secret = loggedInUser.getSecret();
+                    log.debug("Validating TOTP {} with user secret {}", otpNum, secret);
+                    GoogleAuthenticator gAuth = new com.warrenstrange.googleauth.GoogleAuthenticator();
+                    if (gAuth.authorize(secret, otpNum)) {
+                        log.debug("User '{}' verified TOTP successfully", userId);
                     } else {
-                        log.debug("User '{}' failed OTP verification", userId);
-                        model.addAttribute("message", "Your OTP is incorrect, please try-again!");
-                        model.addAttribute("alertClass", "alert-danger");
+                        log.debug("User '{}' failed TOTP verification", userId);
+                        model.addAttribute("otpError", "true");
+                        model.addAttribute("otpMessage", "Your OTP is incorrect, please try-again!");
                         return "login_mfa";
                     }
                 } else {
-                    // TODO: fail
+                    int serverOtp = verificationService.getOtp(userId);
+                    if (serverOtp > 0) {
+                        if (otpNum == serverOtp) {
+                            log.debug("User '{}' verified OTP successfully", userId);
+                            verificationService.clearOTP(userId);
+                        } else {
+                            log.debug("User '{}' failed OTP verification", userId);
+                            model.addAttribute("otpError", "true");
+                            model.addAttribute("otpMessage", "Your OTP is incorrect, please try-again!");
+                            return "login_mfa";
+                        }
+                    } else {
+                        // TODO: fail
+                    }
                 }
+            } else {
+                // TODO: fail
             }
-        } else {
-            // TODO: fail
+        } catch (NumberFormatException ex) {
+            log.debug("User '{}' entered invalid otp/code", userId);
+            model.addAttribute("otpError", "true");
+            model.addAttribute("otpMessage", "The OTP must be a number");
+            return "login_mfa";
         }
         String jwtToken = jwtUtils.generateAndSetSession(request, response, authentication);
         String targetUrl = CustomAuthenticationSuccessHandler.getTargetUrl(request, response, authentication);

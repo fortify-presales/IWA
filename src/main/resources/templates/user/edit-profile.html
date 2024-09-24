@@ -363,26 +363,6 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
-                                <div class="col-md-6" th:classappend="${#fields.hasErrors('mfaType')}? 'has-error':''">
-                                    <label for="mfaType" class="text-black">Multi-Factor Authentication <span class="text-danger"></span></label>
-                                    <select id="mfaType" th:field="*{mfaType}" class="form-control">
-                                        <option th:selected="${userForm.mfaType}=='MFA_NONE'" value="MFA_NONE">None</option>
-                                        <option th:selected="${userForm.mfaType}=='MFA_EMAIL'" value="MFA_EMAIL">Email</option>
-                                        <option th:selected="${userForm.mfaType}=='MFA_SMA'" value="MFA_SMS">SMS</option>
-                                        <option th:selected="${userForm.mfaType}=='MFA_APP'" value="MFA_APP">Authenticator App</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <!--div class="form-group">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" th:field="*{mfa}" th:value="${userForm.mfa}" id="mfa">
-                                    <label class="form-check-label" for="mfa">
-                                        Enable Two-Factor Authentication
-                                    </label>
-                                </div>
-                            </div-->
-
                             <div class="form-group row border border-primary">
                                 <div class="col-md-12" th:classappend="${#fields.hasErrors('password')}? 'has-error':''">
                                     <label for="password" class="text-black">Password</label>
@@ -396,6 +376,7 @@
 
                             <input type="text" hidden id="id" th:field="*{id}" th:value="${userForm.id}">
                             <input type="text" hidden id="username" th:field="*{username}" th:value="${userForm.username}">
+                            <input type="text" hidden id="mfaType" th:field="*{mfaType}" th:value="${userForm.mfaType}">
                             <input type="text" hidden id="enabled" th:field="*{enabled}" th:value="${userForm.enabled}">
 
                             <div class="form-group row mt-4">

@@ -19,7 +19,6 @@
 
 package com.microfocus.example.payload.request;
 
-import com.microfocus.example.entity.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -28,7 +27,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.util.UUID;
 
 /**
  * Register User Request DTO

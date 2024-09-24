@@ -21,12 +21,8 @@ package com.microfocus.example.payload.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.microfocus.example.entity.Order;
-import com.microfocus.example.entity.Product;
-import com.microfocus.example.entity.User;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
-import javax.validation.constraints.*;
 import java.util.Date;
 import java.util.UUID;
 

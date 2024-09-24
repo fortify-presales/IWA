@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import com.microfocus.example.entity.User;
 import com.microfocus.example.web.form.RegisterUserForm;
+import com.microfocus.example.web.form.SecurityForm;
 import com.microfocus.example.web.form.UserForm;
 
 /**
@@ -46,6 +47,11 @@ public class UserValidationService {
     public String validateUser(RegisterUserForm registerUserForm) {
         String message = "";
         // TBD: validate phone number etc.
+        return message;
+    }
+    public String validateUser(SecurityForm securityForm) {
+        String message = "";
+        // TBD: validate MFA type with phone number, email etc.
         return message;
     }
 }

@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2021 Micro Focus or one of its affiliates
+        Copyright (C) 2021-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -83,7 +83,7 @@ public class ApiReviewController {
         return review.map(value -> new ResponseEntity<>(new ReviewResponse(value), HttpStatus.OK)).orElse(null);
     }
 
-    @Operation(summary = "Find reviews by product and keyword(s)", description = "Product and keyword search by %keyword% format", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @Operation(summary = "Find reviews by product and keyword(s)", description = "Product and keyword search by %keyword% format", tags = {"reviews"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ProductResponse.class)))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),

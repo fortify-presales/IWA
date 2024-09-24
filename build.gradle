@@ -66,6 +66,8 @@ dependencies {
     implementation "org.mockito:mockito-bom:${mockitoVersion}"
     implementation "org.hibernate.validator:hibernate-validator:6.1.0.Final"
     implementation "com.warrenstrange:googleauth:1.5.0"
+    implementation "com.google.zxing:core:3.4.0"
+    implementation "com.google.zxing:javase:3.4.0"
     testImplementation "org.hibernate.validator:hibernate-validator:6.1.0.Final"
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}") {
         exclude group: "com.vaadin.external.google", module:"android-json"

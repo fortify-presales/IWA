@@ -80,6 +80,8 @@ springdoc:
 #    url: /v3/api-docs
     path: /swagger-ui.html
     display-request-duration: true
+    operations-sorter: alpha
+    tagsSorter: alpha
 
  #   groups-order: DESC
     disable-swagger-default-url: true

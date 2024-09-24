@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 /**
  * Custom User Details implementation
+ * 
  * @author kadraman
  */
 public class CustomUserDetails implements UserDetails {
@@ -101,4 +102,13 @@ public class CustomUserDetails implements UserDetails {
     public User getUserDetails() {
         return user;
     }
+
+    @Override
+    public String toString() {
+        return "CustomUserDetails [user=" + user + ", getAuthorities()=" + getAuthorities() + ", getId()=" + getId()
+                + ", getPassword()=" + getPassword() + ", getUsername()=" + getUsername() + ", isAccountNonExpired()="
+                + isAccountNonExpired() + ", isAccountNonLocked()=" + isAccountNonLocked()
+                + ", isCredentialsNonExpired()=" + isCredentialsNonExpired() + "]";
+    }
+
 }

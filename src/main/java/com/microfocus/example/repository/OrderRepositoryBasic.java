@@ -19,7 +19,6 @@
 
 package com.microfocus.example.repository;
 
-import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 

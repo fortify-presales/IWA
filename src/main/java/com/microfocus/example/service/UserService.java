@@ -247,6 +247,17 @@ public class UserService {
         }
     }
 
+    public User saveUserFromSecurityForm(SecurityForm securityForm) throws InvalidPasswordException, UserNotFoundException {
+        Optional<User> optionalUser = userRepository.findUserByUsername(securityForm.getUsername());
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setMfaType(securityForm.getMfaType());
+            return userRepository.saveAndFlush(user);
+        } else {
+            throw new UserNotFoundException("Username not found: " + securityForm.getUsername());
+        }
+    }
+
     public User saveUserFromAdminUserForm(AdminUserForm adminUserForm) throws UserNotFoundException {
         Optional<User> optionalUser = userRepository.findUserByUsername(adminUserForm.getUsername());
         if (optionalUser.isPresent()) {

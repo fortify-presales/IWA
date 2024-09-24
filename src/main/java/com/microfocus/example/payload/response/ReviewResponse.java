@@ -20,11 +20,7 @@
 package com.microfocus.example.payload.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.microfocus.example.entity.Order;
-import com.microfocus.example.entity.Product;
 import com.microfocus.example.entity.Review;
-import com.microfocus.example.entity.User;
-
 import java.util.Date;
 import java.util.UUID;
 

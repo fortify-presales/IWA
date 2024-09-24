@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 /**
  * A RESTFul controller for accessing order information.
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 @RestController
 @RequestMapping(value = "/api/v3/orders")
@@ -83,7 +83,7 @@ public class ApiOrderController {
         return order.map(value -> new ResponseEntity<>(new OrderResponse(value), HttpStatus.OK)).orElse(null);
     }
 
-    @Operation(summary = "Find orders by keyword(s)", description = "Keyword search by %keyword% format", tags = {"products"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @Operation(summary = "Find orders by keyword(s)", description = "Keyword search by %keyword% format", tags = {"orders"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ProductResponse.class)))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),

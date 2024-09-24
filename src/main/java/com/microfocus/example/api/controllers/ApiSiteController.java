@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2021 Micro Focus or one of its affiliates
+        Copyright (C) 2021-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -58,7 +58,6 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
@@ -69,7 +68,7 @@ import java.util.stream.Collectors;
 /**
  * A RESTFul controller for accessing site information.
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 @RestController
 @RequestMapping(value = "/api/v3/site")
@@ -125,7 +124,7 @@ public class ApiSiteController {
         }
     }
 
-    @Operation(summary = "Get the site status", description = "Get the site message of the day", tags = {"users"})
+    @Operation(summary = "Get the site status", description = "Get the site message of the day", tags = {"site"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(array = @ArraySchema(schema = @Schema(implementation = SiteStatus.class)))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),

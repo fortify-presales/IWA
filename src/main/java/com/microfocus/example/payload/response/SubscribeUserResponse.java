@@ -19,9 +19,6 @@
 
 package com.microfocus.example.payload.response;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-
 /**
  * Subscribe User Response DTO
  *

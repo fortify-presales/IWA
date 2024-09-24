@@ -29,14 +29,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.UUID;
 
 /**
  * Form backing entity/DTO for updating user profile
  *
- * @author Kevin A. Lee
+ * @author kadraman
  */
 public class UserForm {
 

@@ -1,7 +1,7 @@
 /*
         Insecure Web App (IWA)
 
-        Copyright (C) 2020-2022 Micro Focus or one of its affiliates
+        Copyright (C) 2020-2024 Micro Focus or one of its affiliates
 
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -22,6 +22,11 @@ package com.microfocus.example.entity;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A user email
+ * 
+ * @author kadraman
+ */
 public class Mail {
 
     private String from;
@@ -89,11 +94,8 @@ public class Mail {
 
     @Override
     public String toString() {
-        return "Mail{" +
-                "from='" + from + '\'' +
-                ", replyTo='" + replyTo + '\'' +
-                ", mailTo='" + mailTo + '\'' +
-                ", subject='" + subject + '\'' +
-                '}';
+        return "Mail [from=" + from + ", replyTo=" + replyTo + ", mailTo=" + mailTo + ", subject=" + subject
+                + ", attachments=" + attachments + ", props=" + props + "]";
     }
+
 }

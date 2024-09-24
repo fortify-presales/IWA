@@ -22,7 +22,6 @@ package com.microfocus.example.repository;
 import com.microfocus.example.entity.Review;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 /**

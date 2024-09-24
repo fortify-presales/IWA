@@ -20,9 +20,6 @@
 package com.microfocus.example.repository;
 
 import com.microfocus.example.entity.Authority;
-import com.microfocus.example.entity.User;
-
-import java.util.List;
 import java.util.Optional;
 
 /**

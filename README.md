@@ -179,10 +179,10 @@ This script runs a `sourceanalyzer` translation and scan on the project's source
 which you can open using the Fortify `auditworkbench` tool:
 
 ```PowerShell
-auditworkbench.cmd .\IWA.fpr
+auditworkbench.cmd .\IWA-Java.fpr
 ```
 
-It also creates a PDF report called `IWA.pdf` and optionally
+It also creates a PDF report called `IWA-Java.pdf` and optionally
 uploads the results to [Fortify Software Security Center](https://www.microfocus.com/en-us/products/software-security-assurance-sdlc/overview) (SSC).
 
 In order to upload to SSC you will need to have entries in the `.env` similar to the following:
@@ -190,7 +190,7 @@ In order to upload to SSC you will need to have entries in the `.env` similar to
 ```
 SSC_URL=http://localhost:8080/ssc
 SSC_AUTH_TOKEN=28145aad-c40d-426d-942b-f6d6aec9c56f
-SSC_APP_NAME=IWA
+SSC_APP_NAME=IWA-Java
 SSC_APP_VER_NAME=main
 ```
 
@@ -230,17 +230,14 @@ you can use the `scancentral` command utility as following:
 scancentral package -bt gradle -bf build.gradle -bt "clean build -x test" --output fod.zip
 ```
 
-You can then upload this manually using the Fortify on Demand UI or you can use the PowerShell script [fortify-fod.ps1](bin/fortify-fod.ps1) 
-provided to upload the file and start a Fortify on Demand static scan as follows:
+You can then upload this manually using the Fortify on Demand UI, using the [FoDUploader](https://github.com/fod-dev/fod-uploader-java) 
+utility or via the [Fortify CLI](https://github.com/fortify/fcli) using the following commands:
 
-```PowerShell
-.\bin\fortify-fod.ps1 -ZipFile '.\fod.zip' -ApplicationName 'IWA' -ReleaseName 'master' -Notes 'PowerShell initiated scan' `
-    -FodApiUri 'https://api.emea.fortify.com' -FodApiKey 'FOD_ACCESS_KEY' -FodApiSecret 'FOD_SECRET_KEY'
+```
+fcli fod session login --url http://api.ams.fortify.com -t YOUR_FOD_TENANT -u YOUR_USERNAME -p YOUR_PASSWORD
+fcli fod sast-scan start --release YOUR_APP:YOUR_RELEASE -f fod.zip --store curScan
+fcli fod sast-scan wait-for ::curScan::
 ``` 
-
-where `FOD_ACCESS_KEY` and `FOD_SECRET_KEY` are the values of an API Key and Secret you have created in the Fortify on
-Demand portal. This script makes use of the [PowerShellForFOD](https://github.com/fortify-community-plugins/PowerShellForFOD) 
-PowerShell module.
 
 ### DAST using Fortify WebInspect
 
@@ -271,8 +268,8 @@ For example:
 
 ```
 fcli sc-dast session login --ssc-url http://YOUR_SSC.DOMAIN -t YOUR_SSC_CI_TOKEN
-fcli sc-dast scan -n "IWA - FCLI" -s YOUR_SCAN_SETTINGS_ID --store curScan
-fcli sc-dast scan wait-fod ::curScan::
+fcli sc-dast scan -n "IWA-Java - FCLI" -s YOUR_SCAN_SETTINGS_ID --store curScan
+fcli sc-dast scan wait-for ::curScan::
 ```
 
 ### DAST using Fortify on Demand
@@ -284,7 +281,7 @@ You can invoke a Fortify on Demand _DAST Automated_ scan using the [FCLI](https:
 For example:
 
 ```
-fcli fod session login --url https://ams.fortify.com --client-id YOUR_CLIENT_ID --client-secret YOUR_CLIENT_SECRET
+fcli fod session login --url http://api.ams.fortify.com -t YOUR_FOD_TENANT -u YOUR_USERNAME -p YOUR_PASSWORD
 fcli fod dast-scan start --release YOUR_APP:YOUR_RELEASE --store curScan
 fcli fod dast-scan wait-for ::curScan::
 ```
@@ -415,7 +412,7 @@ you will need to do for a successful invocation.
 
 ### GitHub Actions
 
-This repository includes a number of [GitHub Actions](https://github.com/features/actions) examples in the [.github/workflows](.github/workflows/)  that
+This repository includes a number of [GitHub Actions](https://github.com/features/actions) examples in the [.github/workflows](.github/workflows/) that
 automate the build of the application and scans the code using either
 [Fortify on Demand](https://www.microfocus.com/en-us/products/application-security-testing) or [Fortify ScanCentral](https://www.microfocus.com/en-us/cyberres/application-security/static-code-analyzer) for SAST.
 

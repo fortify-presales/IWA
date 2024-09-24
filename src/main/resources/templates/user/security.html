@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>User Security</title>
+</head>
+<body>
+    <div layout:fragment="content" th:remove="tag">
+
+        <div class="bg-light py-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 mb-0"><a th:href="@{/user/}">User</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Security</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="site-section">
+
+            <div class="container">
+
+                <div class="row">
+
+                    <div class="col-md-3 mr-auto">
+                        <div th:replace="fragments/user-menu.html :: userMenu('/user/security')"></div>
+                    </div>
+
+                    <div class="col-md-9">
+
+                        <form class="form-horizontal">
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <label for="username" class="text-black">Username</label>
+                                    <input type="text" readonly class="form-control" id="username" name="username" th:value="${securityForm.username}">
+                                    <small id="usernameHelp" class="form-text text-muted">Your username cannot be changed from the website.</small>
+                                </div>
+                            </div>
+    
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <label for="email" class="text-black">Email Address </label>
+                                    <input readonly th:value="${securityForm.email}" type="text" class="form-control" id="email" name="email">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phone" class="text-black">Mobile </label>
+                                    <input readonly th:value="${securityForm.phone}" type="text" class="form-control" id="phone" name="phone" placeholder="Mobile Number">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <div th:switch="${#strings.toString(securityForm.mfaType)}">
+                                        <p th:case="'MFA_NONE'" class="text-black"> Multi-Factor Authentication is not configured for your account.</p>
+                                        <p th:case="'MFA_EMAIL'" class="text-black"><i class="fas fa-envelope fa-fw"></i>&nbsp;Your account is configured to use Multi-Factor Authentication via email.</p>
+                                        <p th:case="'MFA_SMS'" class="text-black"><i class="fas fa-sms fa-fw"></i>&nbsp;Your account is configured to use Multi-Factor Authentication via mobile phone.</p>
+                                        <p th:case="'MFA_APP'" class="text-black"><i class="fas fa-mobile fa-fw"></i>&nbsp;Your account is configured to use Multi-Factor Authentication via an Authenticator App.</p>
+                                        <!-- * for default case -->
+                                        <p th:case="*" class="text-black"><i class="fas fa-question-circle fa-fw"></i>&nbsp;Unknown Multi-Factor Authentication configured!</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div th:if="${#strings.toString(securityForm.mfaType)}=='MFA_APP'">
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <img th:src="${'data:image/png;base64,'+qrCode}" alt="" height="250" width="250">
+                                    </div>
+                                    <div class="col-md-8 mt-4">
+                                        <p>
+                                            Please use this QR Code to configure your Authenticator App.
+                                            You can also use the following secret to manually configure your App:
+                                        </p>
+                                        <p><code th:text="${qrSecret}"></code></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row mt-4">
+                                <div class="col-md-12">
+                                    <a class="btn btn-primary" th:href="@{/user/editSecurity}">Edit</a>
+                                    <a class="btn btn-primary" th:href="@{/user/changePassword}">Change Password</a>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

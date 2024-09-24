@@ -19,11 +19,7 @@
 
 package com.microfocus.example.repository;
 
-import com.microfocus.example.entity.Message;
 import com.microfocus.example.entity.Order;
-import com.microfocus.example.entity.Product;
-import com.microfocus.example.web.form.MessageForm;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

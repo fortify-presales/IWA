@@ -19,6 +19,7 @@
 
 package com.microfocus.example.web.controllers;
 
+import com.google.zxing.WriterException;
 import com.microfocus.example.config.LocaleConfiguration;
 import com.microfocus.example.entity.*;
 import com.microfocus.example.exception.*;
@@ -169,9 +170,11 @@ public class UserController extends AbstractBaseController {
         Optional<User> optionalUser = userService.findUserById(user.getId());
         if (optionalUser.isPresent()) {
             UserForm userForm = new UserForm(optionalUser.get());
-            log.debug(userForm.toString());
+            String qrUrl = getQRBarcodeURL(user.getUsername(), user.getSecret());
             model.addAttribute("userForm", userForm);
             model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
+            model.addAttribute("qrUrl", qrUrl);
+            model.addAttribute("qrSecret", user.getSecret());
             model.addAttribute("unreadMessageCount", userService.getUserUnreadMessageCount(user.getId()));
         } else {
             model.addAttribute("message", "Internal error accessing user!");
@@ -199,6 +202,90 @@ public class UserController extends AbstractBaseController {
         }
         this.setModelDefaults(model, principal, "edit-profile");
         return "user/edit-profile";
+    }
+
+    @GetMapping(value = {"/security"})
+    public String userSecurity(Model model, Principal principal) {
+        CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        Optional<User> optionalUser = userService.findUserById(user.getId());
+        if (optionalUser.isPresent()) {
+            UserForm securityForm = new UserForm(optionalUser.get());
+            String qrUrl = getQRBarcodeURL(user.getUsername(), user.getSecret());
+            byte[] image = new byte[0];
+            try {
+                // Generate and Return Qr Code in Byte Array
+                image = WebUtils.getQRCodeImage(qrUrl,250,250);
+            } catch (WriterException | IOException e) {
+                e.printStackTrace();
+            }
+            // Convert Byte Array into Base64 Encode String
+            String qrCode = Base64.getEncoder().encodeToString(image);
+
+            model.addAttribute("securityForm", securityForm);
+            model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
+            model.addAttribute("qrCode", qrCode);
+            model.addAttribute("qrSecret", user.getSecret());
+            model.addAttribute("unreadMessageCount", userService.getUserUnreadMessageCount(user.getId()));
+        } else {
+            model.addAttribute("message", "Internal error accessing user!");
+            model.addAttribute("alertClass", "alert-danger");
+            this.setModelDefaults(model, principal, "not-found");
+            return "user/not-found";
+        }
+        this.setModelDefaults(model, principal, "security");
+        return "user/security";
+    }
+
+    @GetMapping("/editSecurity")
+    public String userEditSecurity(Model model, Principal principal) {
+        CustomUserDetails user = (CustomUserDetails) ((Authentication) principal).getPrincipal();
+        Optional<User> optionalUser = userService.findUserById(user.getId());
+        if (optionalUser.isPresent()) {
+            SecurityForm securityForm = new SecurityForm(optionalUser.get());
+            model.addAttribute("securityForm", securityForm);
+            model.addAttribute("userInfo", WebUtils.toString(user.getUserDetails()));
+        } else {
+            model.addAttribute("message", "Internal error accessing user!");
+            model.addAttribute("alertClass", "alert-danger");
+            this.setModelDefaults(model, principal, "not-found");
+            return "user/not-found";
+        }
+        this.setModelDefaults(model, principal, "edit-security");
+        return "user/edit-security";
+    }
+
+    @PostMapping("/saveSecurity")
+    public String userSaveSecurity(@Valid @ModelAttribute("securityForm") SecurityForm securityForm,
+                                  BindingResult bindingResult, Model model,
+                                  RedirectAttributes redirectAttributes,
+                                  Principal principal) {
+        String err = validationService.validateUser(securityForm);
+        if (!err.isEmpty()) {
+            ObjectError error = new ObjectError("global", err);
+            bindingResult.addError(error);
+        }                            
+        if (bindingResult.hasErrors()) {
+            this.setModelDefaults(model, principal, "edit-security");
+            return "user/edit-security";
+        } else {
+            try {
+                userService.saveUserFromSecurityForm(securityForm);
+                redirectAttributes.addFlashAttribute("message", "Security updated successfully.");
+                redirectAttributes.addFlashAttribute("alertClass", "alert-success");
+                this.setModelDefaults(model, principal, "security");
+                return "redirect:/user/security";
+            } catch (InvalidPasswordException ex) {
+                log.error(AUTHENTICATION_ERROR);
+                FieldError passwordError = new FieldError("securityForm", "password", ex.getMessage());
+                bindingResult.addError(passwordError);
+            } catch (UserNotFoundException ex) {
+                log.error(USER_NOT_FOUND_ERROR);
+                FieldError usernameError = new FieldError("securityForm", "username", ex.getMessage());
+                bindingResult.addError(usernameError);
+            }
+        }
+        this.setModelDefaults(model, principal, "security");
+        return "user/security";
     }
 
     @GetMapping("/changePassword")
@@ -860,4 +947,7 @@ public class UserController extends AbstractBaseController {
                 "attachment; filename=\"" + rfile.getFilename() + "\"").body(rfile);
     }
 
+    private String getQRBarcodeURL(String user, String secret) {
+        return "otpauth://totp/" + user + "?secret=" + secret;
+    }
 }

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>User Security</title>
+</head>
+<body>
+    <div layout:fragment="content" th:remove="tag">
+
+        <div class="bg-light py-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 mb-0"><a th:href="@{/user/}">User</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Security</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="site-section">
+
+            <div class="container">
+
+                <div class="row">
+
+                    <div class="col-md-3 mr-auto">
+                        <div th:replace="fragments/user-menu.html :: userMenu('/user/security')"></div>
+                    </div>
+
+                    <div class="col-md-9">
+
+                        <form class="form-horizontal" action="#" th:action="@{/user/saveSecurity}" th:object="${securityForm}" method="post">
+						
+                            <div th:if="${message}" th:class="${'alert ' + alertClass + ' alert-dismissible'}" role="alert">
+                                <span th:text="${message}">message</span>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="alert alert-danger" th:if="${#fields.hasErrors('global')}">
+                                <p th:each="error : ${#fields.errors('global')}" th:text="${error}">error</p>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('email')}? 'has-error':''">
+                                    <label for="email" class="text-black">Email Address <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="email" th:field="*{email}" th:value="${securityForm.email}">
+                                    <div th:if="${#fields.hasErrors('email')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('phone')}? 'has-error':''">
+                                    <label for="phone" class="text-black">Mobile <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="phone" th:field="*{phone}" th:value="${securityForm.phone}">
+                                    <div th:if="${#fields.hasErrors('phone')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6" th:classappend="${#fields.hasErrors('mfaType')}? 'has-error':''">
+                                    <label for="mfaType" class="text-black">Multi-Factor Authentication <span class="text-danger"></span></label>
+                                    <select id="mfaType" th:field="*{mfaType}" class="form-control">
+                                        <option th:selected="${securityForm.mfaType}=='MFA_NONE'" value="MFA_NONE">None</option>
+                                        <option th:selected="${securityForm.mfaType}=='MFA_EMAIL'" value="MFA_EMAIL">Email</option>
+                                        <option th:selected="${securityForm.mfaType}=='MFA_SMA'" value="MFA_SMS">SMS</option>
+                                        <option th:selected="${securityForm.mfaType}=='MFA_APP'" value="MFA_APP">Authenticator App</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row border border-primary">
+                                <div class="col-md-12" th:classappend="${#fields.hasErrors('password')}? 'has-error':''">
+                                    <label for="password" class="text-black">Password</label>
+                                    <input type="password" class="form-control" id="password" th:field="*{password}" autocomplete="off" th:value="${securityForm.password}">
+                                    <small id="passwordHelp" class="form-text text-muted">Enter your current password to save changes.</small>
+                                    <div th:if="${#fields.hasErrors('password')}">
+                                        <p class="alert alert-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="text" hidden id="id" th:field="*{id}" th:value="${securityForm.id}">
+                            <input type="text" hidden id="username" th:field="*{username}" th:value="${securityForm.username}">
+
+                            <div class="form-group row mt-4">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-space btn-primary">Save</button>
+                                    <a class="btn btn-info" th:href="@{/user/security}">Cancel</a>
+                                </div>
+                            </div>
+							
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</body>
+</html>
