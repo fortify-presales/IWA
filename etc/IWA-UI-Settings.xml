@@ -271,7 +271,7 @@
   <ScanStrategy>ConcurrentCrawlAudit</ScanStrategy>
   <UsePolicyFile>true</UsePolicyFile>
   <PolicyPath>C:\Source\IWA\etc\dast-policies\Critical-and-Highs-Custom.policy</PolicyPath>
-  <ScanSettingsPath>C:\Source\IWA\etc\IWA-UI-Settings.xml</ScanSettingsPath>
+  <ScanSettingsPath>C:\Source\IWA-Java\etc\IWA-UI-Settings.xml</ScanSettingsPath>
   <PolicyID>22b82b15-ab06-4398-a6f9-445b0a75c485</PolicyID>
   <PathTruncationCrawlDisabled>false</PathTruncationCrawlDisabled>
   <RecursionDepthLimit>2</RecursionDepthLimit>

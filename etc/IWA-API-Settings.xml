@@ -200,7 +200,7 @@
   <EnableServerAnalysisServerTypeDetection>true</EnableServerAnalysisServerTypeDetection>
   <EnableLegacyServerTypeDetection>true</EnableLegacyServerTypeDetection>
   <EnableSmartAssessment>true</EnableSmartAssessment>
-  <EnableTrafficMonitor>false</EnableTrafficMonitor>
+  <EnableTrafficMonitor>true</EnableTrafficMonitor>
   <EnableSimHash>false</EnableSimHash>
   <EncryptTrafficMonitor>true</EncryptTrafficMonitor>
   <X_EnableUrlContentResolver>false</X_EnableUrlContentResolver>
@@ -256,7 +256,7 @@
     <StartSessionState>Audit</StartSessionState>
     <StartUrlXmlDocument />
     <StartUrlXmlDocumentFilePath />
-    <StartUrl>https://iwa.onfortify.com/api/v3</StartUrl>
+    <StartUrl />
     <SimplifiedRestrictToFolderOptions>None</SimplifiedRestrictToFolderOptions>
     <MacroName />
     <WorkflowMacros />
@@ -267,7 +267,7 @@
   <ScanStrategy>ConcurrentCrawlAudit</ScanStrategy>
   <UsePolicyFile>false</UsePolicyFile>
   <PolicyPath />
-  <ScanSettingsPath />
+  <ScanSettingsPath>C:\Source\IWA-Java\etc\IWA-API-Settings.xml</ScanSettingsPath>
   <PolicyID>1044</PolicyID>
   <PathTruncationCrawlDisabled>false</PathTruncationCrawlDisabled>
   <RecursionDepthLimit>2</RecursionDepthLimit>
