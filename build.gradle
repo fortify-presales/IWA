@@ -5,13 +5,11 @@ plugins {
 }
 
 ext {
-    springBootVersion = '2.7.17'
-    springSecurityVersion = '3.0.4.RELEASE'
-    springLog4jVersion = '2.3.12.RELEAS'
+    springBootVersion = '2.7.0'
+    springLog4jVersion = '2.3.12.RELEASE'
     jacksonVersion = '2.13.0'
-    tymeleafLayoutDialectVersion = '3.2.1'
     itextVersion = '7.2.5'
-    springdocOpenApiVersion = '1.7.0'
+    springdocOpenApiVersion = '1.8.0'
     junitVersion = '4.12'
     junitJupiterVersion = '5.7.0'
     junitPlatformVersion = '1.7.1'
@@ -30,16 +28,18 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-security:${springBootVersion}"
-    implementation "org.thymeleaf.extras:thymeleaf-extras-springsecurity5:${springSecurityVersion}"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-mail:${springBootVersion}"
-    implementation "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:${tymeleafLayoutDialectVersion}"
     implementation "org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-log4j2:${springLog4jVersion}"
+    implementation "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
+    implementation "org.thymeleaf.extras:thymeleaf-extras-springsecurity5:3.0.5.RELEASE"
+    implementation "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.2.1"
     implementation "org.apache.commons:commons-email:1.4"
+    implementation "org.apache.commons:commons-text:1.8"
     implementation "com.google.guava:guava:30.1.1-jre"
-    implementation "com.h2database:h2:1.4.197"
+    implementation "com.h2database:h2:1.4.200"
     implementation "com.itextpdf:itext7-core:${itextVersion}"
     implementation "org.passay:passay:1.5.0"
     implementation "org.webjars:bootstrap:4.5.3"
@@ -60,14 +60,8 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt:0.9.1"
     implementation "org.apache.maven.wagon:wagon-http:3.4.1"
     implementation "com.github.cliftonlabs:json-simple:2.3.1"
-    implementation "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
     implementation "org.apache.tika:tika-core:1.18"
-    implementation "org.json:json:20201115"
-    //modules {
-    //    module("org.springframework.boot:spring-boot-starter-logging") {
-    //        replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
-    //    }
-    //}    
+    implementation "org.json:json:20201115" 
     implementation "org.mockito:mockito-bom:${mockitoVersion}"
     implementation "org.hibernate.validator:hibernate-validator:6.1.0.Final"
     implementation "com.warrenstrange:googleauth:1.5.0"
@@ -84,21 +78,15 @@ dependencies {
     testImplementation "org.junit.platform:junit-platform-engine:${junitPlatformVersion}"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
     testImplementation "org.seleniumhq.selenium:selenium-java:${seleniumVersion}"
-    //#testImplementation "org.mockito:mockito-inline:${mockitoVersion}"
-    //testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitJupiterVersion}"
     testRuntimeOnly "org.junit.platform:junit-platform-commons:${junitPlatformVersion}"
-   // testRuntimeOnly "org.codehaus.groovy:groovy:3.0.8"
 }
 
-configurations.implementation {
-    exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
-}
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-    //exclude module: 'spring-boot-starter-logging'
+    exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
 }
 dependencyLocking { lockAllConfigurations() }
 

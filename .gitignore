@@ -28,3 +28,6 @@ build
 /.gradle-init-script.debricked.groovy
 .vscode/settings.json
 .history
+dependencies.txt
+bin/main
+bin/test
