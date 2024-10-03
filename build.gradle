@@ -7,6 +7,7 @@ plugins {
 ext {
     springBootVersion = '2.7.17'
     springSecurityVersion = '3.0.4.RELEASE'
+    springLog4jVersion = '2.3.12.RELEAS'
     jacksonVersion = '2.13.0'
     tymeleafLayoutDialectVersion = '3.2.1'
     itextVersion = '7.2.5'
@@ -16,7 +17,6 @@ ext {
     junitPlatformVersion = '1.7.1'
     seleniumVersion = '4.21.0'
     mockitoVersion = '4.11.0'
-    log4jVersion = '2.6.0'
 }
 
 repositories {
@@ -36,6 +36,7 @@ dependencies {
     implementation "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:${tymeleafLayoutDialectVersion}"
     implementation "org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-log4j2:${springLog4jVersion}"
     implementation "org.apache.commons:commons-email:1.4"
     implementation "com.google.guava:guava:30.1.1-jre"
     implementation "com.h2database:h2:1.4.197"
@@ -62,7 +63,11 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
     implementation "org.apache.tika:tika-core:1.18"
     implementation "org.json:json:20201115"
-    implementation "org.springframework.boot:spring-boot-starter-log4j2:2.4.13"
+    //modules {
+    //    module("org.springframework.boot:spring-boot-starter-logging") {
+    //        replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
+    //    }
+    //}    
     implementation "org.mockito:mockito-bom:${mockitoVersion}"
     implementation "org.hibernate.validator:hibernate-validator:6.1.0.Final"
     implementation "com.warrenstrange:googleauth:1.5.0"
@@ -92,7 +97,8 @@ configurations.implementation {
 }
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    exclude module: 'spring-boot-starter-logging'
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    //exclude module: 'spring-boot-starter-logging'
 }
 dependencyLocking { lockAllConfigurations() }
 

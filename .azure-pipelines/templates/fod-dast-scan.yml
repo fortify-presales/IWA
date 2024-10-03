@@ -1,0 +1,135 @@
+# File: templates/fod-dast-scan.yml
+
+# defaults for any parameters that aren't specified
+parameters: 
+- name: 'pool'
+  type: object
+  default: {}
+- name: workingDirectory
+  default: ''
+- name: jdkVersion
+  default: '17'
+- name: jdkArch
+  default: 'x64'
+- name: fodApiUrl
+  default: 'https://api.ams.fortify.com'
+- name: fodClientId
+- name: fodClientSecret
+- name: fodAppName
+- name: fodReleaseName
+- name: fodParentReleaseName
+  default: 'main'
+- name: fodServiceConnection
+  default: 'FortifyOnDemandServiceConnection-OctaneDemoApp'  
+
+jobs:
+- job: FoDDynamicScan
+  pool: ${{ parameters.pool }}
+  steps:
+  - task: Bash@3
+    displayName: 'Linux: Set environment variables manually'
+    condition: eq( variables['Agent.OS'], 'Linux' )
+    inputs:
+      targetType: 'inline'
+      script: |
+        cd ~
+        echo "##vso[task.setvariable variable=HOME]$(pwd)"
+        echo "##vso[task.setvariable variable=USER]$(whoami)"
+        echo "##vso[task.setvariable variable=JAVA_HOME_17_X64]/usr/lib/jvm/java-17-openjdk-amd64"
+        echo "##vso[task.setvariable variable=JAVA_HOME]/usr/lib/jvm/java-17-openjdk-amd64"
+  - task: JavaToolInstaller@0
+    inputs:
+      versionSpec: ${{ parameters.jdkVersion }}
+      jdkArchitectureOption: ${{ parameters.jdkArch }}
+      jdkSourceOption: PreInstalled
+  - task: FcliInstaller@0
+    inputs:
+      version: 'latest'
+  - task: PowerShell@2
+    displayName: 'FoD Check Release'
+    inputs:
+      targetType: 'inline'
+      script: |
+        $App="${env:FOD_APP_NAME}"
+        $Rel="${env:FOD_RELEASE_NAME}"
+        if (${env:FORTIFY_APP_NAME_OVERRIDE}) {
+          Write-Host "##[debug]Overriding FORTIFY_APP_NAME to ${env:FORTIFY_APP_NAME_OVERRIDE}"
+          Write-Host "##vso[task.setvariable variable=FORTIFY_APP_NAME]${env:FORTIFY_APP_NAME_OVERRIDE}"
+          $App="${env:FORTIFY_APP_NAME_OVERRIDE}"
+        } else {
+          Write-Host "##[command]Using FORTIFY_APP_NAME ${App}"
+          Write-Host "##vso[task.setvariable variable=FORTIFY_APP_NAME]${App}"
+        }
+        if (${env:FORTIFY_RELEASE_NAME_OVERRIDE}) {
+          Write-Host "##[debug]Overriding FORTIFY_RELEASE_NAME to ${env:FORTIFY_RELEASE_NAME_OVERRIDE}"
+          Write-Host "##vso[task.setvariable variable=FORTIFY_RELEASE_NAME]${env:FORTIFY_RELEASE_NAME_OVERRIDE}"
+          $Rel=${env:FORTIFY_RELEASE_NAME_OVERRIDE}
+        } else {
+          Write-Host "##[debug]Using FORTIFY_RELEASE_NAME ${Rel}"
+          Write-Host "##vso[task.setvariable variable=FORTIFY_RELEASE_NAME]${Rel}"
+        }
+        Write-Host "##[command]fcli fod session login --url=""${env:FOD_API_URL}"" --client-id=""${env:FOD_CLIENT_ID}"" --client-secret=""${env:FOD_CLIENT_SECRET}"" --session=azure-pipelines"
+        fcli fod session login --url=""${env:FOD_API_URL}"" --client-id=""${env:FOD_CLIENT_ID}"" --client-secret=""${env:FOD_CLIENT_SECRET}"" --session=azure-pipelines
+        Write-Host "##[command]fcli fod release list --app="${App}" --session=azure-pipelines"
+        fcli fod release list --app="${App}" --session=azure-pipelines
+        Write-Host "##[command]fcli fod release create ""${App}:${Rel}"" --description=""Created automatically from Azure DevOps"" --copy-from=""${App}:${env:FOD_PARENT_RELEASE_NAME}"" --status=Development --skip-if-exists -o expr=""{releaseId}"" --session=azure-pipelines"
+        $RelId=(fcli fod release create "${App}:${Rel}" --description="Created automatically from Azure DevOps" --copy-from="${App}:${env:FOD_PARENT_RELEASE_NAME}" --status=Development --skip-if-exists -o expr="{releaseId}" --session=azure-pipelines)
+        Write-Host "##[debug]Setting fodReleaseId to $RelId"
+        Write-Host "##vso[task.setvariable variable=fodReleaseId]$RelId"
+
+        Write-Host "##[command]`$AssessmentTypeId=(fcli fod release lsat --release=""${App}:${Rel}"" --query='name=="DAST Automated"' -o expr=""{assessmentTypeId}"" --session=azure-pipelines"
+        $AssessmentTypeId=(fcli fod release lsat --release="${App}:${Rel}" --query='name=="DAST Automated"' -o expr="{assessmentTypeId}" --session=azure-pipelines)
+        Write-Host "##[debug]Setting fodAssessmentTypeId to $AssessmentTypeId"
+        Write-Host "##vso[task.setvariable variable=fodAssessmentTypeId]$AssessmentTypeId"
+        Write-Host "##[command]`$IsPassed=(fcli fod release lsat --release=""${App}:${Rel}"" --query='name=="DAST Automated"' -o expr=""{entitlementId}"" --session=azure-pipelines"
+        $EntitlementId=(fcli fod release lsat --release="${App}:${Rel}" --query='name=="DAST Automated"' -o expr="{entitlementId}" --session=azure-pipelines)
+        Write-Host "##[debug]Setting fodEntitlementId to $EntitlementId"
+        Write-Host "##vso[task.setvariable variable=fodEntitlementId]$EntitlementId"
+      showWarnings: true
+    env:
+      FOD_API_URL: ${{ parameters.fodApiUrl }}
+      FOD_CLIENT_ID: ${{ parameters.fodClientId }}
+      FOD_CLIENT_SECRET: ${{ parameters.fodClientSecret }}
+      FOD_APP_NAME: ${{ parameters.fodAppName }}
+      FOD_RELEASE_NAME: ${{ parameters.fodReleaseName }}
+      FOD_PARENT_RELEASE_NAME: ${{ parameters.fodParentReleaseName }}
+  # Uncomment to use Fortify Azure DevOps extension for DAST scan    
+  - task: FortifyDASTAutomated@2
+    displayName: 'FoD DAST Scan'
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')  
+    timeoutInMinutes: 120    
+    inputs:
+      FodConnection: 'FortifyOnDemandServiceConnection-OctaneDemoApp'
+      ReleaseOptions: '0'
+      ReleaseId: $(fodReleaseId)
+      AssessmentTypeId: $(fodAssessmentTypeId)
+      EntitlementId: $(fodEntitlementId)
+      EntitlementFrequencyType: $(fodReleaseId)
+      OverrideScanSettings: '2'
+      PolicyFailAction: '0'
+   # Uncomment to use fcli for SAST scan    
+#  - task: PowerShell@2
+#    displayName: 'FoD DAST Scan'
+#    condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+#    timeoutInMinutes: 120
+#    inputs:
+#      targetType: 'inline'
+#      script: |
+#        Write-Host "##[command]fcli fod dast-scan start --release=$(fodReleaseId) --store=curScan --session=azure-pipelines"
+#        fcli fod dast-scan start --release=$(fodReleaseId) --store=curScan --session=azure-pipelines
+#        Start-Sleep -Seconds 5
+#        $ScanId=(fcli util var get ::curScan::)
+#        Write-Host "##[debug]Scan Id is: $ScanId"
+#        Write-Host "##vso[task.setvariable variable=fodScanId]$ScanId"
+#        Write-Host "##[command]fcli fod dast-scan wait-for ::curScan:: --session=azure-pipelines"
+#        fcli fod dast-scan wait-for ::curScan:: --session=azure-pipelines
+#      workingDirectory: ${{ parameters.workingDirectory }}
+#    env:
+#      FOD_RELEASE_ID: $(fodReleaseId)
+  - task: PowerShell@2
+    displayName: 'FoD Logout'
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Host "##[command]fcli fod session logout --session=azure-pipelines"
+        fcli fod session logout --session=azure-pipelines

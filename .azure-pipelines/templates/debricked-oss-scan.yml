@@ -1,0 +1,59 @@
+# File: templates/debricked-oss-scan.yml
+
+# defaults for any parameters that aren't specified
+parameters:
+- name: 'pool'
+  type: object
+  default: {}
+- name: workingDirectory
+  default: ''
+- name: jdkVersion
+  default: '17'
+- name: jdkArch
+  default: 'x64'
+- name: debrickedToken
+
+jobs:
+- job: DebrickedSCAScan
+  pool: ${{ parameters.pool }}
+  steps:
+  - task: Bash@3
+    displayName: 'Linux: Set environment variables manually'
+    condition: eq( variables['Agent.OS'], 'Linux' )
+    inputs:
+      targetType: 'inline'
+      script: |
+        cd ~
+        echo "##vso[task.setvariable variable=HOME]$(pwd)"
+        echo "##vso[task.setvariable variable=USER]$(whoami)"
+        echo "##vso[task.setvariable variable=JAVA_HOME_17_X64]/usr/lib/jvm/java-17-openjdk-amd64"
+        echo "##vso[task.setvariable variable=JAVA_HOME]/usr/lib/jvm/java-17-openjdk-amd64"
+  - task: JavaToolInstaller@0
+    inputs:
+      versionSpec: ${{ parameters.jdkVersion }}
+      jdkArchitectureOption: ${{ parameters.jdkArch }}
+      jdkSourceOption: PreInstalled
+  - task: Gradle@3
+    inputs:
+      gradleWrapperFile: 'gradlew'
+      workingDirectory: '.'
+      tasks: 'build'
+      publishJUnitResults: true
+      testResultsFiles: '**/TEST-*.xml'
+      testRunTitle: 'Unit Tests'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.17'
+      sonarQubeRunAnalysis: false
+      spotBugsAnalysis: false
+  - task: DebrickedInstaller@0
+    inputs:
+      version: 'latest'
+  - task: PowerShell@2
+    displayName: 'Debricked SCA Scan'
+    inputs:
+      targetType: 'inline'
+      script: |
+        debricked scan --callgraph -r "OctaneDemoApp" --access-token="${env:DEBRICKED_TOKEN}" -e "build.gradle" -e "*/**.lock" -e "**/build/classes/test/**" -e "**/target/classes/test-classes/**" .
+      workingDirectory: ${{ parameters.workingDirectory }}
+    env:
+      DEBRICKED_TOKEN: ${{ parameters.debrickedToken }}

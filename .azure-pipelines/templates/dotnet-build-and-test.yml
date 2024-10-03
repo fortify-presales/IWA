@@ -1,0 +1,47 @@
+# File: templates/dotnet-build-and-test.yml
+
+# defaults for any parameters that aren't specified
+parameters: 
+- name: 'pool'
+  type: object
+  default: {}
+- name: srcProject
+  default: '**/*.csproj'
+- name: testProject
+  default: ''
+- name: dotnetVersion
+  default: '6.x'
+- name: buildConfiguration
+  default: 'Debug'
+- name: runTests
+  type: boolean
+  default: true
+
+jobs:
+- job: Build
+  pool: ${{ parameters.pool }}
+  steps: 
+  - task: UseDotNet@2
+    inputs:
+      version: ${{ parameters.dotnetVersion }}
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet build'
+    inputs:
+      command: 'build'
+      configuration: ${{ parameters.buildConfiguration }}
+      projects: ${{ parameters.srcProject }}
+
+- job: UnitTest
+  dependsOn: Build
+  condition: eq('${{ parameters.runTests }}', true)
+  pool: ${{ parameters.pool }}
+  steps:
+  - task: UseDotNet@2
+    inputs:
+      version: ${{ parameters.dotnetVersion }}
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet test'
+    inputs:
+      command: 'test'
+      configuration: ${{ parameters.buildConfiguration }}
+      projects: ${{ parameters.testProject }}

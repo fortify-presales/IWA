@@ -1,0 +1,124 @@
+# File: templates/fod-security-gate.yml
+
+# defaults for any parameters that aren't specified
+parameters: 
+- name: 'pool'
+  type: object
+  default: {}
+- name: workingDirectory
+  default: ''
+- name: jdkVersion
+  default: '17'
+- name: jdkArch
+  default: 'x64'
+- name: fodApiUrl
+  default: 'https://api.ams.fortify.com'
+- name: fodClientId
+- name: fodClientSecret
+- name: fodAppName
+- name: fodReleaseName
+- name: fodParentReleaseName
+  default: 'main'
+- name: fodReportTemplate
+  default: 'HybridIssueDetail'
+- name: reportDir
+  default: '$(Build.SourcesDirectory)/reports'
+- name: reportFile
+  default: '$(Build.SourcesDirectory)/reports/main.html'
+
+jobs:
+- job: FoDSecurityGate
+  pool: ${{ parameters.pool }}
+  steps:
+  - task: Bash@3
+    displayName: 'Linux: Set environment variables manually'
+    condition: eq( variables['Agent.OS'], 'Linux' )
+    inputs:
+      targetType: 'inline'
+      script: |
+        cd ~
+        echo "##vso[task.setvariable variable=HOME]$(pwd)"
+        echo "##vso[task.setvariable variable=USER]$(whoami)"
+        echo "##vso[task.setvariable variable=JAVA_HOME_17_X64]/usr/lib/jvm/java-17-openjdk-amd64"
+        echo "##vso[task.setvariable variable=JAVA_HOME]/usr/lib/jvm/java-17-openjdk-amd64"
+  - task: JavaToolInstaller@0
+    inputs:
+      versionSpec: ${{ parameters.jdkVersion }}
+      jdkArchitectureOption: ${{ parameters.jdkArch }}
+      jdkSourceOption: PreInstalled
+  - task: FcliInstaller@0
+    inputs:
+      version: 'latest'   
+  - task: PowerShell@2
+    displayName: 'Validate Security Policy'
+    inputs:
+      targetType: 'inline'
+      script: |
+        $App="${env:FOD_APP_NAME}"
+        $Rel="${env:FOD_RELEASE_NAME}"
+        if (${env:FORTIFY_APP_NAME_OVERRIDE}) {
+          Write-Host "##[debug]Overriding FORTIFY_APP_NAME to ${env:FORTIFY_APP_NAME_OVERRIDE}"
+          Write-Host "##vso[task.setvariable variable=FORTIFY_APP_NAME]${env:FORTIFY_APP_NAME_OVERRIDE}"
+          $App="${env:FORTIFY_APP_NAME_OVERRIDE}"
+        } else {
+          Write-Host "##[command]Using FORTIFY_APP_NAME ${App}"
+          Write-Host "##vso[task.setvariable variable=FORTIFY_APP_NAME]${App}"
+        }
+        if (${env:FORTIFY_RELEASE_NAME_OVERRIDE}) {
+          Write-Host "##[debug]Overriding FORTIFY_RELEASE_NAME to ${env:FORTIFY_RELEASE_NAME_OVERRIDE}"
+          Write-Host "##vso[task.setvariable variable=FORTIFY_RELEASE_NAME]${env:FORTIFY_RELEASE_NAME_OVERRIDE}"
+          $Rel=${env:FORTIFY_RELEASE_NAME_OVERRIDE}
+        } else {
+          Write-Host "##[debug]Using FORTIFY_RELEASE_NAME ${Rel}"
+          Write-Host "##vso[task.setvariable variable=FORTIFY_RELEASE_NAME]${Rel}"
+        }
+        Write-Host "##[command]fcli fod session login --url=""${env:FOD_API_URL}"" --client-id=""${env:FOD_CLIENT_ID}"" --client-secret=""${env:FOD_CLIENT_SECRET}"" --session=azure-pipelines"
+        fcli fod session login --url=""${env:FOD_API_URL}"" --client-id=""${env:FOD_CLIENT_ID}"" --client-secret=""${env:FOD_CLIENT_SECRET}"" --session=azure-pipelines
+        
+        Write-Host "##[command]`$SecurityRating=(fcli fod release get ""${App}:${Rel}"" -o expr=""{rating}"" --session=azure-pipelines"
+        $SecurityRating=(fcli fod release get "${App}:${Rel}" -o expr="{rating}" --session=azure-pipelines)
+        Write-Host "##[command]`$IsPassed=(fcli fod release get ""${App}:${Rel}"" -o expr=""{isPassed}"" --session=azure-pipelines"
+        $IsPassed=(fcli fod release get "${App}:${Rel}" -o expr="{isPassed}" --session=azure-pipelines)
+
+        Write-Host "##[debug]Release ""${App}:${Rel}"" Security Rating: ${SecurityRating}/5"
+
+        if ($IsPassed) {
+          Write-Host "##[debug]Release ""${App}:${Rel}"" has passed security policy"
+        } else {
+          Write-Host "##[error]Release ""${App}:${Rel}"" failed security policy"
+          #exit 1
+        }
+
+        Write-Host "##[command]Creating FoD Report for Release"
+        fcli fod report create "${env:FOD_REPORT_NAME}" --format=html --release="${App}:${Rel}" --template="${env:FOD_REPORT_TEMPLATE}" --store=curReport --session=azure-pipelines
+        Start-Sleep -Seconds 10
+        fcli fod report wait-for ::curReport:: --on-unknown-state=wait --session=azure-pipelines
+        New-Item -ItemType Directory -Force -Path ${env:FOD_REPORT_DIR} | Out-Null
+        fcli fod report download ::curReport:: --file=${env:FOD_REPORT_DIR}/${env:FOD_REPORT_NAME}.zip --session=azure-pipelines
+        Expand-Archive -Path ${env:FOD_REPORT_DIR}/${env:FOD_REPORT_NAME}.zip -DestinationPath ${env:FOD_REPORT_DIR}
+        Get-ChildItem -Path ${env:FOD_REPORT_DIR} -Filter '*.html' | Rename-Item -NewName { $_.Name -replace '_\d+' }
+        Remove-Item -Force ${env:FOD_REPORT_DIR}/${env:FOD_REPORT_NAME}.zip | Out-Null
+        fcli fod report delete ::curReport:: --session=azure-pipelines
+
+        Write-Host "##[command]fcli fod session logout --session=azure-pipelines"
+        fcli fod session logout --session=azure-pipelines
+      showWarnings: true
+    env:
+      FOD_API_URL: ${{ parameters.fodApiUrl }}
+      FOD_CLIENT_ID: ${{ parameters.fodClientId }}
+      FOD_CLIENT_SECRET: ${{ parameters.fodClientSecret }}
+      FOD_APP_NAME: ${{ parameters.fodAppName }}
+      FOD_RELEASE_NAME: ${{ parameters.fodReleaseName }}
+      FOD_REPORT_TEMPLATE: ${{ parameters.fodReportTemplate }}
+      FOD_REPORT_DIR: ${{ parameters.reportDir }}
+      FOD_REPORT_NAME: "Report-$(Build.BuildId)"
+  - task: PublishBuildArtifacts@1
+    condition: succeededOrFailed()
+    inputs:
+      pathToPublish: ${{ parameters.reportDir }}
+      artifactName: FortifyReports
+  - task: PublishHtmlReport@1
+    condition: succeededOrFailed()
+    inputs:
+      tabName: 'Fortify Security Report'
+      reportDir: ${{ parameters.reportFile }}

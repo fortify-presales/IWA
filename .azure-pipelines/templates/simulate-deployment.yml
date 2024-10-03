@@ -1,0 +1,20 @@
+# File: templates/simulate-deployment.yml
+
+# defaults for any parameters that aren't specified
+parameters: 
+- name: 'pool'
+  type: object
+  default: {}
+- name: workingDirectory
+  default: $(Build.SourcesDirectory).
+
+jobs:
+- job: Build
+  pool: ${{ parameters.pool }}
+  steps: 
+  - task: CmdLine@2
+    inputs:
+      script: |
+        echo "Deploying application..."
+        dir
+      workingDirectory:  ${{ parameters.workingDirectory }}
