@@ -105,6 +105,9 @@ jobs:
         with:
           # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
           fetch-depth: 2
+      #
+      # Set FoD App and Release names for use in rest of workflow
+      #
       - name: Fortify App and Release Name
         id: fortify-app-and-rel-name
         uses: fortify-presales/github-actions/fortify-app-and-release-name@main
@@ -120,19 +123,39 @@ jobs:
       #    echo "FoD Release Name: ${FOD_RELEASE_NAME}"
       #  env:
       #    FOD_APP_NAME: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
-      #    FOD_RELEASE_NAME: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}          
-      - name: Gradle FoD SAST scan
-        id: gradle-fod-sast-scan
-        uses: fortify-presales/github-actions/gradle-fod-sast-scan@main
-        with:
-          working_directory: ${{ env.BASE_DIR }}
-          fod_url: ${{ vars.FOD_URL }}
-          fod_api_url: ${{ vars.FOD_API_URL }}
-          fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
-          fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
-          fod_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
-          fod_release_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
-          fod_parent_release_name: ${{ steps.fortify-app-and-rel-name.outputs.parent_release_name }}
+      #    FOD_RELEASE_NAME: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
+      #
+      # See: https://github.com/marketplace/actions/fortify-ast-scan
+      #
+      - name: Run FoD SAST Scan
+        uses: fortify/github-action/fod-sast-scan@v1
+        env:
+          FOD_URL: ${{ vars.FOD_URL }}
+          FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
+          FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
+          # FOD_LOGIN_EXTRA_OPTS: --socket-timeout=60s
+          FOD_RELEASE: ${{ format('{0}:{1}', steps.fortify-app-and-rel-name.outputs.app_name, steps.fortify-app-and-rel-name.outputs.release_name) }}
+          PACKAGE_EXTRA_OPTS: -oss
+          DO_SETUP: true
+          SETUP_EXTRA_OPTS: ${{ format('--copy-from {0}:{1}', steps.fortify-app-and-rel-name.outputs.app_name, steps.fortify-app-and-rel-name.outputs.parent_release_name) }}
+          DO_WAIT: true
+          DO_JOB_SUMMARY: true
+          #DO_POLICY_CHECK: true
+          DO_PR_COMMENT: true
+          DO_EXPORT: true
+          # TOOL_DEFINITIONS: https://ftfy.mycompany.com/tool-definitions/v1/tool-definitions.yaml.zip
+      #- name: Gradle FoD SAST scan
+      #  id: gradle-fod-sast-scan
+      #  uses: fortify-presales/github-actions/gradle-fod-sast-scan@main
+      #  with:
+      #    working_directory: ${{ env.BASE_DIR }}
+      #    fod_url: ${{ vars.FOD_URL }}
+      #    fod_api_url: ${{ vars.FOD_API_URL }}
+      #    fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
+      #    fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
+      #    fod_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
+      #    fod_release_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
+      #    fod_parent_release_name: ${{ steps.fortify-app-and-rel-name.outputs.parent_release_name }}
 
   Deploy-App:
     runs-on: ubuntu-latest
