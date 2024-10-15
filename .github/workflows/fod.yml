@@ -144,7 +144,7 @@ jobs:
           FOD_RELEASE: ${{ format('{0}:{1}', steps.fortify-app-and-rel-name.outputs.app_name, steps.fortify-app-and-rel-name.outputs.release_name) }}
           PACKAGE_EXTRA_OPTS: -oss
           DO_SETUP: true
-          SETUP_EXTRA_OPTS: ${{ format('--copy-from "{0}:{1}"', steps.fortify-app-and-rel-name.outputs.app_name, steps.fortify-app-and-rel-name.outputs.parent_release_name) }}
+          SETUP_EXTRA_OPTS: ${{ format('--sdlc-status Development --copy-from "{0}:{1}"', steps.fortify-app-and-rel-name.outputs.app_name, steps.fortify-app-and-rel-name.outputs.parent_release_name) }}
           DO_WAIT: true
           DO_JOB_SUMMARY: true
           #DO_POLICY_CHECK: true
