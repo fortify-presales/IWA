@@ -61,11 +61,11 @@ jobs:
         with:
           # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
           fetch-depth: 2
-      # Setup JDK 11 on host
+      # Setup JDK 17 on host
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
@@ -105,6 +105,11 @@ jobs:
         with:
           # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
           fetch-depth: 2
+      # Setup JDK 17 on host
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
       #
       # Set FoD App and Release names for use in rest of workflow
       #
