@@ -48,7 +48,7 @@ on:
 
 # Global environment variables
 env:
-  DEFAULT_APP_NAME: "IWA"
+  DEFAULT_APP_NAME: "IWAPharmacyDirect"
   BASE_DIR: "."
 
 jobs:
