@@ -31,6 +31,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -38,8 +39,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -91,19 +93,22 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+   
     @Configuration
     @Order(1)
     public class ApiConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
+        private JwtAuthenticationConverter jwtAuthenticationConverter() {
+            JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+            jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("scope");
+            jwtGrantedAuthoritiesConverter.setAuthorityPrefix("SCOPE_");
+            JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+            jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+            return jwtAuthenticationConverter;
+        }
+
         @Override
         protected void configure(HttpSecurity httpSecurity) throws Exception {
-
-            /*http.cors().and().csrf().disable()
-                    .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                    .authorizeRequests().antMatchers("/api/auth/**").permitAll()
-                    .antMatchers("/api/test/**").permitAll()
-                    .anyRequest().authenticated();*/
 
             httpSecurity.antMatcher("/api/**")
                     .authorizeRequests()
@@ -114,19 +119,20 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .antMatchers(HttpMethod.GET,"/api/v3/products/**").permitAll()
                     .antMatchers(HttpMethod.GET, "/api/v3/reviews").permitAll()
                     .antMatchers(HttpMethod.GET, "/api/v3/reviews/**").permitAll()
-                    .antMatchers(HttpMethod.GET, "/api/**").authenticated()
-                    .antMatchers(HttpMethod.DELETE, "/api/**").hasAnyRole("ADMIN", "API")
-                    .antMatchers(HttpMethod.POST, "/api/**").hasAnyRole("ADMIN", "API")
-                    .antMatchers(HttpMethod.PUT, "/api/**").hasAnyRole("ADMIN", "API")
-                    .antMatchers(HttpMethod.PATCH, "/api/**").hasAnyRole("ADMIN", "API")
+                    .antMatchers(HttpMethod.GET, "/api/**").hasAuthority("SCOPE_read:users")
+                    .antMatchers(HttpMethod.DELETE, "/api/**").hasAuthority("SCOPE_delete:products")
+                    .antMatchers(HttpMethod.POST, "/api/**").hasAuthority("SCOPE_add:products")
+                    .antMatchers(HttpMethod.PUT, "/api/**").hasAuthority("SCOPE_update:products")
+                    .antMatchers(HttpMethod.PATCH, "/api/**").hasAuthority("SCOPE_update:products")
                     .and().exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                     .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     //.and().exceptionHandling().authenticationEntryPoint(basicAuthenticationEntryPoint)
                     .and().exceptionHandling().accessDeniedHandler(apiAccessDeniedHandler)
-                    .and().csrf().disable();
+                    .and().csrf().disable().cors(Customizer.withDefaults())
+                    .oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
 
-            httpSecurity.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-
+            //httpSecurity.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+            
         }
 
     }

@@ -6,6 +6,7 @@ plugins {
 
 ext {
     springBootVersion = '2.7.0'
+    springOauth2Version = '5.7.1'
     springLog4jVersion = '2.3.12.RELEASE'
     jacksonVersion = '2.13.0'
     itextVersion = '7.2.5'
@@ -67,6 +68,8 @@ dependencies {
     implementation "com.warrenstrange:googleauth:1.5.0"
     implementation "com.google.zxing:core:3.4.0"
     implementation "com.google.zxing:javase:3.4.0"
+    implementation "org.springframework.security:spring-security-oauth2-resource-server:${springOauth2Version}"
+    implementation "org.springframework.security:spring-security-oauth2-jose:${springOauth2Version}"
     testImplementation "org.hibernate.validator:hibernate-validator:6.1.0.Final"
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}") {
         exclude group: "com.vaadin.external.google", module:"android-json"
@@ -107,7 +110,7 @@ project.archivesBaseName = 'iwa'
 group = 'com.microfocus.example'
 version = '1.0'
 description = 'IWA (Insecure Web App) Pharmacy Direct - an insecure web application for use in Fortify demonstrations'
-// A JDK 1.8 is needed if the WebInspect Runtime Agent is being used
+// A JDK 1.8 is needed if the WebInspect Runtime Agent is being used?
 //sourceCompatibility = JavaVersion.VERSION_1_8
 //targetCompatibility = JavaVersion.VERSION_1_8
 sourceCompatibility = JavaVersion.VERSION_11

@@ -64,7 +64,7 @@ public class ApiMessageController {
     @Autowired
     private UserService userService;
 
-    @Operation(summary = "Finds messages by keyword(s)", description = "Keyword search by %keyword% format", tags = {"message"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @Operation(summary = "Finds messages by keyword(s)", description = "Keyword search by %keyword% format", tags = {"messages"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(array = @ArraySchema(schema = @Schema(implementation = MessageResponse.class)))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -92,7 +92,7 @@ public class ApiMessageController {
         }
     }
 
-    @Operation(summary = "Find message by Id", description = "Find a message by UUID", tags = {"message"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @Operation(summary = "Find message by Id", description = "Find a message by UUID", tags = {"messages"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = MessageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),
@@ -166,7 +166,7 @@ public class ApiMessageController {
         return new ResponseEntity<>(apiStatusResponse, HttpStatus.OK);
     }
 
-    @Operation(summary = "Get users unread message count", description = "Get a users unread message count by their UUID", tags = {"message"}, security = @SecurityRequirement(name = "JWT Authentication"))
+    @Operation(summary = "Get users unread message count", description = "Get a users unread message count by their UUID", tags = {"messages"}, security = @SecurityRequirement(name = "JWT Authentication"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(schema = @Schema(implementation = MessageResponse.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ApiStatusResponse.class))),

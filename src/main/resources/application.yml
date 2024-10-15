@@ -50,6 +50,12 @@ spring:
 #    favicon:
 #      enabled: false
     throw-exception-if-no-handler-found: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-ahui5f878pgtbrpr.us.auth0.com/
+          audiences: https://iwa-api.onfortify.com
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
@@ -82,10 +88,10 @@ springdoc:
     display-request-duration: true
     operations-sorter: alpha
     tagsSorter: alpha
-
  #   groups-order: DESC
     disable-swagger-default-url: true
   paths-to-match: /api/**
+  writer-with-order-by-keys: true
 #  group-configs:
 #    - group: application
 #      paths-to-match: /api/**
@@ -99,6 +105,7 @@ logging:
     com.microfocus: INFO
     org.springframework.web: INFO
     org.springframework.security: INFO
+    org.springframework.security.oauth2: DEBUG
 
 app:
   name: IWA Pharmacy Direct
