@@ -151,18 +151,6 @@ jobs:
           DO_PR_COMMENT: true
           DO_EXPORT: true
           # TOOL_DEFINITIONS: https://ftfy.mycompany.com/tool-definitions/v1/tool-definitions.yaml.zip
-      #- name: Gradle FoD SAST scan
-      #  id: gradle-fod-sast-scan
-      #  uses: fortify-presales/github-actions/gradle-fod-sast-scan@main
-      #  with:
-      #    working_directory: ${{ env.BASE_DIR }}
-      #    fod_url: ${{ vars.FOD_URL }}
-      #    fod_api_url: ${{ vars.FOD_API_URL }}
-      #    fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
-      #    fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
-      #    fod_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
-      #    fod_release_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
-      #    fod_parent_release_name: ${{ steps.fortify-app-and-rel-name.outputs.parent_release_name }}
 
   Deploy-App:
     runs-on: ubuntu-latest

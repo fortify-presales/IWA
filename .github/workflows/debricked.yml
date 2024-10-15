@@ -95,10 +95,11 @@ jobs:
           gradle-version: ${{ env.GRADLE_VERSION }}
       # Install Fortify (if required)
       - name: Setup Fortify tools
-        uses: fortify/github-action/setup@v1.2.2
+        uses: fortify/github-action/setup@v1
         with:
           export-path: true
           fcli: latest
+          debricked-cli: true
       - name: Fortify App and Release Name
         id: fortify-app-and-rel-name
         uses: fortify-presales/github-actions/fortify-app-and-release-name@main

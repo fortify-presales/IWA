@@ -118,7 +118,9 @@ jobs:
       #  env:
       #    SSC_APP_NAME: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
       #    SSC_APPVER_NAME: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}      
-      # TODO: make sure release exists 
+
+      #
+      # See: https://github.com/marketplace/actions/fortify-ast-scan
       #
       - name: Run ScanCentral SAST Scan
         uses: fortify/github-action@v1
