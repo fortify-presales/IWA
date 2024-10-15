@@ -51,6 +51,12 @@ spring:
 #    favicon:
 #      enabled: false
     throw-exception-if-no-handler-found: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-ahui5f878pgtbrpr.us.auth0.com/
+          audiences: https://iwa-api.onfortify.com
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false

@@ -52,6 +52,12 @@ spring:
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-ahui5f878pgtbrpr.us.auth0.com/
+          audiences: https://iwa-api.onfortify.com
   mail:
     default-encoding: UTF-8
     host: localhost
