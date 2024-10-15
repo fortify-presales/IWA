@@ -61,7 +61,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
@@ -132,7 +132,13 @@ jobs:
           SSC_APPVERSION: ${{ format('{0}:{1}', steps.fortify-app-and-rel-name.outputs.app_name, steps.fortify-app-and-rel-name.outputs.release_name) }}
           # EXTRA_PACKAGE_OPTS: -bf custom-pom.xml
           SC_SAST_SENSOR_VERSION: ${{ vars.SCANCENTRAL_VERSION }}
+          DO_SETUP: true
+          DO_DEBRICKED_SCAN: true
+          DEBRICKED_TOKEN: ${{ secrets.DEBRICKED_TOKEN }}
           DO_WAIT: true
+          DO_JOB_SUMMARY: true
+          #DO_POLICY_CHECK: true
+          DO_PR_COMMENT: true
           #DO_EXPORT: true
           # TOOL_DEFINITIONS: https://ftfy.mycompany.com/tool-definitions/v1/tool-definitions.yaml.zip
 
