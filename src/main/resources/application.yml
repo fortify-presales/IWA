@@ -63,7 +63,7 @@ spring:
     default-encoding: UTF-8
     host: smtp.sendgrid.net
     username: apikey
-    password: # Your API Password
+    password: password
     port: 587
     test-connection: true
     debug: true
