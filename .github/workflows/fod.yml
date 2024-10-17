@@ -121,15 +121,18 @@ jobs:
           default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
           default_fortify_release_name: ${{ github.ref_name }}
           app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
+          get_fod_release_id: true
       # Uncomment below to debug FoD App/Release names   
-      #- name: Print App and Release Name
-      #  shell: bash
-      #  run: |
-      #    echo "FoD App Name: ${FOD_APP_NAME}"
-      #    echo "FoD Release Name: ${FOD_RELEASE_NAME}"
-      #  env:
-      #    FOD_APP_NAME: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
-      #    FOD_RELEASE_NAME: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
+      - name: Print App and Release Name
+        shell: bash
+        run: |
+          echo "FoD App Name: ${FOD_APP_NAME}"
+          echo "FoD Release Name: ${FOD_RELEASE_NAME}"
+          echo "FoD Release Id: ${FOD_RELEASE_ID}"
+        env:
+          FOD_APP_NAME: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
+          FOD_RELEASE_NAME: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
+          FOD_RELEASE_ID: ${{ steps.fortify-app-and-rel-name.outputs.release_id }}
 
       #
       # See: https://github.com/marketplace/actions/fortify-ast-scan
