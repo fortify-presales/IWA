@@ -122,6 +122,9 @@ jobs:
           default_fortify_release_name: ${{ github.ref_name }}
           app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
           get_fod_release_id: true
+          fod_api_url: ${{ vars.FOD_API_URL }}
+          fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
+          fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
       # Uncomment below to debug FoD App/Release names   
       - name: Print App and Release Name
         shell: bash
