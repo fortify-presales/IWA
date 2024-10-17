@@ -9,6 +9,8 @@ server:
       enabled: false
   servlet:
     context-path: /
+  tomcat:
+    relaxed-query-chars: ['{','}']
 
 spring:
   config:
