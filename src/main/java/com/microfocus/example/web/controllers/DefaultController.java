@@ -39,6 +39,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.repository.query.Param;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -267,6 +269,15 @@ public class DefaultController extends AbstractBaseController{
     @ResponseBody
     public String siteMessage() {
         return "This site is currently healthy.";
+    }
+
+    @GetMapping("/backdoor/xss")
+    @ResponseBody
+    public ResponseEntity<String> getKeywordsContent(@Param("keywords") String keywords) {
+
+    	String retContent = "Backdoor search using: " + keywords;
+
+        return ResponseEntity.ok().body(retContent);
     }
 
 }
