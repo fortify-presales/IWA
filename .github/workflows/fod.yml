@@ -141,10 +141,11 @@ jobs:
           FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
           FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
           # FOD_LOGIN_EXTRA_OPTS: --socket-timeout=60s
-          FOD_RELEASE: ${{ format('{0}:{1}', steps.fortify-app-and-rel-name.outputs.app_name, steps.fortify-app-and-rel-name.outputs.release_name) }}
+          #FOD_RELEASE: ${{ format('{0}:{1}', steps.fortify-app-and-rel-name.outputs.app_name, steps.fortify-app-and-rel-name.outputs.release_name) }}
+          FOD_RELEASE: ${{ steps.fortify-app-and-rel-name.outputs.release_id  }}
           PACKAGE_EXTRA_OPTS: -oss
           DO_SETUP: true
-          SETUP_EXTRA_OPTS: ${{ format('--sdlc-status Development --copy-from "{0}:{1}"', steps.fortify-app-and-rel-name.outputs.app_name, steps.fortify-app-and-rel-name.outputs.parent_release_name) }}
+          SETUP_EXTRA_OPTS: ${{ format('--sdlc-status Development --copy-from {0}', vars.FOD_PARENT_RELEASE_ID) }}
           DO_WAIT: true
           DO_JOB_SUMMARY: true
           #DO_POLICY_CHECK: true
