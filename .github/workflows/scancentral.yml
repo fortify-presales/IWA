@@ -78,6 +78,7 @@ jobs:
         with:
           ssc_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
           ssc_appversion_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
+          ssc_url: ${{ vars.FORTIFY_SSC_URL }}
           ssc_token: ${{ secrets.FORTIFY_SSC_TOKEN }}
       # Uncomment below to debug FoD App/Release names   
       - name: Print App and Release Name
