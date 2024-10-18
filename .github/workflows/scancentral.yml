@@ -145,6 +145,11 @@ jobs:
         with:
           # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
           fetch-depth: 2
+      # Setup JDK 17 on host
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
       # Set SSC App and Version names for use in rest of job
       - name: Fortify App and Release Name
         id: fortify-app-and-rel-name
