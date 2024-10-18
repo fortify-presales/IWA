@@ -33,3 +33,4 @@ bin/main
 bin/test
 gradle.debricked.lock
 sc.gradle.debricked.lock
+fcli.log

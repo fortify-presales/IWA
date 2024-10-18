@@ -44,10 +44,52 @@ on:
 
 # Global environment variables
 env:
-  DEFAULT_APP_NAME: "IWA"
+  DEFAULT_APP_NAME: "IWA-PharmacyDirect"
+  BASE_DIR: "."
   GRADLE_VERSION: "7.3"
 
 jobs:
+
+  Validate-SSC-Setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
+          fetch-depth: 2
+      # Setup JDK 17 on host
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      # Set FoD App and Release names for use in rest of job
+      - name: Fortify App and Release Name
+        id: fortify-app-and-rel-name
+        uses: fortify-presales/github-actions/fortify-app-and-release-name@main
+        with:
+          default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
+          default_fortify_release_name: ${{ github.ref_name }}
+          app_name_postfix: ""
+      # Validate FoD Release exists and create if not
+      - name: Setup SSC App Version
+        id: setup-ssc-appversion
+        uses: fortify-presales/github-actions/ssc-setup-appversion@main
+        with:
+          ssc_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
+          ssc_appversion_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
+          ssc_token: ${{ secrets.FORTIFY_SSC_TOKEN }}
+      # Uncomment below to debug FoD App/Release names   
+      - name: Print App and Release Name
+        shell: bash
+        run: |
+          echo "SSC App Name: ${SSC_APP_NAME}"
+          echo "SSC App Version Name: ${SSC_APPVERSION_NAME}"
+          echo "SSC App Version Id: ${SSC_APPVERSION_ID}"
+        env:
+          SSC_APP_NAME: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
+          SSC_APPVERSION_NAME: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
+          SSC_APPVERSION_ID: ${{ steps.setup-ssc-appversion.outputs.appversion_id }}
 
   Build-And-Unit-Test:
     runs-on: ubuntu-latest
@@ -95,13 +137,14 @@ jobs:
   ScanCentral-SAST-Scan:
     runs-on: ubuntu-latest
     if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runScanCentralSASTScan == 'true') }}
-    needs: [ Quality-Gate ]
+    needs: [ Validate-SSC-Setup ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
           fetch-depth: 2
+      # Set SSC App and Version names for use in rest of job
       - name: Fortify App and Release Name
         id: fortify-app-and-rel-name
         uses: fortify-presales/github-actions/fortify-app-and-release-name@main
@@ -109,16 +152,6 @@ jobs:
           default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
           default_fortify_release_name: ${{ github.ref_name }}
           app_name_postfix: ""
-      # Uncomment below to debug SSC App/App Version names   
-      #- name: Print App and Release Name
-      #  shell: bash
-      #  run: |
-      #    echo "SSC App Name: ${SSC_APP_NAME}"
-      #    echo "SSC App Version Name: ${SSC_APPVER_NAME}"
-      #  env:
-      #    SSC_APP_NAME: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
-      #    SSC_APPVER_NAME: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}      
-
       #
       # See: https://github.com/marketplace/actions/fortify-ast-scan
       #
@@ -134,14 +167,14 @@ jobs:
           SSC_APPVERSION: ${{ format('{0}:{1}', steps.fortify-app-and-rel-name.outputs.app_name, steps.fortify-app-and-rel-name.outputs.release_name) }}
           # EXTRA_PACKAGE_OPTS: -bf custom-pom.xml
           SC_SAST_SENSOR_VERSION: ${{ vars.SCANCENTRAL_VERSION }}
-          DO_SETUP: true
+          DO_SETUP: false
           DO_DEBRICKED_SCAN: true
           DEBRICKED_TOKEN: ${{ secrets.DEBRICKED_TOKEN }}
           DO_WAIT: true
           DO_JOB_SUMMARY: true
           #DO_POLICY_CHECK: true
           DO_PR_COMMENT: true
-          #DO_EXPORT: true
+          DO_EXPORT: true
           # TOOL_DEFINITIONS: https://ftfy.mycompany.com/tool-definitions/v1/tool-definitions.yaml.zip
 
   Deploy-App:
@@ -216,6 +249,7 @@ jobs:
         with:
           default_fortify_app_name: ${{ env.DEFAULT_APP_NAME }}
           default_fortify_release_name: ${{ github.ref_name }}
+          app_name_postfix: ""
       - name: Verify SSC Security Policy
         uses: fortify-presales/github-actions/verify-ssc-security-policy@main
         with:
