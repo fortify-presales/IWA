@@ -81,7 +81,6 @@ jobs:
         with:
           fod_app_name: ${{ steps.fortify-app-and-rel-name.outputs.app_name }}
           fod_release_name: ${{ steps.fortify-app-and-rel-name.outputs.release_name }}
-          app_name_postfix: ${{ vars.FORTIFY_APP_NAME_POSTFIX }}
           fod_api_url: ${{ vars.FOD_URL }}
           fod_client_id: ${{ secrets.FOD_CLIENT_ID }}
           fod_client_secret: ${{ secrets.FOD_CLIENT_SECRET }}
@@ -144,6 +143,7 @@ jobs:
   FoD-SAST-Scan:
     runs-on: ubuntu-latest
     if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runFoDSASTScan == 'true') }}
+    needs: [Validate-FoD-Setup ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
